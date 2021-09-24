@@ -39,7 +39,9 @@ function Singlescreen(props: {
   const imgRef: React.RefObject<HTMLImageElement> = React.createRef();
   const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
 
-  const [visible, update] = useState(false);
+  const [invisible, update] = useState(true);
+
+  const [isWide, updateWide] = useState(false);
 
   return (
     <div className={style.screen_wrapper} style={props.wrapperStyle}>
@@ -49,22 +51,35 @@ function Singlescreen(props: {
           <div className={style.iframe_wrapper}>
             <div className={style.what}>
               <div
-                className={visible ? style.hmm : style.invisble}
+                className={[
+                  style.hmm,
+                  invisible && style.invisble,
+                  isWide ? style.wide : style.tall,
+                ].join(" ")}
                 ref={divRef}
               >
                 <iframe
                   ref={iframeRef}
-                  className={[style.iframe, visible && style.full].join(" ")}
+                  className={[style.iframe, !invisible && style.full].join(" ")}
                   title={props.screen.iFrameTitle}
                   src={props.screen.url}
                   onLoad={() => {
-                    imgRef.current!.src = `http://lorempixel.com/${
-                      iframeRef.current!.offsetWidth
-                    }/${iframeRef.current!.offsetHeight}`;
+                    const ratio = `${iframeRef.current!.offsetWidth}/${
+                      iframeRef.current!.offsetHeight
+                    }`;
+                    imgRef.current!.src = `http://lorempixel.com/${ratio}`;
+                    const match = window.matchMedia(
+                      `(min-aspect-ratio: ${ratio})`
+                    );
+                    if (match.matches) updateWide(true);
+                    match.addListener((e) => {
+                      alert(e.matches);
+                      updateWide(e.matches);
+                    });
                   }}
                 ></iframe>
                 <img
-                  onLoad={() => update(true)}
+                  onLoad={() => update(false)}
                   ref={imgRef}
                   alt={""}
                   className={style.iframe_sizer}

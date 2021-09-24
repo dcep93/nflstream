@@ -72,7 +72,7 @@ function Singlescreen(props: {
                       `(min-aspect-ratio: ${ratio})`
                     );
                     if (match.matches) updateWide(true);
-                    match.addListener((e) => {
+                    match.addEventListener("change", (e) => {
                       alert(e.matches);
                       updateWide(e.matches);
                     });

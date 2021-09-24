@@ -1,0 +1,38 @@
+.bubble {
+  border-radius: 15px;
+  border: 2px solid black;
+  padding: 13px;
+  margin: 13px;
+  display: inline-block;
+}
+
+.main {
+  position: absolute;
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+
+.menu {
+  resize: horizontal;
+  display: inline-block;
+  height: 100%;
+  width: 20em;
+  background-color: lightgray;
+  overflow: scroll;
+}
+
+.menu_header {
+  margin: 0.3em;
+}
+
+.menu_textarea {
+  width: 50em;
+  height: 20em;
+}
+
+.screens {
+  display: inline-flex;
+  background-color: black;
+  flex-grow: 1;
+}

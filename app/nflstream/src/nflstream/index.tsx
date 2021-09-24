@@ -1,4 +1,5 @@
-import React from "react";
+import React, { CSSProperties } from "react";
+import { StreamType } from "../firebase";
 import style from "./index.module.css";
 import Menu from "./Menu";
 import MessageExtension from "./MessageExtension";
@@ -14,33 +15,41 @@ class NFLStream extends React.Component<{}, { screens: ScreenType[] }> {
     return (
       <div className={style.main}>
         <MessageExtension />
-        <Menu
-          sendStream={(stream) =>
-            this.setState({
-              screens: this.state.screens.concat(
-                Object.assign(
-                  {
-                    iFrameTitle: (Math.random() + 1).toString(36).substring(2),
-                  },
-                  stream
-                )
-              ),
-            })
-          }
-        />
-        {(this.state.screens || []).map((screen, i) => (
-          <Multiscreen
-            key={screen.iFrameTitle}
-            screen={screen}
-            delete={() =>
-              this.setState({
-                screens: this.state.screens.filter((_, j) => j !== i),
-              })
-            }
-          />
-        ))}
+        <Menu sendStream={this.sendStream.bind(this)} />
+        <div className={style.screens} style={this.getScreensStyle()}>
+          {(this.state.screens || []).map((screen, i) => (
+            <Multiscreen
+              key={screen.iFrameTitle}
+              screen={screen}
+              delete={() => this.filterScreen(i)}
+            />
+          ))}
+        </div>
       </div>
     );
+  }
+
+  sendStream(stream: StreamType) {
+    this.setState({
+      screens: this.state.screens.concat(
+        Object.assign(
+          {
+            iFrameTitle: (Math.random() + 1).toString(36).substring(2),
+          },
+          stream
+        )
+      ),
+    });
+  }
+
+  getScreensStyle(): CSSProperties {
+    return { flexBasis: "100%" };
+  }
+
+  filterScreen(index: number) {
+    this.setState({
+      screens: this.state.screens.filter((_, i) => i !== index),
+    });
   }
 }
 export default NFLStream;

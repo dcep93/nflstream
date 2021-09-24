@@ -14,11 +14,10 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://nflstream.web.app"],
+      "matches": ["https://nflstream.web.app/"],
       "js": ["content_script.js"]
     }
   ],
-  "web_accessible_resources": ["scripts/*"],
   "browser_action": {
     "default_icon": "favicon.png"
   },

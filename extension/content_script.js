@@ -1,1 +1,1 @@
-chrome.runtime.sendMessage();
+chrome.runtime.sendMessage(null);

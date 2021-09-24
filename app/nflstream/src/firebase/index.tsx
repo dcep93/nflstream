@@ -12,7 +12,7 @@ if (!window.firebaseinitialized) {
   firebase._init();
 }
 
-export type NFLStreamType = { timestamp: string; streams?: StreamType[] };
+export type NFLStreamType = { timestamp: number; streams?: StreamType[] };
 
 export type StreamType = { url: string; name: string };
 

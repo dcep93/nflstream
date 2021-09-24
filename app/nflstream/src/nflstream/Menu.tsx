@@ -1,8 +1,39 @@
 import React from "react";
 import firebase, { NFLStreamType, StreamType } from "../firebase";
 
-var component: Menu;
+const MAX_AGE_MS = 5 * 1000;
 
+function MenuHelper(props: {
+  sendStream: (stream: StreamType) => void;
+  nflStream: NFLStreamType;
+}) {
+  const title = new Date(props.nflStream.timestamp).toLocaleString();
+  console.log(title);
+  return (
+    <div>
+      <h1 title={title}>NFL Stream</h1>
+      <div>
+        {(props.nflStream.streams || []).map((stream, i) => (
+          <div key={i} onClick={() => props.sendStream(stream)}>
+            <div>{stream.name}</div>
+            <div>{stream.url}</div>
+          </div>
+        ))}
+      </div>
+      {new Date().getTime() - props.nflStream.timestamp > MAX_AGE_MS && (
+        <div>
+          These links are out of date. Consider downloading the{" "}
+          <a href="https://chrome.google.com/webstore/detail/movie-date/iofdkijmnaoabjndjbichhbllhbbkbde">
+            chrome extension
+          </a>{" "}
+          to automatically update the streams.
+        </div>
+      )}
+    </div>
+  );
+}
+
+var component: Menu;
 class Menu extends React.Component<
   { sendStream: (stream: StreamType) => void },
   NFLStreamType
@@ -22,17 +53,7 @@ class Menu extends React.Component<
   render() {
     if (!this.state) return "Loading...";
     return (
-      <div>
-        <h1 title={this.state.timestamp}>NFL Stream</h1>
-        <div>
-          {(this.state.streams || []).map((stream, i) => (
-            <div key={i} onClick={() => this.props.sendStream(stream)}>
-              <div>{stream.name}</div>
-              <div>{stream.url}</div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <MenuHelper sendStream={this.props.sendStream} nflStream={this.state} />
     );
   }
 }

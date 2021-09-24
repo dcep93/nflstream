@@ -15,7 +15,7 @@ function main(sendMessage) {
     .then((streamPromises) => Promise.all(streamPromises))
     .then((streams) =>
       sendMessage({
-        timestamp: new Date().toLocaleString(),
+        timestamp: new Date().getTime(),
         streams,
       })
     )

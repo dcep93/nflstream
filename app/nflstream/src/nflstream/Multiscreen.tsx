@@ -42,8 +42,7 @@ function Singlescreen(props: {
   const imgRef: React.RefObject<HTMLImageElement> = React.createRef();
   const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
 
-  const [invisible, update] = useState(true);
-
+  const [isFull, updateFull] = useState(false);
   const [isWide, updateWide] = useState(false);
 
   return (
@@ -54,15 +53,18 @@ function Singlescreen(props: {
       <div className={style.screen}>
         <div
           className={[
-            style.hmm,
-            invisible && style.invisble,
+            style.sized_screen,
             isWide ? style.wide : style.tall,
           ].join(" ")}
           ref={divRef}
         >
           <iframe
             ref={iframeRef}
-            className={[style.iframe, !invisible && style.full].join(" ")}
+            className={[
+              style.iframe,
+              isFull && style.full,
+              !isFull && style.invisible,
+            ].join(" ")}
             title={props.screen.iFrameTitle}
             src={props.screen.url}
             onLoad={() => {
@@ -71,14 +73,14 @@ function Singlescreen(props: {
               }`;
               imgRef.current!.src = `http://lorempixel.com/${ratio}`;
               const match = window.matchMedia(`(min-aspect-ratio: ${ratio})`);
-              if (match.matches) updateWide(true);
+              updateWide(match.matches);
               match.addEventListener("change", (e) => {
                 updateWide(e.matches);
               });
             }}
           ></iframe>
           <img
-            onLoad={() => update(false)}
+            onLoad={() => updateFull(true)}
             ref={imgRef}
             alt={""}
             className={style.iframe_sizer}

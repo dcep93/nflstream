@@ -1,4 +1,4 @@
-import React, { CSSProperties } from "react";
+import React, { CSSProperties, useState } from "react";
 import { StreamType } from "../firebase";
 import style from "./index.module.css";
 
@@ -36,30 +36,40 @@ function Singlescreen(props: {
   const ref: React.RefObject<HTMLImageElement> = React.createRef();
   const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
 
+  const [visible, update] = useState(false);
+
   return (
     <div className={style.screen_wrapper} style={props.wrapperStyle}>
       <div onClick={props.delete}>{props.screen.name}</div>
       <div className={style.screen_helper}>
         <div className={style.screen}>
-          <iframe
-            ref={iframeRef}
-            className={style.iframe}
-            title={props.screen.iFrameTitle}
-            src={props.screen.url}
-            onLoad={() => {
-              ref.current!.src = `http://lorempixel.com/${
-                iframeRef.current!.offsetWidth
-              }/${iframeRef.current!.offsetHeight}`;
-            }}
-          ></iframe>
-          <img
-            className={style.screen_sizer}
-            ref={ref}
-            alt={""}
-            onLoad={() => {
-              console.log("loaded img");
-            }}
-          ></img>
+          <div
+            className={[
+              style.iframe_wrapper,
+              visible && style.sized_iframe,
+            ].join(" ")}
+          >
+            <iframe
+              ref={iframeRef}
+              className={style.iframe}
+              title={props.screen.iFrameTitle}
+              src={props.screen.url}
+              onLoad={() => {
+                ref.current!.src = `http://lorempixel.com/${
+                  iframeRef.current!.offsetWidth
+                }/${iframeRef.current!.offsetHeight}`;
+                update(true);
+              }}
+            ></iframe>
+            <img
+              className={style.screen_sizer}
+              ref={ref}
+              alt={""}
+              onLoad={() => {
+                console.log("loaded img");
+              }}
+            ></img>
+          </div>
         </div>
       </div>
     </div>

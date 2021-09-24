@@ -28,11 +28,9 @@ function Menu(props: {
       <div hidden={hidden}>
         <UpdateStreams nflStream={props.nflStream} />
       </div>
-      (
       {new Date().getTime() - props.nflStream.timestamp > MAX_AGE_MS && (
         <OutOfDate />
       )}
-      )
     </div>
   );
 }

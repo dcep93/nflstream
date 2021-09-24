@@ -68,9 +68,14 @@
   position: relative;
 }
 
+.iframe_wrapper {
+  resize: both;
+  padding: 3px;
+  background-color: green;
+}
+
 .iframe {
   position: absolute;
-  opacity: 0;
 }
 
 .sized_iframe {

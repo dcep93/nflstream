@@ -6,7 +6,7 @@ const MAX_AGE_MS = 5 * 1000;
 
 function Menu(props: {
   sendStream: (stream: StreamType) => void;
-  nflStream: NFLStreamType;
+  nflStream?: NFLStreamType;
 }) {
   const [hidden, update] = useState(true);
   if (!props.nflStream) return <div>Loading...</div>;
@@ -28,7 +28,11 @@ function Menu(props: {
       <div hidden={hidden}>
         <UpdateStreams nflStream={props.nflStream} />
       </div>
-      <OutOfDate nflStream={props.nflStream} />
+      (
+      {new Date().getTime() - props.nflStream.timestamp > MAX_AGE_MS && (
+        <OutOfDate />
+      )}
+      )
     </div>
   );
 }
@@ -77,8 +81,8 @@ function UpdateStreams(props: { nflStream: NFLStreamType }) {
   );
 }
 
-function OutOfDate(props: { nflStream: NFLStreamType }) {
-  return new Date().getTime() - props.nflStream.timestamp > MAX_AGE_MS ? (
+function OutOfDate() {
+  return (
     <div className={style.bubble}>
       <div>These links are out of date.</div>
       <div>
@@ -89,7 +93,7 @@ function OutOfDate(props: { nflStream: NFLStreamType }) {
         to automatically update the streams.
       </div>
     </div>
-  ) : null;
+  );
 }
 
 var component: MenuWrapper;

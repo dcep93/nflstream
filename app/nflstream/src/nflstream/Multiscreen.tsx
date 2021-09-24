@@ -5,14 +5,39 @@ import style from "./index.module.css";
 export type ScreenType = StreamType & { iFrameTitle: string };
 
 function Multiscreen(props: {
+  screens: ScreenType[];
+  removeScreen: (index: number) => void;
+}) {
+  const basis = `${Math.floor(
+    100 / Math.ceil(Math.sqrt(props.screens.length))
+  )}%`;
+  const wrapperStyle: CSSProperties = { flexBasis: basis, height: basis };
+  return (
+    <div className={style.screens_wrapper}>
+      <div className={style.screens}>
+        {(props.screens || []).map((screen, i) => (
+          <Singlescreen
+            key={screen.iFrameTitle}
+            screen={screen}
+            delete={() => props.removeScreen(i)}
+            wrapperStyle={wrapperStyle}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Singlescreen(props: {
   delete: () => void;
   screen: ScreenType;
-  numScreens: number;
+  wrapperStyle: CSSProperties;
 }) {
   const ref: React.RefObject<HTMLImageElement> = React.createRef();
   const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
+
   return (
-    <div className={style.screen_wrapper} style={getStyle(props.numScreens)}>
+    <div className={style.screen_wrapper} style={props.wrapperStyle}>
       <div onClick={props.delete}>{props.screen.name}</div>
       <div className={style.screen_helper}>
         <div className={style.screen}>
@@ -39,12 +64,6 @@ function Multiscreen(props: {
       </div>
     </div>
   );
-}
-
-function getStyle(numScreens: number): CSSProperties {
-  const columns = Math.ceil(Math.sqrt(numScreens));
-  const basis = `${Math.floor(100 / columns)}%`;
-  return { flexBasis: basis, height: basis };
 }
 
 export default Multiscreen;

@@ -16,18 +16,10 @@ class NFLStream extends React.Component<{}, { screens: ScreenType[] }> {
       <div className={style.main}>
         <MessageExtension />
         <Menu sendStream={this.sendStream.bind(this)} />
-        <div className={style.screens_wrapper}>
-          <div className={style.screens}>
-            {(this.state.screens || []).map((screen, i) => (
-              <Multiscreen
-                key={screen.iFrameTitle}
-                numScreens={this.state.screens.length}
-                screen={screen}
-                delete={() => this.filterScreen(i)}
-              />
-            ))}
-          </div>
-        </div>
+        <Multiscreen
+          screens={this.state.screens}
+          removeScreen={this.removeScreen.bind(this)}
+        />
       </div>
     );
   }
@@ -45,7 +37,7 @@ class NFLStream extends React.Component<{}, { screens: ScreenType[] }> {
     });
   }
 
-  filterScreen(index: number) {
+  removeScreen(index: number) {
     this.setState({
       screens: this.state.screens.filter((_, i) => i !== index),
     });

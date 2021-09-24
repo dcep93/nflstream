@@ -84,7 +84,7 @@
 .iframe {
   position: absolute;
   background-color: red;
-  opacity: 0.5;
+  opacity: 0;
   border: 2px solid black;
   display: inline-block;
 }
@@ -100,7 +100,6 @@
 .hmm {
   display: inline-block;
   position: relative;
-  height: 100%;
   flex: 0 0 auto;
 }
 
@@ -117,4 +116,16 @@
 .full {
   width: 100%;
   height: 100%;
+}
+
+@media (min-aspect-ratio: 16/9) {
+  .hmm {
+    height: 100%;
+  }
+}
+
+@media (max-aspect-ratio: 16/9) {
+  .hmm {
+    width: 100%;
+  }
 }

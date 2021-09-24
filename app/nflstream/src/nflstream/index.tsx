@@ -1,11 +1,13 @@
 import React from "react";
 import Menu from "./Menu";
 import Multiscreen, { ScreenType } from "./Multiscreen";
+import recorded_sha from "./recorded_sha";
 
 class NFLStream extends React.Component<{}, { screens: ScreenType[] }> {
   constructor(props: {}) {
     super(props);
     this.state = { screens: [] };
+    console.log(recorded_sha);
   }
 
   render() {

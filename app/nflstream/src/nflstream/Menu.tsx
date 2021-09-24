@@ -20,7 +20,7 @@ class Menu extends React.Component<
     if (!this.state) return "Loading...";
     return (
       <div>
-        <h1>NFL Stream</h1>
+        <h1 title={this.state.updated}>NFL Stream</h1>
         <div>
           {(this.state.streams || []).map((stream, i) => (
             <div key={i} onClick={() => this.props.sendStream(stream)}>

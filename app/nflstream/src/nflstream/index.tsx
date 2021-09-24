@@ -8,7 +8,7 @@ class NFLStream extends React.Component<{}, { screens: ScreenType[] }> {
   constructor(props: {}) {
     super(props);
     this.state = { screens: [] };
-    console.log(recorded_sha);
+    console.log("recorded_sha", recorded_sha);
   }
 
   render() {

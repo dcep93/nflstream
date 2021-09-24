@@ -5,6 +5,7 @@ function MessageExtension() {
   const ref: React.RefObject<HTMLTextAreaElement> = React.createRef();
   return (
     <textarea
+      hidden
       ref={ref}
       id={"extension_message"}
       onClick={() => {

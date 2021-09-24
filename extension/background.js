@@ -1,15 +1,19 @@
 console.log("background", new Date());
 
-function main() {
+function main(sendResponse) {
   console.log("main");
 
-  // export type NFLStreamType = { updated: string, streams?: StreamType[] };
+  // export type NFLStreamType = { timestamp: string, streams?: StreamType[] };
 
   // export type StreamType = { url: string, name: string };
+
+  sendResponse({ timestamp: new Date().toLocaleString() });
 }
 
-main();
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) =>
+  main(sendResponse)
+);
 
-chrome.runtime.onMessage.addListener(main);
-
-chrome.browserAction.onClicked.addListener(main);
+chrome.browserAction.onClicked.addListener((message, sender, sendResponse) =>
+  main(sendResponse)
+);

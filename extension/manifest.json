@@ -9,7 +9,9 @@
     "128": "favicon.png"
   },
   "background": {
-    "scripts": [ "typescriptServices.js", "background.js"],
+    "scripts": [ 
+      "background.js"
+    ],
     "persistent": false
   },
   "content_scripts": [

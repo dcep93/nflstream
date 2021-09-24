@@ -1,5 +1,6 @@
 import React from "react";
 import Menu from "./Menu";
+import MessageExtension from "./MessageExtension";
 import Multiscreen, { ScreenType } from "./Multiscreen";
 import recorded_sha from "./recorded_sha";
 
@@ -13,6 +14,7 @@ class NFLStream extends React.Component<{}, { screens: ScreenType[] }> {
   render() {
     return (
       <div>
+        <MessageExtension />
         <Menu
           sendStream={(stream) =>
             this.setState({

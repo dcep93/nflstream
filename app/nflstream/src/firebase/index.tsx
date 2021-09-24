@@ -12,7 +12,7 @@ if (!window.firebaseinitialized) {
   firebase._init();
 }
 
-export type NFLStreamType = { updated: string; streams?: StreamType[] };
+export type NFLStreamType = { timestamp: string; streams?: StreamType[] };
 
 export type StreamType = { url: string; name: string };
 
@@ -20,8 +20,13 @@ function connect(f: (nflStream: NFLStreamType) => void) {
   firebase._connect(`/`, (val) => f(val || {}));
 }
 
+function updateNFLStream(nflStream: NFLStreamType) {
+  firebase._set(`/`, nflStream);
+}
+
 const ex = {
   connect,
+  updateNFLStream,
 };
 
 export default ex;

@@ -1,0 +1,27 @@
+import firebase from "./firebase";
+
+declare global {
+  interface Window {
+    firebaseinitialized: boolean;
+  }
+}
+window.firebaseinitialized = false;
+if (!window.firebaseinitialized) {
+  window.firebaseinitialized = true;
+  // set userAgent to Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1
+  firebase._init();
+}
+
+export type NFLStreamType = { updated: string; streams?: StreamType[] };
+
+export type StreamType = { url: string; name: string };
+
+function connect(f: (nflStream: NFLStreamType) => void) {
+  firebase._connect(`/`, (val) => f(val || {}));
+}
+
+const ex = {
+  connect,
+};
+
+export default ex;

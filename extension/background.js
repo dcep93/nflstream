@@ -11,9 +11,7 @@ function fileToPromise(fileName) {
 function main() {
   console.log("main");
 
-  Promise.all(["firebase.ts", "fetch_and_save.ts"].map(fileToPromise)).catch(
-    alert
-  );
+  Promise.all(["fetch_and_save.ts"].map(fileToPromise)).catch(alert);
 }
 
 main();

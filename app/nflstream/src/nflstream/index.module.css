@@ -15,14 +15,13 @@
 
 .menu {
   resize: horizontal;
-  display: inline-block;
-  height: 100%;
   width: 20em;
   background-color: lightgray;
   overflow: scroll;
+  flex-shrink: 0;
 }
 
-.menu_header {
+.header {
   margin: 0.3em;
 }
 
@@ -31,8 +30,22 @@
   height: 20em;
 }
 
-.screens {
-  display: inline-flex;
-  background-color: black;
+.screens_wrapper {
   flex-grow: 1;
+}
+
+.screens {
+  display: flex;
+  background-color: black;
+  height: 100%;
+  flex-wrap: wrap;
+}
+
+.screen {
+  display: flex;
+  flex-direction: column;
+}
+
+.iframe {
+  width: 100%;
 }

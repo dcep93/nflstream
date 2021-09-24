@@ -15,7 +15,7 @@ function Menu(props: {
   return (
     <div>
       <h1
-        className={style.menu_header}
+        className={style.header}
         title={title}
         onClick={() => update(!hidden)}
       >

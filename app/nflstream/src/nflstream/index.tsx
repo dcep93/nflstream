@@ -1,4 +1,4 @@
-import React, { CSSProperties } from "react";
+import React from "react";
 import { StreamType } from "../firebase";
 import style from "./index.module.css";
 import Menu from "./Menu";
@@ -16,14 +16,17 @@ class NFLStream extends React.Component<{}, { screens: ScreenType[] }> {
       <div className={style.main}>
         <MessageExtension />
         <Menu sendStream={this.sendStream.bind(this)} />
-        <div className={style.screens} style={this.getScreensStyle()}>
-          {(this.state.screens || []).map((screen, i) => (
-            <Multiscreen
-              key={screen.iFrameTitle}
-              screen={screen}
-              delete={() => this.filterScreen(i)}
-            />
-          ))}
+        <div className={style.screens_wrapper}>
+          <div className={style.screens}>
+            {(this.state.screens || []).map((screen, i) => (
+              <Multiscreen
+                key={screen.iFrameTitle}
+                numScreens={this.state.screens.length}
+                screen={screen}
+                delete={() => this.filterScreen(i)}
+              />
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -40,10 +43,6 @@ class NFLStream extends React.Component<{}, { screens: ScreenType[] }> {
         )
       ),
     });
-  }
-
-  getScreensStyle(): CSSProperties {
-    return { flexBasis: "100%" };
   }
 
   filterScreen(index: number) {

@@ -11,23 +11,26 @@ function Multiscreen(props: {
 }) {
   return (
     <div
-      className={style.screen}
+      className={style.screen_wrapper}
       style={getStyle(props.numScreens)}
       onClick={props.delete}
     >
       <div>{props.screen.name}</div>
-      <iframe
-        className={style.iframe}
-        title={props.screen.iFrameTitle}
-        src={props.screen.url}
-      ></iframe>
+      <div className={style.screen}>
+        <iframe
+          className={style.iframe}
+          title={props.screen.iFrameTitle}
+          src={props.screen.url}
+        ></iframe>
+      </div>
     </div>
   );
 }
 
 function getStyle(numScreens: number): CSSProperties {
   const columns = Math.ceil(Math.sqrt(numScreens));
-  return { flexBasis: `${Math.floor(100 / columns)}%` };
+  const basis = `${Math.floor(100 / columns)}%`;
+  return { flexBasis: basis, height: basis };
 }
 
 export default Multiscreen;

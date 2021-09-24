@@ -14,16 +14,18 @@ function Multiscreen(props: {
   const wrapperStyle: CSSProperties = { flexBasis: basis, height: basis };
   return (
     <div className={style.screens_wrapper}>
-      <div className={style.screens}>
-        {(props.screens || []).map((screen, i) => (
-          <Singlescreen
-            key={screen.iFrameTitle}
-            screen={screen}
-            delete={() => props.removeScreen(i)}
-            wrapperStyle={wrapperStyle}
-          />
-        ))}
-      </div>
+      {props.screens.length && (
+        <div className={style.screens}>
+          {props.screens.map((screen, i) => (
+            <Singlescreen
+              key={screen.iFrameTitle}
+              screen={screen}
+              delete={() => props.removeScreen(i)}
+              wrapperStyle={wrapperStyle}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -33,7 +35,8 @@ function Singlescreen(props: {
   screen: ScreenType;
   wrapperStyle: CSSProperties;
 }) {
-  const ref: React.RefObject<HTMLImageElement> = React.createRef();
+  const divRef: React.RefObject<HTMLDivElement> = React.createRef();
+  const imgRef: React.RefObject<HTMLImageElement> = React.createRef();
   const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
 
   const [visible, update] = useState(false);
@@ -43,32 +46,31 @@ function Singlescreen(props: {
       <div onClick={props.delete}>{props.screen.name}</div>
       <div className={style.screen_helper}>
         <div className={style.screen}>
-          <div
-            className={[
-              style.iframe_wrapper,
-              visible && style.sized_iframe,
-            ].join(" ")}
-          >
-            <iframe
-              ref={iframeRef}
-              className={style.iframe}
-              title={props.screen.iFrameTitle}
-              src={props.screen.url}
-              onLoad={() => {
-                ref.current!.src = `http://lorempixel.com/${
-                  iframeRef.current!.offsetWidth
-                }/${iframeRef.current!.offsetHeight}`;
-                update(true);
-              }}
-            ></iframe>
-            <img
-              className={style.screen_sizer}
-              ref={ref}
-              alt={""}
-              onLoad={() => {
-                console.log("loaded img");
-              }}
-            ></img>
+          <div className={style.iframe_wrapper}>
+            <div className={style.what}>
+              <div
+                className={visible ? style.hmm : style.invisble}
+                ref={divRef}
+              >
+                <iframe
+                  ref={iframeRef}
+                  className={style.iframe}
+                  title={props.screen.iFrameTitle}
+                  src={props.screen.url}
+                  onLoad={() => {
+                    imgRef.current!.src = `http://lorempixel.com/${
+                      iframeRef.current!.offsetWidth
+                    }/${iframeRef.current!.offsetHeight}`;
+                  }}
+                ></iframe>
+                <img
+                  onLoad={() => update(true)}
+                  ref={imgRef}
+                  alt={""}
+                  className={style.iframe_sizer}
+                ></img>
+              </div>
+            </div>
           </div>
         </div>
       </div>

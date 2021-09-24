@@ -30,14 +30,17 @@
   height: 20em;
 }
 
+/* screens */
+
 .screens_wrapper {
   flex-grow: 1;
+  background-color: black;
 }
 
 .screens {
   display: flex;
-  background-color: black;
   height: 100%;
+  width: 100vw;
   flex-wrap: wrap;
   align-content: flex-start;
 }
@@ -47,6 +50,7 @@
   flex-direction: column;
   align-items: center;
   color: lightgray;
+  background-color: green;
 }
 
 .screen_helper {
@@ -56,30 +60,61 @@
   overflow: hidden;
 }
 
-.screen_sizer {
-  object-fit: contain;
-  width: 100%;
-  height: 100%;
-}
-
 .screen {
   width: 100%;
   height: 100%;
   position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .iframe_wrapper {
-  resize: both;
-  padding: 3px;
-  background-color: green;
+  position: relative;
+  overflow: visible;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+}
+
+.iframe_wrapper > * {
+  height: 100%;
 }
 
 .iframe {
   position: absolute;
-}
-
-.sized_iframe {
   width: 100%;
   height: 100%;
-  opacity: 1;
+  background-color: red;
+  opacity: 0.5;
+  border: 2px solid black;
+  display: inline-block;
+}
+
+.what {
+  height: 100%;
+  width: 100%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hmm {
+  display: inline-block;
+  position: relative;
+  /* width: 100%; */
+  /* max-height: 100%; */
+  height: 100% !important;
+  max-width: 100%;
+  flex: 0 0 auto;
+}
+
+.iframe_sizer {
+  width: 100%;
+  flex: 0 0 auto;
+  height: 100%;
+}
+
+.invisble {
+  opacity: 0;
 }

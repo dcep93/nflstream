@@ -9,6 +9,9 @@ class Menu extends React.Component<
 > {
   componentDidMount() {
     const shouldConnect = !component;
+    if (!shouldConnect) {
+      this.setState(component.state);
+    }
     component = this;
     if (shouldConnect)
       firebase.connect((nflStream) =>

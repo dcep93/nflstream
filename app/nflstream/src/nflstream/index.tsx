@@ -2,13 +2,11 @@ import React from "react";
 import Menu from "./Menu";
 import MessageExtension from "./MessageExtension";
 import Multiscreen, { ScreenType } from "./Multiscreen";
-import recorded_sha from "./recorded_sha";
 
 class NFLStream extends React.Component<{}, { screens: ScreenType[] }> {
   constructor(props: {}) {
     super(props);
     this.state = { screens: [] };
-    console.log("recorded_sha", recorded_sha);
   }
 
   render() {
@@ -20,7 +18,9 @@ class NFLStream extends React.Component<{}, { screens: ScreenType[] }> {
             this.setState({
               screens: this.state.screens.concat(
                 Object.assign(
-                  { title: (Math.random() + 1).toString(36).substring(2) },
+                  {
+                    iFrameTitle: (Math.random() + 1).toString(36).substring(2),
+                  },
                   stream
                 )
               ),
@@ -29,7 +29,7 @@ class NFLStream extends React.Component<{}, { screens: ScreenType[] }> {
         />
         {(this.state.screens || []).map((screen, i) => (
           <Multiscreen
-            key={screen.title}
+            key={screen.iFrameTitle}
             screen={screen}
             delete={() =>
               this.setState({

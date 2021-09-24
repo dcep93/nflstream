@@ -23,7 +23,7 @@ function main(sendMessage) {
 }
 
 function getRawStreams() {
-  return [{ url: "url", name: "name" }];
+  return [{ url: "http://weakstreams.com/streams/9520445", name: "ws" }];
 }
 
 function getStream(rawStream) {

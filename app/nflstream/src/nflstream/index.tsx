@@ -1,4 +1,5 @@
 import React from "react";
+import style from "./index.module.css";
 import Menu from "./Menu";
 import MessageExtension from "./MessageExtension";
 import Multiscreen, { ScreenType } from "./Multiscreen";
@@ -11,7 +12,7 @@ class NFLStream extends React.Component<{}, { screens: ScreenType[] }> {
 
   render() {
     return (
-      <div>
+      <div className={style.main}>
         <MessageExtension />
         <Menu
           sendStream={(stream) =>

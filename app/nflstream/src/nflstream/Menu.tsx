@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import firebase, { NFLStreamType, StreamType } from "../firebase";
 
 const MAX_AGE_MS = 5 * 1000;
@@ -9,9 +9,13 @@ function MenuHelper(props: {
 }) {
   const title = new Date(props.nflStream.timestamp).toLocaleString();
   console.log(title);
+  const [hidden, update] = useState(true);
+  const ref: React.RefObject<HTMLTextAreaElement> = React.createRef();
   return (
     <div>
-      <h1 title={title}>NFL Stream</h1>
+      <h1 title={title} onClick={() => update(!hidden)}>
+        NFL Stream
+      </h1>
       <div>
         {(props.nflStream.streams || []).map((stream, i) => (
           <div key={i} onClick={() => props.sendStream(stream)}>
@@ -19,6 +23,19 @@ function MenuHelper(props: {
             <div>{stream.url}</div>
           </div>
         ))}
+      </div>
+      <div hidden={hidden}>
+        <textarea ref={ref} defaultValue={JSON.stringify(props.nflStream)} />
+        <div>
+          <button
+            onClick={() => {
+              const nflStream: NFLStreamType = JSON.parse(ref.current!.value);
+              firebase.updateNFLStream(nflStream);
+            }}
+          >
+            Update
+          </button>
+        </div>
       </div>
       {new Date().getTime() - props.nflStream.timestamp > MAX_AGE_MS && (
         <div>

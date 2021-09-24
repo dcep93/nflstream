@@ -54,7 +54,7 @@ function Singlescreen(props: {
               >
                 <iframe
                   ref={iframeRef}
-                  className={style.iframe}
+                  className={[style.iframe, visible && style.full].join(" ")}
                   title={props.screen.iFrameTitle}
                   src={props.screen.url}
                   onLoad={() => {

@@ -51,41 +51,37 @@ function Singlescreen(props: {
       <div onClick={props.delete}>{props.screen.name}</div>
       <div className={style.screen}>
         <div className={style.iframe_wrapper}>
-          <div className={style.what}>
-            <div
-              className={[
-                style.hmm,
-                invisible && style.invisble,
-                isWide ? style.wide : style.tall,
-              ].join(" ")}
-              ref={divRef}
-            >
-              <iframe
-                ref={iframeRef}
-                className={[style.iframe, !invisible && style.full].join(" ")}
-                title={props.screen.iFrameTitle}
-                src={props.screen.url}
-                onLoad={() => {
-                  const ratio = `${iframeRef.current!.offsetWidth}/${
-                    iframeRef.current!.offsetHeight
-                  }`;
-                  imgRef.current!.src = `http://lorempixel.com/${ratio}`;
-                  const match = window.matchMedia(
-                    `(min-aspect-ratio: ${ratio})`
-                  );
-                  if (match.matches) updateWide(true);
-                  match.addEventListener("change", (e) => {
-                    updateWide(e.matches);
-                  });
-                }}
-              ></iframe>
-              <img
-                onLoad={() => update(false)}
-                ref={imgRef}
-                alt={""}
-                className={style.iframe_sizer}
-              ></img>
-            </div>
+          <div
+            className={[
+              style.hmm,
+              invisible && style.invisble,
+              isWide ? style.wide : style.tall,
+            ].join(" ")}
+            ref={divRef}
+          >
+            <iframe
+              ref={iframeRef}
+              className={[style.iframe, !invisible && style.full].join(" ")}
+              title={props.screen.iFrameTitle}
+              src={props.screen.url}
+              onLoad={() => {
+                const ratio = `${iframeRef.current!.offsetWidth}/${
+                  iframeRef.current!.offsetHeight
+                }`;
+                imgRef.current!.src = `http://lorempixel.com/${ratio}`;
+                const match = window.matchMedia(`(min-aspect-ratio: ${ratio})`);
+                if (match.matches) updateWide(true);
+                match.addEventListener("change", (e) => {
+                  updateWide(e.matches);
+                });
+              }}
+            ></iframe>
+            <img
+              onLoad={() => update(false)}
+              ref={imgRef}
+              alt={""}
+              className={style.iframe_sizer}
+            ></img>
           </div>
         </div>
       </div>

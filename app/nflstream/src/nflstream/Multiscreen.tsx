@@ -38,7 +38,7 @@ function Singlescreen(props: {
   screen: ScreenType;
   wrapperStyle: CSSProperties;
 }) {
-  const divRef: React.RefObject<HTMLDivElement> = React.createRef();
+  const titleRef: React.RefObject<HTMLDivElement> = React.createRef();
   const imgRef: React.RefObject<HTMLImageElement> = React.createRef();
   const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
 
@@ -47,7 +47,7 @@ function Singlescreen(props: {
 
   return (
     <div className={style.screen_wrapper} style={props.wrapperStyle}>
-      <div className={style.screen_title} onClick={props.delete}>
+      <div className={style.screen_title} ref={titleRef} onClick={props.delete}>
         {props.screen.name}
       </div>
       <div className={style.screen}>
@@ -56,7 +56,6 @@ function Singlescreen(props: {
             style.sized_screen,
             isWide ? style.wide : style.tall,
           ].join(" ")}
-          ref={divRef}
         >
           <iframe
             ref={iframeRef}

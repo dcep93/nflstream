@@ -21,7 +21,10 @@ function Multiscreen(props: {
               key={screen.iFrameTitle}
               screen={screen}
               delete={() => props.removeScreen(i)}
-              wrapperStyle={wrapperStyle}
+              wrapperStyle={Object.assign(
+                { zIndex: props.screens.length - i },
+                wrapperStyle
+              )}
             />
           ))}
         </div>
@@ -73,7 +76,6 @@ function Singlescreen(props: {
                     );
                     if (match.matches) updateWide(true);
                     match.addEventListener("change", (e) => {
-                      alert(e.matches);
                       updateWide(e.matches);
                     });
                   }}

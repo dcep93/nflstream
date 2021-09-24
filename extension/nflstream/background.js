@@ -23,7 +23,10 @@ function main(sendMessage) {
 }
 
 function getRawStreams() {
-  return [{ url: "http://weakstreams.com/streams/9520445", name: "ws" }];
+  return [
+    { url: "https://www.youtube.com/embed/f_GghfbcHx0", name: "yt" },
+    { url: "http://weakstreams.com/streams/9520445", name: "ws" },
+  ];
 }
 
 function getStream(rawStream) {

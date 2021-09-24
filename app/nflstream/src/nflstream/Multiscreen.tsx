@@ -1,4 +1,4 @@
-import { CSSProperties } from "react";
+import React, { CSSProperties } from "react";
 import { StreamType } from "../firebase";
 import style from "./index.module.css";
 
@@ -9,19 +9,33 @@ function Multiscreen(props: {
   screen: ScreenType;
   numScreens: number;
 }) {
+  const ref: React.RefObject<HTMLImageElement> = React.createRef();
+  const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
   return (
-    <div
-      className={style.screen_wrapper}
-      style={getStyle(props.numScreens)}
-      onClick={props.delete}
-    >
-      <div>{props.screen.name}</div>
-      <div className={style.screen}>
-        <iframe
-          className={style.iframe}
-          title={props.screen.iFrameTitle}
-          src={props.screen.url}
-        ></iframe>
+    <div className={style.screen_wrapper} style={getStyle(props.numScreens)}>
+      <div onClick={props.delete}>{props.screen.name}</div>
+      <div className={style.screen_helper}>
+        <div className={style.screen}>
+          <iframe
+            ref={iframeRef}
+            className={style.iframe}
+            title={props.screen.iFrameTitle}
+            src={props.screen.url}
+            onLoad={() => {
+              ref.current!.src = `http://lorempixel.com/${
+                iframeRef.current!.offsetWidth
+              }/${iframeRef.current!.offsetHeight}`;
+            }}
+          ></iframe>
+          <img
+            className={style.screen_sizer}
+            ref={ref}
+            alt={""}
+            onLoad={() => {
+              console.log("loaded img");
+            }}
+          ></img>
+        </div>
       </div>
     </div>
   );

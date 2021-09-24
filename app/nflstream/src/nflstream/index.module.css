@@ -61,14 +61,9 @@
   align-items: center;
 }
 
-.iframe_wrapper {
-  position: relative;
-  overflow: visible;
-  display: inline-flex;
+.screen_title {
   width: 100%;
-  height: 100%;
-  justify-content: center;
-  align-items: center;
+  text-align: center;
 }
 
 .hmm {

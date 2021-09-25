@@ -1,6 +1,7 @@
 import React, { CSSProperties, useState } from "react";
 import { StreamType } from "../firebase";
 import style from "./index.module.css";
+import msStyle from "./Multiscreen.module.css";
 
 export type ScreenType = StreamType & { iFrameTitle: string };
 
@@ -13,9 +14,9 @@ function Multiscreen(props: {
   )}%`;
   const wrapperStyle: CSSProperties = { flexBasis: basis, height: basis };
   return (
-    <div className={style.screens_wrapper}>
+    <div className={msStyle.screens_wrapper}>
       {props.screens.length && (
-        <div className={style.screens}>
+        <div className={msStyle.screens}>
           {props.screens.map((screen, i) => (
             <Singlescreen
               key={screen.iFrameTitle}
@@ -46,28 +47,28 @@ function Singlescreen(props: {
   const [isWide, updateWide] = useState(false);
 
   return (
-    <div className={style.screen_wrapper} style={props.wrapperStyle}>
+    <div className={msStyle.screen_wrapper} style={props.wrapperStyle}>
       <div
-        className={[style.screen_title, style.hover].join(" ")}
+        className={[msStyle.screen_title, style.hover].join(" ")}
         ref={titleRef}
         onClick={props.delete}
       >
         {props.screen.name}
       </div>
-      <div className={style.screen}>
+      <div className={msStyle.screen}>
         <div
           className={[
-            style.sized_screen,
-            isWide ? style.wide : style.tall,
+            msStyle.sized_screen,
+            isWide ? msStyle.wide : msStyle.tall,
           ].join(" ")}
         >
           <iframe
             sandbox={"allow-scripts allow-same-origin"}
             ref={iframeRef}
             className={[
-              style.iframe,
-              isFull && style.full,
-              !isFull && style.invisible,
+              msStyle.iframe,
+              isFull && msStyle.full,
+              !isFull && msStyle.invisible,
             ].join(" ")}
             title={props.screen.iFrameTitle}
             src={props.screen.url}
@@ -87,7 +88,7 @@ function Singlescreen(props: {
             onLoad={() => updateFull(true)}
             ref={imgRef}
             alt={""}
-            className={style.iframe_sizer}
+            className={msStyle.iframe_sizer}
           ></img>
         </div>
       </div>

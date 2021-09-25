@@ -30,6 +30,10 @@
   height: 20em;
 }
 
+.hover:hover {
+  cursor: pointer;
+}
+
 /* screens */
 
 .screens_wrapper {

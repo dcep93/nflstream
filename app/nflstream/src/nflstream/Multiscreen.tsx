@@ -47,7 +47,11 @@ function Singlescreen(props: {
 
   return (
     <div className={style.screen_wrapper} style={props.wrapperStyle}>
-      <div className={style.screen_title} ref={titleRef} onClick={props.delete}>
+      <div
+        className={[style.screen_title, style.hover].join(" ")}
+        ref={titleRef}
+        onClick={props.delete}
+      >
         {props.screen.name}
       </div>
       <div className={style.screen}>

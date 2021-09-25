@@ -45,7 +45,7 @@ function Streams(props: {
       {(props.streams || []).map((stream, i) => (
         <div key={i}>
           <div
-            className={style.bubble}
+            className={[style.bubble, style.hover].join(" ")}
             onClick={() => props.sendStream(stream)}
           >
             <div title={stream.url}>{stream.name}</div>

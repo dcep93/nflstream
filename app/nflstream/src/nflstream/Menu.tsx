@@ -59,6 +59,8 @@ function Streams(props: {
 function UpdateStreams(props: { nflStream: NFLStreamType }) {
   const ref: React.RefObject<HTMLTextAreaElement> = React.createRef();
 
+  if (!props.nflStream.streams) props.nflStream.streams = [];
+
   return (
     <div>
       <textarea

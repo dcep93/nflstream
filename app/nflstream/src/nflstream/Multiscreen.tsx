@@ -58,6 +58,7 @@ function Singlescreen(props: {
           ].join(" ")}
         >
           <iframe
+            sandbox={""}
             ref={iframeRef}
             className={[
               style.iframe,

@@ -49,7 +49,7 @@ function Singlescreen(props: {
   return (
     <div className={msStyle.screen_wrapper} style={props.wrapperStyle}>
       <div
-        className={[msStyle.screen_title, style.hover].join(" ")}
+        className={[msStyle.title, style.hover].join(" ")}
         ref={titleRef}
         onClick={props.delete}
       >
@@ -57,10 +57,9 @@ function Singlescreen(props: {
       </div>
       <div className={msStyle.screen}>
         <div
-          className={[
-            msStyle.sized_screen,
-            isWide ? msStyle.wide : msStyle.tall,
-          ].join(" ")}
+          className={[msStyle.sized, isWide ? msStyle.wide : msStyle.tall].join(
+            " "
+          )}
         >
           <iframe
             sandbox={"allow-scripts allow-same-origin"}
@@ -88,7 +87,7 @@ function Singlescreen(props: {
             onLoad={() => updateFull(true)}
             ref={imgRef}
             alt={""}
-            className={msStyle.iframe_sizer}
+            className={msStyle.sizer}
           ></img>
         </div>
       </div>

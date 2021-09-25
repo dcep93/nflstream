@@ -10,6 +10,7 @@ function MessageExtension() {
       id={"extension_message"}
       onClick={() => {
         const nflStream: NFLStreamType = JSON.parse(ref.current!.value);
+        console.log("skipping update", nflStream);
         firebase.updateNFLStream(nflStream);
       }}
     />

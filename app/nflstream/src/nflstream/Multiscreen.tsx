@@ -58,7 +58,7 @@ function Singlescreen(props: {
           ].join(" ")}
         >
           <iframe
-            sandbox={""}
+            sandbox={"allow-scripts allow-same-origin"}
             ref={iframeRef}
             className={[
               style.iframe,

@@ -5,9 +5,9 @@ var count = 0;
 function main(sendMessage) {
   console.log("main");
 
-  // export type NFLStreamType = { timestamp: string, streams?: StreamType[] };
+  // export type NFLStreamType = { timestamp: number; streams?: StreamType[] };
 
-  // export type StreamType = { url: string, name: string };
+  // export type StreamType = { url: string; name: string };
 
   Promise.resolve()
     .then(() => getRawStreams())

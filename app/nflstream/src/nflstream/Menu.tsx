@@ -14,6 +14,9 @@ function Menu(props: {
   console.log(title);
   return (
     <div>
+      <div hidden={hidden}>
+        <UpdateStreams nflStream={props.nflStream} />
+      </div>
       <h1
         className={style.header}
         title={title}
@@ -25,9 +28,6 @@ function Menu(props: {
         streams={props.nflStream.streams}
         sendStream={props.sendStream}
       />
-      <div hidden={hidden}>
-        <UpdateStreams nflStream={props.nflStream} />
-      </div>
       {false &&
         new Date().getTime() - props.nflStream!.timestamp > MAX_AGE_MS && (
           <OutOfDate />

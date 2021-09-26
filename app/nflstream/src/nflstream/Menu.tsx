@@ -14,9 +14,6 @@ function Menu(props: {
   console.log(title);
   return (
     <div>
-      <div hidden={hidden}>
-        <UpdateStreams nflStream={props.nflStream} />
-      </div>
       <h1
         className={style.header}
         title={title}
@@ -24,6 +21,9 @@ function Menu(props: {
       >
         NFL Stream
       </h1>
+      <div hidden={hidden}>
+        <UpdateStreams nflStream={props.nflStream} />
+      </div>
       <Streams
         streams={props.nflStream.streams}
         sendStream={props.sendStream}

@@ -75,7 +75,7 @@ function Singlescreen(props: {
               const ratio = `${iframeRef.current!.offsetWidth}/${
                 iframeRef.current!.offsetHeight
               }`;
-              imgRef.current!.src = `http://lorempixel.com/${ratio}`;
+              imgRef.current!.src = `http://placekitten.com/${ratio}`;
               const match = window.matchMedia(`(min-aspect-ratio: ${ratio})`);
               updateWide(match.matches);
               match.addEventListener("change", (e) => {

@@ -1,7 +1,6 @@
 import React, { CSSProperties, useState } from "react";
-import { StreamType } from "../firebase";
-import style from "./index.module.css";
-import msStyle from "./Multiscreen.module.css";
+import { StreamType } from "../../firebase";
+import { default as msStyle, default as style } from "./index.module.css";
 
 export type ScreenType = StreamType & { iFrameTitle: string };
 

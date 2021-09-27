@@ -3,7 +3,7 @@ import { StreamType } from "../firebase";
 import style from "./index.module.css";
 import Menu from "./Menu";
 import MessageExtension from "./MessageExtension";
-import Multiscreen, { ScreenType } from "./Multiscreen";
+import Multiscreen, { ScreenType } from "./multiscreen";
 
 class NFLStream extends React.Component<{}, { screens: ScreenType[] }> {
   constructor(props: {}) {

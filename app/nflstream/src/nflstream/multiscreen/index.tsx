@@ -1,6 +1,7 @@
-import React, { CSSProperties, useState } from "react";
+import { CSSProperties } from "react";
 import { StreamType } from "../../firebase";
 import { default as style } from "../index.module.css";
+import ObjectFitIframe from "../ObjectFitIframe";
 import { default as msStyle } from "./index.module.css";
 
 export type ScreenType = StreamType & { iFrameTitle: string };
@@ -39,48 +40,19 @@ function Singlescreen(props: {
   screen: ScreenType;
   wrapperStyle: CSSProperties;
 }) {
-  const titleRef: React.RefObject<HTMLDivElement> = React.createRef();
-  const imgRef: React.RefObject<HTMLImageElement> = React.createRef();
-  const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
-
-  const [isVisible, updateVisible] = useState(false);
-
   return (
     <div className={msStyle.screen_wrapper} style={props.wrapperStyle}>
       <div
         className={[msStyle.title, style.hover].join(" ")}
-        ref={titleRef}
         onClick={props.delete}
       >
         {props.screen.name}
       </div>
       <div className={msStyle.screen}>
-        <div className={msStyle.sub_screen}>
-          <div className={[msStyle.sized].join(" ")}>
-            <iframe
-              sandbox={"allow-scripts allow-same-origin"}
-              ref={iframeRef}
-              hidden={isVisible}
-              className={[
-                msStyle.iframe,
-                isVisible ? msStyle.full : msStyle.invisible,
-              ].join(" ")}
-              title={`${props.screen.name}\n${props.screen.iFrameTitle}`}
-              src={props.screen.url}
-              onLoad={() => {
-                imgRef.current!.src = `http://placekitten.com/${
-                  iframeRef.current!.offsetWidth
-                }/${iframeRef.current!.offsetHeight}`;
-              }}
-            ></iframe>
-            <img
-              onLoad={() => updateVisible(true)}
-              ref={imgRef}
-              alt={""}
-              className={msStyle.sizer}
-            ></img>
-          </div>
-        </div>
+        <ObjectFitIframe
+          url={props.screen.url}
+          title={`${props.screen.name}\n${props.screen.iFrameTitle}`}
+        />
       </div>
     </div>
   );

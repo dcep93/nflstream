@@ -65,7 +65,7 @@ function Singlescreen(props: {
                 msStyle.iframe,
                 isVisible ? msStyle.full : msStyle.invisible,
               ].join(" ")}
-              title={props.screen.iFrameTitle}
+              title={props.screen.name}
               src={props.screen.url}
               onLoad={() => {
                 imgRef.current!.src = `http://placekitten.com/${

@@ -1,39 +1,45 @@
-import React, { useState } from "react";
 import { default as ofStyle } from "./index.module.css";
 
 function ObjectFitIframe(props: { url: string; title: string }) {
-  const imgRef: React.RefObject<HTMLImageElement> = React.createRef();
-  const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
-
-  const [isVisible, updateVisible] = useState(false);
-
   return (
-    <div className={ofStyle.sub_screen}>
-      <div className={[ofStyle.sized].join(" ")}>
-        <iframe
-          sandbox={"allow-scripts allow-same-origin"}
-          ref={iframeRef}
-          hidden={isVisible}
-          className={[
-            ofStyle.iframe,
-            isVisible ? ofStyle.full : ofStyle.invisible,
-          ].join(" ")}
-          title={props.title}
-          src={props.url}
-          onLoad={() => {
-            imgRef.current!.src = `http://placekitten.com/${
-              iframeRef.current!.offsetWidth
-            }/${iframeRef.current!.offsetHeight}`;
-          }}
-        ></iframe>
-        <img
-          onLoad={() => updateVisible(true)}
-          ref={imgRef}
-          alt={""}
-          className={ofStyle.sizer}
-        ></img>
-      </div>
-    </div>
+    <iframe
+      className={ofStyle.sub_screen}
+      title={props.title}
+      srcDoc={`
+<style>
+body {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    border: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+iframe {
+    border: 0;
+    opacity: 0;
+}
+</style>
+<script>
+function load() {
+    console.log("loading");
+    const iframe = document.getElementById("iframe");
+    const ratioStr = iframe.offsetWidth + "/" + iframe.offsetHeight;
+    const ratio = iframe.offsetWidth / iframe.offsetHeight;
+    const style = document.createElement("style");
+    style.innerHTML = "\
+    iframe { opacity: 1; }\
+    @media (min-aspect-ratio: " + ratioStr + ") { iframe { height: 100vh; width: " + 100 * ratio + "vh; } }\
+    @media (max-aspect-ratio: " + ratioStr + ") { iframe { width: 100vw; height: " + 100 / ratio + "vw; } }\
+";
+    console.log(style.innerHTML);
+    document.head.appendChild(style);
+}
+</script>
+<iframe id="iframe" src="${props.url}" onload="load()" />
+`}
+    ></iframe>
   );
 }
 

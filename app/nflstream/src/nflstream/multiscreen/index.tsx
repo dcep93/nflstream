@@ -16,7 +16,7 @@ function Multiscreen(props: {
   const wrapperStyle: CSSProperties = { width: basis, height: basis };
   return (
     <div className={msStyle.screens_wrapper}>
-      {props.screens.length && (
+      {props.screens.length === 0 ? null : (
         <div className={msStyle.screens}>
           {props.screens.map((screen, i) => (
             <Singlescreen

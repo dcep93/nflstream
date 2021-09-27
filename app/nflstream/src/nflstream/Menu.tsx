@@ -108,6 +108,7 @@ class MenuWrapper extends React.Component<
     if (oldComponent) {
       this.setState(oldComponent.state);
     } else {
+      document.title = "NFLStream";
       firebase.connect((nflStream) =>
         component.setState.bind(component)(nflStream)
       );

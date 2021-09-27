@@ -12,7 +12,7 @@ function Multiscreen(props: {
   const basis = `${Math.floor(
     100 / Math.ceil(Math.sqrt(props.screens.length))
   )}%`;
-  const wrapperStyle: CSSProperties = { flexBasis: basis, height: basis };
+  const wrapperStyle: CSSProperties = { width: basis, height: basis };
   return (
     <div className={msStyle.screens_wrapper}>
       {props.screens.length && (
@@ -44,7 +44,7 @@ function Singlescreen(props: {
   const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
 
   const [isFull, updateFull] = useState(false);
-  const [isWide, updateWide] = useState(false);
+  const [isTall, updateTall] = useState(true);
 
   return (
     <div className={msStyle.screen_wrapper} style={props.wrapperStyle}>
@@ -53,14 +53,11 @@ function Singlescreen(props: {
         ref={titleRef}
         onClick={props.delete}
       >
-        {props.screen.name}
+        {props.screen.name} {isTall ? "tall" : "wide"}{" "}
+        {isFull ? "full" : "nofull"}
       </div>
       <div className={msStyle.screen}>
-        <div
-          className={[msStyle.sized, isWide ? msStyle.wide : msStyle.tall].join(
-            " "
-          )}
-        >
+        <div className={[msStyle.sized, isTall && msStyle.tall].join(" ")}>
           <iframe
             sandbox={"allow-scripts allow-same-origin"}
             ref={iframeRef}
@@ -72,14 +69,15 @@ function Singlescreen(props: {
             title={props.screen.iFrameTitle}
             src={props.screen.url}
             onLoad={() => {
-              const ratio = `${iframeRef.current!.offsetWidth}/${
+              var ratio = `${iframeRef.current!.offsetWidth}/${
                 iframeRef.current!.offsetHeight
               }`;
+              ratio = "400/100";
               imgRef.current!.src = `http://placekitten.com/${ratio}`;
-              const match = window.matchMedia(`(min-aspect-ratio: ${ratio})`);
-              updateWide(match.matches);
+              const match = window.matchMedia(`(max-aspect-ratio: ${ratio})`);
+              updateTall(match.matches);
               match.addEventListener("change", (e) => {
-                updateWide(e.matches);
+                updateTall(e.matches);
               });
             }}
           ></iframe>

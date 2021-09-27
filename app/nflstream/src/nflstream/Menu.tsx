@@ -103,15 +103,15 @@ class MenuWrapper extends React.Component<
   NFLStreamType
 > {
   componentDidMount() {
-    const shouldConnect = !component;
-    if (!shouldConnect) {
-      this.setState(component.state);
-    }
+    const oldComponent = component;
     component = this;
-    if (shouldConnect)
+    if (oldComponent) {
+      this.setState(oldComponent.state);
+    } else {
       firebase.connect((nflStream) =>
         component.setState.bind(component)(nflStream)
       );
+    }
   }
 
   render() {

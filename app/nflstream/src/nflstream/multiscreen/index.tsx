@@ -26,7 +26,6 @@ function Multiscreen(props: {
         <div className={msStyle.screens}>
           {props.screens.map((screen, i) => (
             <div
-              ref={refs[screen.iFrameTitle]}
               key={screen.iFrameTitle}
               style={{
                 width:
@@ -47,7 +46,7 @@ function Multiscreen(props: {
               >
                 {screen.name}
               </div>
-              <div className={msStyle.screen}>
+              <div className={msStyle.screen} ref={refs[screen.iFrameTitle]}>
                 <div
                   hidden={selected === screen.iFrameTitle}
                   className={msStyle.screen_mask}

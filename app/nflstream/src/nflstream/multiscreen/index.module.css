@@ -9,15 +9,11 @@
   width: 100vw;
   flex-wrap: wrap;
   justify-content: space-around;
-  align-items: stretch;
 }
 
 .selected_screen {
   width: 100%;
-  height: 75%;
   order: -1;
-  resize: vertical;
-  overflow: hidden;
 }
 
 .screen_wrapper {
@@ -36,6 +32,8 @@
   position: relative;
   display: inline-flex;
   flex-grow: 1;
+  resize: vertical;
+  overflow: hidden;
 }
 
 .screen_mask {

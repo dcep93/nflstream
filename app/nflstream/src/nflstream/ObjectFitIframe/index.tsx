@@ -1,3 +1,4 @@
+import { CSSProperties } from "react";
 import { default as ofStyle } from "./index.module.css";
 
 function ObjectFitIframe(props: { url: string; title: string }) {
@@ -7,58 +8,58 @@ function ObjectFitIframe(props: { url: string; title: string }) {
       className={ofStyle.fill}
       title={props.title}
       srcDoc={`
-<style>
-body {
-    width: 100vw;
-    height: 100vh;
-    margin: 0;
-    border: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-iframe {
-    border: 0;
-    opacity: 0;
-}
-</style>
-<iframe id="iframe"></iframe>
+<meta data-url="${props.url}" data-title="${props.title}" />
 <script>
-document.getElementById("iframe").onload = ${load.toString()};
-</script>
-<script>
-document.getElementById("iframe").src = "${props.url}";
+(${script.toString()})();
 </script>
       `}
     ></iframe>
   );
 }
 
-const load = () => {
-  console.log("loading");
-  const iframe = document.getElementById("iframe")! as HTMLIFrameElement;
-  const ratioStr = iframe.offsetWidth + "/" + iframe.offsetHeight;
-  const ratio = iframe.offsetWidth / iframe.offsetHeight;
-  const style = document.createElement("style");
-  style.innerHTML = `
-      iframe {
-          opacity: 1;
-      }
-      @media (min-aspect-ratio: ${ratioStr}) {
-          iframe {
-              height: 100vh;
-              width: ${100 * ratio}vh;
-          }
-      }
-      @media (max-aspect-ratio: ${ratioStr}) {
-          iframe {
-              width: 100vw;
-              height: ${100 / ratio}vw;
-          }
-      }
-  `;
-  console.log(iframe.src);
-  document.head.appendChild(style);
+const script = () => {
+  document.addEventListener("DOMContentLoaded", () => {
+    const style: CSSProperties = {
+      width: "100vw",
+      height: "100vh",
+      margin: 0,
+      border: 0,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    };
+    Object.assign(document.body.style, style);
+    const meta = document.getElementsByTagName("meta")[0];
+    const iframeE = document.createElement("iframe");
+    const iframeStyle = {
+      border: 0,
+      opacity: 0,
+    };
+    Object.assign(iframeE.style, iframeStyle);
+    iframeE.onload = () => {
+      const ratioStr = iframeE.offsetWidth + "/" + iframeE.offsetHeight;
+      const ratio = iframeE.offsetWidth / iframeE.offsetHeight;
+      const style = document.createElement("style");
+      style.innerHTML = `
+                @media (min-aspect-ratio: ${ratioStr}) {
+                    iframe {
+                        height: 100vh;
+                        width: ${100 * ratio}vh;
+                    }
+                }
+                @media (max-aspect-ratio: ${ratioStr}) {
+                    iframe {
+                        width: 100vw;
+                        height: ${100 / ratio}vw;
+                    }
+                }
+            `;
+      iframeE.style.opacity = "1";
+      document.head.appendChild(style);
+    };
+    iframeE.src = meta.getAttribute("data-url")!;
+    document.body.appendChild(iframeE);
+  });
 };
 
 export default ObjectFitIframe;

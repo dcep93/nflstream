@@ -23,9 +23,10 @@ iframe {
 }
 </style>
 <iframe id="iframe"></iframe>
-<script nonce="wli4Ie0yPhWS35TUeZ8bLQ==">
-${load.toString().replace(/^function \w+/, "function load")}
-document.getElementById("iframe").onload = load;
+<script>
+document.getElementById("iframe").onload = ${load.toString()};
+</script>
+<script>
 document.getElementById("iframe").src = "${props.url}";
 </script>
       `}
@@ -33,7 +34,7 @@ document.getElementById("iframe").src = "${props.url}";
   );
 }
 
-function load() {
+const load = () => {
   console.log("loading");
   const iframe = document.getElementById("iframe")! as HTMLIFrameElement;
   const ratioStr = iframe.offsetWidth + "/" + iframe.offsetHeight;
@@ -58,6 +59,6 @@ function load() {
   `;
   console.log(iframe.src);
   document.head.appendChild(style);
-}
+};
 
 export default ObjectFitIframe;

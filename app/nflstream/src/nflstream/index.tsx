@@ -12,6 +12,23 @@ class NFLStream extends React.Component<{}, { screens: ScreenType[] }> {
   }
 
   render() {
+    if (window.location.href.startsWith("http")) {
+      const blob = new Blob(
+        [
+          document.body.innerHTML.replaceAll(
+            /\/static/g,
+            `${window.location.href}/static`
+          ),
+        ],
+        {
+          type: "text/html",
+        }
+      );
+      const url = URL.createObjectURL(blob);
+      return (
+        <iframe className={style.main} title={"_blank"} src={url}></iframe>
+      );
+    }
     return (
       <div className={style.main}>
         <MessageExtension />

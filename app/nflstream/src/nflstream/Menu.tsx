@@ -4,22 +4,6 @@ import style from "./index.module.css";
 
 const MAX_AGE_MS = 5 * 1000;
 
-function test() {
-  const blob = new Blob(
-    [
-      document.body.innerHTML.replaceAll(
-        /\/static/g,
-        `${window.location.href}/static`
-      ),
-    ],
-    {
-      type: "text/html",
-    }
-  );
-  const url = URL.createObjectURL(blob);
-  window.open(url, "_blank");
-}
-
 function Menu(props: {
   sendStream: (stream: StreamType) => void;
   nflStream?: NFLStreamType;
@@ -30,7 +14,11 @@ function Menu(props: {
   console.log(title);
   return (
     <div>
-      <h1 className={style.header} title={title} onClick={() => test()}>
+      <h1
+        className={style.header}
+        title={title}
+        onClick={() => update(!hidden)}
+      >
         NFL Stream
       </h1>
       <div hidden={hidden}>

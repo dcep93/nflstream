@@ -1,4 +1,4 @@
-import { CSSProperties } from "react";
+import { useState } from "react";
 import { StreamType } from "../../firebase";
 import { default as style } from "../index.module.css";
 import ObjectFitIframe from "../ObjectFitIframe";
@@ -10,34 +10,59 @@ function Multiscreen(props: {
   screens: ScreenType[];
   removeScreen: (index: number) => void;
 }) {
-  const basis = `${Math.floor(
-    100 / Math.ceil(Math.sqrt(props.screens.length))
-  )}%`;
-  const wrapperStyle: CSSProperties = { width: basis, height: basis };
+  const screens = props.screens.map((screen, i) => (
+    <Singlescreen
+      key={screen.iFrameTitle}
+      screen={screen}
+      delete={() => props.removeScreen(i)}
+    />
+  ));
+  return (
+    <MultiscreenStateful
+      screens={screens}
+      titleToIndex={Object.fromEntries(
+        props.screens.map((screen, i) => [screen.iFrameTitle, i])
+      )}
+    />
+  );
+}
+
+function MultiscreenStateful(props: {
+  screens: JSX.Element[];
+  titleToIndex: { [title: string]: number };
+}) {
+  const [selected, updateSelected] = useState("");
+  const spotlightIndex = props.titleToIndex[selected] || 0;
   return (
     <div className={msStyle.screens}>
-      {props.screens.map((screen, i) => (
-        <Singlescreen
-          key={screen.iFrameTitle}
-          screen={screen}
-          delete={() => props.removeScreen(i)}
-          wrapperStyle={Object.assign(
-            { zIndex: props.screens.length - i },
-            wrapperStyle
-          )}
-        />
-      ))}
+      <div className={msStyle.spotlight}>{props.screens[spotlightIndex]}</div>
+      {props.screens.length <= 1 ? null : (
+        <div className={msStyle.aux_screens}>
+          {props.screens
+            .map((screen, i) => ({ screen, i }))
+            .filter((_, i) => i !== spotlightIndex)
+            .map((obj) => (
+              <div
+                onClick={() =>
+                  updateSelected(
+                    Object.entries(props.titleToIndex)
+                      .map(([title, index]) => ({ title, index }))
+                      .find((findObj) => findObj.index === obj.i)!.title
+                  )
+                }
+              >
+                {obj.screen}
+              </div>
+            ))}
+        </div>
+      )}
     </div>
   );
 }
 
-function Singlescreen(props: {
-  delete: () => void;
-  screen: ScreenType;
-  wrapperStyle: CSSProperties;
-}) {
+function Singlescreen(props: { delete: () => void; screen: ScreenType }) {
   return (
-    <div className={msStyle.screen_wrapper} style={props.wrapperStyle}>
+    <div className={msStyle.screen_wrapper}>
       <div
         className={[msStyle.title, style.hover].join(" ")}
         onClick={props.delete}

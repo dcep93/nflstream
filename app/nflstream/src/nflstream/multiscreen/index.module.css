@@ -14,6 +14,7 @@
 .selected_screen {
   width: 100%;
   order: -1;
+  min-height: 66%;
 }
 
 .screen_wrapper {

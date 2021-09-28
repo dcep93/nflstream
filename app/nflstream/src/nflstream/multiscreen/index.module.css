@@ -1,9 +1,6 @@
-.screens_wrapper {
+.screens {
   flex-grow: 1;
   background-color: black;
-}
-
-.screens {
   display: flex;
   height: 100%;
   width: 100vw;

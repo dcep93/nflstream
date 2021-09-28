@@ -15,22 +15,18 @@ function Multiscreen(props: {
   )}%`;
   const wrapperStyle: CSSProperties = { width: basis, height: basis };
   return (
-    <div className={msStyle.screens_wrapper}>
-      {props.screens.length === 0 ? null : (
-        <div className={msStyle.screens}>
-          {props.screens.map((screen, i) => (
-            <Singlescreen
-              key={screen.iFrameTitle}
-              screen={screen}
-              delete={() => props.removeScreen(i)}
-              wrapperStyle={Object.assign(
-                { zIndex: props.screens.length - i },
-                wrapperStyle
-              )}
-            />
-          ))}
-        </div>
-      )}
+    <div className={msStyle.screens}>
+      {props.screens.map((screen, i) => (
+        <Singlescreen
+          key={screen.iFrameTitle}
+          screen={screen}
+          delete={() => props.removeScreen(i)}
+          wrapperStyle={Object.assign(
+            { zIndex: props.screens.length - i },
+            wrapperStyle
+          )}
+        />
+      ))}
     </div>
   );
 }

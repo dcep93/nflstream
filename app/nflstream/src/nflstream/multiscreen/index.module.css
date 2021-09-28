@@ -9,6 +9,7 @@
   width: 100vw;
   flex-wrap: wrap;
   justify-content: space-around;
+  align-items: stretch;
 }
 
 .selected_screen {

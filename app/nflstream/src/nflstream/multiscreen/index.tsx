@@ -31,11 +31,13 @@ function Multiscreen(props: {
               style={{
                 width:
                   selected === screen.iFrameTitle
-                    ? undefined
+                    ? "100%"
                     : `${100 / (props.screens.length - 1)}%`,
               }}
               className={[
-                selected === screen.iFrameTitle && msStyle.selected_screen,
+                props.screens.length > 1 &&
+                  selected === screen.iFrameTitle &&
+                  msStyle.selected_screen,
                 msStyle.screen_wrapper,
               ].join(" ")}
             >

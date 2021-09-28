@@ -23,7 +23,7 @@ function Multiscreen(props: {
               key={screen.iFrameTitle}
               screen={screen}
               numScreens={props.screens.length}
-              selected={selected}
+              isSelected={selected === screen.iFrameTitle}
               updateSelected={updateSelected}
               delete={() => props.removeScreen(i)}
             />
@@ -37,20 +37,17 @@ function Multiscreen(props: {
 function Singlescreen(props: {
   screen: ScreenType;
   numScreens: number;
-  selected: string;
+  isSelected: boolean;
   updateSelected: (selected: string) => void;
   delete: () => void;
 }) {
   return (
     <div
       style={{
-        width:
-          props.screen.iFrameTitle === props.selected
-            ? undefined
-            : `${100 / props.numScreens}%`,
+        width: props.isSelected ? undefined : `${100 / props.numScreens}%`,
       }}
       className={[
-        props.screen.iFrameTitle === props.selected && msStyle.selected_screen,
+        props.isSelected && msStyle.selected_screen,
         msStyle.screen_wrapper,
       ].join(" ")}
     >
@@ -62,7 +59,7 @@ function Singlescreen(props: {
       </div>
       <div className={msStyle.screen}>
         <div
-          hidden={props.screen.iFrameTitle === props.selected}
+          hidden={props.isSelected}
           className={msStyle.screen_mask}
           onClick={() => props.updateSelected(props.screen.iFrameTitle)}
         ></div>

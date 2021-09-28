@@ -23,7 +23,7 @@ iframe {
 }
 </style>
 <script>
-${load}
+${load.toString()}
 </script>
 <iframe id="iframe" src="${props.url}" onload="load()" />
       `}

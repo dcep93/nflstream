@@ -88,7 +88,7 @@ function Streams(props: {
                 if (obj.invalid) {
                   const blob = new Blob(
                     [
-                      document.body.innerHTML.replaceAll(
+                      document.documentElement.outerHTML.replaceAll(
                         /\/static/g,
                         `${window.location.href}/static`
                       ),

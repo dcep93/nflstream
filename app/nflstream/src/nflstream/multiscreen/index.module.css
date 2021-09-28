@@ -19,6 +19,17 @@
   justify-content: space-evenly;
 }
 
+.aux_screen_wrapper {
+  position: relative;
+}
+
+.aux_screen_cover {
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+}
+
 .screen_wrapper {
   flex-grow: 1;
   display: inline-flex;

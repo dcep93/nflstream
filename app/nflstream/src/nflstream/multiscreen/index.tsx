@@ -42,15 +42,17 @@ function MultiscreenStateful(props: {
             .map((screen, i) => ({ screen, i }))
             .filter((_, i) => i !== spotlightIndex)
             .map((obj) => (
-              <div
-                onClick={() =>
-                  updateSelected(
-                    Object.entries(props.titleToIndex)
-                      .map(([title, index]) => ({ title, index }))
-                      .find((findObj) => findObj.index === obj.i)!.title
-                  )
-                }
-              >
+              <div className={msStyle.aux_screen_wrapper}>
+                <div
+                  className={msStyle.aux_screen_cover}
+                  onClick={() =>
+                    updateSelected(
+                      Object.entries(props.titleToIndex)
+                        .map(([title, index]) => ({ title, index }))
+                        .find((findObj) => findObj.index === obj.i)!.title
+                    )
+                  }
+                ></div>
                 {obj.screen}
               </div>
             ))}

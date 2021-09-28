@@ -24,6 +24,7 @@
   display: inline-flex;
   flex-direction: column;
   color: lightgray;
+  border: 10px solid red;
 }
 
 .title {

@@ -25,7 +25,7 @@ function Multiscreen(props: {
                 width:
                   selected === screen.iFrameTitle
                     ? undefined
-                    : `${100 / props.screens.length}%`,
+                    : `${100 / (props.screens.length - 1)}%`,
               }}
               className={[
                 selected === screen.iFrameTitle && msStyle.selected_screen,

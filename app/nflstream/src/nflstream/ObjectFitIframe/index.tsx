@@ -3,6 +3,7 @@ import { default as ofStyle } from "./index.module.css";
 function ObjectFitIframe(props: { url: string; title: string }) {
   return (
     <iframe
+      sandbox={"allow-scripts allow-same-origin"}
       className={ofStyle.fill}
       title={props.title}
       srcDoc={`

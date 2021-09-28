@@ -35,6 +35,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   return true;
 });
 
-chrome.browserAction.onClicked.addListener((tab) =>
-  main((message) => chrome.tabs.sendMessage(tab.id, message))
-);
+chrome.browserAction.onClicked.addListener((tab) => {
+  main((message) =>
+    chrome.tabs.create(
+      { url: chrome.runtime.getURL("nflstream.html") },
+      function (tab_) {
+        chrome.tabs.sendMessage(tab.id, message);
+      }
+    )
+  );
+});

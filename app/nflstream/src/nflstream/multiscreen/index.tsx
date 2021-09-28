@@ -34,28 +34,34 @@ function MultiscreenStateful(props: {
   const [selected, updateSelected] = useState("");
   const spotlightIndex = props.titleToIndex[selected] || 0;
   return (
-    <div className={msStyle.screens}>
-      <div className={msStyle.spotlight}>{props.screens[spotlightIndex]}</div>
-      {props.screens.length <= 1 ? null : (
-        <div className={msStyle.aux_screens}>
-          {props.screens
-            .map((screen, i) => ({ screen, i }))
-            .filter((_, i) => i !== spotlightIndex)
-            .map((obj) => (
-              <div className={msStyle.aux_screen_wrapper}>
-                <div
-                  className={msStyle.aux_screen_cover}
-                  onClick={() =>
-                    updateSelected(
-                      Object.entries(props.titleToIndex)
-                        .map(([title, index]) => ({ title, index }))
-                        .find((findObj) => findObj.index === obj.i)!.title
-                    )
-                  }
-                ></div>
-                {obj.screen}
-              </div>
-            ))}
+    <div className={msStyle.screens_wrapper}>
+      {props.screens.length === 0 ? null : (
+        <div className={msStyle.screens}>
+          <div className={msStyle.spotlight}>
+            {props.screens[spotlightIndex]}
+          </div>
+          {props.screens.length <= 1 ? null : (
+            <div className={msStyle.aux_screens}>
+              {props.screens
+                .map((screen, i) => ({ screen, i }))
+                .filter((_, i) => i !== spotlightIndex)
+                .map((obj) => (
+                  <div className={msStyle.aux_screen_wrapper}>
+                    <div
+                      className={msStyle.aux_screen_cover}
+                      onClick={() =>
+                        updateSelected(
+                          Object.entries(props.titleToIndex)
+                            .map(([title, index]) => ({ title, index }))
+                            .find((findObj) => findObj.index === obj.i)!.title
+                        )
+                      }
+                    ></div>
+                    {obj.screen}
+                  </div>
+                ))}
+            </div>
+          )}
         </div>
       )}
     </div>

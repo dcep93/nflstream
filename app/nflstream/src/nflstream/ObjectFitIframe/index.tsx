@@ -33,7 +33,7 @@ ${load}
 
 function load() {
   console.log("loading");
-  const iframe = document.getElementById("iframe")!;
+  const iframe = document.getElementById("iframe")! as HTMLIFrameElement;
   const ratioStr = iframe.offsetWidth + "/" + iframe.offsetHeight;
   const ratio = iframe.offsetWidth / iframe.offsetHeight;
   const style = document.createElement("style");
@@ -54,7 +54,7 @@ function load() {
           }
       }
   `;
-  console.log(style.innerHTML);
+  console.log(iframe.src);
   document.head.appendChild(style);
 }
 

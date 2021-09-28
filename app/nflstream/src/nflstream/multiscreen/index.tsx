@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { StreamType } from "../../firebase";
 import style from "../index.module.css";
 import ObjectFitIframe from "../ObjectFitIframe";
@@ -14,12 +14,19 @@ function Multiscreen(props: {
   const selected =
     props.screens.find((s) => s.iFrameTitle === rawSelected)?.iFrameTitle ||
     props.screens[0]?.iFrameTitle;
+  const refs = Object.fromEntries(
+    props.screens.map((s) => [
+      s.iFrameTitle,
+      React.createRef() as React.RefObject<HTMLDivElement>,
+    ])
+  );
   return (
     <div className={msStyle.screens_wrapper}>
       {props.screens.length === 0 ? null : (
         <div className={msStyle.screens}>
           {props.screens.map((screen, i) => (
             <div
+              ref={refs[screen.iFrameTitle]}
               key={screen.iFrameTitle}
               style={{
                 width:
@@ -42,7 +49,12 @@ function Multiscreen(props: {
                 <div
                   hidden={selected === screen.iFrameTitle}
                   className={msStyle.screen_mask}
-                  onClick={() => updateSelected(screen.iFrameTitle)}
+                  onClick={() => {
+                    const height = refs[selected]!.current!.style.height;
+                    refs[selected]!.current!.style.height = "initial";
+                    refs[screen.iFrameTitle]!.current!.style.height = height;
+                    updateSelected(screen.iFrameTitle);
+                  }}
                 ></div>
                 <ObjectFitIframe
                   url={screen.url}

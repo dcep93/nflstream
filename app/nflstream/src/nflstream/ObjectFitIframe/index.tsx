@@ -23,7 +23,7 @@ iframe {
 }
 </style>
 <script>
-${load.toString()}
+${load.toString().replace(/^function \w+/, "function load")}
 </script>
 <iframe id="iframe" src="${props.url}" onload="load()" />
       `}

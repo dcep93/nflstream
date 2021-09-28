@@ -37,11 +37,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 chrome.browserAction.onClicked.addListener((tab) => {
   main((message) =>
-    chrome.tabs.create(
-      { url: chrome.runtime.getURL("nflstream.html") },
-      function (tab_) {
-        chrome.tabs.sendMessage(tab.id, message);
-      }
-    )
+    fetch("https://nflstream.web.app")
+      .then((resp) => resp.text())
+      .then((text) =>
+        chrome.tabs.create(
+          { url: chrome.runtime.getURL("nflstream.html") },
+          function (tab_) {
+            // chrome.tabs.sendMessage(tab.id, message);
+            // setTimeout(() => chrome.tabs.sendMessage(tab_.id, text), 100);
+          }
+        )
+      )
   );
 });

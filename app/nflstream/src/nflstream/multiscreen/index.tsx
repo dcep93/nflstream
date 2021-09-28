@@ -11,7 +11,9 @@ function Multiscreen(props: {
   removeScreen: (index: number) => void;
 }) {
   const [rawSelected, updateSelected] = useState("");
-  const selected = rawSelected || props.screens[0]?.iFrameTitle;
+  const selected =
+    props.screens.find((s) => s.iFrameTitle === rawSelected)?.iFrameTitle ||
+    props.screens[0]?.iFrameTitle;
   return (
     <div className={msStyle.screens_wrapper}>
       {props.screens.length === 0 ? null : (

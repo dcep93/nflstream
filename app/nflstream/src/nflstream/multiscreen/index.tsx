@@ -10,54 +10,51 @@ function Multiscreen(props: {
   screens: ScreenType[];
   removeScreen: (index: number) => void;
 }) {
-  const screens = props.screens.map((screen, i) => (
-    <Singlescreen
-      key={screen.iFrameTitle}
-      screen={screen}
-      delete={() => props.removeScreen(i)}
-    />
-  ));
   return (
     <MultiscreenStateful
-      screens={screens}
-      titleToIndex={Object.fromEntries(
-        props.screens.map((screen, i) => [screen.iFrameTitle, i])
-      )}
+      screens={props.screens.map((s, i) => ({
+        e: (
+          <Singlescreen
+            key={s.iFrameTitle}
+            screen={s}
+            delete={() => props.removeScreen(i)}
+          />
+        ),
+        s,
+        i,
+      }))}
     />
   );
 }
 
 function MultiscreenStateful(props: {
-  screens: JSX.Element[];
-  titleToIndex: { [title: string]: number };
+  screens: { e: JSX.Element; s: ScreenType; i: number }[];
 }) {
   const [selected, updateSelected] = useState("");
-  const spotlightIndex = props.titleToIndex[selected] || 0;
+  var spotlightIndex =
+    props.screens.find((obj) => obj.s.iFrameTitle === selected)?.i || 0;
   return (
     <div className={msStyle.screens_wrapper}>
       {props.screens.length === 0 ? null : (
         <div className={msStyle.screens}>
           <div className={msStyle.spotlight}>
-            {props.screens[spotlightIndex]}
+            {props.screens[spotlightIndex]!.e}
           </div>
           {props.screens.length <= 1 ? null : (
             <div className={msStyle.aux_screens}>
               {props.screens
-                .map((screen, i) => ({ screen, i }))
+                .map((w, i) => ({ w, i }))
                 .filter((_, i) => i !== spotlightIndex)
                 .map((obj) => (
-                  <div className={msStyle.aux_screen_wrapper}>
+                  <div
+                    className={msStyle.aux_screen_wrapper}
+                    key={obj.w.s.iFrameTitle}
+                  >
                     <div
                       className={msStyle.aux_screen_cover}
-                      onClick={() =>
-                        updateSelected(
-                          Object.entries(props.titleToIndex)
-                            .map(([title, index]) => ({ title, index }))
-                            .find((findObj) => findObj.index === obj.i)!.title
-                        )
-                      }
+                      onClick={() => updateSelected(obj.w.s.iFrameTitle)}
                     ></div>
-                    {obj.screen}
+                    {obj.w.e}
                   </div>
                 ))}
             </div>

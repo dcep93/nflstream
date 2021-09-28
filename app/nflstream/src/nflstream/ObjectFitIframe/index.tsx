@@ -22,10 +22,12 @@ iframe {
     opacity: 0;
 }
 </style>
+<iframe id="iframe"></iframe>
 <script>
 ${load.toString().replace(/^function \w+/, "function load")}
+document.getElementById("iframe").onload = load;
+document.getElementById("iframe").src = "${props.url}";
 </script>
-<iframe id="iframe" src="${props.url}" onload="load()" />
       `}
     ></iframe>
   );

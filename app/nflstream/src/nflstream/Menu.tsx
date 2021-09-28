@@ -22,7 +22,7 @@ function Menu(props: {
         NFL Stream
       </h1>
       <div hidden={hidden}>
-        <UpdateStreams nflStream={props.nflStream} />
+        <ManualStreams nflStream={props.nflStream} />
       </div>
       <Streams
         streams={props.nflStream.streams}
@@ -36,27 +36,7 @@ function Menu(props: {
   );
 }
 
-function Streams(props: {
-  streams?: StreamType[];
-  sendStream: (stream: StreamType) => void;
-}) {
-  return (
-    <div>
-      {(props.streams || []).map((stream, i) => (
-        <div key={i}>
-          <div
-            className={[style.bubble, style.hover].join(" ")}
-            onClick={() => props.sendStream(stream)}
-          >
-            <div title={stream.url}>{stream.name}</div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function UpdateStreams(props: { nflStream: NFLStreamType }) {
+function ManualStreams(props: { nflStream: NFLStreamType }) {
   const ref: React.RefObject<HTMLTextAreaElement> = React.createRef();
 
   if (!props.nflStream.streams) props.nflStream.streams = [];
@@ -78,6 +58,56 @@ function UpdateStreams(props: { nflStream: NFLStreamType }) {
           Update
         </button>
       </div>
+    </div>
+  );
+}
+
+function Streams(props: {
+  streams?: StreamType[];
+  sendStream: (stream: StreamType) => void;
+}) {
+  return (
+    <div>
+      {(props.streams || [])
+        .map((stream, i) => ({
+          stream,
+          i,
+          invalid:
+            stream.url.startsWith("http://") &&
+            window.location.protocol === "https:",
+        }))
+        .map((obj) => (
+          <div key={obj.i}>
+            <div
+              className={[
+                style.bubble,
+                style.hover,
+                obj.invalid && style.red,
+              ].join(" ")}
+              onClick={() => {
+                if (obj.invalid) {
+                  const blob = new Blob(
+                    [
+                      document.body.innerHTML.replaceAll(
+                        /\/static/g,
+                        `${window.location.href}/static`
+                      ),
+                    ],
+                    {
+                      type: "text/html",
+                    }
+                  );
+                  const url = URL.createObjectURL(blob);
+                  window.open(url, "_blank");
+                } else {
+                  props.sendStream(obj.stream);
+                }
+              }}
+            >
+              <div title={obj.stream.url}>{obj.stream.name}</div>
+            </div>
+          </div>
+        ))}
     </div>
   );
 }

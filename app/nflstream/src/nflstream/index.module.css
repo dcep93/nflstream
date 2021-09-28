@@ -6,6 +6,10 @@
   display: inline-block;
 }
 
+.red {
+  background-color: pink;
+}
+
 .main {
   position: absolute;
   display: flex;

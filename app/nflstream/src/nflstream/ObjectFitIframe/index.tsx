@@ -23,7 +23,7 @@ iframe {
 }
 </style>
 <iframe id="iframe"></iframe>
-<script>
+<script nonce="wli4Ie0yPhWS35TUeZ8bLQ==">
 ${load.toString().replace(/^function \w+/, "function load")}
 document.getElementById("iframe").onload = load;
 document.getElementById("iframe").src = "${props.url}";

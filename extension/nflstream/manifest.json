@@ -24,5 +24,5 @@
     "default_icon": "favicon.png"
   },
   "manifest_version": 2,
-  "content_security_policy": "script-src 'self' https://nflstream.web.app 'sha256-skX/FxAyX0MI4ingUnDPWrV8G/oyjVw4uvp/nNX41gY=' 'sha256-ghkQ8Kn9VK3ptGztIFvMbAZnOrMthUs6lV3Ndu54B0A='; object-src 'self'"
+  "content_security_policy": "script-src 'self' https://nflstream.web.app 'sha256-skX/FxAyX0MI4ingUnDPWrV8G/oyjVw4uvp/nNX41gY=' 'nonce-wli4Ie0yPhWS35TUeZ8bLQ=='; object-src 'self'"
 }

@@ -19,55 +19,40 @@ function Multiscreen(props: {
       {props.screens.length === 0 ? null : (
         <div className={msStyle.screens}>
           {props.screens.map((screen, i) => (
-            <Singlescreen
+            <div
               key={screen.iFrameTitle}
-              screen={screen}
-              numScreens={props.screens.length}
-              isSelected={selected === screen.iFrameTitle}
-              updateSelected={updateSelected}
-              delete={() => props.removeScreen(i)}
-            />
+              style={{
+                width:
+                  selected === screen.iFrameTitle
+                    ? undefined
+                    : `${100 / props.screens.length}%`,
+              }}
+              className={[
+                selected === screen.iFrameTitle && msStyle.selected_screen,
+                msStyle.screen_wrapper,
+              ].join(" ")}
+            >
+              <div
+                className={[msStyle.title, style.hover].join(" ")}
+                onClick={() => props.removeScreen(i)}
+              >
+                {screen.name}
+              </div>
+              <div className={msStyle.screen}>
+                <div
+                  hidden={selected === screen.iFrameTitle}
+                  className={msStyle.screen_mask}
+                  onClick={() => updateSelected(screen.iFrameTitle)}
+                ></div>
+                <ObjectFitIframe
+                  url={screen.url}
+                  title={`${screen.name}\n${screen.iFrameTitle}`}
+                />
+              </div>
+            </div>
           ))}
         </div>
       )}
-    </div>
-  );
-}
-
-function Singlescreen(props: {
-  screen: ScreenType;
-  numScreens: number;
-  isSelected: boolean;
-  updateSelected: (selected: string) => void;
-  delete: () => void;
-}) {
-  return (
-    <div
-      style={{
-        width: props.isSelected ? undefined : `${100 / props.numScreens}%`,
-      }}
-      className={[
-        props.isSelected && msStyle.selected_screen,
-        msStyle.screen_wrapper,
-      ].join(" ")}
-    >
-      <div
-        className={[msStyle.title, style.hover].join(" ")}
-        onClick={props.delete}
-      >
-        {props.screen.name}
-      </div>
-      <div className={msStyle.screen}>
-        <div
-          hidden={props.isSelected}
-          className={msStyle.screen_mask}
-          onClick={() => props.updateSelected(props.screen.iFrameTitle)}
-        ></div>
-        <ObjectFitIframe
-          url={props.screen.url}
-          title={`${props.screen.name}\n${props.screen.iFrameTitle}`}
-        />
-      </div>
     </div>
   );
 }

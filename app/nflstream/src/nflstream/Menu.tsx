@@ -73,9 +73,8 @@ function Streams(props: {
           stream,
           i,
           invalid:
-            true ||
-            (stream.url.startsWith("http://") &&
-              window.location.protocol === "https:"),
+            stream.url.startsWith("http://") &&
+            window.location.protocol === "https:",
         }))
         .map((obj) => (
           <div key={obj.i}>
@@ -87,14 +86,21 @@ function Streams(props: {
               ].join(" ")}
               onClick={() => {
                 if (obj.invalid) {
-                  fetch("iframe.html")
-                    .then((response) => response.blob())
-                    .then((blob) => {
-                      const a = document.createElement("a");
-                      a.href = window.URL.createObjectURL(blob);
-                      a.download = "nflstream.html";
-                      a.click();
-                    });
+                  const blob = new Blob(
+                    [
+                      document.documentElement.outerHTML.replaceAll(
+                        /\/static/g,
+                        `${window.location.href}/static`
+                      ),
+                    ],
+                    {
+                      type: "text/html",
+                    }
+                  );
+                  const a = document.createElement("a");
+                  a.href = window.URL.createObjectURL(blob);
+                  a.download = "nflstream.html";
+                  a.click();
                 } else {
                   props.sendStream(obj.stream);
                 }

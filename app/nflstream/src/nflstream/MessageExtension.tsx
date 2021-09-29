@@ -7,7 +7,7 @@ function MessageExtension() {
     <textarea
       hidden
       ref={ref}
-      id={"extension_message"}
+      id={"message_extension"}
       onClick={() => {
         const nflStream: NFLStreamType = JSON.parse(ref.current!.value);
         console.log("skipping update", nflStream);

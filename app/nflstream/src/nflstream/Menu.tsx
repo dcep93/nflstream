@@ -86,21 +86,14 @@ function Streams(props: {
               ].join(" ")}
               onClick={() => {
                 if (obj.invalid) {
-                  const blob = new Blob(
-                    [
-                      document.documentElement.outerHTML.replaceAll(
-                        /\/static/g,
-                        `${window.location.href}/static`
-                      ),
-                    ],
-                    {
-                      type: "text/html",
-                    }
-                  );
-                  const a = document.createElement("a");
-                  a.href = window.URL.createObjectURL(blob);
-                  a.download = "nflstream.html";
-                  a.click();
+                  fetch("iframe.html")
+                    .then((response) => response.blob())
+                    .then((blob) => {
+                      const a = document.createElement("a");
+                      a.href = window.URL.createObjectURL(blob);
+                      a.download = "nflstream.html";
+                      a.click();
+                    });
                 } else {
                   props.sendStream(obj.stream);
                 }

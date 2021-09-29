@@ -2,7 +2,7 @@
   "name": "NFL Stream",
   "description": "On click or page load, runs a background script to scrape a URL and update firebase with the response.",
   "version": "0.0.2",
-  "permissions": ["https://nflstream.web.app/**"],
+  "permissions": ["tabs", "https://nflstream.web.app/**"],
   "icons": {
     "16": "favicon.png",
     "48": "favicon.png",
@@ -14,6 +14,12 @@
     ],
     "persistent": false
   },
+  "content_scripts": [
+    {
+      "matches": ["https://nflstream.web.app/**"],
+      "js": ["content_script.js"]
+    }
+  ],
   "browser_action": {
     "default_icon": "favicon.png"
   },

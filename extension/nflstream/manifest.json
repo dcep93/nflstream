@@ -1,7 +1,7 @@
 {
   "name": "NFL Stream",
-  "description": "On click, runs a background script to scrape a URL and update firebase with the response.",
-  "version": "0.0.1",
+  "description": "On click or page load, runs a background script to scrape a URL and update firebase with the response.",
+  "version": "0.0.2",
   "permissions": ["https://nflstream.web.app/**"],
   "icons": {
     "16": "favicon.png",
@@ -17,6 +17,5 @@
   "browser_action": {
     "default_icon": "favicon.png"
   },
-  "manifest_version": 2,
-  "content_security_policy": "script-src 'self' https://nflstream.web.app 'sha256-skX/FxAyX0MI4ingUnDPWrV8G/oyjVw4uvp/nNX41gY=' 'sha256-Yhg8G0D7DqQAfierVlC11HzmIPEoFhUNWpDJ19/jPHE='; object-src 'self'"
+  "manifest_version": 2
 }

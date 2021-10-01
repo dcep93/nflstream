@@ -20,13 +20,12 @@
 .screen_wrapper {
   display: inline-flex;
   flex-direction: column;
-  color: lightgray;
-  border: 1px solid lightgray;
 }
 
 .title {
   width: 100%;
   text-align: center;
+  color: lightgray;
 }
 
 .screen {
@@ -35,6 +34,7 @@
   flex-grow: 1;
   resize: vertical;
   overflow: hidden;
+  border: 1px solid lightgray;
 }
 
 .screen_mask {

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import firebase, { NFLStreamType, StreamType } from "../firebase";
 import style from "./index.module.css";
 
-const MAX_AGE_MS = 5 * 1000;
+const MAX_AGE_MS = 5 * 60 * 1000;
 
 function Menu(props: {
   sendStream: (stream: StreamType) => void;
@@ -11,7 +11,6 @@ function Menu(props: {
   const [hidden, update] = useState(true);
   if (!props.nflStream) return <div>Loading...</div>;
   const title = new Date(props.nflStream.timestamp).toLocaleString();
-  console.log(title);
   return (
     <div>
       <h1
@@ -28,10 +27,9 @@ function Menu(props: {
         streams={props.nflStream.streams}
         sendStream={props.sendStream}
       />
-      {false &&
-        new Date().getTime() - props.nflStream!.timestamp > MAX_AGE_MS && (
-          <OutOfDate />
-        )}
+      {new Date().getTime() - props.nflStream!.timestamp > MAX_AGE_MS && (
+        <OutOfDate />
+      )}
     </div>
   );
 }

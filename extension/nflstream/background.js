@@ -16,19 +16,26 @@ chrome.action.onClicked.addListener((tab) =>
 chrome.runtime.onMessage.addListener(
   (message, sender, sendResponse) =>
     main("visit", sender.tab.id).then((message) =>
-      sendResponse({ type: "main", message })
+      sendMessage(sender.tab.id, { type: "main", message })
     ) && true
 );
 
 function main(src, tabId) {
   console.log("main", src);
-  return fetch("https://reddit.nflbite.com/")
+  return fetch("https://reddit.nflbite.com/" && "https://mlbshow.com/") // todo
     .then((resp) => resp.text())
     .then((message) => sendMessage(tabId, { type: "parseGames", message }))
     .then((hrefs) =>
       hrefs.map((href) =>
         fetch(href)
           .then((resp) => resp.text())
+          .then((text) => {
+            const matchId = text.match(/var streamsMatchId = (\d+);/)[1];
+            const sport = text.match(/var streamsSport = "(\w+)"/)[1];
+            return `https://sportscentral.io/streams-table/${matchId}/${sport}?new-ui=1&origin=${href}`; // todo
+          })
+          .then(log) // todo
+          .then(fetch)
           .then((message) =>
             sendMessage(tabId, { type: "parseLinks", message })
           )

@@ -23,33 +23,47 @@ function parse(text) {
 
 function parseGames(message) {
   return parse(message)
-    .then((html) =>
-      Array.from(html.getElementsByClassName("competition")).find(
-        (competition) =>
-          Array.from(competition.getElementsByClassName("name")).find(
-            (name) => name.innerHTML === "NFL, Regular Season"
-          )
+    .then((html) => html.getElementsByClassName("competition"))
+    .then(Array.from)
+    .then((competitions) =>
+      competitions.find((competition) =>
+        Array.from(competition.getElementsByClassName("name")).find(
+          (name) => name.innerHTML === "MLB, Regular Season" // todo
+        )
       )
     )
-    .then((competition) =>
-      Array.from(competition.getElementsByClassName("col-md-6"))
-        .filter(
-          (match) =>
-            match.getElementsByClassName("status")[0].innerHTML === "finished"
-        )
-        .map((match) => match.getElementsByTagName("a")[0].href)
+    .then((competition) => competition.getElementsByClassName("col-md-6"))
+    .then(Array.from)
+    .then((matches) =>
+      matches.filter((match) =>
+        match
+          .getElementsByClassName("status")[0]
+          .classList.contains("live-indicator")
+      )
+    )
+    .then((matches) =>
+      matches.map((match) => match.getElementsByTagName("a")[0].href)
     );
 }
 
 function parseLinks(message) {
   return Promise.resolve(message)
     .then(parse)
-    .then((html) => html.innerHTML);
+    .then((html) => html.getElementsByTagName("tr"))
+    .then(Array.from)
+    .then((trs) =>
+      trs.find(
+        (tr) =>
+          tr.getElementsByClassName("username")[0].innerText.trim() ===
+          "Weak_Spell"
+      )
+    )
+    .then((tr) => tr?.getAttribute("data-stream-link"));
 }
 
 chrome.runtime.onMessage.addListener(receive);
 
-chrome.runtime.sendMessage(null, receive);
+chrome.runtime.sendMessage(null);
 
 function log(arg) {
   console.log(arg);

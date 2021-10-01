@@ -25,6 +25,9 @@ function main(src, tabId) {
   return fetch("https://reddit.nflbite.com/")
     .then((resp) => resp.text())
     .then((message) => sendMessage(tabId, { type: "parseGames", message }))
+    .then(() => [
+      "https://reddi.boxingstreams.cc/game/scardina-vs-doberstien-live-stream/",
+    ]) // todo
     .then((hrefs) =>
       hrefs.map((href) =>
         fetch(href)

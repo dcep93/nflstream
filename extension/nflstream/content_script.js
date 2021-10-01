@@ -3,7 +3,7 @@ console.log("content_script");
 function receive(payload, sender, sendResponse) {
   console.log("receive", payload);
   Promise.resolve(payload.message)
-    .then({ main, parseGames, parseLinks }[payload.type])
+    .then({ main, parseGames, parseLinks, parseTinyUrl }[payload.type])
     .then(sendResponse);
 }
 
@@ -54,11 +54,20 @@ function parseLinks(message) {
     .then((trs) =>
       trs.find(
         (tr) =>
-          tr.getElementsByClassName("username")[0].innerText.trim() ===
+          tr.getElementsByClassName("username")[0]?.innerText.trim() ===
           "Weak_Spell"
       )
     )
     .then((tr) => tr?.getAttribute("data-stream-link"));
+}
+
+function parseTinyUrl(message) {
+  return Promise.resolve(message)
+    .then(parse)
+    .then((html) => html.getElementsByTagName("a"))
+    .then(Array.from)
+    .then((links) => links.find((l) => l.id === "skip-btn"))
+    .then((link) => link.href);
 }
 
 chrome.runtime.onMessage.addListener(receive);

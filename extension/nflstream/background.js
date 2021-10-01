@@ -40,10 +40,26 @@ function main(src, tabId) {
           })
           .then(fetch)
           .then((resp) => resp.text())
-          .then(log) // todo
           .then((message) =>
             sendMessage(tabId, { type: "parseLinks", message })
           )
+      )
+    )
+    .then((tinyUrls) =>
+      tinyUrls.map((tinyUrl) =>
+        Promise.resolve(tinyUrl)
+          .then(fetch)
+          .then((resp) => resp.text())
+          .then((message) =>
+            sendMessage(tabId, { type: "parseTinyUrl", message })
+          )
+      )
+    )
+    .then((urls) =>
+      urls.map((url) =>
+        Promise.resolve(url)
+          .then((url) => url.split("/").reverse()[1])
+          .then((id) => `http://weakstreams.com/streams/${id}`)
       )
     )
     .then((promises) => Promise.all(promises));

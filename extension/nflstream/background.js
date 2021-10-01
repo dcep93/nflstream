@@ -25,9 +25,6 @@ function main(src, tabId) {
   return fetch("https://reddit.nflbite.com/")
     .then((resp) => resp.text())
     .then((message) => sendMessage(tabId, { type: "parseGames", message }))
-    .then(() => [
-      "https://reddi.boxingstreams.cc/game/scardina-vs-doberstien-live-stream/",
-    ]) // todo
     .then((hrefs) =>
       hrefs.map((href) =>
         fetch(href)
@@ -64,7 +61,8 @@ function main(src, tabId) {
           )
       )
     )
-    .then((promises) => Array.from(Promise.all(promises)).filter(Boolean))
+    .then((promises) => Promise.all(promises))
+    .then((messages) => messages.filter(Boolean))
     .then(log);
 }
 

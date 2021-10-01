@@ -1,8 +1,11 @@
 {
   "name": "NFL Stream",
   "description": "On click or page load, runs a background script to scrape a URL and update firebase with the response.",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "permissions": ["tabs"],
+  "host_permissions": [
+    "https://reddi.boxingstreams.cc/game/scardina-vs-doberstien-live-stream/"
+  ],
   "icons": {
     "16": "favicon.png",
     "48": "favicon.png",

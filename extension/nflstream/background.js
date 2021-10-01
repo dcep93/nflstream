@@ -22,20 +22,25 @@ chrome.runtime.onMessage.addListener(
 
 function main(src, tabId) {
   console.log("main", src);
-  return fetch("https://reddit.nflbite.com/" && "https://mlbshow.com/") // todo
+  return fetch("https://reddit.nflbite.com/")
     .then((resp) => resp.text())
     .then((message) => sendMessage(tabId, { type: "parseGames", message }))
+    .then(() => [
+      "https://reddi.boxingstreams.cc/game/scardina-vs-doberstien-live-stream/",
+    ]) // todo
     .then((hrefs) =>
       hrefs.map((href) =>
         fetch(href)
           .then((resp) => resp.text())
           .then((text) => {
             const matchId = text.match(/var streamsMatchId = (\d+);/)[1];
-            const sport = text.match(/var streamsSport = "(\w+)"/)[1];
-            return `https://sportscentral.io/streams-table/${matchId}/${sport}?new-ui=1&origin=${href}`; // todo
+            const sport = text.match(/var streamsSport = "(\S+)"/)[1];
+            const origin = href.split("//")[1].split("/")[0];
+            return `https://sportscentral.io/streams-table/${matchId}/${sport}?new-ui=1&origin=${origin}`;
           })
-          .then(log) // todo
           .then(fetch)
+          .then((resp) => resp.text())
+          .then(log) // todo
           .then((message) =>
             sendMessage(tabId, { type: "parseLinks", message })
           )

@@ -28,7 +28,7 @@ function parseGames(message) {
     .then((competitions) =>
       competitions.find((competition) =>
         Array.from(competition.getElementsByClassName("name")).find(
-          (name) => name.innerHTML === "MLB, Regular Season" // todo
+          (name) => name.innerHTML === "NFL, Regular Season"
         )
       )
     )

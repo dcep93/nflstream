@@ -1,7 +1,8 @@
 console.log("content_script");
+const start = new Date().getTime();
 
 function receive(payload, sender, sendResponse) {
-  console.log("receive", payload);
+  console.log("receive", new Date().getTime() - start, payload);
   Promise.resolve(payload.message)
     .then({ main, parseGames, parseLinks, parseTinyUrl }[payload.type])
     .then(sendResponse);
@@ -35,10 +36,12 @@ function parseGames(message) {
     .then((competition) => competition.getElementsByClassName("col-md-6"))
     .then(Array.from)
     .then((matches) =>
-      matches.filter((match) =>
-        match
-          .getElementsByClassName("status")[0]
-          .classList.contains("live-indicator")
+      matches.filter(
+        (match) =>
+          true ||
+          match
+            .getElementsByClassName("status")[0]
+            .classList.contains("live-indicator")
       )
     )
     .then((matches) =>

@@ -64,10 +64,17 @@ function parseLinks(message) {
 function parseTinyUrl(message) {
   return Promise.resolve(message)
     .then(parse)
-    .then((html) => html.getElementsByTagName("a"))
-    .then(Array.from)
-    .then((links) => links.find((l) => l.id === "skip-btn"))
-    .then((link) => link.href);
+    .then((html) => ({
+      title: html
+        .getElementsByTagName("title")[0]
+        .innerText.split(" - WeakStreams.com - ")[0],
+      href: Promise.resolve(html.getElementsByTagName("a"))
+        .then(Array.from)
+        .then((links) => links.find((l) => l.id === "skip-btn"))
+        .then((link) => link.href),
+    }))
+    .then(({ title, href }) => Promise.all([title, href]))
+    .then(([title, href]) => ({ title, href }));
 }
 
 chrome.runtime.onMessage.addListener(receive);

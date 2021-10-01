@@ -43,23 +43,20 @@ function main(src, tabId) {
           .then((message) =>
             sendMessage(tabId, { type: "parseLinks", message })
           )
-      )
-    )
-    .then((tinyUrls) =>
-      tinyUrls.map((tinyUrl) =>
-        Promise.resolve(tinyUrl)
           .then(fetch)
           .then((resp) => resp.text())
           .then((message) =>
             sendMessage(tabId, { type: "parseTinyUrl", message })
           )
-      )
-    )
-    .then((urls) =>
-      urls.map((url) =>
-        Promise.resolve(url)
-          .then((url) => url.split("/").reverse()[1])
-          .then((id) => `http://weakstreams.com/streams/${id}`)
+          .then(({ title, href }) => ({
+            title,
+            href: Promise.resolve(href)
+              .then((href) => href.replace("/?", "?").split("?")[0])
+              .then((href) => href.split("/").reverse()[0])
+              .then((id) => `http://weakstreams.com/streams/${id}`),
+          }))
+          .then(({ title, href }) => Promise.all([title, href]))
+          .then(([title, href]) => ({ title, href }))
       )
     )
     .then((promises) => Promise.all(promises));

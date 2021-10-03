@@ -37,8 +37,10 @@ const script = () => {
     };
     Object.assign(iframeE.style, iframeStyle);
     iframeE.onload = () => {
-      const ratioStr = iframeE.offsetWidth + "/" + iframeE.offsetHeight;
-      const ratio = iframeE.offsetWidth / iframeE.offsetHeight;
+      // const [width, height] = [iframeE.offsetWidth, iframeE.offsetHeight];
+      const [width, height] = [812, 477]; // on weakstreams, height is dynamic
+      const ratioStr = width + "/" + height;
+      const ratio = width / height;
       const style = document.createElement("style");
       style.innerHTML = `
                 @media (min-aspect-ratio: ${ratioStr}) {

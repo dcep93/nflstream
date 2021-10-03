@@ -32,7 +32,7 @@
   position: relative;
   display: inline-flex;
   flex-grow: 1;
-  resize: vertical;
+  resize: both;
   overflow: hidden;
   border: 1px solid lightgray;
 }

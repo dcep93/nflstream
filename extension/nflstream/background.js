@@ -51,10 +51,14 @@ function main(src, tabId) {
                 )
                 .then(({ title, href }) => ({
                   title,
-                  href: Promise.resolve(href)
-                    .then((href) => href.replace("/?", "?").split("?")[0])
-                    .then((href) => href.split("/").reverse()[0])
-                    .then((id) => `http://weakstreams.com/streams/${id}`),
+                  href: fetch(href)
+                    .then((resp) => resp.text())
+                    .then(
+                      (message) =>
+                        message.match(
+                          /http:\/\/weakstreams.com\/streams\/\d+/
+                        )[0]
+                    ),
                 }))
                 .then(({ title, href }) => Promise.all([title, href]))
                 .then(([title, href]) => ({ title, href }))
@@ -63,6 +67,7 @@ function main(src, tabId) {
     )
     .then((promises) => Promise.all(promises))
     .then((messages) => messages.filter(Boolean))
+    .then((streams) => ({ version: "0.0.4", streams }))
     .then(log);
 }
 

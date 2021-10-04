@@ -1,5 +1,6 @@
 import React from "react";
 import firebase from "../firebase";
+import { menuWrapper } from "./Menu";
 
 type MessageType = {
   version: string;
@@ -23,13 +24,13 @@ function MessageExtension() {
           const message: MessageType = JSON.parse(ref.current!.value);
           console.log("update", message);
           if (message.version !== "0.0.4") return;
-          const nflStream = {
+          const nflStream = Object.assign(menuWrapper.state, {
             timestamp: new Date().getTime(),
             streams: message.streams.map((m) => ({
               url: m.href,
               name: m.title,
             })),
-          };
+          });
           firebase.updateNFLStream(nflStream);
         }}
       />

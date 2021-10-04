@@ -133,20 +133,20 @@ function Guide() {
   );
 }
 
-var component: MenuWrapper;
+export var menuWrapper: MenuWrapper;
 class MenuWrapper extends React.Component<
   { sendStream: (stream: StreamType) => void },
   NFLStreamType
 > {
   componentDidMount() {
-    const oldComponent = component;
-    component = this;
+    const oldComponent = menuWrapper;
+    menuWrapper = this;
     if (oldComponent) {
       this.setState(oldComponent.state);
     } else {
       document.title = "NFLStream";
       firebase.connect((nflStream) =>
-        component.setState.bind(component)(nflStream)
+        menuWrapper.setState.bind(menuWrapper)(nflStream)
       );
     }
   }

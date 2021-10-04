@@ -1,3 +1,10 @@
+var version;
+fetch(chrome.runtime.getURL("manifest.json"))
+  .then((response) => response.json())
+  .then((json) => json.version)
+  .then((_version) => (version = _version))
+  .then(() => console.log("version", version));
+
 function sendMessage(tabId, payload) {
   return new Promise((resolve) => {
     chrome.tabs.sendMessage(tabId, payload, resolve);
@@ -67,7 +74,7 @@ function main(src, tabId) {
     )
     .then((promises) => Promise.all(promises))
     .then((messages) => messages.filter(Boolean))
-    .then((streams) => ({ version: "0.0.4", streams }))
+    .then((streams) => ({ version, streams }))
     .then(log);
 }
 

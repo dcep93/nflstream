@@ -84,9 +84,11 @@ function muteUnmute(
   mute: boolean
 ) {
   console.log(iframeRef, mute);
-  const contentWindow = iframeRef.current!.contentWindow!;
-  contentWindow.document.getElementsByTagName("iframe")[0] as HTMLIFrameElement;
-  contentWindow.postMessage({ mute }, "*");
+  (
+    iframeRef.current!.contentWindow!.document.getElementsByTagName(
+      "iframe"
+    )[0] as HTMLIFrameElement
+  ).contentWindow!.postMessage({ mute }, "*");
 }
 
 export default Multiscreen;

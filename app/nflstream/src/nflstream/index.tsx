@@ -1,8 +1,8 @@
 import React from "react";
 import { StreamType } from "../firebase";
+import Extension from "./Extension";
 import style from "./index.module.css";
 import Menu from "./Menu";
-import MessageExtension from "./MessageExtension";
 import Multiscreen, { ScreenType } from "./multiscreen";
 
 class NFLStream extends React.Component<{}, { screens: ScreenType[] }> {
@@ -14,7 +14,7 @@ class NFLStream extends React.Component<{}, { screens: ScreenType[] }> {
   render() {
     return (
       <div className={style.main}>
-        <MessageExtension />
+        <Extension />
         <Menu sendStream={this.sendStream.bind(this)} />
         <Multiscreen
           screens={this.state.screens}

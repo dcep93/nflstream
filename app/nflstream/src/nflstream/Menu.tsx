@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import firebase, { NFLStreamType, StreamType } from "../firebase";
 import style from "./index.module.css";
 
-const MAX_AGE_MS = 15 * 60 * 1000;
-
 function Menu(props: {
   sendStream: (stream: StreamType) => void;
   nflStream?: NFLStreamType;

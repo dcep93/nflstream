@@ -7,7 +7,7 @@ type MessageType = {
   streams: { href: string; title: string }[];
 };
 
-const url = "https://nflstream.web.app";
+const url = "https://nflstream.web.app/";
 
 function MessageExtension() {
   const ref: React.RefObject<HTMLTextAreaElement> = React.createRef();

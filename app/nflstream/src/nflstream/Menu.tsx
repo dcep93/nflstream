@@ -22,10 +22,12 @@ function Menu(props: {
         NFL Stream
       </h1>
       <div hidden={hidden}>
-        <ManualStreams nflStream={props.nflStream} />
+        <ManualUpdate nflStream={props.nflStream} />
       </div>
       <Streams
-        streams={props.nflStream.streams}
+        streams={(props.nflStream.streams || []).concat(
+          props.nflStream?.other || []
+        )}
         sendStream={props.sendStream}
       />
       <Guide />
@@ -33,7 +35,7 @@ function Menu(props: {
   );
 }
 
-function ManualStreams(props: { nflStream: NFLStreamType }) {
+function ManualUpdate(props: { nflStream: NFLStreamType }) {
   const ref: React.RefObject<HTMLTextAreaElement> = React.createRef();
 
   if (!props.nflStream.streams) props.nflStream.streams = [];

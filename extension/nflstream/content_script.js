@@ -5,6 +5,7 @@ function init() {
   if (location.href === "https://nflstream.web.app/") {
     chrome.runtime.onMessage.addListener(receive);
     chrome.runtime.sendMessage(null);
+    setInterval(() => chrome.runtime.sendMessage(null), 5 * 60 * 1000);
   } else {
     window.addEventListener("message", muteUnmute);
   }

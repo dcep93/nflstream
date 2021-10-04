@@ -106,8 +106,10 @@ function Streams(props: {
 }
 
 function OutOfDate() {
+  const [hidden, updateHidden] = useState(true);
+  setTimeout(() => updateHidden(false), 15000);
   return (
-    <div className={style.bubble}>
+    <div hidden={hidden} className={style.bubble}>
       <div>These links are out of date.</div>
       <div>
         Consider downloading the{" "}

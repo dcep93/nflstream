@@ -51,12 +51,10 @@ function parseGames(message) {
     .then((competition) => competition.getElementsByClassName("col-md-6"))
     .then(Array.from)
     .then((matches) =>
-      matches.filter(
-        (match) =>
-          true ||
-          match
-            .getElementsByClassName("status")[0]
-            .classList.contains("live-indicator")
+      matches.filter((match) =>
+        match
+          .getElementsByClassName("status")[0]
+          .classList.contains("live-indicator")
       )
     )
     .then((matches) =>

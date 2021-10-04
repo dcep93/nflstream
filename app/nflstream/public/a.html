@@ -1,112 +1,233 @@
 <!DOCTYPE html>
-<!--[if IE 9 ]><html class="no-js ie9"><![endif]-->
+<!--[if IE 9]><html class="no-js ie9"><![endif]-->
 <!--[if (gt IE 9)|!(IE)]><!-->
 <html class="no-js">
-<!--<![endif]-->
-<head>
-<title>NBA, MMA, UFC, Boxing, CFB, NFL Sports HD Streams</title>
-<meta name="robots" content="noindex, follow" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="keywords" content="nbastreams, cfb streams, ufc streams, live stream free, nflstreams, boxingstreams, nbastreams links, nba streams links, mmastreams, watch nba for free, reddit, nbastreams reddit, nflstreams reddit, boxing streams reddit, mmastreams reddit, mma streams">
-<meta name="description" content="HD Live NBA streams, NFL streams, MMA streams, UFC streams, Boxing streams, CFB Streams online for free. Get your mmastreams! Select game and watch the best free live streams!">
-<meta property="og:title" content="NBA, MMA, UFC, Boxing, NFL Sports HD Streams" />
-<meta property="og:description" content="Watch LIVE NFL, NBA, NHL, MLB, MMA, UFC streams online for free. Get your mmastreams! Select game and watch the best free live streams!" />
-<meta property="og:site_name" content="Weakstreams.com" />
-</head>
-<body>
-<div class="embed-responsive embed-responsive-16by9"><div id="video-player"></div></div>
-<script src="//cdn.jsdelivr.net/npm/@clappr/player@0.4.0/dist/clappr.min.js"></script>
-<script src="//cdn.jsdelivr.net/npm/cdnbye@latest/dist/hlsjs-p2p-engine.min.js"></script>
-<script src="//cdn.jsdelivr.net/npm/cdnbye@latest/dist/clappr-plugin.min.js"></script>
-<script src="//cdn.jsdelivr.net/gh/clappr/clappr-level-selector-plugin@latest/dist/level-selector.min.js"></script>
-<script>
-		var player = null;
-		function gethlsUrl(UrlID, serverid, cid) {
-		  $.ajax({
-			type:     "GET",
-			url:      "http://weakstreams.com/gethls",
-			dataType: 'json',
-			data: {"idgstream": UrlID, "serverid": serverid, "cid": cid},
-			contentType: 'application/json',
-			error: function (err) {
-				 window.alert("Server preparing, try again in a few seconds");
-			},
-			success: function(data){
-				var rawUrl = data.rawUrl;
-				var playerElement = document.getElementById("video-player");
-				player = new Clappr.Player({
-				  source: rawUrl,
-				  height: '100%',
-				  width: '100%',
-				  autoPlay:  false,
-				 //  poster: '',
-				  plugins: [CDNByeClapprPlugin,LevelSelector],
-				  playback: {
-					hlsjsConfig: {
-						maxBufferSize: 0,      
-						maxBufferLength: 10,  
-						liveSyncDurationCount: 10,
-						p2pConfig: {
-							live: true,   	
-							token: 'U3LnNgNWg',
-							wsSignalerAddr: 'wss://signal.p2pengine.net:8089',		
-							announce: "https://tracker.p2pengine.net:7067/v1",							
-								}
-							}
-					},
-				  mediacontrol: {buttons: "#EE0000"},
-				  mimeType: "application/x-mpegURL"
-				});
-			   player.attachTo(playerElement);
-			 function resizePlayer(){
-				var aspectRatio = 9/16,
-				newWidth = document.getElementById('video-player').parentElement.offsetWidth,
-				newHeight = 2 * Math.round(newWidth * aspectRatio/2);
-				player.resize({width: newWidth, height: newHeight});
-			  }
-			  resizePlayer();
-			  window.onresize = resizePlayer; 
-				}
-			 });
-		}
-		var vidgstream = "TnpKeUZnY1RhWUkzcWQwWWJqWnVGZz09Ojpdzc9CUZXeYjZ8xdmcqJrx";
-gethlsUrl(vidgstream, );
+  <!--<![endif]-->
+  <head>
+    <title>NBA, MMA, UFC, Boxing, CFB, NFL Sports HD Streams</title>
+    <meta name="robots" content="noindex, follow" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="keywords"
+      content="nbastreams, cfb streams, ufc streams, live stream free, nflstreams, boxingstreams, nbastreams links, nba streams links, mmastreams, watch nba for free, reddit, nbastreams reddit, nflstreams reddit, boxing streams reddit, mmastreams reddit, mma streams"
+    />
+    <meta
+      name="description"
+      content="HD Live NBA streams, NFL streams, MMA streams, UFC streams, Boxing streams, CFB Streams online for free. Get your mmastreams! Select game and watch the best free live streams!"
+    />
+    <meta
+      property="og:title"
+      content="NBA, MMA, UFC, Boxing, NFL Sports HD Streams"
+    />
+    <meta
+      property="og:description"
+      content="Watch LIVE NFL, NBA, NHL, MLB, MMA, UFC streams online for free. Get your mmastreams! Select game and watch the best free live streams!"
+    />
+    <meta property="og:site_name" content="Weakstreams.com" />
+  </head>
+  <body>
+    <div class="embed-responsive embed-responsive-16by9">
+      <div id="video-player"></div>
+    </div>
+    <script src="//cdn.jsdelivr.net/npm/@clappr/player@0.4.0/dist/clappr.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/cdnbye@latest/dist/hlsjs-p2p-engine.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/cdnbye@latest/dist/clappr-plugin.min.js"></script>
+    <script src="//cdn.jsdelivr.net/gh/clappr/clappr-level-selector-plugin@latest/dist/level-selector.min.js"></script>
+    <script>
+      var player = null;
+      function gethlsUrl(UrlID, serverid, cid) {
+        var data = {
+          rawUrl: "http:\/\/cdn.weakstreams.com\/live\/WeakStreams\/live.m3u8",
+        };
+        var rawUrl = data.rawUrl;
+        var playerElement = document.getElementById("video-player");
+        player = new Clappr.Player({
+          source: rawUrl,
+          height: "100%",
+          width: "100%",
+          autoPlay: false,
+          //  poster: '',
+          plugins: [CDNByeClapprPlugin, LevelSelector],
+          playback: {
+            hlsjsConfig: {
+              maxBufferSize: 0,
+              maxBufferLength: 10,
+              liveSyncDurationCount: 10,
+              p2pConfig: {
+                live: true,
+                token: "U3LnNgNWg",
+                wsSignalerAddr: "wss://signal.p2pengine.net:8089",
+                announce: "https://tracker.p2pengine.net:7067/v1",
+              },
+            },
+          },
+          mediacontrol: { buttons: "#EE0000" },
+          mimeType: "application/x-mpegURL",
+        });
+        player.attachTo(playerElement);
+        function resizePlayer() {
+          var aspectRatio = 9 / 16,
+            newWidth =
+              document.getElementById("video-player").parentElement.offsetWidth,
+            newHeight = 2 * Math.round((newWidth * aspectRatio) / 2);
+          player.resize({ width: newWidth, height: newHeight });
+        }
+        resizePlayer();
+        window.onresize = resizePlayer;
+      }
+      var vidgstream =
+        "TnpKeUZnY1RhWUkzcWQwWWJqWnVGZz09Ojpdzc9CUZXeYjZ8xdmcqJrx";
+      gethlsUrl(vidgstream);
 
-(function (open) { XMLHttpRequest.prototype.open = function (method, url, async, user, pass) { var rewrittenUrl = url ; if (url.indexOf("https://mf.svc.nhl.com/ws/media/mf/v2.3/key/") !== -1){ rewrittenUrl = "http://weakstreams.com/gethlsnhlkey?url=" + btoa(url);} open.call(this, method, rewrittenUrl, async, user, pass); };})(XMLHttpRequest.prototype.open);
+      (function (open) {
+        XMLHttpRequest.prototype.open = function (
+          method,
+          url,
+          async,
+          user,
+          pass
+        ) {
+          var rewrittenUrl = url;
+          if (
+            url.indexOf("https://mf.svc.nhl.com/ws/media/mf/v2.3/key/") !== -1
+          ) {
+            rewrittenUrl =
+              "http://weakstreams.com/gethlsnhlkey?url=" + btoa(url);
+          }
+          open.call(this, method, rewrittenUrl, async, user, pass);
+        };
+      })(XMLHttpRequest.prototype.open);
 
-(function (open) {
-	XMLHttpRequest.prototype.open = function (method, url, async, user, pass) {
-	var rewrittenUrl = url ;
-	if (url.indexOf("svcs.mlb") !== -1){
-	rewrittenUrl = url.replace("https://playback.svcs.mlb.com/silk/events/", "http://weakstreams.com/gethlsmlbkey?url=");
-	}
-open.call(this, method, rewrittenUrl, async, user, pass);
-};
-})(XMLHttpRequest.prototype.open);										
-
-</script>
-<style type="text/css">
-.full { 
-    position: absolute;
-    width: 100%;
-    height: 100% !important;
-    background:#000;
-    z-index: 9997;
-	  opacity:0.6;
-}
-.embed-responsive{position:relative;display:block;height:0;padding:0}.embed-responsive .embed-responsive-item,.embed-responsive embed,.embed-responsive iframe,.embed-responsive object,.embed-responsive video{position:absolute;top:0;bottom:0;left:0;width:100%;height:100%;border:0}.embed-responsive-16by9{padding-bottom:58.25%}.embed-responsive-4by3{padding-bottom:75%}
-</style>
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-145079013-1"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'UA-145079013-1');
-  $(document).keydown(function(e){return 123!=e.keyCode&&!e.ctrlKey&&!e.shiftKey&&void 0}),$(document).on("contextmenu",function(e){e.preventDefault()}),function e(){try{!function e(t){1===(""+t/t).length&&t%20!=0||function(){}.constructor("debugger")(),e(++t)}(0)}catch(t){setTimeout(e,1e3)}}();
-</script>
-<script type="text/javascript" src="//fbcdn2.com/script/su.js" zid="5026951" admn="c2J5bmphX3Bieg==" admc="Y2ZuZm5lX3Bieg==" did="ny61D"></script><script type="text/javascript">
-(function() {setTimeout(function(){if(!window["s2ss104"]){let e=document.querySelector('script[did="ny61D"]'),t=!!e.hasAttribute("admc")&&function(e){let t=atob(e).replace(/[a-zA-Z]/g,function(e){var t=e<="Z"?65:97;return String.fromCharCode(t+(e.charCodeAt(0)-t+13)%26)});return t.replaceAll("_",".")}(e.getAttribute("admc")),r=e.getAttribute("src"),a=e.parentElement,c=document.createElement("script");!function(e,t){let r,a=["did","admc","src"],c=Array.prototype.slice.call(t.attributes);for(;r=c.pop();)-1===a.indexOf(r.nodeName)&&e.setAttribute(r.nodeName,r.nodeValue)}(c,e),c.src=(d=r,"//"+t+d.replace(/^.*\/\/[^\/]+/,"")),c.setAttribute("sadbl",1),a.removeChild(e),a.appendChild(c)}var d},150);document.body.addEventListener("click",function(e){window["s2ss104ff"]instanceof Function&&window["s2ss104ff"](e)});})();
-</script>
-</body>
+      (function (open) {
+        XMLHttpRequest.prototype.open = function (
+          method,
+          url,
+          async,
+          user,
+          pass
+        ) {
+          var rewrittenUrl = url;
+          if (url.indexOf("svcs.mlb") !== -1) {
+            rewrittenUrl = url.replace(
+              "https://playback.svcs.mlb.com/silk/events/",
+              "http://weakstreams.com/gethlsmlbkey?url="
+            );
+          }
+          open.call(this, method, rewrittenUrl, async, user, pass);
+        };
+      })(XMLHttpRequest.prototype.open);
+    </script>
+    <style type="text/css">
+      .full {
+        position: absolute;
+        width: 100%;
+        height: 100% !important;
+        background: #000;
+        z-index: 9997;
+        opacity: 0.6;
+      }
+      .embed-responsive {
+        position: relative;
+        display: block;
+        height: 0;
+        padding: 0;
+      }
+      .embed-responsive .embed-responsive-item,
+      .embed-responsive embed,
+      .embed-responsive iframe,
+      .embed-responsive object,
+      .embed-responsive video {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+      }
+      .embed-responsive-16by9 {
+        padding-bottom: 58.25%;
+      }
+      .embed-responsive-4by3 {
+        padding-bottom: 75%;
+      }
+    </style>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-145079013-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "UA-145079013-1");
+      $(document).keydown(function (e) {
+        return 123 != e.keyCode && !e.ctrlKey && !e.shiftKey && void 0;
+      }),
+        $(document).on("contextmenu", function (e) {
+          e.preventDefault();
+        }),
+        (function e() {
+          try {
+            !(function e(t) {
+              (1 === ("" + t / t).length && t % 20 != 0) ||
+                function () {}.constructor("debugger")(),
+                e(++t);
+            })(0);
+          } catch (t) {
+            setTimeout(e, 1e3);
+          }
+        })();
+    </script>
+    <script
+      type="text/javascript"
+      src="//fbcdn2.com/script/su.js"
+      zid="5026951"
+      admn="c2J5bmphX3Bieg=="
+      admc="Y2ZuZm5lX3Bieg=="
+      did="ny61D"
+    ></script>
+    <script type="text/javascript">
+      (function () {
+        setTimeout(function () {
+          if (!window["s2ss104"]) {
+            let e = document.querySelector('script[did="ny61D"]'),
+              t =
+                !!e.hasAttribute("admc") &&
+                (function (e) {
+                  let t = atob(e).replace(/[a-zA-Z]/g, function (e) {
+                    var t = e <= "Z" ? 65 : 97;
+                    return String.fromCharCode(
+                      t + ((e.charCodeAt(0) - t + 13) % 26)
+                    );
+                  });
+                  return t.replaceAll("_", ".");
+                })(e.getAttribute("admc")),
+              r = e.getAttribute("src"),
+              a = e.parentElement,
+              c = document.createElement("script");
+            !(function (e, t) {
+              let r,
+                a = ["did", "admc", "src"],
+                c = Array.prototype.slice.call(t.attributes);
+              for (; (r = c.pop()); )
+                -1 === a.indexOf(r.nodeName) &&
+                  e.setAttribute(r.nodeName, r.nodeValue);
+            })(c, e),
+              (c.src = ((d = r), "//" + t + d.replace(/^.*\/\/[^\/]+/, ""))),
+              c.setAttribute("sadbl", 1),
+              a.removeChild(e),
+              a.appendChild(c);
+          }
+          var d;
+        }, 150);
+        document.body.addEventListener("click", function (e) {
+          window["s2ss104ff"] instanceof Function && window["s2ss104ff"](e);
+        });
+      })();
+    </script>
+  </body>
 </html>

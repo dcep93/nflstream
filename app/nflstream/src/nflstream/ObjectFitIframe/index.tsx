@@ -1,9 +1,14 @@
 import { CSSProperties } from "react";
 import { default as ofStyle } from "./index.module.css";
 
-function ObjectFitIframe(props: { url: string; title: string }) {
+function ObjectFitIframe(props: {
+  iframeRef: React.RefObject<HTMLIFrameElement>;
+  url: string;
+  title: string;
+}) {
   return (
     <iframe
+      ref={props.iframeRef}
       sandbox={"allow-scripts allow-same-origin"}
       className={ofStyle.fill}
       title={props.title}

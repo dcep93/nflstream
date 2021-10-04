@@ -20,6 +20,12 @@ function Multiscreen(props: {
       React.createRef() as React.RefObject<HTMLDivElement>,
     ])
   );
+  const iframeRefs = Object.fromEntries(
+    props.screens.map((s) => [
+      s.iFrameTitle,
+      React.createRef() as React.RefObject<HTMLIFrameElement>,
+    ])
+  );
   return (
     <div className={msStyle.screens_wrapper}>
       {props.screens.length === 0 ? null : (
@@ -54,10 +60,13 @@ function Multiscreen(props: {
                     const height = refs[selected]!.current!.style.height;
                     refs[selected]!.current!.style.height = "initial";
                     refs[screen.iFrameTitle]!.current!.style.height = height;
+                    muteUnmute(iframeRefs[screen.iFrameTitle]!, false);
+                    muteUnmute(iframeRefs[selected]!, true);
                     updateSelected(screen.iFrameTitle);
                   }}
                 ></div>
                 <ObjectFitIframe
+                  iframeRef={iframeRefs[screen.iFrameTitle]}
                   url={screen.url}
                   title={`${screen.name}\n${screen.iFrameTitle}`}
                 />
@@ -68,6 +77,16 @@ function Multiscreen(props: {
       )}
     </div>
   );
+}
+
+function muteUnmute(
+  iframeRef: React.RefObject<HTMLIFrameElement>,
+  mute: boolean
+) {
+  console.log(iframeRef, mute);
+  const contentWindow = iframeRef.current!.contentWindow!;
+  contentWindow.document.getElementsByTagName("iframe")[0] as HTMLIFrameElement;
+  contentWindow.postMessage({ mute }, "*");
 }
 
 export default Multiscreen;

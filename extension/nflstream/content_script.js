@@ -1,5 +1,20 @@
-console.log("content_script");
+console.log("content_script", location.href);
 const start = new Date().getTime();
+
+function init() {
+  if (location.href === "https://nflstream.web.app/") {
+    chrome.runtime.onMessage.addListener(receive);
+    chrome.runtime.sendMessage(null);
+  } else {
+    window.addEventListener("message", muteUnmute);
+  }
+}
+
+function muteUnmute(event) {
+  const video = document.getElementsByTagName("video")[0];
+  console.log(event.data, "muteUnmute", video);
+  video.muted = event.data.mute;
+}
 
 function receive(payload, sender, sendResponse) {
   console.log("receive", new Date().getTime() - start, payload);
@@ -80,9 +95,7 @@ function parseTinyUrl(message) {
     .then(([title, href]) => ({ title, href }));
 }
 
-chrome.runtime.onMessage.addListener(receive);
-
-chrome.runtime.sendMessage(null);
+init();
 
 function log(arg) {
   console.log(arg);

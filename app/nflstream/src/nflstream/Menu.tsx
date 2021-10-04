@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import firebase, { NFLStreamType, StreamType } from "../firebase";
 import style from "./index.module.css";
+import recorded_sha from "./recorded_sha";
 
 function Menu(props: {
   sendStream: (stream: StreamType) => void;
@@ -8,7 +9,9 @@ function Menu(props: {
 }) {
   const [hidden, update] = useState(true);
   if (!props.nflStream) return <div>Loading...</div>;
-  const title = new Date(props.nflStream.timestamp).toLocaleString();
+  const title = `${new Date(
+    props.nflStream.timestamp
+  ).toLocaleString()}\n${recorded_sha}`;
   return (
     <div>
       <h1

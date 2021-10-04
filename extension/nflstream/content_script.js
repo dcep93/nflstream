@@ -18,7 +18,7 @@ function muteUnmute(event) {
 }
 
 function receive(payload, sender, sendResponse) {
-  console.log("receive", new Date().getTime() - start, payload);
+  console.log("receive", new Date().getTime() - start, payload.type, payload);
   Promise.resolve(payload.message)
     .then({ main, parseGames, parseLinks, parseTinyUrl }[payload.type])
     .then(sendResponse);

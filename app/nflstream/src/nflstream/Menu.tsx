@@ -27,9 +27,7 @@ function Menu(props: {
         streams={props.nflStream.streams}
         sendStream={props.sendStream}
       />
-      {new Date().getTime() - props.nflStream!.timestamp > MAX_AGE_MS && (
-        <OutOfDate />
-      )}
+      <Guide />
     </div>
   );
 }
@@ -105,19 +103,34 @@ function Streams(props: {
   );
 }
 
-function OutOfDate() {
-  const [hidden, updateHidden] = useState(true);
-  setTimeout(() => updateHidden(false), 15000);
+function Guide() {
   return (
-    <div hidden={hidden} className={style.bubble}>
-      <div>These links are out of date.</div>
-      <div>
-        Consider downloading the{" "}
-        <a href="https://chrome.google.com/webstore/detail/nfl-stream/jjlokcmkcepehbfepbffkmkkbnggkmje?hl=en&u_producttype=chrome-extension-667709&u_country=au&funnel=convert-pdf&gclid=Cj0KCQjwwNWKBhDAARIsAJ8HkhfEFO3SAM6aK42aSfntfnUY6yIRKS6A7DiyPG00l1mf8743CELeGaQaAksoEALw_wcB">
-          chrome extension
-        </a>{" "}
-        to automatically update the streams.
-      </div>
+    <div className={style.bubble}>
+      <h3>User Guide</h3>
+      <ol>
+        <li>
+          This app is used to watch multiple NFL streams free with no popups.
+        </li>
+        <li>
+          Because of CORS policies, most streams will be colored in red. These
+          http links cannot be loaded over https, so clicking one will instead
+          download an HTML page that will work properly.
+        </li>
+        <li>
+          Clicking a game will open a stream and place it on the multiscreen.
+          Streams are borrowed from other sources, so I can't do anything about
+          broken links.
+        </li>
+        <li>Clicking a minimized stream will move it to the spotlight.</li>
+        <li>
+          Downloading the{" "}
+          <a href="https://chrome.google.com/webstore/detail/nfl-stream/jjlokcmkcepehbfepbffkmkkbnggkmje?hl=en&u_producttype=chrome-extension-667709&u_country=au&funnel=convert-pdf&gclid=Cj0KCQjwwNWKBhDAARIsAJ8HkhfEFO3SAM6aK42aSfntfnUY6yIRKS6A7DiyPG00l1mf8743CELeGaQaAksoEALw_wcB">
+            chrome extension
+          </a>{" "}
+          offers additional functionality, like keeping the list of streams
+          updated, and muting non-spotlighted streams.
+        </li>
+      </ol>
     </div>
   );
 }

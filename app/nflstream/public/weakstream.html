@@ -49,5 +49,14 @@
       resizePlayer();
       window.onresize = resizePlayer;
     </script>
+    <script>
+      window.addEventListener("message", muteUnmute);
+
+      function muteUnmute(event) {
+        const video = document.getElementsByTagName("video")[0];
+        console.log(event.data, "muteUnmute", video);
+        video.muted = event.data.mute;
+      }
+    </script>
   </body>
 </html>

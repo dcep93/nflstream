@@ -66,57 +66,10 @@
           mimeType: "application/x-mpegURL",
         });
         player.attachTo(playerElement);
-        function resizePlayer() {
-          var aspectRatio = 9 / 16,
-            newWidth =
-              document.getElementById("video-player").parentElement.offsetWidth,
-            newHeight = 2 * Math.round((newWidth * aspectRatio) / 2);
-          player.resize({ width: newWidth, height: newHeight });
-        }
-        resizePlayer();
-        window.onresize = resizePlayer;
       }
       var vidgstream =
         "TnpKeUZnY1RhWUkzcWQwWWJqWnVGZz09Ojpdzc9CUZXeYjZ8xdmcqJrx";
       gethlsUrl(vidgstream);
-
-      (function (open) {
-        XMLHttpRequest.prototype.open = function (
-          method,
-          url,
-          async,
-          user,
-          pass
-        ) {
-          var rewrittenUrl = url;
-          if (
-            url.indexOf("https://mf.svc.nhl.com/ws/media/mf/v2.3/key/") !== -1
-          ) {
-            rewrittenUrl =
-              "http://weakstreams.com/gethlsnhlkey?url=" + btoa(url);
-          }
-          open.call(this, method, rewrittenUrl, async, user, pass);
-        };
-      })(XMLHttpRequest.prototype.open);
-
-      (function (open) {
-        XMLHttpRequest.prototype.open = function (
-          method,
-          url,
-          async,
-          user,
-          pass
-        ) {
-          var rewrittenUrl = url;
-          if (url.indexOf("svcs.mlb") !== -1) {
-            rewrittenUrl = url.replace(
-              "https://playback.svcs.mlb.com/silk/events/",
-              "http://weakstreams.com/gethlsmlbkey?url="
-            );
-          }
-          open.call(this, method, rewrittenUrl, async, user, pass);
-        };
-      })(XMLHttpRequest.prototype.open);
     </script>
   </body>
 </html>

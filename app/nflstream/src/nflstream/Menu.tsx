@@ -71,9 +71,12 @@ function Streams(props: {
       {(props.streams || [])
         .map(
           (stream) =>
-            Object.assign(null, stream, {
+            Object.assign({}, stream, {
               url: isActive
-                ? stream.url.replace("http://", "https://")
+                ? stream.url.replace(
+                    "http://weakstreams.com",
+                    "https://weakstreams.com"
+                  )
                 : stream.url,
             }) as StreamType
         )

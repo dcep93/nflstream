@@ -8,19 +8,24 @@ type MessageType = {
 };
 
 const url = "https://nflstream.web.app/";
-const version = "0.0.4";
+const expected_version = "0.0.4";
 
-export var isActive = false;
+export var version = "";
 
 function MessageExtension() {
   const ref: React.RefObject<HTMLTextAreaElement> = React.createRef();
+  const versionRef: React.RefObject<HTMLDivElement> = React.createRef();
   return (
     <div hidden>
       {window.location.href !== url && (
         // so that the chrome extension is loaded even on localhost or downloaded html
         <iframe title={"hidden_iframe"} hidden src={url}></iframe>
       )}
-      <div id="extension_active" onClick={() => (isActive = true)} />
+      <div
+        ref={versionRef}
+        id="extension_active"
+        onClick={() => (version = versionRef.current!.innerText)}
+      />
       <textarea
         hidden
         ref={ref}
@@ -28,8 +33,10 @@ function MessageExtension() {
         onClick={() => {
           const message: MessageType = JSON.parse(ref.current!.value);
           console.log("update", message);
-          if (message.version !== version) {
-            console.log(`need chrome extension v ${version} - rejecting`);
+          if (message.version !== expected_version) {
+            console.log(
+              `need chrome extension version ${expected_version} - rejecting`
+            );
             return;
           }
           const nflStream = Object.assign(menuWrapper.state, {

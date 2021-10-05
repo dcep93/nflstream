@@ -20,12 +20,18 @@ chrome.action.onClicked.addListener((tab) =>
     : chrome.tabs.create({ url }, function (tab_) {})
 );
 
-chrome.runtime.onMessage.addListener(
-  (message, sender, sendResponse) =>
-    main("visit", sender.tab.id).then((message) =>
-      sendMessage(sender.tab.id, { type: "main", message })
-    ) && true
-);
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  switch (message.action) {
+    case "version":
+      sendResponse(version);
+      break;
+    default:
+      main("visit", sender.tab.id).then((message) =>
+        sendMessage(sender.tab.id, { type: "main", message })
+      );
+  }
+  return true;
+});
 
 function main(src, tabId) {
   console.log("main", src);

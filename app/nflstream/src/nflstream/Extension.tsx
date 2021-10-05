@@ -4,16 +4,18 @@ import { menuWrapper } from "./Menu";
 
 type MessageType = {
   version: string;
-  streams: { href: string; title: string }[];
+  streams: { url_id: string; title: string }[];
 };
 
 const url = "https://nflstream.web.app/";
+const version = "0.0.4";
 
 function MessageExtension() {
   const ref: React.RefObject<HTMLTextAreaElement> = React.createRef();
   return (
     <div hidden>
       {window.location.href !== url && (
+        // so that the chrome extension is loaded even on localhost or downloaded html
         <iframe title={"hidden_iframe"} hidden src={url}></iframe>
       )}
       <textarea
@@ -23,11 +25,14 @@ function MessageExtension() {
         onClick={() => {
           const message: MessageType = JSON.parse(ref.current!.value);
           console.log("update", message);
-          if (message.version !== "0.0.4") return;
+          if (message.version !== version) {
+            console.log(`need chrome extension v ${version} - rejecting`);
+            return;
+          }
           const nflStream = Object.assign(menuWrapper.state, {
             timestamp: new Date().getTime(),
             streams: message.streams.map((m) => ({
-              url: m.href,
+              url: `./weakstream.html#${m.url_id}`,
               name: m.title,
             })),
           });

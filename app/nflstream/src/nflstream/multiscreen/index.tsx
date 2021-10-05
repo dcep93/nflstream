@@ -83,7 +83,6 @@ function muteUnmute(
   iframeRef: React.RefObject<HTMLIFrameElement>,
   mute: boolean
 ) {
-  console.log(iframeRef, mute);
   (
     iframeRef.current!.contentWindow!.document.getElementsByTagName(
       "iframe"

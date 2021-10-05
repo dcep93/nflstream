@@ -12,7 +12,7 @@
   "background": {"service_worker": "background.js"},
   "content_scripts": [
     {
-      "matches": ["https://nflstream.web.app/"],
+      "matches": ["https://nflstream.web.app/", "http://weakstreams.com/streams/**"],
       "js": ["content_script.js"],
       "all_frames": true
     }

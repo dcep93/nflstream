@@ -2,14 +2,24 @@ console.log("content_script", location.href);
 const start = new Date().getTime();
 
 function init() {
-  chrome.runtime.sendMessage({ action: "version" }, (version) => {
-    const extensionActive = document.getElementById("extension_active");
-    extensionActive.innerText = version;
-    extensionActive.click();
-  });
-  chrome.runtime.onMessage.addListener(receive);
-  sendMain();
-  setInterval(sendMain, 5 * 60 * 1000);
+  if (location.href.startsWith("http://weakstreams.com/streams/")) {
+    window.addEventListener("message", muteUnmute);
+  } else {
+    chrome.runtime.sendMessage({ action: "version" }, (version) => {
+      const extensionActive = document.getElementById("extension_active");
+      extensionActive.innerText = version;
+      extensionActive.click();
+    });
+    chrome.runtime.onMessage.addListener(receive);
+    sendMain();
+    setInterval(sendMain, 5 * 60 * 1000);
+  }
+}
+
+function muteUnmute(event) {
+  const video = document.getElementsByTagName("video")[0];
+  console.log(event.data, "muteUnmute", video);
+  video.muted = event.data.mute;
 }
 
 function sendMain() {

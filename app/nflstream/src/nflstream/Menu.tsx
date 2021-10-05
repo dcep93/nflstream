@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import firebase, { NFLStreamType, StreamType } from "../firebase";
-import { version } from "./Extension";
 import style from "./index.module.css";
 import recorded_sha from "./recorded_sha";
 
@@ -69,18 +68,6 @@ function Streams(props: {
   return (
     <div>
       {(props.streams || [])
-        .map(
-          (stream) =>
-            Object.assign({}, stream, {
-              url:
-                version !== ""
-                  ? stream.url.replace(
-                      "http://weakstreams.com",
-                      "https://weakstreams.com"
-                    )
-                  : stream.url,
-            }) as StreamType
-        )
         .map((stream, i) => ({
           stream,
           i,

@@ -2,6 +2,7 @@ console.log("content_script", location.href);
 const start = new Date().getTime();
 
 function init() {
+  document.getElementById("extension_active").checked = true;
   chrome.runtime.onMessage.addListener(receive);
   chrome.runtime.sendMessage(null);
   setInterval(() => chrome.runtime.sendMessage(null), 5 * 60 * 1000);

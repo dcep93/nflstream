@@ -8,7 +8,7 @@ type MessageType = {
 };
 
 const url = "https://nflstream.web.app/";
-const expected_version = "0.0.4";
+const expected_version = "0.0.5";
 
 export var version = "";
 

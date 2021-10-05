@@ -33,7 +33,7 @@ function MessageExtension() {
         onClick={() => {
           const message: MessageType = JSON.parse(ref.current!.value);
           console.log("update", message);
-          if (message.version !== expected_version) {
+          if (message.version < expected_version) {
             console.log(
               `need chrome extension version ${expected_version} - rejecting`
             );

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import firebase, { NFLStreamType, StreamType } from "../firebase";
+import { isActive } from "./Extension";
 import style from "./index.module.css";
 import recorded_sha from "./recorded_sha";
 
@@ -68,6 +69,14 @@ function Streams(props: {
   return (
     <div>
       {(props.streams || [])
+        .map(
+          (stream) =>
+            Object.assign(null, stream, {
+              url: isActive
+                ? stream.url.replace("http://", "https://")
+                : stream.url,
+            }) as StreamType
+        )
         .map((stream, i) => ({
           stream,
           i,

@@ -20,13 +20,7 @@ function MessageExtension() {
         // so that the chrome extension is loaded even on localhost or downloaded html
         <iframe title={"hidden_iframe"} hidden src={url}></iframe>
       )}
-      <div
-        id="extension_active"
-        onClick={() => {
-          alert("gotem");
-          isActive = true;
-        }}
-      />
+      <div id="extension_active" onClick={() => (isActive = true)} />
       <textarea
         hidden
         ref={ref}

@@ -134,12 +134,6 @@ function Guide() {
           offers additional functionality, like keeping the list of streams
           updated, and muting non-spotlighted streams.
         </li>
-        <li>
-          Coming soon! I'm figuring out if it's possible to use the chrome
-          extension to bypass CORS and load http streams over https, meaning you
-          won't need to download the HTML file, and can watch streams directly
-          on nflstream.web.app
-        </li>
       </ol>
     </div>
   );

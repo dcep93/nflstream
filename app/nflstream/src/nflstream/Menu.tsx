@@ -125,6 +125,7 @@ function Guide() {
           broken links.
         </li>
         <li>Clicking a minimized stream will move it to the spotlight.</li>
+        <li>Clicking the title of a stream will delete it.</li>
         <li>
           Downloading the{" "}
           <a href="https://chrome.google.com/webstore/detail/nfl-stream/jjlokcmkcepehbfepbffkmkkbnggkmje?hl=en&u_producttype=chrome-extension-667709&u_country=au&funnel=convert-pdf&gclid=Cj0KCQjwwNWKBhDAARIsAJ8HkhfEFO3SAM6aK42aSfntfnUY6yIRKS6A7DiyPG00l1mf8743CELeGaQaAksoEALw_wcB">
@@ -132,6 +133,12 @@ function Guide() {
           </a>{" "}
           offers additional functionality, like keeping the list of streams
           updated, and muting non-spotlighted streams.
+        </li>
+        <li>
+          Coming soon! I'm figuring out if it's possible to use the chrome
+          extension to bypass CORS and load http streams over https, meaning you
+          won't need to download the HTML file, and can watch streams directly
+          on nflstream.web.app
         </li>
       </ol>
     </div>

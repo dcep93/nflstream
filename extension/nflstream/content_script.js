@@ -58,7 +58,9 @@ function parseGames(message) {
         )
       )
     )
-    .then((competition) => competition.getElementsByClassName("col-md-6"))
+    .then(
+      (competition) => competition?.getElementsByClassName("col-md-6") || []
+    )
     .then(Array.from)
     .then((matches) =>
       matches.filter((match) =>

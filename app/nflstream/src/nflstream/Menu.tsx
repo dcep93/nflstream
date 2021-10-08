@@ -83,7 +83,7 @@ function Streams(props: {
                 style.hover,
                 obj.invalid && style.red,
               ].join(" ")}
-              onClick={() => {
+              onClick={(e) => {
                 if (obj.invalid) {
                   fetch("iframe.html")
                     .then((response) => response.blob())
@@ -93,6 +93,8 @@ function Streams(props: {
                       a.download = "nflstream.html";
                       a.click();
                     });
+                } else if (e.shiftKey) {
+                  window.open(obj.stream.url, "_blank");
                 } else {
                   props.sendStream(obj.stream);
                 }
@@ -123,6 +125,10 @@ function Guide() {
           Clicking a game will open a stream and place it on the multiscreen.
           Streams are borrowed from other sources, so I can't do anything about
           broken links.
+        </li>
+        <li>
+          Holding shift when clicking a game will open it in a new tab - in case
+          something is broken.
         </li>
         <li>Clicking a minimized stream will move it to the spotlight.</li>
         <li>Clicking the title of a stream will delete it.</li>

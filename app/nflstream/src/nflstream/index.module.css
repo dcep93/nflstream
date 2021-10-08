@@ -19,7 +19,7 @@
 
 .menu {
   resize: horizontal;
-  width: 20em;
+  width: 40em;
   background-color: lightgray;
   overflow: scroll;
   flex-shrink: 0;

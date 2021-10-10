@@ -5,6 +5,8 @@ import ObjectFitIframe from "../ObjectFitIframe";
 import msStyle from "./index.module.css";
 
 export type ScreenType = StreamType & { iFrameTitle: string };
+export const screenWrapperRef: React.RefObject<HTMLDivElement> =
+  React.createRef();
 
 function Multiscreen(props: {
   screens: ScreenType[];
@@ -27,7 +29,7 @@ function Multiscreen(props: {
     ])
   );
   return (
-    <div className={msStyle.screens_wrapper}>
+    <div ref={screenWrapperRef} className={msStyle.screens_wrapper}>
       {props.screens.length === 0 ? null : (
         <div className={msStyle.screens}>
           {props.screens.map((screen, i) => (

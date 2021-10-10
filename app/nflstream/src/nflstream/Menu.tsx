@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import firebase, { NFLStreamType, StreamType } from "../firebase";
 import style from "./index.module.css";
+import { screenWrapperRef } from "./multiscreen";
 import recorded_sha from "./recorded_sha";
 
 function Menu(props: {
@@ -61,51 +62,68 @@ function ManualUpdate(props: { nflStream: NFLStreamType }) {
   );
 }
 
-function Streams(props: {
+type StreamsPropsType = {
   streams?: StreamType[];
   sendStream: (stream: StreamType) => void;
-}) {
-  return (
-    <div>
-      {(props.streams || [])
-        .map((stream, i) => ({
-          stream,
-          i,
-          invalid:
-            stream.url.startsWith("http://") &&
-            window.location.protocol === "https:",
-        }))
-        .map((obj) => (
-          <div key={obj.i}>
-            <div
-              className={[
-                style.bubble,
-                style.hover,
-                obj.invalid && style.red,
-              ].join(" ")}
-              onClick={(e) => {
-                if (obj.invalid) {
-                  fetch("iframe.html")
-                    .then((response) => response.blob())
-                    .then((blob) => {
-                      const a = document.createElement("a");
-                      a.href = window.URL.createObjectURL(blob);
-                      a.download = "nflstream.html";
-                      a.click();
-                    });
-                } else if (e.shiftKey) {
-                  window.open(obj.stream.url, "_blank");
-                } else {
-                  props.sendStream(obj.stream);
-                }
-              }}
-            >
-              <div title={obj.stream.url}>{obj.stream.name}</div>
+};
+class Streams extends React.Component<StreamsPropsType, {}> {
+  componentDidUpdate(prevProps: StreamsPropsType) {
+    if (
+      (this.props.streams || []).filter(
+        (s) => !prevProps.streams?.map((prevS) => prevS.name).includes(s.name)
+      ).length > 0
+    ) {
+      screenWrapperRef.current!.style.backgroundColor = "darkgrey";
+      setTimeout(
+        () => (screenWrapperRef.current!.style.backgroundColor = ""),
+        2000
+      );
+    }
+  }
+
+  render() {
+    return (
+      <div>
+        {(this.props.streams || [])
+          .map((stream, i) => ({
+            stream,
+            i,
+            invalid:
+              stream.url.startsWith("http://") &&
+              window.location.protocol === "https:",
+          }))
+          .map((obj) => (
+            <div key={obj.i}>
+              <div
+                className={[
+                  style.bubble,
+                  style.hover,
+                  obj.invalid && style.red,
+                ].join(" ")}
+                onClick={(e) => {
+                  if (obj.invalid) {
+                    fetch("iframe.html")
+                      .then((response) => response.blob())
+                      .then((blob) => {
+                        const a = document.createElement("a");
+                        a.href = window.URL.createObjectURL(blob);
+                        a.download = "nflstream.html";
+                        a.click();
+                      });
+                  } else if (e.shiftKey) {
+                    window.open(obj.stream.url, "_blank");
+                  } else {
+                    this.props.sendStream(obj.stream);
+                  }
+                }}
+              >
+                <div title={obj.stream.url}>{obj.stream.name}</div>
+              </div>
             </div>
-          </div>
-        ))}
-    </div>
-  );
+          ))}
+      </div>
+    );
+  }
 }
 
 function Guide() {

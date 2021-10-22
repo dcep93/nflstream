@@ -62,19 +62,20 @@ function main(src, tabId) {
                 .then((message) =>
                   sendMessage(tabId, { type: "parseTinyUrl", message })
                 )
-                .then(({ title, href }) => ({
-                  title,
-                  href: fetch(href)
+                .then(({ title, href }) =>
+                  fetch(href)
                     .then((resp) => resp.text())
-                    .then(
-                      (message) =>
-                        message.match(
-                          /http:\/\/weakstreams.com\/streams\/\d+/
-                        )[0]
-                    ),
-                }))
-                .then(({ title, href }) => Promise.all([title, href]))
-                .then(([title, href]) => ({ title, href }))
+                    .then((message) => ({
+                      title,
+                      href: message.match(
+                        /http:\/\/weakstreams.com\/streams\/\d+/
+                      )[0],
+                      chat: message.match(
+                        /https:\/\/www.youtube.com\/live_chat?v=.*?&/
+                      )[0],
+                    }))
+                    .then(log)
+                )
           )
       )
     )

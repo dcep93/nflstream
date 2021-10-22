@@ -48,30 +48,32 @@ function parse(text) {
 }
 
 function parseGames(message) {
-  return parse(message)
-    .then((html) => html.getElementsByClassName("competition"))
-    .then(Array.from)
-    .then((competitions) =>
-      competitions.find((competition) =>
-        Array.from(competition.getElementsByClassName("name")).find(
-          (name) => name.innerHTML === "NFL, Regular Season"
+  return (
+    parse(message)
+      .then((html) => html.getElementsByClassName("competition"))
+      .then(Array.from)
+      .then((competitions) =>
+        competitions.find((competition) =>
+          Array.from(competition.getElementsByClassName("name")).find(
+            (name) => name.innerHTML === "NFL, Regular Season"
+          )
         )
       )
-    )
-    .then(
-      (competition) => competition?.getElementsByClassName("col-md-6") || []
-    )
-    .then(Array.from)
-    .then((matches) =>
-      matches.filter((match) =>
-        match
-          .getElementsByClassName("status")[0]
-          .classList.contains("live-indicator")
+      .then(
+        (competition) => competition?.getElementsByClassName("col-md-6") || []
       )
-    )
-    .then((matches) =>
-      matches.map((match) => match.getElementsByTagName("a")[0].href)
-    );
+      .then(Array.from)
+      // .then((matches) =>
+      //   matches.filter((match) =>
+      //     match
+      //       .getElementsByClassName("status")[0]
+      //       .classList.contains("live-indicator")
+      //   )
+      // )
+      .then((matches) =>
+        matches.map((match) => match.getElementsByTagName("a")[0].href)
+      )
+  );
 }
 
 function parseLinks(message) {
@@ -98,7 +100,7 @@ function parseTinyUrl(message) {
         .innerText.split(" - WeakStreams.com - ")[0],
       href: Promise.resolve(html.getElementsByTagName("a"))
         .then(Array.from)
-        .then((links) => links.find((l) => l.id === "skip-btn"))
+        .then((links) => links.find((l) => l.id.startsWith("skip-btn")))
         .then((link) => link.href),
     }))
     .then(({ title, href }) => Promise.all([title, href]))

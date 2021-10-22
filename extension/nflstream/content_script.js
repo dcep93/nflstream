@@ -92,19 +92,79 @@ function parseLinks(message) {
 }
 
 function parseTinyUrl(message) {
+  var _0xc49e = [
+    "",
+    "split",
+    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/",
+    "slice",
+    "indexOf",
+    "",
+    "",
+    ".",
+    "pow",
+    "reduce",
+    "reverse",
+    "0",
+  ];
+  function _0xe81c(d, e, f) {
+    var g = _0xc49e[2][_0xc49e[1]](_0xc49e[0]);
+    var h = g[_0xc49e[3]](0, e);
+    var i = g[_0xc49e[3]](0, f);
+    var j = d[_0xc49e[1]](_0xc49e[0])
+      [_0xc49e[10]]()
+      [_0xc49e[9]](function (a, b, c) {
+        if (h[_0xc49e[4]](b) !== -1)
+          return (a += h[_0xc49e[4]](b) * Math[_0xc49e[8]](e, c));
+      }, 0);
+    var k = _0xc49e[0];
+    while (j > 0) {
+      k = i[j % f] + k;
+      j = (j - (j % f)) / f;
+    }
+    return k || _0xc49e[11];
+  }
+  function asdf(h, u, n, t, e, r) {
+    r = "";
+    for (var i = 0, len = h.length; i < len; i++) {
+      var s = "";
+      while (h[i] !== n[e]) {
+        s += h[i];
+        i++;
+      }
+      for (var j = 0; j < n.length; j++)
+        s = s.replace(new RegExp(n[j], "g"), j);
+      r += String.fromCharCode(_0xe81c(s, e, 10) - t);
+    }
+    return decodeURIComponent(escape(r));
+  }
+  function qwer(x) {
+    return x.match(/\.attr\("href","http.*?"\)/)[0].split('"')[3];
+  }
+  function getUrl(rawHtml) {
+    var args = rawHtml
+      .match(/decodeURIComponent\(escape\(r\)\)\}\(.*?\)\)/)[0]
+      .split("(")[3]
+      .split(")")[0]
+      .split(",");
+    var h = args[0].split('"')[1];
+    var u = parseInt(args[1]);
+    var n = args[2].split('"')[1];
+    var t = parseInt(args[3]);
+    var e = parseInt(args[4]);
+    var r = parseInt(args[5]);
+
+    var x = asdf(h, u, n, t, e, r);
+    var y = qwer(x);
+    return y;
+  }
   return Promise.resolve(message)
     .then(parse)
     .then((html) => ({
       title: html
         .getElementsByTagName("title")[0]
         .innerText.split(" - WeakStreams.com - ")[0],
-      href: Promise.resolve(html.getElementsByTagName("a"))
-        .then(Array.from)
-        .then((links) => links.find((l) => l.id.startsWith("skip-btn")))
-        .then((link) => link.href),
-    }))
-    .then(({ title, href }) => Promise.all([title, href]))
-    .then(([title, href]) => ({ title, href }));
+      href: getUrl(message),
+    }));
 }
 
 init();

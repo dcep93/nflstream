@@ -1,7 +1,7 @@
 {
   "name": "NFL Stream",
   "description": "On click or page load, runs a background script to scrape a URL and update firebase with the response.",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "permissions": ["tabs"],
   "host_permissions": ["http://weakstreams.com/**"],
   "icons": {

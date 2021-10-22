@@ -18,7 +18,7 @@ export type NFLStreamType = {
   streams?: StreamType[];
 };
 
-export type StreamType = { url: string; name: string };
+export type StreamType = { url: string; name: string; chat?: string };
 
 function connect(f: (nflStream: NFLStreamType) => void) {
   firebase._connect(`/`, (val) => f(val || {}));

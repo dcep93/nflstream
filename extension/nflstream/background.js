@@ -74,7 +74,6 @@ function main(src, tabId) {
                         /https:\/\/www.youtube.com\/live_chat?v=.*?&/
                       )[0],
                     }))
-                    .then(log)
                 )
           )
       )

@@ -36,6 +36,7 @@ const script = () => {
     Object.assign(document.body.style, style);
     const meta = document.getElementsByTagName("meta")[0];
     const iframeE = document.createElement("iframe");
+    iframeE.allowFullscreen = true;
     const iframeStyle = {
       border: 0,
       opacity: 0,

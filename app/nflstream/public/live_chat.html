@@ -11,7 +11,7 @@
 </style>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const chat_id = "eWQspTusdH8";
+    const chat_id = new URLSearchParams(window.location.search).get("chat");
     const url = `https://www.youtube.com/live_chat?v=${chat_id}&embed_domain=${location.host}`;
     const iframe = document.createElement("iframe");
     iframe.src = url;

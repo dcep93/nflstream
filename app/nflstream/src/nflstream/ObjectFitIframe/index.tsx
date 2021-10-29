@@ -22,11 +22,13 @@ function ObjectFitIframe(props: {
 </script>
       `}
       ></iframe>
-      <iframe
-        className={ofStyle.live_chat}
-        title={`${props.title}_live_chat`}
-        src={`${nflstream_url}live_chat.html?chat=${props.chat}`}
-      ></iframe>
+      {props.chat === undefined ? null : (
+        <iframe
+          className={ofStyle.live_chat}
+          title={`${props.title}_live_chat`}
+          src={`${nflstream_url}live_chat.html?chat=${props.chat}`}
+        ></iframe>
+      )}
     </div>
   );
 }

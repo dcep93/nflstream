@@ -4,6 +4,7 @@ import style from "./index.module.css";
 import { screenWrapperRef } from "./multiscreen";
 import recorded_sha from "./recorded_sha";
 
+const ref: React.RefObject<HTMLTextAreaElement> = React.createRef();
 function Menu(props: {
   sendStream: (stream: StreamType) => void;
   nflStream?: NFLStreamType;
@@ -18,7 +19,10 @@ function Menu(props: {
       <h1
         className={style.header}
         title={title}
-        onClick={() => update(!hidden)}
+        onClick={() => {
+          ref.current!.value = JSON.stringify(props.nflStream, null, 2);
+          update(!hidden);
+        }}
       >
         NFL Stream
       </h1>
@@ -37,17 +41,11 @@ function Menu(props: {
 }
 
 function ManualUpdate(props: { nflStream: NFLStreamType }) {
-  const ref: React.RefObject<HTMLTextAreaElement> = React.createRef();
-
   if (!props.nflStream.streams) props.nflStream.streams = [];
 
   return (
     <div>
-      <textarea
-        className={style.menu_textarea}
-        ref={ref}
-        defaultValue={JSON.stringify(props.nflStream, null, 2)}
-      />
+      <textarea className={style.menu_textarea} ref={ref} />
       <div>
         <button
           onClick={() => {

@@ -7,7 +7,7 @@ type MessageType = {
   streams: { href: string; title: string; chat: string }[];
 };
 
-const url = "https://nflstream.web.app/";
+export const nflstream_url = "https://nflstream.web.app/";
 const expected_version = "0.0.5";
 
 export var version = "";
@@ -17,9 +17,9 @@ function MessageExtension() {
   const versionRef: React.RefObject<HTMLDivElement> = React.createRef();
   return (
     <div hidden>
-      {window.location.href !== url && (
+      {window.location.href !== nflstream_url && (
         // so that the chrome extension is loaded even on localhost or downloaded html
-        <iframe title={"hidden_iframe"} hidden src={url}></iframe>
+        <iframe title={"hidden_iframe"} hidden src={nflstream_url}></iframe>
       )}
       <div
         ref={versionRef}

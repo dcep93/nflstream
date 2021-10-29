@@ -1,24 +1,33 @@
 import { CSSProperties } from "react";
+import { nflstream_url } from "../Extension";
 import { default as ofStyle } from "./index.module.css";
 
 function ObjectFitIframe(props: {
   iframeRef: React.RefObject<HTMLIFrameElement>;
   url: string;
   title: string;
+  chat: string | undefined;
 }) {
   return (
-    <iframe
-      ref={props.iframeRef}
-      sandbox={"allow-scripts allow-same-origin"}
-      className={ofStyle.fill}
-      title={props.title}
-      srcDoc={`
+    <div className={ofStyle.container}>
+      <iframe
+        ref={props.iframeRef}
+        sandbox={"allow-scripts allow-same-origin"}
+        className={ofStyle.fill}
+        title={props.title}
+        srcDoc={`
 <meta data-url="${props.url}" data-title="${props.title}" />
 <script>
 (${script.toString()})();
 </script>
       `}
-    ></iframe>
+      ></iframe>
+      <iframe
+        className={ofStyle.live_chat}
+        title={`${props.title}_live_chat`}
+        src={`${nflstream_url}live_chat.html?chat=${props.chat}`}
+      ></iframe>
+    </div>
   );
 }
 

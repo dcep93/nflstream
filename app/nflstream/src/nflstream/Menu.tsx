@@ -111,7 +111,10 @@ class Streams extends React.Component<StreamsPropsType, {}> {
                   } else if (e.shiftKey) {
                     window.open(obj.stream.url, "_blank");
                   } else {
-                    this.props.sendStream(obj.stream);
+                    const stream = e.metaKey
+                      ? obj.stream
+                      : Object.assign({}, obj.stream, { chat: undefined });
+                    this.props.sendStream(stream);
                   }
                 }}
               >

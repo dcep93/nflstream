@@ -10,9 +10,7 @@ type MessageType = {
 export const nflstream_url = "https://nflstream.web.app/";
 const expected_version = "0.0.5";
 
-export var version = "";
-
-function MessageExtension() {
+function MessageExtension(props: { updateVersion: (version: string) => void }) {
   const ref: React.RefObject<HTMLTextAreaElement> = React.createRef();
   const versionRef: React.RefObject<HTMLDivElement> = React.createRef();
   return (
@@ -24,7 +22,7 @@ function MessageExtension() {
       <div
         ref={versionRef}
         id="extension_active"
-        onClick={() => (version = versionRef.current!.innerText)}
+        onClick={() => props.updateVersion(versionRef.current!.innerText)}
       />
       <textarea
         hidden

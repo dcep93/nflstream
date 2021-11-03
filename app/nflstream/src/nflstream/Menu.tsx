@@ -5,10 +5,11 @@ import { screenWrapperRef } from "./multiscreen";
 import recorded_sha from "./recorded_sha";
 
 const ref: React.RefObject<HTMLTextAreaElement> = React.createRef();
-function Menu(props: {
-  sendStream: (stream: StreamType) => void;
-  nflStream?: NFLStreamType;
-}) {
+function Menu(
+  props: MenuWrapperProps & {
+    nflStream?: NFLStreamType;
+  }
+) {
   const [hidden, update] = useState(true);
   if (!props.nflStream) return <div>Loading...</div>;
   const title = `${new Date(
@@ -24,7 +25,7 @@ function Menu(props: {
           update(!hidden);
         }}
       >
-        NFL Stream
+        NFL Stream{props.version ? " " + props.version : null}
       </h1>
       <div hidden={hidden}>
         <ManualUpdate nflStream={props.nflStream} />
@@ -169,10 +170,11 @@ function Guide() {
 }
 
 export var menuWrapper: MenuWrapper;
-class MenuWrapper extends React.Component<
-  { sendStream: (stream: StreamType) => void },
-  NFLStreamType
-> {
+type MenuWrapperProps = {
+  sendStream: (stream: StreamType) => void;
+  version: string | undefined;
+};
+class MenuWrapper extends React.Component<MenuWrapperProps, NFLStreamType> {
   componentDidMount() {
     const oldComponent = menuWrapper;
     menuWrapper = this;
@@ -189,7 +191,11 @@ class MenuWrapper extends React.Component<
   render() {
     return (
       <div className={style.menu}>
-        <Menu sendStream={this.props.sendStream} nflStream={this.state} />
+        <Menu
+          sendStream={this.props.sendStream}
+          version={this.props.version}
+          nflStream={this.state}
+        />
       </div>
     );
   }

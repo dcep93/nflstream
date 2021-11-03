@@ -41,6 +41,7 @@ function MessageExtension(props: { updateVersion: (version: string) => void }) {
             );
             return;
           }
+          console.log("menuWrapper.state", menuWrapper.state);
           const nflStream = Object.assign(menuWrapper.state, {
             timestamp: new Date().getTime(),
             streams: message.streams.map((m) => ({

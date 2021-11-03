@@ -41,20 +41,28 @@ function MessageExtension(props: { updateVersion: (version: string) => void }) {
             );
             return;
           }
-          console.log("menuWrapper.state", menuWrapper.state);
-          const nflStream = Object.assign(menuWrapper.state, {
-            timestamp: new Date().getTime(),
-            streams: message.streams.map((m) => ({
-              url: m.href,
-              name: m.title,
-              chat: m.chat,
-            })),
-          });
-          firebase.updateNFLStream(nflStream);
+          updateNFLStream(message);
         }}
       />
     </div>
   );
+}
+
+function updateNFLStream(message: MessageType) {
+  if (!menuWrapper.state) {
+    console.log("no state - waiting");
+    setTimeout(() => updateNFLStream(message), 500);
+    return;
+  }
+  const nflStream = Object.assign(menuWrapper.state, {
+    timestamp: new Date().getTime(),
+    streams: message.streams.map((m) => ({
+      url: m.href,
+      name: m.title,
+      chat: m.chat,
+    })),
+  });
+  firebase.updateNFLStream(nflStream);
 }
 
 export default MessageExtension;

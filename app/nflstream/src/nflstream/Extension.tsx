@@ -22,7 +22,11 @@ function MessageExtension(props: { updateVersion: (version: string) => void }) {
       <div
         ref={versionRef}
         id="extension_active"
-        onClick={() => props.updateVersion(versionRef.current!.innerText)}
+        onClick={() => {
+          console.log("got version");
+          console.log(versionRef.current!.innerText);
+          props.updateVersion(versionRef.current!.innerText);
+        }}
       />
       <textarea
         hidden

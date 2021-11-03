@@ -12,22 +12,12 @@ const expected_version = "0.0.5";
 
 function MessageExtension(props: { updateVersion: (version: string) => void }) {
   const ref: React.RefObject<HTMLTextAreaElement> = React.createRef();
-  const versionRef: React.RefObject<HTMLDivElement> = React.createRef();
   return (
     <div hidden>
       {window.location.href !== nflstream_url && (
         // so that the chrome extension is loaded even on localhost or downloaded html
         <iframe title={"hidden_iframe"} hidden src={nflstream_url}></iframe>
       )}
-      <div
-        ref={versionRef}
-        id="extension_active"
-        onClick={() => {
-          console.log("got version");
-          console.log(versionRef.current!.innerText);
-          props.updateVersion(versionRef.current!.innerText);
-        }}
-      />
       <textarea
         hidden
         ref={ref}
@@ -49,6 +39,7 @@ function MessageExtension(props: { updateVersion: (version: string) => void }) {
 }
 
 function updateNFLStream(message: MessageType) {
+  console.log("debug");
   if (!menuWrapper.state) {
     console.log("no state - waiting");
     setTimeout(() => updateNFLStream(message), 500);

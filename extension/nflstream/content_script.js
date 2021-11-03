@@ -5,11 +5,6 @@ function init() {
   if (location.href.startsWith("http://weakstreams.com/streams/")) {
     window.addEventListener("message", muteUnmute);
   } else {
-    chrome.runtime.sendMessage({ action: "version" }, (version) => {
-      const extensionActive = document.getElementById("extension_active");
-      extensionActive.innerText = version;
-      extensionActive.click();
-    });
     chrome.runtime.onMessage.addListener(receive);
     sendMain();
     setInterval(sendMain, 5 * 60 * 1000);

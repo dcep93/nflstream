@@ -51,7 +51,13 @@ function main(src, tabId) {
           .then((url) =>
             fetch("https://api.aworldofstruggle.com/proxy", {
               method: "POST",
-              body: { url, params: { Referer: "https://reddit.nflbite.com/" } },
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                url,
+                params: { headers: { Referer: "https://reddit.nflbite.com/" } },
+              }),
             })
           )
           .then((resp) => resp.text())

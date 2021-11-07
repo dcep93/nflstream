@@ -48,7 +48,12 @@ function main(src, tabId) {
             const origin = href.split("//")[1].split("/")[0];
             return `https://sportscentral.io/streams-table/${matchId}/${sport}?new-ui=1&origin=${origin}`;
           })
-          .then(fetch)
+          .then((url) =>
+            fetch("https://api.aworldofstruggle.com/proxy", {
+              method: "POST",
+              body: { url, params: { Referer: "https://reddit.nflbite.com/" } },
+            })
+          )
           .then((resp) => resp.text())
           .then((message) =>
             sendMessage(tabId, { type: "parseLinks", message })

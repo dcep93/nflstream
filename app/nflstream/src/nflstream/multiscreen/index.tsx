@@ -69,7 +69,6 @@ function Multiscreen(props: {
                 ></div>
                 <ObjectFitIframe
                   iframeRef={iframeRefs[screen.iFrameTitle]}
-                  chat={screen.chat}
                   url={screen.url}
                   title={`${screen.name}\n${screen.iFrameTitle}`}
                 />

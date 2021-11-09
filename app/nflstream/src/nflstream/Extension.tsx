@@ -4,7 +4,7 @@ import { menuWrapper } from "./Menu";
 
 type MessageType = {
   version: string;
-  streams: { href: string; title: string; chat: string }[];
+  streams: { href: string; title: string }[];
 };
 
 export const nflstream_url = "https://nflstream.web.app/";
@@ -50,7 +50,6 @@ function updateNFLStream(message: MessageType) {
     streams: message.streams.map((m) => ({
       url: m.href,
       name: m.title,
-      chat: m.chat,
     })),
   });
   firebase.updateNFLStream(nflStream);

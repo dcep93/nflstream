@@ -81,9 +81,6 @@ function main(src, tabId) {
                       href: message.match(
                         /http:\/\/weakstreams.com\/streams\/\d+/
                       )[0],
-                      chat: message.match(
-                        /https:\/\/www.youtube.com\/live_chat\?v=(.*?)&/
-                      )[1],
                     }))
                 )
           )

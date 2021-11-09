@@ -1,12 +1,10 @@
 import { CSSProperties } from "react";
-import { nflstream_url } from "../Extension";
 import { default as ofStyle } from "./index.module.css";
 
 function ObjectFitIframe(props: {
   iframeRef: React.RefObject<HTMLIFrameElement>;
   url: string;
   title: string;
-  chat: string | undefined;
 }) {
   return (
     <div className={ofStyle.container}>
@@ -22,13 +20,6 @@ function ObjectFitIframe(props: {
 </script>
       `}
       ></iframe>
-      {props.chat === undefined ? null : (
-        <iframe
-          className={ofStyle.live_chat}
-          title={`${props.title}_live_chat`}
-          src={`${nflstream_url}live_chat.html?chat=${props.chat}`}
-        ></iframe>
-      )}
     </div>
   );
 }

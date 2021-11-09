@@ -100,7 +100,6 @@ class Streams extends React.Component<StreamsPropsType, {}> {
                   obj.invalid && style.red,
                 ].join(" ")}
                 onClick={(e) => {
-                  const stream = Object.assign({}, obj.stream);
                   if (obj.invalid) {
                     fetch("iframe.html")
                       .then((response) => response.blob())
@@ -111,10 +110,10 @@ class Streams extends React.Component<StreamsPropsType, {}> {
                         a.click();
                       });
                     return;
-                  } else if (e.shiftKey) {
-                    Object.assign(stream, { log: null });
-                  } else if (e.metaKey || e.altKey) {
-                    Object.assign(stream, { chat: undefined });
+                  }
+                  const stream = Object.assign({}, obj.stream);
+                  if (e.shiftKey) {
+                    Object.assign(stream, { log: undefined });
                   }
                   this.props.sendStream(stream);
                 }}
@@ -151,9 +150,6 @@ function Guide() {
         <li>
           Streams will include a delayed play-by-play log. You can disable this
           by holding shift when opening a stream.
-        </li>
-        <li>
-          Clicking a stream while holding ctrl or cmd will open a chat panel.
         </li>
         <li>
           Downloading the{" "}

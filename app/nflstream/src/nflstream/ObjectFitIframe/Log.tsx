@@ -26,7 +26,16 @@ class Log extends React.Component<
   }
 
   render() {
-    return <div className={ofStyle.log}>{JSON.stringify(this.state.log)}</div>;
+    return (
+      <div className={ofStyle.log}>
+        <div className={ofStyle.logContent}>
+          {JSON.stringify(this.state.log).repeat(10)}
+        </div>
+        <div className={ofStyle.logContent}>
+          {JSON.stringify(this.state.log).repeat(10)}
+        </div>
+      </div>
+    );
   }
 }
 

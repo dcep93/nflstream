@@ -10,5 +10,13 @@
 
 .log {
   width: 25%;
-  background-color: white;
+  background-color: lightgray;
+  border: 2px solid black;;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.logContent {
+  height: 49%;
 }

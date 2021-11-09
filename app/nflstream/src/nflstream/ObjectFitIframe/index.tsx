@@ -11,6 +11,7 @@ function ObjectFitIframe(props: {
 }) {
   return (
     <div className={ofStyle.container}>
+      {props.log === undefined ? null : <Log log={props.log}></Log>}
       <iframe
         ref={props.iframeRef}
         sandbox={"allow-scripts allow-same-origin"}
@@ -23,7 +24,6 @@ function ObjectFitIframe(props: {
 </script>
       `}
       ></iframe>
-      {props.log === undefined ? null : <Log log={props.log}></Log>}
     </div>
   );
 }

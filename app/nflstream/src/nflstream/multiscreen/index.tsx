@@ -71,6 +71,7 @@ function Multiscreen(props: {
                   iframeRef={iframeRefs[screen.iFrameTitle]}
                   url={screen.url}
                   title={`${screen.name}\n${screen.iFrameTitle}`}
+                  log={screen.log}
                 />
               </div>
             </div>

@@ -1,10 +1,13 @@
 import { CSSProperties } from "react";
+import { LogType } from "../../firebase";
 import { default as ofStyle } from "./index.module.css";
+import Log from "./Log";
 
 function ObjectFitIframe(props: {
   iframeRef: React.RefObject<HTMLIFrameElement>;
   url: string;
   title: string;
+  log: LogType | undefined;
 }) {
   return (
     <div className={ofStyle.container}>
@@ -20,6 +23,7 @@ function ObjectFitIframe(props: {
 </script>
       `}
       ></iframe>
+      {props.log === undefined ? null : <Log log={props.log}></Log>}
     </div>
   );
 }

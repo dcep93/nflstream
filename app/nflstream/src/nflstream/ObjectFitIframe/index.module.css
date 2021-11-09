@@ -7,3 +7,7 @@
 .fill {
   flex-grow: 1;
 }
+
+.log {
+  width: 25%;
+}

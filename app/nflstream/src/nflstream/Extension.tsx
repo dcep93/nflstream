@@ -4,6 +4,7 @@ import { menuWrapper } from "./Menu";
 
 type MessageType = {
   version: string;
+  timestamp: number;
   streams: { url: string; title: string; log: LogType }[];
 };
 
@@ -23,7 +24,17 @@ function MessageExtension(props: { updateVersion: (version: string) => void }) {
         ref={ref}
         id={"message_extension"}
         onClick={() => {
-          const message: MessageType = JSON.parse(ref.current!.value);
+          const message: MessageType = {
+            version: "1",
+            timestamp: 1636480299869,
+            streams: [
+              {
+                title: "test",
+                url: "https://example.org",
+                log: { id: "test" },
+              },
+            ],
+          }; //JSON.parse(ref.current!.value);
           console.log("update", message);
           if (message.version < expected_version) {
             console.log(

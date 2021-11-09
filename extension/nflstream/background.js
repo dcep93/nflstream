@@ -78,7 +78,7 @@ function main(src, tabId) {
                     .then((resp) => resp.text())
                     .then((message) => ({
                       title,
-                      href: message.match(
+                      url: message.match(
                         /http:\/\/weakstreams.com\/streams\/\d+/
                       )[0],
                     }))

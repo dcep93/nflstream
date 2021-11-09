@@ -4,7 +4,7 @@ import { menuWrapper } from "./Menu";
 
 type MessageType = {
   version: string;
-  streams: { href: string; title: string }[];
+  streams: { url: string; title: string }[];
 };
 
 export const nflstream_url = "https://nflstream.web.app/";
@@ -48,7 +48,7 @@ function updateNFLStream(message: MessageType) {
   const nflStream = Object.assign(menuWrapper.state, {
     timestamp: new Date().getTime(),
     streams: message.streams.map((m) => ({
-      url: m.href,
+      url: m.url,
       name: m.title,
     })),
   });

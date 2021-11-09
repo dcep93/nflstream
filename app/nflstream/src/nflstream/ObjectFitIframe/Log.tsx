@@ -5,7 +5,7 @@ import { default as ofStyle } from "./index.module.css";
 
 const delaySeconds = 1;
 
-class Log extends React.Component<
+class LogWrapper extends React.Component<
   { log: LogType },
   { log: LogType | null; upcomingLog: LogType | null }
 > {
@@ -27,16 +27,24 @@ class Log extends React.Component<
 
   render() {
     return (
-      <div className={ofStyle.log}>
-        <div className={ofStyle.logContent}>
-          {JSON.stringify(this.state.log).repeat(10)}
-        </div>
-        <div className={ofStyle.logContent}>
-          {JSON.stringify(this.state.log).repeat(10)}
-        </div>
+      <div className={ofStyle.logWrapper}>
+        <Log log={this.state.log} />
       </div>
     );
   }
 }
 
-export default Log;
+function Log(props: { log: LogType | null }) {
+  return (
+    <div className={ofStyle.log}>
+      <div className={ofStyle.logContent}>
+        {JSON.stringify(props.log).repeat(20)}
+      </div>
+      <div className={ofStyle.logContent}>
+        {JSON.stringify(props.log).repeat(20)}
+      </div>
+    </div>
+  );
+}
+
+export default LogWrapper;

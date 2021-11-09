@@ -105,16 +105,45 @@ function getLogsPromise(titleToLog, tabId) {
     .then((message) => sendMessage(tabId, { type: "parseSchedule", message }))
     .then((hrefs) =>
       hrefs.map((href) =>
-        fetch(log(`https://www.espn.com${href}`))
+        fetch(`https://www.espn.com${href}`)
           .then((resp) => resp.text())
           .then((message) =>
             message.match(/espn\.gamepackage\.data =(.*?)\n/)[1].slice(0, -1)
           )
           .then((json) => JSON.parse(json))
           .then((obj) => {
-            // todo
-            const title = "";
-            titleToLog[title] = log;
+            const title = obj.boxscore.teams
+              .map((team) => team.displayName)
+              .join(" vs ");
+            const playByPlay = [obj.drives.current]
+              .concat(obj.drives.previous)
+              .map((drive) => ({
+                team: drive.team.shortDisplayName,
+                result: drive.displayResult,
+                plays: drive.plays.map((p) => ({
+                  down: p.start.downDistanceText,
+                  text: p.text,
+                  clock: `Q${p.period.number} ${p.clock.displayValue}`,
+                })),
+                description: drive.description,
+              }));
+            const boxScore = ["passing", "rushing", "receiving"].map((key) => ({
+              key,
+              labels: obj.boxscore.players[0].statistics.find(
+                (s) => s.name === key
+              ).labels,
+              players: []
+                .concat(
+                  obj.boxscore.players.map((team) =>
+                    team.statistics.find((s) => s.name === key)
+                  ).athletes
+                )
+                .map((a) => ({
+                  name: a.displayName,
+                  stats: a.stats,
+                })),
+            }));
+            titleToLog[title] = { playByPlay, boxScore };
           })
       )
     )

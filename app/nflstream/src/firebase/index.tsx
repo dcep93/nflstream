@@ -25,14 +25,21 @@ export type StreamType = {
 };
 
 export type LogType = {
-  playByPlay?: { title: string; lines: { head: string; body: string } }[];
+  playByPlay?: DriveType[];
   boxScore?: PlayByPlayType[];
 };
 
+export type DriveType = {
+  team: string;
+  result?: string;
+  description: string;
+  plays: { down: string; text: string; clock: string }[];
+};
+
 export type PlayByPlayType = {
-  name: string;
-  fields: string[];
-  players: { name: string; fields: string[] };
+  key: string;
+  labels: string[];
+  players: { name: string; stats: string[] };
 };
 
 function connect(f: (nflStream: NFLStreamType) => void) {

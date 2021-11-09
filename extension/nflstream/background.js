@@ -112,6 +112,7 @@ function getLogsPromise(titleToLog, tabId) {
           )
           .then((json) => JSON.parse(json))
           .then((obj) => {
+            // todo
             const title = "";
             titleToLog[title] = log;
           })

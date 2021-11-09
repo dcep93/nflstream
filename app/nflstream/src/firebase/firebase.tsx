@@ -30,7 +30,7 @@ function _push(path: string, obj: BlobType): void {
 function _connect(path: string, callback: (value: BlobType) => void): void {
   database.ref(`${path}`).on("value", (snapshot: ResultType) => {
     var val = snapshot.val();
-    console.log("firebase", val);
+    console.log("firebase", window.location.href, val);
     callback(val);
   });
 }

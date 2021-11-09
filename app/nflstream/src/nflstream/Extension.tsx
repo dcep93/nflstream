@@ -39,7 +39,6 @@ function MessageExtension(props: { updateVersion: (version: string) => void }) {
 }
 
 function updateNFLStream(message: MessageType) {
-  console.log("debug");
   if (!menuWrapper.state) {
     console.log("no state - waiting");
     setTimeout(() => updateNFLStream(message), 500);

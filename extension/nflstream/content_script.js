@@ -40,7 +40,9 @@ function main(message) {
 
 function parse(text) {
   return Promise.resolve(text).then((text) => {
-    const html = document.createElement("html");
+    const newHTMLDocument =
+      document.implementation.createHTMLDocument("preview");
+    const html = newHTMLDocument.createElement("html");
     html.innerHTML = text;
     return html;
   });

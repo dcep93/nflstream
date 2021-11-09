@@ -5,7 +5,7 @@ import { menuWrapper } from "./Menu";
 type MessageType = {
   version: string;
   timestamp: number;
-  streams: { url: string; title: string; log: LogType }[];
+  streams: { url: string; name: string; log: LogType }[];
 };
 
 export const nflstream_url = "https://nflstream.web.app/";
@@ -24,17 +24,7 @@ function MessageExtension(props: { updateVersion: (version: string) => void }) {
         ref={ref}
         id={"message_extension"}
         onClick={() => {
-          const message: MessageType = {
-            version: "1",
-            timestamp: 1636480299869,
-            streams: [
-              {
-                title: "test",
-                url: "https://example.org",
-                log: { id: "test" },
-              },
-            ],
-          }; //JSON.parse(ref.current!.value);
+          const message: MessageType = JSON.parse(ref.current!.value);
           console.log("update", message);
           if (message.version < expected_version) {
             console.log(
@@ -59,7 +49,7 @@ function updateNFLStream(message: MessageType) {
     timestamp: new Date().getTime(),
     streams: message.streams.map((m) => ({
       url: m.url,
-      name: m.title,
+      name: m.name,
       log: m.log,
     })),
   });

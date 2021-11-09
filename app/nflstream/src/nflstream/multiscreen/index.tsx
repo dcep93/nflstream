@@ -70,7 +70,7 @@ function Multiscreen(props: {
                 <ObjectFitIframe
                   iframeRef={iframeRefs[screen.iFrameTitle]}
                   url={screen.url}
-                  title={`${screen.name}\n${screen.iFrameTitle}`}
+                  name={`${screen.name}\n${screen.iFrameTitle}`}
                   log={screen.log}
                 />
               </div>

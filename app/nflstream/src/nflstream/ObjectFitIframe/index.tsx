@@ -6,7 +6,7 @@ import Log from "./Log";
 function ObjectFitIframe(props: {
   iframeRef: React.RefObject<HTMLIFrameElement>;
   url: string;
-  title: string;
+  name: string;
   log: LogType | undefined;
 }) {
   return (
@@ -15,9 +15,9 @@ function ObjectFitIframe(props: {
         ref={props.iframeRef}
         sandbox={"allow-scripts allow-same-origin"}
         className={ofStyle.fill}
-        title={props.title}
+        title={props.name}
         srcDoc={`
-<meta data-url="${props.url}" data-title="${props.title}" />
+<meta data-url="${props.url}" data-title="${props.name}" />
 <script>
 (${script.toString()})();
 </script>

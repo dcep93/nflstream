@@ -7,7 +7,6 @@ function init() {
   } else {
     chrome.runtime.onMessage.addListener(receive);
     sendMain();
-    setInterval(sendMain, 5 * 60 * 1000);
   }
 }
 
@@ -19,6 +18,7 @@ function muteUnmute(event) {
 
 function sendMain() {
   chrome.runtime.sendMessage({ action: "main" });
+  setTimeout(sendMain, 5 * 60 * 1000);
 }
 
 function receive(payload, sender, sendResponse) {

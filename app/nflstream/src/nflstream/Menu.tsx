@@ -100,6 +100,7 @@ class Streams extends React.Component<StreamsPropsType, {}> {
                   obj.invalid && style.red,
                 ].join(" ")}
                 onClick={(e) => {
+                  const stream = Object.assign({}, obj.stream);
                   if (obj.invalid) {
                     fetch("iframe.html")
                       .then((response) => response.blob())
@@ -109,15 +110,13 @@ class Streams extends React.Component<StreamsPropsType, {}> {
                         a.download = "nflstream.html";
                         a.click();
                       });
+                    return;
                   } else if (e.shiftKey) {
-                    window.open(obj.stream.url, "_blank");
-                  } else {
-                    const stream =
-                      e.metaKey || e.altKey
-                        ? obj.stream
-                        : Object.assign({}, obj.stream, { chat: undefined });
-                    this.props.sendStream(stream);
+                    Object.assign(stream, { log: null });
+                  } else if (e.metaKey || e.altKey) {
+                    Object.assign(stream, { chat: undefined });
                   }
+                  this.props.sendStream(stream);
                 }}
               >
                 <div title={obj.stream.url}>{obj.stream.name}</div>

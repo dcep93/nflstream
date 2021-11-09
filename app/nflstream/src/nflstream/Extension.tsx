@@ -1,10 +1,10 @@
 import React from "react";
-import firebase from "../firebase";
+import firebase, { LogType } from "../firebase";
 import { menuWrapper } from "./Menu";
 
 type MessageType = {
   version: string;
-  streams: { url: string; title: string }[];
+  streams: { url: string; title: string; log: LogType }[];
 };
 
 export const nflstream_url = "https://nflstream.web.app/";
@@ -50,6 +50,7 @@ function updateNFLStream(message: MessageType) {
     streams: message.streams.map((m) => ({
       url: m.url,
       name: m.title,
+      log: m.log,
     })),
   });
   firebase.updateNFLStream(nflStream);

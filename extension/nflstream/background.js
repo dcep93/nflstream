@@ -35,6 +35,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 function main(src, tabId) {
   console.log("main", src);
+  const titleToLog = {};
   return fetch("https://reddit.nflbite.com/")
     .then((resp) => resp.text())
     .then((message) => sendMessage(tabId, { type: "parseGames", message }))
@@ -86,10 +87,35 @@ function main(src, tabId) {
           )
       )
     )
+    .then((promises) => promises.concat(getSchedulePromise(titleToLog, tabId)))
     .then((promises) => Promise.all(promises))
     .then((messages) => messages.filter(Boolean))
+    .then((streams) =>
+      streams.map((stream) =>
+        Object.assign(stream, { log: titleToLog[stream.title] })
+      )
+    )
     .then((streams) => ({ version, streams }))
     .then(log);
+}
+
+function getSchedulePromise(_titleToLog, tabId) {
+  return fetch("https://www.espn.com/nfl/schedule")
+    .then((resp) => resp.text())
+    .then((message) => sendMessage(tabId, { type: "parseSchedule", message }))
+    .then((gameIds) =>
+      gameIds.map((gameId) =>
+        fetch(`https://www.espn.com/nfl/game?gameId=${gameId}`)
+          .then((resp) => resp.text())
+          .then(
+            (message) => message.match(/espn\.gamepackage\.data =(.*?)\n/)[1]
+          )
+          .then((json) => JSON.parse(json))
+      )
+    )
+    .then((promises) => Promise.all(promises))
+    .then(log)
+    .then(() => false);
 }
 
 function log(arg) {

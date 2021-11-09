@@ -24,7 +24,11 @@ function sendMain() {
 function receive(payload, sender, sendResponse) {
   console.log("receive", new Date().getTime() - start, payload.type, payload);
   Promise.resolve(payload.message)
-    .then({ main, parseGames, parseLinks, parseTinyUrl }[payload.type])
+    .then(
+      { main, parseGames, parseLinks, parseTinyUrl, parseSchedule }[
+        payload.type
+      ]
+    )
     .then(sendResponse);
 }
 
@@ -160,6 +164,15 @@ function parseTinyUrl(message) {
         .innerText.split(" - WeakStreams.com - ")[0],
       href: getUrl(message),
     }));
+}
+
+function parseSchedule(message) {
+  return Promise.resolve(message)
+    .then(parse)
+    .then((html) => html.getElementsByTagName("a"))
+    .then(Array.from)
+    .then((as) => as.filter((a) => a.innerHTML === "LIVE"))
+    .then((as) => as.map((a) => a.href));
 }
 
 init();

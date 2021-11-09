@@ -41,7 +41,10 @@ function Log(props: { log: LogType | null }) {
         {(props.log.playByPlay || []).map((drive, i) => (
           <div key={i}>
             <div className={ofStyle.logHeader}>
-              {drive.team} {drive.description} {drive.result}
+              <div>
+                {drive.team} {drive.result}
+              </div>
+              <div>{drive.description}</div>
             </div>
             <div>
               {(drive.plays || []).map((play, j) => (

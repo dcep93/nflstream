@@ -27,20 +27,20 @@ export type StreamType = {
 export type LogType = {
   id: string;
   playByPlay?: DriveType[];
-  boxScore?: PlayByPlayType[];
+  boxScore?: BoxScoreType[];
 };
 
 export type DriveType = {
   team: string;
-  result?: string;
   description: string;
-  plays: { down: string; text: string; clock: string }[];
+  result?: string;
+  plays?: { down: string; text: string; clock: string }[];
 };
 
-export type PlayByPlayType = {
+export type BoxScoreType = {
   key: string;
   labels: string[];
-  players: { name: string; stats: string[] };
+  players?: { name: string; stats: string[] }[];
 };
 
 function connect(f: (nflStream: NFLStreamType) => void) {

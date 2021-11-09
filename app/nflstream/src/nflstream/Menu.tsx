@@ -178,6 +178,7 @@ class MenuWrapper extends React.Component<MenuWrapperProps, NFLStreamType> {
     } else {
       document.title = "NFLStream";
       firebase.connect((nflStream) => {
+        // TODO remove
         if (!nflStream.streams)
           nflStream = {
             timestamp: 1636480299869,
@@ -185,7 +186,63 @@ class MenuWrapper extends React.Component<MenuWrapperProps, NFLStreamType> {
               {
                 name: "test",
                 url: "https://example.org",
-                log: { id: "test" },
+                log: {
+                  id: "test",
+                  playByPlay: [
+                    {
+                      team: "team",
+                      result: "result",
+                      description: "description",
+                      plays: [
+                        {
+                          down: "down",
+                          text: "text",
+                          clock: "clock",
+                        },
+                        {
+                          down: "down",
+                          text: "text",
+                          clock: "clock",
+                        },
+                      ],
+                    },
+                    {
+                      team: "team",
+                      result: "result",
+                      description: "description",
+                      plays: [
+                        {
+                          down: "down",
+                          text: "text",
+                          clock: "clock",
+                        },
+                        {
+                          down: "down",
+                          text: "text",
+                          clock: "clock",
+                        },
+                      ],
+                    },
+                  ],
+                  boxScore: [
+                    {
+                      key: "key",
+                      labels: ["label1", "label2"],
+                      players: [
+                        { name: "name", stats: ["stats1", "stats2"] },
+                        { name: "name", stats: ["stats1", "stats2"] },
+                      ],
+                    },
+                    {
+                      key: "key",
+                      labels: ["label1", "label2"],
+                      players: [
+                        { name: "name", stats: ["stats1", "stats2"] },
+                        { name: "name", stats: ["stats1", "stats2"] },
+                      ],
+                    },
+                  ],
+                },
               },
             ],
           };

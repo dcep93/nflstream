@@ -36,119 +36,141 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 function main(src, tabId) {
   console.log("main", src);
   const titleToLog = {};
-  return fetch("https://reddit.nflbite.com/")
-    .then((resp) => resp.text())
-    .then((message) => sendMessage(tabId, { type: "parseGames", message }))
-    .then((hrefs) =>
-      hrefs.map((href) =>
-        fetch(href)
-          .then((resp) => resp.text())
-          .then((text) => {
-            const matchId = text.match(/var streamsMatchId = (\d+);/)[1];
-            const sport = text.match(/var streamsSport = "(\S+)"/)[1];
-            const origin = href.split("//")[1].split("/")[0];
-            return `https://sportscentral.io/streams-table/${matchId}/${sport}?new-ui=1&origin=${origin}`;
-          })
-          .then((url) =>
-            fetch("https://api.aworldofstruggle.com/proxy", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                url,
-                params: { headers: { Referer: "https://reddit.nflbite.com/" } },
-              }),
+  return (
+    fetch("https://reddit.nflbite.com/")
+      .then((resp) => resp.text())
+      .then((message) => sendMessage(tabId, { type: "parseGames", message }))
+      .then((hrefs) =>
+        hrefs.map((href) =>
+          fetch(href)
+            .then((resp) => resp.text())
+            .then((text) => {
+              const matchId = text.match(/var streamsMatchId = (\d+);/)[1];
+              const sport = text.match(/var streamsSport = "(\S+)"/)[1];
+              const origin = href.split("//")[1].split("/")[0];
+              return `https://sportscentral.io/streams-table/${matchId}/${sport}?new-ui=1&origin=${origin}`;
             })
-          )
-          .then((resp) => resp.text())
-          .then((message) =>
-            sendMessage(tabId, { type: "parseLinks", message })
-          )
-          .then(
-            (link) =>
-              link &&
-              Promise.resolve(link)
-                .then(fetch)
-                .then((resp) => resp.text())
-                .then((message) =>
-                  sendMessage(tabId, { type: "parseTinyUrl", message })
-                )
-                .then(({ title, href }) =>
-                  fetch(href)
-                    .then((resp) => resp.text())
-                    .then((message) => ({
-                      title,
-                      url: message.match(
-                        /http:\/\/weakstreams.com\/streams\/\d+/
-                      )[0],
-                    }))
-                )
-          )
+            .then((url) =>
+              fetch("https://api.aworldofstruggle.com/proxy", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  url,
+                  params: {
+                    headers: { Referer: "https://reddit.nflbite.com/" },
+                  },
+                }),
+              })
+            )
+            .then((resp) => resp.text())
+            .then((message) =>
+              sendMessage(tabId, { type: "parseLinks", message })
+            )
+            .then(
+              (link) =>
+                link &&
+                Promise.resolve(link)
+                  .then(fetch)
+                  .then((resp) => resp.text())
+                  .then((message) =>
+                    sendMessage(tabId, { type: "parseTinyUrl", message })
+                  )
+                  .then(({ title, href }) =>
+                    fetch(href)
+                      .then((resp) => resp.text())
+                      .then((message) => ({
+                        title,
+                        url: message.match(
+                          /http:\/\/weakstreams.com\/streams\/\d+/
+                        )[0],
+                      }))
+                  )
+            )
+        )
       )
-    )
-    .then((promises) => promises.concat(getLogsPromise(titleToLog, tabId)))
-    .then((promises) => Promise.all(promises))
-    .then((messages) => messages.filter(Boolean))
-    .then((streams) =>
-      streams.map((stream) =>
-        Object.assign(stream, { log: titleToLog[stream.title] })
+      .then((promises) => promises.concat(getLogsPromise(titleToLog, tabId)))
+      .then((promises) => Promise.all(promises))
+      .then((messages) => messages.filter(Boolean))
+      // TODO test
+      .then(() => [
+        {
+          title: "Miami Dolphins vs New Orleans Saints",
+          url: "https://example.org",
+        },
+      ])
+      .then((streams) =>
+        streams.map((stream) =>
+          Object.assign(stream, { log: titleToLog[stream.title] })
+        )
       )
-    )
-    .then((streams) => ({ version, streams }))
-    .then(log);
+      .then((streams) => ({ version, streams }))
+      .then(log)
+  );
 }
 
 function getLogsPromise(titleToLog, tabId) {
-  return fetch("https://www.espn.com/nfl/schedule")
-    .then((resp) => resp.text())
-    .then((message) => sendMessage(tabId, { type: "parseSchedule", message }))
-    .then((hrefs) =>
-      hrefs.map((href) =>
-        fetch(`https://www.espn.com${href}`)
-          .then((resp) => resp.text())
-          .then((message) =>
-            message.match(/espn\.gamepackage\.data =(.*?)\n/)[1].slice(0, -1)
-          )
-          .then((json) => JSON.parse(json))
-          .then((obj) => {
-            const title = obj.boxscore.teams
-              .map((team) => team.displayName)
-              .join(" vs ");
-            const playByPlay = [obj.drives.current]
-              .concat(obj.drives.previous)
-              .map((drive) => ({
-                team: drive.team.shortDisplayName,
-                result: drive.displayResult,
-                plays: drive.plays.map((p) => ({
-                  down: p.start.downDistanceText,
-                  text: p.text,
-                  clock: `Q${p.period.number} ${p.clock.displayValue}`,
-                })),
-                description: drive.description,
-              }));
-            const boxScore = ["passing", "rushing", "receiving"].map((key) => ({
-              key,
-              labels: obj.boxscore.players[0].statistics.find(
-                (s) => s.name === key
-              ).labels,
-              players: []
-                .concat(
-                  obj.boxscore.players.map((team) =>
-                    team.statistics.find((s) => s.name === key)
-                  ).athletes
-                )
-                .map((a) => ({
-                  name: a.displayName,
-                  stats: a.stats,
-                })),
-            }));
-            titleToLog[title] = { playByPlay, boxScore };
-          })
+  return (
+    fetch("https://www.espn.com/nfl/schedule")
+      .then((resp) => resp.text())
+      .then((message) => sendMessage(tabId, { type: "parseSchedule", message }))
+      // TODO test
+      .then(() => ["/nfl/game/_/gameId/401326568"])
+      .then((hrefs) =>
+        hrefs.map((href) =>
+          fetch(`https://www.espn.com${href}`)
+            .then((resp) => resp.text())
+            .then((message) =>
+              message.match(/espn\.gamepackage\.data =(.*?)\n/)[1].slice(0, -1)
+            )
+            .then((json) => JSON.parse(json))
+            .then(log)
+            .then((obj) => {
+              const title = obj.boxscore.teams
+                .map((team) => team.team.displayName)
+                .join(" vs ");
+              if (obj.drives === undefined) {
+                titleToLog[title] = null;
+                return;
+              }
+              const playByPlay = [obj.drives.current]
+                .concat(obj.drives.previous)
+                .map((drive) => ({
+                  team: drive.team.shortDisplayName,
+                  result: drive.displayResult,
+                  plays: drive.plays.map((p) => ({
+                    down: p.start.downDistanceText,
+                    text: p.text,
+                    clock: `Q${p.period.number} ${p.clock.displayValue}`,
+                  })),
+                  description: drive.description,
+                }));
+              const boxScore = ["passing", "rushing", "receiving"].map(
+                (key) => ({
+                  key,
+                  labels: obj.boxscore.players[0].statistics.find(
+                    (s) => s.name === key
+                  ).labels,
+                  players: []
+                    .concat(
+                      obj.boxscore.players.map((team) =>
+                        team.statistics.find((s) => s.name === key)
+                      ).athletes
+                    )
+                    .map((a) => ({
+                      name: a.displayName,
+                      stats: a.stats,
+                    })),
+                })
+              );
+              titleToLog[title] = { playByPlay, boxScore };
+            })
+        )
       )
-    )
-    .then((promises) => Promise.all(promises))
-    .then(() => false);
+      .then((promises) => Promise.all(promises))
+      .then(() => false)
+  );
 }
 
 function log(arg) {

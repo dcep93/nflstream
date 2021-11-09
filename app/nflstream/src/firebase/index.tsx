@@ -27,7 +27,7 @@ export type StreamType = {
 export type LogType = {
   playByPlay?: DriveType[];
   boxScore?: PlayByPlayType[];
-};
+} | null;
 
 export type DriveType = {
   team: string;

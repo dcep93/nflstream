@@ -164,7 +164,7 @@ function getLogsPromise(titleToLog, tabId) {
                     })),
                 })
               );
-              titleToLog[title] = { playByPlay, boxScore };
+              titleToLog[title] = { id: href, playByPlay, boxScore };
             })
         )
       )

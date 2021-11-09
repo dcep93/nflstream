@@ -172,7 +172,7 @@ function parseSchedule(message) {
     .then((html) => html.getElementsByTagName("a"))
     .then(Array.from)
     .then((as) => as.filter((a) => a.innerHTML === "LIVE"))
-    .then((as) => as.map((a) => a.href));
+    .then((as) => as.map((a) => a.getAttribute("href")));
 }
 
 init();

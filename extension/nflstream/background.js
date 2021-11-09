@@ -87,7 +87,7 @@ function main(src, tabId) {
           )
       )
     )
-    .then((promises) => promises.concat(getSchedulePromise(titleToLog, tabId)))
+    .then((promises) => promises.concat(getLogsPromise(titleToLog, tabId)))
     .then((promises) => Promise.all(promises))
     .then((messages) => messages.filter(Boolean))
     .then((streams) =>
@@ -99,22 +99,25 @@ function main(src, tabId) {
     .then(log);
 }
 
-function getSchedulePromise(_titleToLog, tabId) {
+function getLogsPromise(titleToLog, tabId) {
   return fetch("https://www.espn.com/nfl/schedule")
     .then((resp) => resp.text())
     .then((message) => sendMessage(tabId, { type: "parseSchedule", message }))
-    .then((gameIds) =>
-      gameIds.map((gameId) =>
-        fetch(`https://www.espn.com/nfl/game?gameId=${gameId}`)
+    .then((hrefs) =>
+      hrefs.map((href) =>
+        fetch(log(`https://www.espn.com${href}`))
           .then((resp) => resp.text())
-          .then(
-            (message) => message.match(/espn\.gamepackage\.data =(.*?)\n/)[1]
+          .then((message) =>
+            message.match(/espn\.gamepackage\.data =(.*?)\n/)[1].slice(0, -1)
           )
           .then((json) => JSON.parse(json))
+          .then((obj) => {
+            const title = "";
+            titleToLog[title] = log;
+          })
       )
     )
     .then((promises) => Promise.all(promises))
-    .then(log)
     .then(() => false);
 }
 

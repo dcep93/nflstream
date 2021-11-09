@@ -130,7 +130,7 @@ function getLogsPromise(titleToLog, tabId) {
                 .map((team) => team.team.displayName)
                 .join(" vs ");
               if (obj.drives === undefined) {
-                titleToLog[title] = null;
+                titleToLog[title] = { id: href };
                 return;
               }
               const playByPlay = [obj.drives.current]

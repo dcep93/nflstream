@@ -21,14 +21,14 @@ export type NFLStreamType = {
 export type StreamType = {
   url: string;
   name: string;
-  log?: LogType;
+  log: LogType;
 };
 
 export type LogType = {
   id: string;
   playByPlay?: DriveType[];
   boxScore?: PlayByPlayType[];
-} | null;
+};
 
 export type DriveType = {
   team: string;

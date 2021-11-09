@@ -7,7 +7,7 @@ function ObjectFitIframe(props: {
   iframeRef: React.RefObject<HTMLIFrameElement>;
   url: string;
   title: string;
-  log: LogType | undefined;
+  log: LogType | null;
 }) {
   return (
     <div className={ofStyle.container}>
@@ -23,7 +23,7 @@ function ObjectFitIframe(props: {
 </script>
       `}
       ></iframe>
-      {props.log === undefined ? null : <Log log={props.log}></Log>}
+      {props.log === null ? null : <Log log={props.log}></Log>}
     </div>
   );
 }

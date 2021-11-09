@@ -146,12 +146,12 @@ function Guide() {
           Streams are borrowed from other sources, so I can't do anything about
           broken links.
         </li>
-        <li>
-          Holding shift when clicking a game will open it in a new tab - in case
-          something is broken.
-        </li>
         <li>Clicking a minimized stream will move it to the spotlight.</li>
         <li>Clicking the title of a stream will delete it.</li>
+        <li>
+          Streams will include a delayed play-by-play log. You can disable this
+          by holding shift when opening a stream.
+        </li>
         <li>
           Clicking a stream while holding ctrl or cmd will open a chat panel.
         </li>

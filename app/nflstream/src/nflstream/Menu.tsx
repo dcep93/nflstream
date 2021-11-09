@@ -178,16 +178,17 @@ class MenuWrapper extends React.Component<MenuWrapperProps, NFLStreamType> {
     } else {
       document.title = "NFLStream";
       firebase.connect((nflStream) => {
-        nflStream = {
-          timestamp: 1636480299869,
-          streams: [
-            {
-              name: "test",
-              url: "https://example.org",
-              log: { id: "test" },
-            },
-          ],
-        };
+        if (!nflStream.streams)
+          nflStream = {
+            timestamp: 1636480299869,
+            streams: [
+              {
+                name: "test",
+                url: "https://example.org",
+                log: { id: "test" },
+              },
+            ],
+          };
         menuWrapper.setState.bind(menuWrapper)(nflStream);
       });
     }

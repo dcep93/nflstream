@@ -113,7 +113,7 @@ class Streams extends React.Component<StreamsPropsType, {}> {
                   }
                   const stream = Object.assign({}, obj.stream);
                   if (e.shiftKey) {
-                    Object.assign(stream, { log: null });
+                    Object.assign(stream, { log: undefined });
                   }
                   this.props.sendStream(stream);
                 }}

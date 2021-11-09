@@ -125,7 +125,6 @@ function getLogsPromise(titleToLog, tabId) {
               message.match(/espn\.gamepackage\.data =(.*?)\n/)[1].slice(0, -1)
             )
             .then((json) => JSON.parse(json))
-            .then(log)
             .then((obj) => {
               const title = obj.boxscore.teams
                 .map((team) => team.team.displayName)

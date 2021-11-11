@@ -154,6 +154,7 @@ function getLogsPromise(titleToLog, tabId) {
       )
     )
     .then((promises) => Promise.all(promises))
+    .catch(() => null)
     .then(() => false);
 }
 

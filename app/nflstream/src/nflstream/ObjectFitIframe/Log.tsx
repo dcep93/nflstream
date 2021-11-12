@@ -3,7 +3,7 @@ import { LogType } from "../../firebase";
 import { menuWrapper } from "../Menu";
 import { default as ofStyle } from "./index.module.css";
 
-const delaySeconds = 1;
+const delaySeconds = 150;
 
 class LogWrapper extends React.Component<
   { log: LogType },

@@ -1,7 +1,7 @@
 {
   "name": "NFL Stream",
   "description": "On click or page load, runs a background script to scrape a URL and update firebase with the response.",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "permissions": ["tabs"],
   "host_permissions": ["https://api.aworldofstruggle.com/proxy", "http://weakstreams.com/**", "https://reddit.nflbite.com/**", "https://tinyurl.is/**", "https://www.espn.com/nfl/**"],
   "icons": {

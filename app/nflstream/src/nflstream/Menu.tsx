@@ -25,7 +25,7 @@ function Menu(
           update(!hidden);
         }}
       >
-        NFL Stream{props.version ? " " + props.version : null}
+        NFL Stream
       </h1>
       <div hidden={hidden}>
         <ManualUpdate nflStream={props.nflStream} />
@@ -167,7 +167,6 @@ function Guide() {
 export var menuWrapper: MenuWrapper;
 type MenuWrapperProps = {
   sendStream: (stream: StreamType) => void;
-  version: string | undefined;
 };
 class MenuWrapper extends React.Component<MenuWrapperProps, NFLStreamType> {
   componentDidMount() {
@@ -186,11 +185,7 @@ class MenuWrapper extends React.Component<MenuWrapperProps, NFLStreamType> {
   render() {
     return (
       <div className={style.menu}>
-        <Menu
-          sendStream={this.props.sendStream}
-          version={this.props.version}
-          nflStream={this.state}
-        />
+        <Menu sendStream={this.props.sendStream} nflStream={this.state} />
       </div>
     );
   }

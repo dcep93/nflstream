@@ -6,7 +6,8 @@ function init() {
     window.addEventListener("message", muteUnmute);
   } else {
     chrome.runtime.onMessage.addListener(receive);
-    sendMain();
+    main();
+    updateStreams().then(updateLogs);
   }
 }
 
@@ -16,26 +17,45 @@ function muteUnmute(event) {
   video.muted = event.data.mute;
 }
 
-function sendMain() {
-  chrome.runtime.sendMessage({ action: "main" });
-  setTimeout(sendMain, 5 * 60 * 1000);
+function sendMessage(message) {
+  return new Promise((resolve) => {
+    chrome.runtime.sendMessage(message, resolve);
+  });
+}
+
+var version;
+function main() {
+  sendMessage({ action: "getVersion" })
+    .then((_version) => {
+      version = _version;
+    })
+    .then(updateStreams)
+    .then(updateLogs);
+}
+
+function updateStreams() {
+  return sendMessage({ action: "getStreams" })
+    .then((streams) => update("extension_streams", { streams, version }))
+    .then(() => setTimeout(updateStreams, 10 * 60 * 1000));
+}
+
+function updateLogs() {
+  return sendMessage({ action: "getLogs" })
+    .then((logs) => update("extension_logs", { logs, version }))
+    .then(() => setTimeout(updateLogs, 10 * 1000));
+}
+
+function update(id, payload) {
+  const div = document.getElementById(id);
+  div.value = JSON.stringify(payload);
+  div.click();
 }
 
 function receive(payload, sender, sendResponse) {
   console.log("receive", new Date().getTime() - start, payload.type, payload);
   Promise.resolve(payload.message)
-    .then(
-      { main, parseGames, parseLinks, parseTinyUrl, parseSchedule }[
-        payload.type
-      ]
-    )
+    .then({ parseGames, parseLinks, parseTinyUrl, parseSchedule }[payload.type])
     .then(sendResponse);
-}
-
-function main(message) {
-  const div = document.getElementById("message_extension");
-  div.value = JSON.stringify(message);
-  div.click();
 }
 
 function parse(text) {
@@ -168,6 +188,7 @@ function parseTinyUrl(message) {
     }));
 }
 
+// TODO parse finished games too
 function parseSchedule(message) {
   return Promise.resolve(message)
     .then(parse)

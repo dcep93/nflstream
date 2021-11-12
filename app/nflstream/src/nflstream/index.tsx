@@ -5,10 +5,7 @@ import style from "./index.module.css";
 import Menu from "./Menu";
 import Multiscreen, { ScreenType } from "./multiscreen";
 
-class NFLStream extends React.Component<
-  {},
-  { screens: ScreenType[]; version?: string }
-> {
+class NFLStream extends React.Component<{}, { screens: ScreenType[] }> {
   constructor(props: {}) {
     super(props);
     this.state = { screens: [] };
@@ -17,13 +14,8 @@ class NFLStream extends React.Component<
   render() {
     return (
       <div className={style.main}>
-        <Extension
-          updateVersion={(version: string) => this.setState({ version })}
-        />
-        <Menu
-          version={this.state.version || ""}
-          sendStream={this.sendStream.bind(this)}
-        />
+        <Extension />
+        <Menu sendStream={this.sendStream.bind(this)} />
         <Multiscreen
           screens={this.state.screens}
           removeScreen={this.removeScreen.bind(this)}

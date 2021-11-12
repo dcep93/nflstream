@@ -9,9 +9,9 @@ type MessageType = {
 };
 
 export const nflstream_url = "https://nflstream.web.app/";
-const expected_version = "0.0.5";
+const expected_version = "0.5.0";
 
-function MessageExtension(props: { updateVersion: (version: string) => void }) {
+function MessageExtension() {
   const ref: React.RefObject<HTMLTextAreaElement> = React.createRef();
   return (
     <div hidden>

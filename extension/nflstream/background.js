@@ -12,35 +12,18 @@ function sendMessage(tabId, payload) {
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  switch (message.action) {
-    case "version":
-      sendResponse(version);
-      break;
-    default:
-      main(sender.tab.id).then((message) =>
-        sendMessage(sender.tab.id, { type: "main", message })
-      );
+  {
+    getVersion, getStreams, getLogs;
   }
+  [message.action](sender.tab.id).then(sendResponse);
   return true;
 });
 
-function main(tabId) {
-  console.log("main");
-  const nameToLog = {};
-  return getStreamsPromise(tabId)
-    .then((promises) => promises.concat(getLogsPromise(nameToLog, tabId)))
-    .then((promises) => Promise.all(promises))
-    .then((messages) => messages.filter(Boolean))
-    .then((streams) =>
-      streams.map((stream) =>
-        Object.assign(stream, { log: nameToLog[stream.name] || null })
-      )
-    )
-    .then((streams) => ({ version, streams }))
-    .then(log);
+function getVersion(tabId) {
+  return Promise.resolve(version);
 }
 
-function getStreamsPromise(tabId) {
+function getStreams(tabId) {
   return fetch("https://reddit.nflbite.com/")
     .then((resp) => resp.text())
     .then((message) => sendMessage(tabId, { type: "parseGames", message }))
@@ -93,10 +76,12 @@ function getStreamsPromise(tabId) {
                 )
           )
       )
-    );
+    )
+    .then((promises) => Promise.all(promises));
 }
 
-function getLogsPromise(nameToLog, tabId) {
+function getLogs(tabId) {
+  const nameToLog = {};
   return fetch("https://www.espn.com/nfl/schedule")
     .then((resp) => resp.text())
     .then((message) => sendMessage(tabId, { type: "parseSchedule", message }))
@@ -150,9 +135,7 @@ function getLogsPromise(nameToLog, tabId) {
           })
       )
     )
-    .then((promises) => Promise.all(promises))
-    .catch((e) => console.log(e))
-    .then(() => false);
+    .then(() => nameToLog);
 }
 
 function log(arg) {

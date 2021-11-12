@@ -1,5 +1,5 @@
 import { CSSProperties } from "react";
-import { menuWrapper } from "../Menu";
+import { menuWrapperComponent } from "../Menu";
 import { default as ofStyle } from "./index.module.css";
 import Log from "./Log";
 
@@ -8,7 +8,9 @@ function ObjectFitIframe(props: {
   url: string;
   name: string;
 }) {
-  const log = (menuWrapper.state.logs || []).find((l) => l.name === props.name);
+  const log = (menuWrapperComponent.state.logs || []).find(
+    (l) => l.name === props.name
+  );
   return (
     <div className={ofStyle.container}>
       {log === undefined ? null : <Log log={log}></Log>}

@@ -162,20 +162,20 @@ function Guide() {
   );
 }
 
-export var menuWrapper: MenuWrapper;
+export var menuWrapperComponent: MenuWrapper;
 type MenuWrapperProps = {
   sendStream: (stream: StreamType) => void;
 };
 class MenuWrapper extends React.Component<MenuWrapperProps, NFLStreamType> {
   componentDidMount() {
-    const oldComponent = menuWrapper;
-    menuWrapper = this;
+    const oldComponent = menuWrapperComponent;
+    menuWrapperComponent = this;
     if (oldComponent) {
       this.setState(oldComponent.state);
     } else {
       document.title = "NFLStream";
       firebase.connect((nflStream) =>
-        menuWrapper.setState.bind(menuWrapper)(nflStream)
+        menuWrapperComponent.setState.bind(menuWrapperComponent)(nflStream)
       );
     }
   }

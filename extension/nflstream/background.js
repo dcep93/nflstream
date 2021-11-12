@@ -147,7 +147,7 @@ function getLogsPromise(nameToLog, tabId) {
                     .map((t) => t.athletes)
                 )
                 .map((a) => ({
-                  name: a.displayName,
+                  name: a.athlete.displayName,
                   stats: a.stats,
                 })),
             }));

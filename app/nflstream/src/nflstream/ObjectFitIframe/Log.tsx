@@ -3,7 +3,7 @@ import { LogType } from "../../firebase";
 import { menuWrapper } from "../Menu";
 import { default as ofStyle } from "./index.module.css";
 
-const delaySeconds = 150;
+const delaySeconds = 1;
 
 class LogWrapper extends React.Component<
   { log: LogType },
@@ -65,20 +65,24 @@ function Log(props: { log: LogType | null }) {
           <div key={i} className={ofStyle.boxScore}>
             <div className={ofStyle.logHeader}>{boxScore.key}</div>
             <table>
-              <tr>
-                <th></th>
-                {boxScore.labels.map((label, j) => (
-                  <th key={j}>{label}</th>
-                ))}
-              </tr>
-              {(boxScore.players || []).map((player, j) => (
-                <tr key={j}>
-                  <td>{player.name}</td>
-                  {player.stats.map((stat, j) => (
-                    <td key={j}>{stat}</td>
+              <thead>
+                <tr>
+                  <th></th>
+                  {boxScore.labels.map((label, j) => (
+                    <th key={j}>{label}</th>
                   ))}
                 </tr>
-              ))}
+              </thead>
+              <tbody>
+                {(boxScore.players || []).map((player, j) => (
+                  <tr key={j}>
+                    <td>{player.name}</td>
+                    {player.stats.map((stat, j) => (
+                      <td key={j}>{stat}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
             </table>
           </div>
         ))}

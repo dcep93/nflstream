@@ -12,9 +12,7 @@ function Menu(
 ) {
   const [hidden, update] = useState(true);
   if (!props.nflStream) return <div>Loading...</div>;
-  const title = `${new Date(
-    props.nflStream.timestamp
-  ).toLocaleString()}\n${recorded_sha}`;
+  const title = recorded_sha;
   return (
     <div>
       <h1
@@ -176,9 +174,9 @@ class MenuWrapper extends React.Component<MenuWrapperProps, NFLStreamType> {
       this.setState(oldComponent.state);
     } else {
       document.title = "NFLStream";
-      firebase.connect((nflStream) => {
-        menuWrapper.setState.bind(menuWrapper)(nflStream);
-      });
+      firebase.connect((nflStream) =>
+        menuWrapper.setState.bind(menuWrapper)(nflStream)
+      );
     }
   }
 

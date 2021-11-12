@@ -1,40 +1,14 @@
 import React from "react";
 import { LogType } from "../../firebase";
-import { menuWrapper } from "../Menu";
 import { default as ofStyle } from "./index.module.css";
 
-const delaySeconds = 10;
+// TODO delay log update
 
-class LogWrapper extends React.Component<
-  { log: LogType },
-  { log: LogType | null; upcomingLog: LogType | null }
-> {
-  constructor(props: { log: LogType }) {
-    super(props);
-    this.state = { log: null, upcomingLog: null };
-    this.delayUpdate();
-  }
-
-  getUpcomingLog(): LogType | null {
-    return (
-      (menuWrapper.state.streams || [])
-        .map((s) => s.log)
-        .find((l) => l.id === this.props.log.id) || null
-    );
-  }
-
-  delayUpdate() {
-    const upcomingLog = this.getUpcomingLog();
-    if (!upcomingLog) return;
-    const log = this.state.upcomingLog;
-    this.setState({ log, upcomingLog });
-    setTimeout(this.delayUpdate.bind(this), delaySeconds * 1000);
-  }
-
+class LogWrapper extends React.Component<{ log: LogType }> {
   render() {
     return (
       <div className={ofStyle.logWrapper}>
-        <Log log={this.state.log} />
+        <Log log={this.props.log} />
       </div>
     );
   }

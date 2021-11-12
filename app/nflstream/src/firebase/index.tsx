@@ -13,19 +13,19 @@ if (!window.firebaseinitialized) {
 }
 
 export type NFLStreamType = {
-  timestamp: number;
   other?: StreamType[];
   streams?: StreamType[];
+  logs?: LogType[];
 };
 
 export type StreamType = {
   url: string;
   name: string;
-  log: LogType;
 };
 
 export type LogType = {
   id: string;
+  name: string;
   playByPlay?: DriveType[];
   boxScore?: BoxScoreType[];
 };
@@ -51,9 +51,19 @@ function updateNFLStream(nflStream: NFLStreamType) {
   firebase._set(`/`, nflStream);
 }
 
+function updateStreams(streams: StreamType[]) {
+  firebase._set(`/streams`, streams);
+}
+
+function updateLogs(logs: LogType[]) {
+  firebase._set(`/logs`, logs);
+}
+
 const ex = {
   connect,
   updateNFLStream,
+  updateStreams,
+  updateLogs,
 };
 
 export default ex;

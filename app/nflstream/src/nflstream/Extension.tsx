@@ -68,9 +68,8 @@ function MessageExtension(props: { streams: StreamType[]; logs: LogType[] }) {
   );
 }
 
-// TODO implement isIdentical
 function isIdentical<T>(a: T, b: T): boolean {
-  return true;
+  return JSON.stringify(a) === JSON.stringify(b);
 }
 
 export default MessageExtension;

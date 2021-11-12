@@ -1,5 +1,5 @@
 import { CSSProperties } from "react";
-import { LogType } from "../../firebase";
+import { menuWrapper } from "../Menu";
 import { default as ofStyle } from "./index.module.css";
 import Log from "./Log";
 
@@ -7,11 +7,11 @@ function ObjectFitIframe(props: {
   iframeRef: React.RefObject<HTMLIFrameElement>;
   url: string;
   name: string;
-  log: LogType | undefined;
 }) {
+  const log = (menuWrapper.state.logs || []).find((l) => l.name === props.name);
   return (
     <div className={ofStyle.container}>
-      {props.log === undefined ? null : <Log log={props.log}></Log>}
+      {log === undefined ? null : <Log log={log}></Log>}
       <iframe
         ref={props.iframeRef}
         sandbox={"allow-scripts allow-same-origin"}

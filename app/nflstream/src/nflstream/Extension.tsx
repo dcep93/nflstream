@@ -1,6 +1,5 @@
 import React from "react";
 import firebase, { LogType, StreamType } from "../firebase";
-import { menuWrapper } from "./Menu";
 
 type ScreenMessageType = { version: string; streams: StreamType[] };
 type LogsMessageType = { version: string; logs: LogType[] };
@@ -9,7 +8,7 @@ const nflstream_url = "https://nflstream.web.app/";
 const streamsVersion = "0.5.0";
 const logsVersion = "0.5.0";
 
-function MessageExtension() {
+function MessageExtension(props: { streams: StreamType[]; logs: LogType[] }) {
   const streamsRef: React.RefObject<HTMLTextAreaElement> = React.createRef();
   const logsRef: React.RefObject<HTMLTextAreaElement> = React.createRef();
   return (
@@ -30,7 +29,7 @@ function MessageExtension() {
                 );
                 return;
               }
-              if (isIdentical(message.streams, menuWrapper.state.streams)) {
+              if (isIdentical(message.streams, props.streams)) {
                 console.log(`identical updateStreams`);
                 return;
               }
@@ -52,7 +51,7 @@ function MessageExtension() {
                 );
                 return;
               }
-              if (isIdentical(message.logs, menuWrapper.state.logs)) {
+              if (isIdentical(message.logs, props.logs)) {
                 console.log(`identical updateStreams`);
                 return;
               }

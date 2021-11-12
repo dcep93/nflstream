@@ -60,13 +60,13 @@ function ManualUpdate(props: { nflStream: NFLStreamType }) {
 }
 
 type StreamsPropsType = {
-  streams?: StreamType[];
+  streams: StreamType[];
   sendStream: (stream: StreamType) => void;
 };
 class Streams extends React.Component<StreamsPropsType, {}> {
   componentDidUpdate(prevProps: StreamsPropsType) {
     if (
-      (this.props.streams || []).filter(
+      this.props.streams.filter(
         (s) => !prevProps.streams?.map((prevS) => prevS.name).includes(s.name)
       ).length > 0
     ) {

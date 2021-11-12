@@ -123,11 +123,11 @@ function getLogsPromise(nameToLog, tabId) {
               return;
             }
             const playByPlay = [obj.drives.current]
-              .concat(obj.drives.previous)
+              .concat(obj.drives.previous.reverse())
               .map((drive) => ({
                 team: drive.team.shortDisplayName,
                 result: drive.displayResult,
-                plays: drive.plays.map((p) => ({
+                plays: drive.plays.reverse().map((p) => ({
                   down: p.start.downDistanceText,
                   text: p.text,
                   clock: `Q${p.period.number} ${p.clock.displayValue}`,

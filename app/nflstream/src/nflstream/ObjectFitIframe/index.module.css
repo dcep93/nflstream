@@ -45,3 +45,7 @@
 .boxScore {
   padding-bottom: 20px;
 }
+
+.boxScore td {
+  padding: 2px;
+}

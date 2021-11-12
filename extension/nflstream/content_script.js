@@ -161,7 +161,7 @@ function parseTinyUrl(message) {
   return Promise.resolve(message)
     .then(parse)
     .then((html) => ({
-      title: html
+      name: html
         .getElementsByTagName("title")[0]
         .innerText.split(" - WeakStreams.com - ")[0],
       href: getUrl(message),

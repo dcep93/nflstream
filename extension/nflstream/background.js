@@ -35,7 +35,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 function main(src, tabId) {
   console.log("main", src);
-  const titleToLog = {};
+  const nameToLog = {};
   return fetch("https://reddit.nflbite.com/")
     .then((resp) => resp.text())
     .then((message) => sendMessage(tabId, { type: "parseGames", message }))
@@ -76,11 +76,11 @@ function main(src, tabId) {
                 .then((message) =>
                   sendMessage(tabId, { type: "parseTinyUrl", message })
                 )
-                .then(({ title, href }) =>
+                .then(({ name, href }) =>
                   fetch(href)
                     .then((resp) => resp.text())
                     .then((message) => ({
-                      title,
+                      name,
                       url: message.match(
                         /http:\/\/weakstreams.com\/streams\/\d+/
                       )[0],
@@ -89,19 +89,19 @@ function main(src, tabId) {
           )
       )
     )
-    .then((promises) => promises.concat(getLogsPromise(titleToLog, tabId)))
+    .then((promises) => promises.concat(getLogsPromise(nameToLog, tabId)))
     .then((promises) => Promise.all(promises))
     .then((messages) => messages.filter(Boolean))
     .then((streams) =>
       streams.map((stream) =>
-        Object.assign(stream, { log: titleToLog[stream.title] })
+        Object.assign(stream, { log: nameToLog[stream.name] || null })
       )
     )
     .then((streams) => ({ version, streams }))
     .then(log);
 }
 
-function getLogsPromise(titleToLog, tabId) {
+function getLogsPromise(nameToLog, tabId) {
   return fetch("https://www.espn.com/nfl/schedule")
     .then((resp) => resp.text())
     .then((message) => sendMessage(tabId, { type: "parseSchedule", message }))
@@ -114,11 +114,12 @@ function getLogsPromise(titleToLog, tabId) {
           )
           .then((json) => JSON.parse(json))
           .then((obj) => {
-            const title = obj.boxscore.teams
+            const name = obj.boxscore.teams
               .map((team) => team.team.displayName)
+              .reverse()
               .join(" vs ");
             if (obj.drives === undefined) {
-              titleToLog[title] = { id: href };
+              nameToLog[name] = { id: href };
               return;
             }
             const playByPlay = [obj.drives.current]
@@ -140,21 +141,22 @@ function getLogsPromise(titleToLog, tabId) {
               ).labels,
               players: []
                 .concat(
-                  obj.boxscore.players.map((team) =>
-                    team.statistics.find((s) => s.name === key)
-                  ).athletes
+                  ...obj.boxscore.players
+                    .map((team) => team.statistics.find((s) => s.name === key))
+
+                    .map((t) => t.athletes)
                 )
                 .map((a) => ({
                   name: a.displayName,
                   stats: a.stats,
                 })),
             }));
-            titleToLog[title] = { id: href, playByPlay, boxScore };
+            nameToLog[name] = { id: href, playByPlay, boxScore };
           })
       )
     )
     .then((promises) => Promise.all(promises))
-    .catch(() => null)
+    .catch((e) => console.log(e))
     .then(() => false);
 }
 

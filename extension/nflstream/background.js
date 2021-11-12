@@ -11,31 +11,36 @@ function sendMessage(tabId, payload) {
   });
 }
 
-const url = "https://nflstream.web.app/";
-chrome.action.onClicked.addListener((tab) =>
-  tab.url === url
-    ? main("click", tab.id).then((message) =>
-        sendMessage(tab.id, { type: "main", message })
-      )
-    : chrome.tabs.create({ url }, function (tab_) {})
-);
-
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   switch (message.action) {
     case "version":
       sendResponse(version);
       break;
     default:
-      main("visit", sender.tab.id).then((message) =>
+      main(sender.tab.id).then((message) =>
         sendMessage(sender.tab.id, { type: "main", message })
       );
   }
   return true;
 });
 
-function main(src, tabId) {
-  console.log("main", src);
+function main(tabId) {
+  console.log("main");
   const nameToLog = {};
+  return getStreamsPromise(tabId)
+    .then((promises) => promises.concat(getLogsPromise(nameToLog, tabId)))
+    .then((promises) => Promise.all(promises))
+    .then((messages) => messages.filter(Boolean))
+    .then((streams) =>
+      streams.map((stream) =>
+        Object.assign(stream, { log: nameToLog[stream.name] || null })
+      )
+    )
+    .then((streams) => ({ version, streams }))
+    .then(log);
+}
+
+function getStreamsPromise(tabId) {
   return fetch("https://reddit.nflbite.com/")
     .then((resp) => resp.text())
     .then((message) => sendMessage(tabId, { type: "parseGames", message }))
@@ -88,17 +93,7 @@ function main(src, tabId) {
                 )
           )
       )
-    )
-    .then((promises) => promises.concat(getLogsPromise(nameToLog, tabId)))
-    .then((promises) => Promise.all(promises))
-    .then((messages) => messages.filter(Boolean))
-    .then((streams) =>
-      streams.map((stream) =>
-        Object.assign(stream, { log: nameToLog[stream.name] || null })
-      )
-    )
-    .then((streams) => ({ version, streams }))
-    .then(log);
+    );
 }
 
 function getLogsPromise(nameToLog, tabId) {

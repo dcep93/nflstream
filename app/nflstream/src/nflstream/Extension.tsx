@@ -52,10 +52,10 @@ function MessageExtension(props: { streams: StreamType[]; logs: LogType[] }) {
                 return;
               }
               if (isIdentical(message.logs, props.logs)) {
-                console.log(`identical updateStreams`);
+                console.log(`identical updateLogs`);
                 return;
               }
-              console.log("updateStreams", message);
+              console.log("updateLogs", message);
               firebase.updateLogs(message.logs);
             }}
           />

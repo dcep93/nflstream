@@ -12,10 +12,13 @@ function sendMessage(tabId, payload) {
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  {
-    getVersion, getStreams, getLogs;
+  ({
+    getVersion,
+    getStreams,
+    getLogs,
   }
-  [message.action](sender.tab.id).then(sendResponse);
+    [message.action](sender.tab.id)
+    .then(sendResponse));
   return true;
 });
 

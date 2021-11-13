@@ -34,12 +34,14 @@ function main() {
 }
 
 function updateStreams() {
+  console.log("updateStreams");
   return sendMessage({ action: "getStreams" })
     .then((streams) => update("extension_streams", { streams, version }))
     .then(() => setTimeout(updateStreams, 10 * 60 * 1000));
 }
 
 function updateLogs() {
+  console.log("updateLogs");
   return sendMessage({ action: "getLogs" })
     .then((logs) => update("extension_logs", { logs, version }))
     .then(() => setTimeout(updateLogs, 10 * 1000));

@@ -97,20 +97,14 @@ class Streams extends React.Component<StreamsPropsType, {}> {
                   style.hover,
                   obj.invalid && style.red,
                 ].join(" ")}
-                onClick={(e) => {
-                  if (obj.invalid) {
-                    fetch("iframe.html")
-                      .then((response) => response.blob())
-                      .then((blob) => {
-                        const a = document.createElement("a");
-                        a.href = window.URL.createObjectURL(blob);
-                        a.download = "nflstream.html";
-                        a.click();
-                      });
-                    return;
-                  }
-                  this.props.sendStream(obj.stream, e.shiftKey);
-                }}
+                onClick={(e) =>
+                  click(
+                    this.props.sendStream,
+                    obj.stream,
+                    obj.invalid,
+                    e.shiftKey
+                  )
+                }
               >
                 <div title={obj.stream.url}>{obj.stream.name}</div>
               </div>
@@ -119,6 +113,26 @@ class Streams extends React.Component<StreamsPropsType, {}> {
       </div>
     );
   }
+}
+
+function click(
+  sendStream: (stream: StreamType, skipLog: boolean) => void,
+  stream: StreamType,
+  invalid: boolean,
+  skipLog: boolean
+) {
+  if (invalid) {
+    fetch("iframe.html")
+      .then((response) => response.blob())
+      .then((blob) => {
+        const a = document.createElement("a");
+        a.href = window.URL.createObjectURL(blob);
+        a.download = "nflstream.html";
+        a.click();
+      });
+    return;
+  }
+  sendStream(stream, skipLog);
 }
 
 function Guide() {

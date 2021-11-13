@@ -30,7 +30,7 @@ function Menu(
       </div>
       <Streams
         streams={(props.nflStream.streams || []).concat(
-          props.nflStream?.other || []
+          (props.nflStream?.other || []).filter((s) => s.url !== "")
         )}
         sendStream={props.sendStream}
       />

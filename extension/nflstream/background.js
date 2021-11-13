@@ -84,13 +84,12 @@ function getStreams(tabId) {
 }
 
 function getLogs(tabId) {
-  const nameToLog = {};
   return fetch("https://www.espn.com/nfl/schedule")
     .then((resp) => resp.text())
     .then((message) => sendMessage(tabId, { type: "parseSchedule", message }))
-    .then((hrefs) =>
-      hrefs.map((href) =>
-        fetch(`https://www.espn.com${href}`)
+    .then((ids) =>
+      ids.map((id) =>
+        fetch(`https://www.espn.com${id}`)
           .then((resp) => resp.text())
           .then((message) =>
             message.match(/espn\.gamepackage\.data =(.*?)\n/)[1].slice(0, -1)
@@ -102,8 +101,7 @@ function getLogs(tabId) {
               .reverse()
               .join(" vs ");
             if (obj.drives === undefined) {
-              nameToLog[name] = { id: href };
-              return;
+              return { id, name };
             }
             const playByPlay = [obj.drives.current]
               .concat(obj.drives.previous.reverse())
@@ -134,11 +132,11 @@ function getLogs(tabId) {
                   stats: a.stats,
                 })),
             }));
-            nameToLog[name] = { id: href, playByPlay, boxScore };
+            return { id, name, playByPlay, boxScore };
           })
       )
     )
-    .then(() => nameToLog);
+    .then((promises) => Promise.all(promises));
 }
 
 function log(arg) {

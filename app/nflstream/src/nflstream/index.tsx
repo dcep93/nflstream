@@ -27,16 +27,13 @@ class NFLStream extends React.Component<{}, { screens: ScreenType[] }> {
     );
   }
 
-  sendStream(stream: StreamType) {
+  sendStream(stream: StreamType, skipLog: boolean) {
     this.setState({
-      screens: this.state.screens.concat(
-        Object.assign(
-          {
-            iFrameTitle: (Math.random() + 1).toString(36).substring(2),
-          },
-          stream
-        )
-      ),
+      screens: this.state.screens.concat({
+        iFrameTitle: (Math.random() + 1).toString(36).substring(2),
+        skipLog,
+        ...stream,
+      }),
     });
   }
 

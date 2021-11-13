@@ -7,10 +7,13 @@ function ObjectFitIframe(props: {
   iframeRef: React.RefObject<HTMLIFrameElement>;
   url: string;
   name: string;
+  skipLog: boolean;
 }) {
-  const log = (menuWrapperComponent.state.logs || []).find(
-    (l) => l.name === props.name
-  );
+  const log = props.skipLog
+    ? undefined
+    : (menuWrapperComponent.state.logs || []).find(
+        (l) => l.name === props.name
+      );
   return (
     <div className={ofStyle.container}>
       {log === undefined ? null : <Log log={log}></Log>}

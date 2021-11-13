@@ -61,7 +61,7 @@ function ManualUpdate(props: { nflStream: NFLStreamType }) {
 
 type StreamsPropsType = {
   streams: StreamType[];
-  sendStream: (stream: StreamType) => void;
+  sendStream: (stream: StreamType, skipLog: boolean) => void;
 };
 class Streams extends React.Component<StreamsPropsType, {}> {
   componentDidUpdate(prevProps: StreamsPropsType) {
@@ -109,11 +109,7 @@ class Streams extends React.Component<StreamsPropsType, {}> {
                       });
                     return;
                   }
-                  const stream = Object.assign({}, obj.stream);
-                  if (e.shiftKey) {
-                    Object.assign(stream, { log: undefined });
-                  }
-                  this.props.sendStream(stream);
+                  this.props.sendStream(obj.stream, e.shiftKey);
                 }}
               >
                 <div title={obj.stream.url}>{obj.stream.name}</div>
@@ -164,7 +160,7 @@ function Guide() {
 
 export var menuWrapperComponent: MenuWrapper;
 type MenuWrapperProps = {
-  sendStream: (stream: StreamType) => void;
+  sendStream: (stream: StreamType, skipLog: boolean) => void;
 };
 class MenuWrapper extends React.Component<MenuWrapperProps, NFLStreamType> {
   componentDidMount() {

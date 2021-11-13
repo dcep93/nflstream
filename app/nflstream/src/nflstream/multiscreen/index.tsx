@@ -4,7 +4,7 @@ import style from "../index.module.css";
 import ObjectFitIframe from "../ObjectFitIframe";
 import msStyle from "./index.module.css";
 
-export type ScreenType = StreamType & { iFrameTitle: string };
+export type ScreenType = StreamType & { iFrameTitle: string; skipLog: boolean };
 export const screenWrapperRef: React.RefObject<HTMLDivElement> =
   React.createRef();
 
@@ -71,6 +71,7 @@ function Multiscreen(props: {
                   iframeRef={iframeRefs[screen.iFrameTitle]}
                   url={screen.url}
                   name={`${screen.name}\n${screen.iFrameTitle}`}
+                  skipLog={screen.skipLog}
                 />
               </div>
             </div>

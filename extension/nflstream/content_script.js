@@ -7,7 +7,6 @@ function init() {
   } else {
     chrome.runtime.onMessage.addListener(receive);
     main();
-    updateStreams().then(updateLogs);
   }
 }
 

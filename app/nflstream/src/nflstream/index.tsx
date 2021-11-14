@@ -17,7 +17,7 @@ class FirebaseWrapper extends React.Component<
     if (oldComponent) {
       this.setState(oldComponent.state);
     } else {
-      document.title = "NFLStream";
+      document.title = "NFL Stream";
       firebase.connect((nflStream) =>
         firebaseWrapperComponent.setState.bind(firebaseWrapperComponent)({
           nflStream,

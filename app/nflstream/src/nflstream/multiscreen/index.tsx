@@ -71,7 +71,11 @@ function Multiscreen(props: {
                   iframeRef={iframeRefs[screen.iFrameTitle]}
                   url={screen.url}
                   name={screen.name}
-                  skipLog={screen.skipLog}
+                  skipLog={
+                    screen.skipLog ||
+                    (props.screens.length > 1 &&
+                      selected !== screen.iFrameTitle)
+                  }
                 />
               </div>
             </div>

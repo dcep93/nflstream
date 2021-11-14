@@ -12,12 +12,18 @@ class DelayedLog extends React.Component<
     delayedLogComponent = this;
     if (oldComponent) {
       this.setState(oldComponent.state);
+    } else {
+      this.delayUpdate();
     }
   }
 
   componentDidUpdate(prevProps: { logs: LogType[] }) {
     if (isIdentical(prevProps.logs, this.props.logs)) return;
-    setTimeout(() => this.setState({ logs: this.props.logs }), 2 * 60 * 1000);
+    this.delayUpdate();
+  }
+
+  delayUpdate() {
+    setTimeout(() => this.setState({ logs: this.props.logs }), 2 * 1000);
   }
 
   render() {

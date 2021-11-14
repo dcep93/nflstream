@@ -14,7 +14,6 @@ function ObjectFitIframe(props: {
     : (delayedLogComponent?.state?.logs || []).find(
         (l) => l.name === props.name.split("\n")[0]
       );
-  console.log(log);
   return (
     <div className={ofStyle.container}>
       {<Log log={log}></Log>}

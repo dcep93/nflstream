@@ -3,13 +3,12 @@ import { LogType } from "../../firebase";
 import { default as ofStyle } from "./index.module.css";
 
 function LogWrapper(props: { log: LogType | null | undefined }) {
-  // if (props.log === null) return null;
-  // return (
-  //   <div className={ofStyle.logWrapper}>
-  //     <Log log={props.log} />
-  //   </div>
-  // );
-  return null;
+  if (props.log === null) return null;
+  return (
+    <div className={ofStyle.logWrapper}>
+      <Log log={props.log} />
+    </div>
+  );
 }
 
 function Log(props: { log: LogType | undefined }) {

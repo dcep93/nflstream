@@ -5,16 +5,14 @@ import { screenWrapperRef } from "./multiscreen";
 import recorded_sha from "./recorded_sha";
 
 const ref: React.RefObject<HTMLTextAreaElement> = React.createRef();
-function Menu(
-  props: MenuWrapperProps & {
-    nflStream?: NFLStreamType;
-  }
-) {
+function Menu(props: {
+  sendStream: (stream: StreamType, skipLog: boolean) => void;
+  nflStream: NFLStreamType;
+}) {
   const [hidden, update] = useState(true);
-  if (!props.nflStream) return <div>Loading...</div>;
   const title = recorded_sha;
   return (
-    <div>
+    <div className={style.menu}>
       <h1
         className={style.header}
         title={title}
@@ -172,31 +170,4 @@ function Guide() {
   );
 }
 
-export var menuWrapperComponent: MenuWrapper;
-type MenuWrapperProps = {
-  sendStream: (stream: StreamType, skipLog: boolean) => void;
-};
-class MenuWrapper extends React.Component<MenuWrapperProps, NFLStreamType> {
-  componentDidMount() {
-    const oldComponent = menuWrapperComponent;
-    menuWrapperComponent = this;
-    if (oldComponent) {
-      this.setState(oldComponent.state);
-    } else {
-      document.title = "NFLStream";
-      firebase.connect((nflStream) =>
-        menuWrapperComponent.setState.bind(menuWrapperComponent)(nflStream)
-      );
-    }
-  }
-
-  render() {
-    return (
-      <div className={style.menu}>
-        <Menu sendStream={this.props.sendStream} nflStream={this.state} />
-      </div>
-    );
-  }
-}
-
-export default MenuWrapper;
+export default Menu;

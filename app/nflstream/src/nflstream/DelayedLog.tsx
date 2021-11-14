@@ -23,7 +23,7 @@ class DelayedLog extends React.Component<
   }
 
   delayUpdate() {
-    setTimeout(() => this.setState({ logs: this.props.logs }), 2.5 * 60 * 1000);
+    setTimeout(() => this.setState({ logs: this.props.logs }), 3 * 60 * 1000);
   }
 
   render() {

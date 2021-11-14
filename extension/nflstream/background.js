@@ -101,11 +101,14 @@ function getLogs(tabId) {
       ids.map((id) =>
         fetch(`https://www.espn.com${id}`)
           .then((resp) => resp.text())
-          .then((message) =>
-            message.match(/espn\.gamepackage\.data =(.*?)\n/)[1].slice(0, -1)
-          )
-          .then((json) => JSON.parse(json))
-          .then((obj) => {
+          .then((message) => {
+            const match = message.match(/espn\.gamepackage\.data =(.*?)\n/);
+            if (!match) {
+              // TODO parse finished games too
+              return null;
+            }
+            const json = match[1].slice(0, -1);
+            const obj = JSON.parse(json);
             const name = obj.boxscore.teams
               .map((team) => team.team.displayName)
               .reverse()
@@ -146,7 +149,8 @@ function getLogs(tabId) {
           })
       )
     )
-    .then((promises) => Promise.all(promises));
+    .then((promises) => Promise.all(promises))
+    .then((logs) => logs.filter(Boolean));
 }
 
 function log(arg) {

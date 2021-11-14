@@ -189,7 +189,6 @@ function parseTinyUrl(message) {
     }));
 }
 
-// TODO parse finished games too
 function parseSchedule(message) {
   return Promise.resolve(message)
     .then(parse)

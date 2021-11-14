@@ -16,6 +16,7 @@ export type NFLStreamType = {
   other?: StreamType[];
   streams?: StreamType[];
   logs?: LogType[];
+  version: string;
 };
 
 export type StreamType = {

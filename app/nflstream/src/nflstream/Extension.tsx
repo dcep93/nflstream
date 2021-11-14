@@ -8,7 +8,11 @@ const nflstream_url = "https://nflstream.web.app/";
 const streamsVersion = "0.5.0";
 const logsVersion = "0.5.0";
 
-function MessageExtension(props: { streams: StreamType[]; logs: LogType[] }) {
+function MessageExtension(props: {
+  streams: StreamType[];
+  logs: LogType[];
+  version: string;
+}) {
   const streamsRef: React.RefObject<HTMLTextAreaElement> = React.createRef();
   const logsRef: React.RefObject<HTMLTextAreaElement> = React.createRef();
   return (
@@ -26,6 +30,12 @@ function MessageExtension(props: { streams: StreamType[]; logs: LogType[] }) {
               if (message.version < streamsVersion) {
                 console.log(
                   `need chrome extension version ${streamsVersion} - rejecting`
+                );
+                return;
+              }
+              if (message.version < props.version) {
+                console.log(
+                  `need chrome extension version ${props.version} - rejecting`
                 );
                 return;
               }
@@ -48,6 +58,12 @@ function MessageExtension(props: { streams: StreamType[]; logs: LogType[] }) {
               if (message.version < logsVersion) {
                 console.log(
                   `need chrome extension version ${logsVersion} - rejecting`
+                );
+                return;
+              }
+              if (message.version < props.version) {
+                console.log(
+                  `need chrome extension version ${props.version} - rejecting`
                 );
                 return;
               }

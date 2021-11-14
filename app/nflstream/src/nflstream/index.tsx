@@ -17,6 +17,7 @@ class NFLStream extends React.Component<{}, { screens: ScreenType[] }> {
         <Extension
           streams={menuWrapperComponent?.state.streams || []}
           logs={menuWrapperComponent?.state.logs || []}
+          version={menuWrapperComponent?.state.version || ""}
         />
         <Menu sendStream={this.sendStream.bind(this)} />
         <Multiscreen

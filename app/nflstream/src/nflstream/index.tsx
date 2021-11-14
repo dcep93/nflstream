@@ -1,8 +1,9 @@
 import React from "react";
 import { StreamType } from "../firebase";
-import Extension from "./Extension";
+import DelayedLog from "./DelayedLog";
 import style from "./index.module.css";
 import Menu, { menuWrapperComponent } from "./Menu";
+import MessageExtension from "./MessageExtension";
 import Multiscreen, { ScreenType } from "./multiscreen";
 
 class NFLStream extends React.Component<{}, { screens: ScreenType[] }> {
@@ -14,7 +15,8 @@ class NFLStream extends React.Component<{}, { screens: ScreenType[] }> {
   render() {
     return (
       <div className={style.main}>
-        <Extension
+        <DelayedLog logs={menuWrapperComponent?.state.logs || []} />
+        <MessageExtension
           streams={menuWrapperComponent?.state.streams || []}
           logs={menuWrapperComponent?.state.logs || []}
           version={menuWrapperComponent?.state.version || ""}

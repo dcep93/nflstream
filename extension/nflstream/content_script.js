@@ -193,10 +193,20 @@ function parseTinyUrl(message) {
 function parseSchedule(message) {
   return Promise.resolve(message)
     .then(parse)
-    .then((html) => html.getElementsByTagName("a"))
+    .then((html) => html.getElementsByTagName("td"))
     .then(Array.from)
-    .then((as) => as.filter((a) => a.innerHTML === "LIVE"))
-    .then((as) => as.map((a) => a.getAttribute("href")));
+    .then((tds) =>
+      tds.filter((td) => {
+        if (td.innerText === "LIVE") return true;
+        const dataDate = td.getAttribute("data-date");
+        if (dataDate) {
+          const d = Date.parse(dataDate);
+          if (Date.now() - d < 4 * 60 * 60 * 1000) return true;
+        }
+        return false;
+      })
+    )
+    .then((tds) => tds.map((td) => td.children[0].getAttribute("href")));
 }
 
 init();

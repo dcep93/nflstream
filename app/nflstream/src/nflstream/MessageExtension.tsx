@@ -84,7 +84,7 @@ function MessageExtension(props: {
   );
 }
 
-function isIdentical<T>(a: T, b: T): boolean {
+export function isIdentical<T>(a: T, b: T): boolean {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 

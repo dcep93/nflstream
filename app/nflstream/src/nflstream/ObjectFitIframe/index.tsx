@@ -1,5 +1,5 @@
 import { CSSProperties } from "react";
-import { menuWrapperComponent } from "../Menu";
+import { delayedLogComponent } from "../DelayedLog";
 import { default as ofStyle } from "./index.module.css";
 import Log from "./Log";
 
@@ -10,13 +10,14 @@ function ObjectFitIframe(props: {
   skipLog: boolean;
 }) {
   const log = props.skipLog
-    ? undefined
-    : (menuWrapperComponent.state.logs || []).find(
-        (l) => l.name === props.name
+    ? null
+    : (delayedLogComponent?.state?.logs || []).find(
+        (l) => l.name === props.name.split("\n")[0]
       );
+  console.log(log);
   return (
     <div className={ofStyle.container}>
-      {log === undefined ? null : <Log log={log}></Log>}
+      {<Log log={log}></Log>}
       <iframe
         ref={props.iframeRef}
         sandbox={"allow-scripts allow-same-origin"}

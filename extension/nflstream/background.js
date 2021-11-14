@@ -40,21 +40,7 @@ function getStreams(tabId) {
             const origin = href.split("//")[1].split("/")[0];
             return `https://sportscentral.io/streams-table/${matchId}/${sport}?new-ui=1&origin=${origin}`;
           })
-          .then((url) =>
-            fetch("https://api.aworldofstruggle.com/proxy", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                url,
-                params: {
-                  headers: { Referer: "https://reddit.nflbite.com/" },
-                },
-              }),
-            })
-          )
-          .then((resp) => resp.text())
+          .then(fetchSC)
           .then((message) =>
             sendMessage(tabId, { type: "parseLinks", message })
           )
@@ -81,6 +67,30 @@ function getStreams(tabId) {
       )
     )
     .then((promises) => Promise.all(promises));
+}
+
+const allScData = {};
+const maxAge = 24 * 60 * 60 * 1000;
+function fetchSC(url) {
+  const scData = allScData[url] || {};
+  if (Date.now() - allScData.date < maxAge) return Promise.resolve(scData.text);
+  return fetch("https://api.aworldofstruggle.com/proxy", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      url,
+      params: {
+        headers: { Referer: "https://reddit.nflbite.com/" },
+      },
+    }),
+  })
+    .then((resp) => resp.text())
+    .then((text) => {
+      scData[url] = { date: Date.now(), text };
+      return text;
+    });
 }
 
 function getLogs(tabId) {

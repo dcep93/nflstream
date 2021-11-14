@@ -12,7 +12,7 @@ function ObjectFitIframe(props: {
   const log = props.skipLog
     ? null
     : (delayedLogComponent?.state?.logs || []).find(
-        (l) => l.name === props.name[0]
+        (l) => l.name === props.name
       );
   return (
     <div className={ofStyle.container}>

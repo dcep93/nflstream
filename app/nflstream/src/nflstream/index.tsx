@@ -27,8 +27,7 @@ class FirebaseWrapper extends React.Component<
   }
 
   render() {
-    if (!this.state) return <div>Loading...</div>;
-    return <NFLStream nflStream={this.state.nflStream} />;
+    return <NFLStream nflStream={this.state?.nflStream || {}} />;
   }
 }
 

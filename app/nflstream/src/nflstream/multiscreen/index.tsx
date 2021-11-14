@@ -69,8 +69,8 @@ function Multiscreen(props: {
                 ></div>
                 <ObjectFitIframe
                   iframeRef={iframeRefs[screen.iFrameTitle]}
-                  url={"https://example.org"}
-                  name={`${screen.name}\n${screen.iFrameTitle}`}
+                  url={screen.url}
+                  name={screen.name}
                   skipLog={screen.skipLog}
                 />
               </div>

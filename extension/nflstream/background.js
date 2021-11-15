@@ -105,7 +105,7 @@ function getLogs(tabId) {
             const match = message.match(/espn\.gamepackage\.data =(.*?)\n/);
             if (!match) return null;
             const json = match[1].slice(0, -1);
-            const obj = log(JSON.parse(json));
+            const obj = JSON.parse(json);
             const name = obj.boxscore.teams
               .map((team) => team.team.displayName)
               .reverse()

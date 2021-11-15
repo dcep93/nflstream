@@ -27,6 +27,7 @@ export type StreamType = {
 export type LogType = {
   id: string;
   name: string;
+  timestamp: string;
   playByPlay?: DriveType[];
   boxScore?: BoxScoreType[];
 };

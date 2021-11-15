@@ -16,6 +16,7 @@ function Log(props: { log: LogType | undefined }) {
   return (
     <div className={ofStyle.log}>
       <div className={ofStyle.logContent}>
+        <div>{new Date(props.log.timestamp).toLocaleTimeString()}</div>
         {(props.log.playByPlay || []).map((drive, i) => (
           <div key={i}>
             <div className={ofStyle.logHeader}>

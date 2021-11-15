@@ -113,6 +113,7 @@ function getLogs(tabId) {
             if (obj.drives === undefined) {
               return { id, name };
             }
+            const timestamp = obj.drives.current.plays[0].modified;
             const playByPlay = [obj.drives.current]
               .concat(obj.drives.previous.reverse())
               .map((drive) => ({
@@ -143,7 +144,7 @@ function getLogs(tabId) {
                   stats: a.stats,
                 })),
             }));
-            return { id, name, playByPlay, boxScore };
+            return { id, name, timestamp, playByPlay, boxScore };
           })
           .catch((e) => log(e) && false)
       )

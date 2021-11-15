@@ -31,10 +31,10 @@ export type LogType = {
   boxScore?: BoxScoreType[];
 };
 
-// TODO include score
 export type DriveType = {
   team: string;
   description: string;
+  score: string;
   result?: string;
   plays?: { down: string; text: string; clock: string }[];
 };

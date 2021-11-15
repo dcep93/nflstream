@@ -200,7 +200,7 @@ function parseSchedule(message) {
         const dataDate = td.getAttribute("data-date");
         if (dataDate) {
           const d = Date.parse(dataDate);
-          if (Date.now() - d < 4 * 60 * 60 * 1000) return true;
+          if (Date.now() > d) return true;
         }
         return false;
       })

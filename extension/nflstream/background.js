@@ -103,12 +103,9 @@ function getLogs(tabId) {
           .then((resp) => resp.text())
           .then((message) => {
             const match = message.match(/espn\.gamepackage\.data =(.*?)\n/);
-            if (!match) {
-              // TODO parse finished games too
-              return null;
-            }
+            if (!match) return null;
             const json = match[1].slice(0, -1);
-            const obj = JSON.parse(json);
+            const obj = log(JSON.parse(json));
             const name = obj.boxscore.teams
               .map((team) => team.team.displayName)
               .reverse()
@@ -119,6 +116,7 @@ function getLogs(tabId) {
             const playByPlay = [obj.drives.current]
               .concat(obj.drives.previous.reverse())
               .map((drive) => ({
+                score: `${drive.plays[0].awayScore} - ${drive.plays[0].homeScore}`,
                 team: drive.team.shortDisplayName,
                 result: drive.displayResult,
                 plays: drive.plays.reverse().map((p) => ({
@@ -147,6 +145,7 @@ function getLogs(tabId) {
             }));
             return { id, name, playByPlay, boxScore };
           })
+          .catch((e) => log(e) && false)
       )
     )
     .then((promises) => Promise.all(promises))

@@ -23,6 +23,7 @@ function Log(props: { log: LogType | undefined }) {
                 {drive.team} {drive.result}
               </div>
               <div>{drive.description}</div>
+              <div>{drive.score}</div>
             </div>
             <div>
               {(drive.plays || []).map((play, j) => (

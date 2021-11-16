@@ -5,8 +5,8 @@ type ScreenMessageType = { version: string; streams: StreamType[] };
 type LogsMessageType = { version: string; logs: LogType[] };
 
 const nflstream_url = "https://nflstream.web.app/";
-const streamsVersion = "0.5.0";
-const logsVersion = "0.5.0";
+const streamsVersion = "1.0.0";
+const logsVersion = "1.0.0";
 
 function MessageExtension(props: {
   streams: StreamType[];

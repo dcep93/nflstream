@@ -67,7 +67,8 @@ function getStreams(tabId) {
           )
       )
     )
-    .then((promises) => Promise.all(promises));
+    .then((promises) => Promise.all(promises))
+    .then((logs) => logs.filter(Boolean));
 }
 
 const allScData = {};
@@ -114,7 +115,6 @@ function getLogs(tabId) {
             if (obj.drives === undefined) {
               return { id, name };
             }
-            const timestamp = obj.drives.current.plays[0].modified;
             const playByPlay = [obj.drives.current]
               .concat(obj.drives.previous.reverse())
               .map((drive) => ({
@@ -128,6 +128,7 @@ function getLogs(tabId) {
                 })),
                 description: drive.description,
               }));
+            const timestamp = obj.drives.current.plays[0].modified;
             const boxScore = ["passing", "rushing", "receiving"].map((key) => ({
               key,
               labels: obj.boxscore.players[0].statistics.find(

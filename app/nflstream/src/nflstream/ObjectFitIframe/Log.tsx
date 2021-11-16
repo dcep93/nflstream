@@ -1,11 +1,14 @@
-import React from "react";
 import { LogType } from "../../firebase";
+import { delayedLogComponent } from "../DelayedLog";
 import { default as ofStyle } from "./index.module.css";
 
 function LogWrapper(props: { log: LogType | null | undefined }) {
   if (props.log === null) return null;
   return (
-    <div className={ofStyle.logWrapper}>
+    <div
+      className={ofStyle.logWrapper}
+      onClick={() => delayedLogComponent.updateNow()}
+    >
       <Log log={props.log} />
     </div>
   );

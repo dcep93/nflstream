@@ -118,7 +118,6 @@ function getLogs(tabId) {
             const playByPlay = [obj.drives.current]
               .concat(obj.drives.previous.reverse())
               .map((drive) => ({
-                score: `${drive.plays[0].awayScore} - ${drive.plays[0].homeScore}`,
                 team: drive.team.shortDisplayName,
                 result: drive.displayResult,
                 plays: drive.plays.reverse().map((p) => ({
@@ -127,6 +126,7 @@ function getLogs(tabId) {
                   clock: `Q${p.period.number} ${p.clock.displayValue}`,
                 })),
                 description: drive.description,
+                score: `${drive.plays[0].awayScore} - ${drive.plays[0].homeScore}`,
               }));
             const timestamp = obj.drives.current.plays[0].modified;
             const boxScore = ["passing", "rushing", "receiving"].map((key) => ({

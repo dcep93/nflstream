@@ -18,6 +18,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     getLogs,
   }
     [message.action](sender.tab.id)
+    .then(log)
     .then(sendResponse));
   return true;
 });

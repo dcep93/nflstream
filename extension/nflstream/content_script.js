@@ -163,6 +163,7 @@ function parseTinyUrl(message) {
     return x.match(/\.attr\("href","http.*?"\)/)[0].split('"')[3];
   }
   function getUrl(rawHtml) {
+    return log(rawHtml.match(/\$\("#skip-btn"\)\.attr\("href","(.*)"\);/)[1]);
     var args = rawHtml
       .match(/decodeURIComponent\(escape\(r\)\)\}\(.*?\)\)/)[0]
       .split("(")[3]

@@ -3,6 +3,9 @@ import { LogType } from "../firebase";
 import { isIdentical } from "./MessageExtension";
 
 export var delayedLogComponent: DelayedLog;
+
+const delayMs = 4 * 60 * 1000;
+
 class DelayedLog extends React.Component<
   { logs: LogType[] },
   { logs: LogType[] }
@@ -23,7 +26,7 @@ class DelayedLog extends React.Component<
   }
 
   delayUpdate() {
-    setTimeout(this.updateNow.bind(this), 3 * 60 * 1000);
+    setTimeout(this.updateNow.bind(this), delayMs);
   }
 
   updateNow() {

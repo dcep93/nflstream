@@ -1,17 +1,25 @@
+import React from "react";
 import { LogType } from "../../firebase";
 import { delayedLogComponent } from "../DelayedLog";
 import { default as ofStyle } from "./index.module.css";
 
-function LogWrapper(props: { log: LogType | null | undefined }) {
-  if (props.log === null) return null;
-  return (
-    <div
-      className={ofStyle.logWrapper}
-      onClick={() => delayedLogComponent.updateNow()}
-    >
-      <Log log={props.log} />
-    </div>
-  );
+class LogWrapper extends React.Component<{ name?: string }> {
+  render() {
+    const log = (delayedLogComponent?.state?.logs || []).find(
+      (l) => l.name === this.props.name
+    );
+    return (
+      <div
+        className={ofStyle.logWrapper}
+        onClick={() => {
+          delayedLogComponent.updateNow();
+          setTimeout(() => this.forceUpdate(), 100);
+        }}
+      >
+        <Log log={log || undefined} />
+      </div>
+    );
+  }
 }
 
 function Log(props: { log: LogType | undefined }) {

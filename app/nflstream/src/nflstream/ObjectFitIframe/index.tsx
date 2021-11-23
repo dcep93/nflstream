@@ -1,5 +1,4 @@
 import { CSSProperties } from "react";
-import { delayedLogComponent } from "../DelayedLog";
 import { default as ofStyle } from "./index.module.css";
 import Log from "./Log";
 
@@ -9,14 +8,9 @@ function ObjectFitIframe(props: {
   name: string;
   skipLog: boolean;
 }) {
-  const log = props.skipLog
-    ? null
-    : (delayedLogComponent?.state?.logs || []).find(
-        (l) => l.name === props.name
-      );
   return (
     <div className={ofStyle.container}>
-      {<Log log={log}></Log>}
+      <Log name={props.skipLog ? undefined : props.name}></Log>
       <iframe
         ref={props.iframeRef}
         sandbox={"allow-scripts allow-same-origin"}

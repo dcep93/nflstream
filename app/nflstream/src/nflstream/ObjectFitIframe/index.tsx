@@ -10,7 +10,7 @@ function ObjectFitIframe(props: {
 }) {
   return (
     <div className={ofStyle.container}>
-      <Log name={props.skipLog ? undefined : props.name}></Log>
+      {props.skipLog ? null : <Log name={props.name}></Log>}
       <iframe
         ref={props.iframeRef}
         sandbox={"allow-scripts allow-same-origin"}

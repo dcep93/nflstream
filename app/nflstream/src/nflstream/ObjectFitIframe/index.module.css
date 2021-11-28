@@ -13,7 +13,6 @@
   position:relative;
   resize: horizontal;
   overflow:scroll;
-  background-color: lightgray;
 }
 
 .log {
@@ -23,6 +22,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  background-color: lightgray;
 }
 
 .logContent {

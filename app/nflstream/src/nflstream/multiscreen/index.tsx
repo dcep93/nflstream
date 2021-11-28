@@ -48,6 +48,12 @@ function Multiscreen(props: {
                 msStyle.screen_wrapper,
               ].join(" ")}
             >
+              <div
+                className={[msStyle.title, style.hover].join(" ")}
+                onClick={() => props.removeScreen(i)}
+              >
+                {screen.name}
+              </div>
               <div className={msStyle.screen} ref={refs[screen.iFrameTitle]}>
                 <div
                   hidden={selected === screen.iFrameTitle}
@@ -71,12 +77,6 @@ function Multiscreen(props: {
                       selected !== screen.iFrameTitle)
                   }
                 />
-              </div>
-              <div
-                className={[msStyle.title, style.hover].join(" ")}
-                onClick={() => props.removeScreen(i)}
-              >
-                {screen.name}
               </div>
             </div>
           ))}

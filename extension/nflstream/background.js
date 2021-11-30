@@ -117,6 +117,7 @@ function getLogs(tabId) {
             }
             const playByPlay = [obj.drives.current]
               .concat(obj.drives.previous.reverse())
+              .filter((drive) => drive.team)
               .map((drive) => ({
                 team: drive.team.shortDisplayName,
                 result: drive.displayResult,

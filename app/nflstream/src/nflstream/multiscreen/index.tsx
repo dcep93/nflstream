@@ -45,6 +45,7 @@ function Multiscreen(props: {
                 props.screens.length > 1 &&
                   selected === screen.iFrameTitle &&
                   msStyle.selected_screen,
+                selected !== screen.iFrameTitle && msStyle.unselected_screen,
                 msStyle.screen_wrapper,
               ].join(" ")}
             >
@@ -55,28 +56,30 @@ function Multiscreen(props: {
                 {screen.name}
               </div>
               <div className={msStyle.screen} ref={refs[screen.iFrameTitle]}>
-                <div
-                  hidden={selected === screen.iFrameTitle}
-                  className={msStyle.screen_mask}
-                  onClick={() => {
-                    const height = refs[selected]!.current!.style.height;
-                    refs[selected]!.current!.style.height = "initial";
-                    refs[screen.iFrameTitle]!.current!.style.height = height;
-                    muteUnmute(iframeRefs[screen.iFrameTitle]!, false);
-                    muteUnmute(iframeRefs[selected]!, true);
-                    updateSelected(screen.iFrameTitle);
-                  }}
-                ></div>
-                <ObjectFitIframe
-                  iframeRef={iframeRefs[screen.iFrameTitle]}
-                  url={screen.url}
-                  name={screen.name}
-                  skipLog={
-                    screen.skipLog ||
-                    (props.screens.length > 1 &&
-                      selected !== screen.iFrameTitle)
-                  }
-                />
+                <div className={msStyle.subscreen}>
+                  <div
+                    hidden={selected === screen.iFrameTitle}
+                    className={msStyle.screen_mask}
+                    onClick={() => {
+                      const height = refs[selected]!.current!.style.height;
+                      refs[selected]!.current!.style.height = "initial";
+                      refs[screen.iFrameTitle]!.current!.style.height = height;
+                      muteUnmute(iframeRefs[screen.iFrameTitle]!, false);
+                      muteUnmute(iframeRefs[selected]!, true);
+                      updateSelected(screen.iFrameTitle);
+                    }}
+                  ></div>
+                  <ObjectFitIframe
+                    iframeRef={iframeRefs[screen.iFrameTitle]}
+                    url={screen.url}
+                    name={screen.name}
+                    skipLog={
+                      screen.skipLog ||
+                      (props.screens.length > 1 &&
+                        selected !== screen.iFrameTitle)
+                    }
+                  />
+                </div>
               </div>
             </div>
           ))}

@@ -14,7 +14,11 @@
 .selected_screen {
   width: 100%;
   order: -1;
-  min-height: 85%;
+  height: 85%;
+}
+
+.unselected_screen {
+  height: 14%;
 }
 
 .screen_wrapper {
@@ -35,6 +39,12 @@
   resize: both;
   overflow: hidden;
   border: 1px solid lightgray;
+}
+
+.subscreen {
+  position: absolute;
+  height: 100%;
+  width: 100%;
 }
 
 .screen_mask {

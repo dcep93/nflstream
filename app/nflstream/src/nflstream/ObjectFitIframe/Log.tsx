@@ -34,7 +34,7 @@ function Log(props: { log: LogType | undefined }) {
           <div key={i}>
             <div className={ofStyle.logHeader}>
               <div>
-                {drive.team}: {drive.result || "(current)"}
+                {drive.team}: {drive.result || "*"}
               </div>
               <div>{drive.description}</div>
               <div>{drive.score}</div>

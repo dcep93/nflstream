@@ -26,11 +26,18 @@ class LogWrapper extends React.Component<{ name?: string }> {
 
 function Log(props: { log: LogType | undefined }) {
   if (props.log === undefined) return null;
+  const playByPlay = props.log.playByPlay || [];
+  if (
+    playByPlay.length > 1 &&
+    playByPlay[0].description === playByPlay[1].description
+  ) {
+    playByPlay.shift();
+  }
   return (
     <div className={ofStyle.log}>
       <div className={ofStyle.logContent}>
         <div>{new Date(props.log.timestamp).toLocaleTimeString()}</div>
-        {(props.log.playByPlay || []).map((drive, i) => (
+        {(playByPlay || []).map((drive, i) => (
           <div key={i}>
             <div className={ofStyle.logHeader}>
               <div>

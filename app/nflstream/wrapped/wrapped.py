@@ -28,14 +28,14 @@ g = {}
 def main():
     with concurrent.futures.ThreadPoolExecutor(len(metrics)) as executor:
         fetched_metrics = executor.map(
-            lambda metric: (metric, metric[1]()),
+            lambda metric: (metric, metric[2]()),
             metrics,
         )
     for metric in fetched_metrics:
         print(metric[0][0])
+        number = metric[0][1]
         points = metric[1]
         points.sort(reverse=True)
-        number = metric[0][2]
         if number > 0:
             points = points[:number]
         if points:
@@ -48,7 +48,7 @@ def main():
 
 def metric_d(name, number=0):
     def d(f):
-        metrics.append((name, f, number))
+        metrics.append((name, number, f))
         return f
 
     return d
@@ -75,10 +75,10 @@ def fetch(url):
 def get_matches(week):
     url = f"https://fantasy.espn.com/apis/v3/games/ffl/seasons/2021/segments/0/leagues/{league_id}?view=mScoreboard&scoringPeriodId={week}"
     data = fetch(url)
-    return [
-        i for i in data["schedule"]
-        if "rosterForCurrentScoringPeriod" in i["away"]
-    ]
+    return filter(
+        lambda i: "rosterForCurrentScoringPeriod" in i["away"],
+        data["schedule"],
+    )
 
 
 def get_team_names():

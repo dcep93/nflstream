@@ -20,7 +20,7 @@ class Positions:
     FLEX = -1
 
 
-metrics = []
+metrics = []  # type: ignore
 
 g = {}
 

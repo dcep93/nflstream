@@ -1,5 +1,6 @@
 import concurrent.futures
 
+import collections
 import json
 import requests
 
@@ -46,8 +47,9 @@ def main():
         print()
 
 
-def metric_d(name, number=0):
+def metric_d(number=0):
     def d(f):
+        name = f.__name__
         metrics.append((name, number, f))
         return f
 
@@ -76,7 +78,7 @@ def get_matches(week):
     url = f"https://fantasy.espn.com/apis/v3/games/ffl/seasons/2021/segments/0/leagues/{league_id}?view=mScoreboard&scoringPeriodId={week}"
     data = fetch(url)
     return filter(
-        lambda i: "rosterForCurrentScoringPeriod" in i["away"],
+        lambda match: "rosterForCurrentScoringPeriod" in match["away"],
         data["schedule"],
     )
 
@@ -85,7 +87,11 @@ def get_team_names():
     data = fetch(
         f"https://fantasy.espn.com/apis/v3/games/ffl/seasons/2021/segments/0/leagues/{league_id}?view=mTeam"
     )
-    return [f'{i["location"]} {i["nickname"]}' for i in data["teams"]]
+    return list(
+        map(
+            lambda team: f'{team["location"]} {team["nickname"]}',
+            data["teams"],
+        ), )
 
 
 def get_points(raw_points):
@@ -95,7 +101,21 @@ def get_points(raw_points):
 ###
 
 
-@metric_d("times chosen wrong")
+@metric_d()
+def best_by_streaming_position():
+    points = []
+    team_names = get_team_names()
+    for position in [Positions.QB, Positions.DST, Positions.K]:
+        scores = collections.defaultdict(float)
+        for week in range(1, 18):
+            matches = get_matches(week)
+            for match in matches:
+                for team in [match["away"], match["home"]]:
+                    pass
+    return points
+
+
+@metric_d()
 def times_chosen_wrong():
     points = []
     team_names = get_team_names()
@@ -104,12 +124,12 @@ def times_chosen_wrong():
         for match in matches:
             raw_teams = sorted(
                 [match["away"], match["home"]],
-                key=lambda i: i["totalPoints"],
+                key=lambda team: team["totalPoints"],
             )
             teams = []
-            for i in raw_teams:
-                score = get_points(i["totalPoints"])
-                superscore = get_points(i["totalPoints"])
+            for team in raw_teams:
+                score = get_points(team["totalPoints"])
+                superscore = get_points(team["totalPoints"])
                 better_starts = []
                 better_starts_strings = []
                 for choices in [
@@ -130,23 +150,23 @@ def times_chosen_wrong():
                     },
                 ]:
                     started_players = filter(
-                        lambda j: j["playerPoolEntry"]["player"][
+                        lambda player: player["playerPoolEntry"]["player"][
                             "defaultPositionId"] in choices,
-                        i["rosterForMatchupPeriod"]["entries"],
+                        team["rosterForMatchupPeriod"]["entries"],
                     )
                     started_ids = {
-                        j["playerId"]:
-                        j["playerPoolEntry"]["player"]["fullName"]
-                        for j in started_players
+                        player["playerId"]:
+                        player["playerPoolEntry"]["player"]["fullName"]
+                        for player in started_players
                     }
                     best_players = sorted(
                         filter(
-                            lambda j: j["playerPoolEntry"]["player"][
+                            lambda player: player["playerPoolEntry"]["player"][
                                 "defaultPositionId"] in choices,
-                            i["rosterForCurrentScoringPeriod"]["entries"],
+                            team["rosterForCurrentScoringPeriod"]["entries"],
                         ),
-                        key=lambda j: -j["playerPoolEntry"]["appliedStatTotal"
-                                                            ],
+                        key=lambda player: -player["playerPoolEntry"][
+                            "appliedStatTotal"],
                     )
                     best_ids = {}
                     for position in choices:
@@ -155,18 +175,19 @@ def times_chosen_wrong():
                         for _ in range(choices[position]):
                             best_id = list(
                                 filter(
-                                    lambda j: j["playerId"] not in best_ids and
-                                    j["playerPoolEntry"]["player"][
-                                        "defaultPositionId"] == position,
+                                    lambda player: player["playerId"] not in
+                                    best_ids and player["playerPoolEntry"][
+                                        "player"]["defaultPositionId"
+                                                  ] == position,
                                     best_players,
                                 ))[0]["playerId"]
                             best_ids[best_id] = True
                     for _ in range(choices.get(Positions.FLEX, 0)):
                         best_flex_id = list(
                             filter(
-                                lambda j: j not in best_ids,
+                                lambda player_id: player_id not in best_ids,
                                 map(
-                                    lambda j: j["playerId"],
+                                    lambda player: player["playerId"],
                                     best_players,
                                 ),
                             ))[0]
@@ -176,13 +197,13 @@ def times_chosen_wrong():
                             del best_ids[id]
                             del started_ids[id]
                     if best_ids:
+                        players_by_id = {
+                            player["playerId"]: player["playerPoolEntry"]
+                            for player in best_players
+                        }
                         best_starts = []
                         for id in best_ids:
-                            best_player = list(
-                                filter(
-                                    lambda j: j["playerId"] == id,
-                                    best_players,
-                                ))[0]["playerPoolEntry"]
+                            best_player = players_by_id[id]
                             player_score = get_points(
                                 best_player["appliedStatTotal"])
                             superscore += player_score
@@ -191,11 +212,7 @@ def times_chosen_wrong():
                             )
                         started_starts = []
                         for id in started_ids:
-                            started_player = list(
-                                filter(
-                                    lambda j: j["playerId"] == id,
-                                    best_players,
-                                ))[0]["playerPoolEntry"]
+                            started_player = players_by_id[id]
                             player_score = get_points(
                                 started_player["appliedStatTotal"])
                             superscore -= player_score
@@ -213,7 +230,7 @@ def times_chosen_wrong():
                 superscore = get_points(superscore)
                 teams.append({
                     "name":
-                    f'{team_names[i["teamId"] - 1]}: {score} ss {superscore}',
+                    f'{team_names[team["teamId"] - 1]}: {score} ss {superscore}',
                     "better_starts": better_starts,
                     "better_starts_strings": better_starts_strings,
                     "score": score,
@@ -228,7 +245,7 @@ def times_chosen_wrong():
                     "week",
                     week,
                     "if they had started:",
-                    ','.join(teams[0]["better_starts_strings"]),
+                    '\t'.join(teams[0]["better_starts_strings"]),
                 ])
     return points
 

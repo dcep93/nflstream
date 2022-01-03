@@ -108,9 +108,10 @@ def times_chosen_wrong():
             )
             teams = []
             for i in raw_teams:
-                score = i["totalPoints"]
-                superscore = i["totalPoints"]
+                score = get_points(i["totalPoints"])
+                superscore = get_points(i["totalPoints"])
                 better_starts = []
+                better_starts_strings = []
                 for choices in [
                     {
                         Positions.QB: 1
@@ -182,13 +183,12 @@ def times_chosen_wrong():
                                     lambda j: j["playerId"] == id,
                                     best_players,
                                 ))[0]["playerPoolEntry"]
-                            superscore += best_player["appliedStatTotal"]
-                            best_starts.append({
-                                "name":
-                                best_player["player"]["fullName"],
-                                "points":
-                                get_points(best_player["appliedStatTotal"]),
-                            })
+                            player_score = get_points(
+                                best_player["appliedStatTotal"])
+                            superscore += player_score
+                            best_starts.append(
+                                f'{best_player["player"]["fullName"]} {player_score}'
+                            )
                         started_starts = []
                         for id in started_ids:
                             started_player = list(
@@ -196,19 +196,28 @@ def times_chosen_wrong():
                                     lambda j: j["playerId"] == id,
                                     best_players,
                                 ))[0]["playerPoolEntry"]
-                            superscore -= started_player["appliedStatTotal"]
-                            started_starts.append({
-                                "name":
-                                started_player["player"]["fullName"],
-                                "points":
-                                get_points(started_player["appliedStatTotal"]),
-                            })
-                        better_starts.append([best_starts, started_starts])
+                            player_score = get_points(
+                                started_player["appliedStatTotal"])
+                            superscore -= player_score
+                            started_starts.append(
+                                f'{started_player["player"]["fullName"]} {player_score}'
+                            )
+                        best_started_starts = [best_starts, started_starts]
+                        better_starts.append(best_started_starts)
+                        better_starts_strings.append(' / '.join(
+                            map(
+                                lambda starts: ",".join(starts),
+                                best_started_starts,
+                            ), ))
+                score = get_points(score)
+                superscore = get_points(superscore)
                 teams.append({
-                    "name": team_names[i["teamId"] - 1],
+                    "name":
+                    f'{team_names[i["teamId"] - 1]}: {score} ss {superscore}',
                     "better_starts": better_starts,
-                    "score": get_points(score),
-                    "superscore": get_points(superscore),
+                    "better_starts_strings": better_starts_strings,
+                    "score": score,
+                    "superscore": superscore,
                 })
             if teams[0]["superscore"] > teams[1]["score"]:
                 points.append([
@@ -219,23 +228,7 @@ def times_chosen_wrong():
                     "week",
                     week,
                     "if they had started:",
-                    ",".join(
-                        map(
-                            lambda best_started_starts: ' / '.join(
-                                map(
-                                    lambda i: f'[{i}]',
-                                    map(
-                                        lambda starts: ",".join(
-                                            map(
-                                                lambda start:
-                                                f'{start["name"]} {start["points"]}',
-                                                starts,
-                                            )),
-                                        best_started_starts,
-                                    ),
-                                ), ),
-                            teams[0]["better_starts"],
-                        )),
+                    ','.join(teams[0]["better_starts_strings"]),
                 ])
     return points
 

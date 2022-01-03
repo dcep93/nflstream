@@ -7,6 +7,16 @@ league_id = 203836968
 
 cache_path = "cache.json"
 
+
+class Positions:
+    QB = 1
+    RB = 2
+    WR = 3
+    TE = 4
+    K = 5
+    DST = 16
+
+
 metrics = []
 
 g = {}
@@ -27,7 +37,7 @@ def main():
             points = points[:number]
         if points:
             for point in points:
-                print(point)
+                print(f"{point[0]} {point[1]}")
         else:
             print("no points")
         print()
@@ -59,23 +69,73 @@ def fetch(url):
     return data
 
 
-###
+def get_matches(week):
+    url = f"https://fantasy.espn.com/apis/v3/games/ffl/seasons/2021/segments/0/leagues/{league_id}?view=mScoreboard&scoringPeriodId={week}"
+    data = fetch(url)
+    return [
+        i for i in data['schedule']
+        if 'rosterForCurrentScoringPeriod' in i['away']
+    ]
 
-weeks = range(1, 14)
+
+def get_team_names():
+    data = fetch(
+        f"https://fantasy.espn.com/apis/v3/games/ffl/seasons/2021/segments/0/leagues/{league_id}?view=mTeam"
+    )
+    return [f"{i['location']} {i['nickname']}" for i in data["teams"]]
+
+
+def get_points(raw_points):
+    return round(raw_points, 2)
+
+
+###
 
 
 @metric_d("times chosen wrong")
 def times_chosen_wrong():
     points = []
-    for week in weeks:
-        url = f"https://fantasy.espn.com/apis/v3/games/ffl/seasons/2021/segments/0/leagues/{league_id}?view=mScoreboard&scoringPeriodId={week}"
-        data = fetch(url)
-        matches = [
-            i for i in data['schedule']
-            if 'rosterForCurrentScoringPeriod' in i['away']
-        ]
+    for week in range(1, 14):
+        matches = get_matches(week)
         for match in matches:
-            pass
+            raw_teams = sorted([i for i in [match["away"], match["home"]]],
+                               key=lambda i: i["totalPoints"])
+            teams = []
+            for i in raw_teams:
+                score = i['totalPoints']
+                superscore = i['totalPoints']
+                starts = []
+                for position in [Positions.QB, Positions.DST, Positions.K]:
+                    started_player = [
+                        j for j in i['rosterForMatchupPeriod']["entries"]
+                        if j["playerPoolEntry"]["player"]["defaultPositionId"]
+                        == position
+                    ][0]["playerPoolEntry"]
+                    best_player = sorted(
+                        [
+                            j for j in i['rosterForCurrentScoringPeriod']
+                            ["entries"] if j["playerPoolEntry"]["player"]
+                            ["defaultPositionId"] == position
+                        ],
+                        key=lambda j: -(j["playerPoolEntry"][
+                            "appliedStatTotal"]))[0]["playerPoolEntry"]
+                    if started_player["id"] != best_player["id"]:
+                        superscore += best_player[
+                            "appliedStatTotal"] - started_player[
+                                "appliedStatTotal"]
+                        starts.append(
+                            f"{best_player['player']['fullName']} {get_points(best_player['appliedStatTotal'])} / {started_player['player']['fullName']} {get_points(started_player['appliedStatTotal'])}"
+                        )
+                    desc = f"{get_team_names()[i['teamId']-1]} {score} (ss {get_points(superscore)})"
+                teams.append(
+                    [desc, starts,
+                     get_points(score),
+                     get_points(superscore)])
+            if teams[0][3] > teams[1][2]:
+                points.append([
+                    get_points(teams[0][3] - teams[0][2]),
+                    f"[{teams[0][0]}] could have beaten [{teams[1][0]}] week {week} if they had started: {','.join(teams[0][1])}"
+                ])
     return points
 
 

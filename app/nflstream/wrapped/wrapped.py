@@ -5,15 +5,11 @@ import requests
 
 league_id = 203836968
 
-metrics = []
-
 cache_path = "cache.json"
 
-with open(cache_path) as fh:
-    try:
-        cache = json.load(fh)
-    except:
-        cache = {}
+metrics = []
+
+g = {}
 
 
 def main():
@@ -46,6 +42,13 @@ def metric_d(name, number=0):
 
 
 def fetch(url):
+    if "cache" not in g:
+        with open(cache_path) as fh:
+            try:
+                g['cache'] = json.load(fh)
+            except:
+                g['cache'] = {}
+    cache = g['cache']
     if url in cache:
         return cache[url]
     print(f"fetching {url}")
@@ -67,8 +70,12 @@ def times_chosen_wrong():
     for week in weeks:
         url = f"https://fantasy.espn.com/apis/v3/games/ffl/seasons/2021/segments/0/leagues/{league_id}?view=mScoreboard&scoringPeriodId={week}"
         data = fetch(url)
-        print(data)
-        break
+        matches = [
+            i for i in data['schedule']
+            if 'rosterForCurrentScoringPeriod' in i['away']
+        ]
+        for match in matches:
+            pass
     return points
 
 

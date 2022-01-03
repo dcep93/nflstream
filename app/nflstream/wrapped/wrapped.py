@@ -29,16 +29,12 @@ g = {}
 def main():
     with concurrent.futures.ThreadPoolExecutor(len(metrics)) as executor:
         fetched_metrics = executor.map(
-            lambda metric: (metric, metric[2]()),
+            lambda metric: (metric, metric[1]()),
             metrics,
         )
     for metric in fetched_metrics:
         print(metric[0][0])
-        number = metric[0][1]
         points = metric[1]
-        points.sort(reverse=True)
-        if number > 0:
-            points = points[:number]
         if points:
             for point in points:
                 print(joiner.join(map(str, point)))
@@ -47,10 +43,10 @@ def main():
         print()
 
 
-def metric_d(number=0):
+def metric_d():
     def d(f):
         name = f.__name__
-        metrics.append((name, number, f))
+        metrics.append((name, f))
         return f
 
     return d
@@ -105,13 +101,35 @@ def get_points(raw_points):
 def best_by_streaming_position():
     points = []
     team_names = get_team_names()
+    position_to_name = {
+        Positions.QB: "QB",
+        Positions.DST: "DST",
+        Positions.K: "K"
+    }
     for position in [Positions.QB, Positions.DST, Positions.K]:
         scores = collections.defaultdict(float)
         for week in range(1, 18):
             matches = get_matches(week)
             for match in matches:
                 for team in [match["away"], match["home"]]:
-                    pass
+                    started_player = list(
+                        filter(
+                            lambda player: player["playerPoolEntry"]["player"][
+                                "defaultPositionId"] == position,
+                            team["rosterForMatchupPeriod"]["entries"],
+                        ))[0]
+                    scores[team["teamId"]] += started_player[
+                        "playerPoolEntry"]["appliedStatTotal"]
+        best_team_ids = sorted(
+            scores.keys(),
+            key=lambda team_id: -scores[team_id],
+        )
+        for team_id in best_team_ids:
+            points.append([
+                get_points(scores[team_id]),
+                team_names[team_id - 1],
+                position_to_name[position],
+            ])
     return points
 
 
@@ -247,6 +265,7 @@ def times_chosen_wrong():
                     "if they had started:",
                     '\t'.join(teams[0]["better_starts_strings"]),
                 ])
+    points.sort(reverse=True)
     return points
 
 

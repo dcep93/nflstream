@@ -15,6 +15,7 @@ class Positions:
     TE = 4
     K = 5
     DST = 16
+    FLEX = -1
 
 
 metrics = []
@@ -105,7 +106,25 @@ def times_chosen_wrong():
             for i in raw_teams:
                 score = i['totalPoints']
                 superscore = i['totalPoints']
-                starts = []
+                better_starts = []
+                for choices in [
+                    {
+                        Positions.QB: 1
+                    },
+                    {
+                        Positions.DST: 1
+                    },
+                    {
+                        Positions.K: 1
+                    },
+                    {
+                        Positions.RB: 2,
+                        Positions.WR: 2,
+                        Positions.TE: 1,
+                        Positions.FLEX: 1,
+                    },
+                ]:
+                    continue
                 for position in [Positions.QB, Positions.DST, Positions.K]:
                     started_player = [
                         j for j in i['rosterForMatchupPeriod']["entries"]
@@ -124,7 +143,7 @@ def times_chosen_wrong():
                         superscore += best_player[
                             "appliedStatTotal"] - started_player[
                                 "appliedStatTotal"]
-                        starts.append(
+                        better_starts.append(
                             f"[{best_player['player']['fullName']} {get_points(best_player['appliedStatTotal'])} / {started_player['player']['fullName']} {get_points(started_player['appliedStatTotal'])}]"
                         )
                 # WRT
@@ -191,16 +210,17 @@ def times_chosen_wrong():
                             f"{started_player['player']['fullName']} {get_points(started_player['appliedStatTotal'])}"
                         )
                         superscore -= started_player["appliedStatTotal"]
-                    starts.append(
+                    better_starts.append(
                         f"[{','.join(best_starts)} / {','.join(started_starts)}]"
                     )
                     #
 
                 desc = f"{team_names[i['teamId']-1]} {score} (ss {get_points(superscore)})"
-                teams.append(
-                    [desc, starts,
-                     get_points(score),
-                     get_points(superscore)])
+                teams.append([
+                    desc, better_starts,
+                    get_points(score),
+                    get_points(superscore)
+                ])
             if teams[0][3] > teams[1][2]:
                 points.append([
                     get_points(teams[0][3] - teams[0][2]),

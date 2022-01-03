@@ -3,6 +3,8 @@ import concurrent.futures
 import json
 import requests
 
+joiner = " "
+
 league_id = 203836968
 
 cache_path = "cache.json"
@@ -38,7 +40,7 @@ def main():
             points = points[:number]
         if points:
             for point in points:
-                print(f"{point[0]} {point[1]}")
+                print(joiner.join(map(str, point)))
         else:
             print("no points")
         print()
@@ -56,13 +58,13 @@ def fetch(url):
     if "cache" not in g:
         with open(cache_path) as fh:
             try:
-                g['cache'] = json.load(fh)
+                g["cache"] = json.load(fh)
             except:
-                g['cache'] = {}
-    cache = g['cache']
+                g["cache"] = {}
+    cache = g["cache"]
     if url in cache:
         return cache[url]
-    print(f"fetching {url}")
+    print("fetching", url)
     data = requests.get(url).json()
     cache[url] = data
     with open(cache_path, "w") as fh:
@@ -74,8 +76,8 @@ def get_matches(week):
     url = f"https://fantasy.espn.com/apis/v3/games/ffl/seasons/2021/segments/0/leagues/{league_id}?view=mScoreboard&scoringPeriodId={week}"
     data = fetch(url)
     return [
-        i for i in data['schedule']
-        if 'rosterForCurrentScoringPeriod' in i['away']
+        i for i in data["schedule"]
+        if "rosterForCurrentScoringPeriod" in i["away"]
     ]
 
 
@@ -83,7 +85,7 @@ def get_team_names():
     data = fetch(
         f"https://fantasy.espn.com/apis/v3/games/ffl/seasons/2021/segments/0/leagues/{league_id}?view=mTeam"
     )
-    return [f"{i['location']} {i['nickname']}" for i in data["teams"]]
+    return [f'{i["location"]} {i["nickname"]}' for i in data["teams"]]
 
 
 def get_points(raw_points):
@@ -106,8 +108,8 @@ def times_chosen_wrong():
             )
             teams = []
             for i in raw_teams:
-                score = i['totalPoints']
-                superscore = i['totalPoints']
+                score = i["totalPoints"]
+                superscore = i["totalPoints"]
                 better_starts = []
                 for choices in [
                     {
@@ -129,7 +131,7 @@ def times_chosen_wrong():
                     started_players = filter(
                         lambda j: j["playerPoolEntry"]["player"][
                             "defaultPositionId"] in choices,
-                        i['rosterForMatchupPeriod']["entries"],
+                        i["rosterForMatchupPeriod"]["entries"],
                     )
                     started_ids = {
                         j["playerId"]:
@@ -140,7 +142,7 @@ def times_chosen_wrong():
                         filter(
                             lambda j: j["playerPoolEntry"]["player"][
                                 "defaultPositionId"] in choices,
-                            i['rosterForCurrentScoringPeriod']["entries"],
+                            i["rosterForCurrentScoringPeriod"]["entries"],
                         ),
                         key=lambda j: -j["playerPoolEntry"]["appliedStatTotal"
                                                             ],
@@ -179,36 +181,61 @@ def times_chosen_wrong():
                                 filter(
                                     lambda j: j["playerId"] == id,
                                     best_players,
-                                ))[0]['playerPoolEntry']
+                                ))[0]["playerPoolEntry"]
                             superscore += best_player["appliedStatTotal"]
-                            best_starts.append(
-                                f"{best_player['player']['fullName']} {get_points(best_player['appliedStatTotal'])}"
-                            )
+                            best_starts.append({
+                                "name":
+                                best_player["player"]["fullName"],
+                                "points":
+                                get_points(best_player["appliedStatTotal"]),
+                            })
                         started_starts = []
                         for id in started_ids:
                             started_player = list(
                                 filter(
                                     lambda j: j["playerId"] == id,
                                     best_players,
-                                ))[0]['playerPoolEntry']
+                                ))[0]["playerPoolEntry"]
                             superscore -= started_player["appliedStatTotal"]
-                            started_starts.append(
-                                f"{started_player['player']['fullName']} {get_points(started_player['appliedStatTotal'])}"
-                            )
-                        better_starts.append(
-                            f"[{','.join(best_starts)} / {','.join(started_starts)}]"
-                        )
-
-                desc = f"{team_names[i['teamId']-1]} {score} (ss {get_points(superscore)})"
-                teams.append([
-                    desc, better_starts,
-                    get_points(score),
-                    get_points(superscore)
-                ])
-            if teams[0][3] > teams[1][2]:
+                            started_starts.append({
+                                "name":
+                                started_player["player"]["fullName"],
+                                "points":
+                                get_points(started_player["appliedStatTotal"]),
+                            })
+                        better_starts.append([best_starts, started_starts])
+                teams.append({
+                    "name": team_names[i["teamId"] - 1],
+                    "better_starts": better_starts,
+                    "score": get_points(score),
+                    "superscore": get_points(superscore),
+                })
+            if teams[0]["superscore"] > teams[1]["score"]:
                 points.append([
-                    get_points(teams[0][3] - teams[0][2]),
-                    f"[{teams[0][0]}] could have beaten [{teams[1][0]}] week {week} if they had started: {','.join(teams[0][1])}"
+                    get_points(teams[0]["superscore"] - teams[0]["score"]),
+                    f'[{teams[0]["name"]}]',
+                    "could have beaten",
+                    f'[{teams[1]["name"]}]',
+                    "week",
+                    week,
+                    "if they had started:",
+                    ",".join(
+                        map(
+                            lambda best_started_starts: ' / '.join(
+                                map(
+                                    lambda i: f'[{i}]',
+                                    map(
+                                        lambda starts: ",".join(
+                                            map(
+                                                lambda start:
+                                                f'{start["name"]} {start["points"]}',
+                                                starts,
+                                            )),
+                                        best_started_starts,
+                                    ),
+                                ), ),
+                            teams[0]["better_starts"],
+                        )),
                 ])
     return points
 

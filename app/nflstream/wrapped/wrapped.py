@@ -100,8 +100,10 @@ def times_chosen_wrong():
     for week in range(1, 14):
         matches = get_matches(week)
         for match in matches:
-            raw_teams = sorted([i for i in [match["away"], match["home"]]],
-                               key=lambda i: i["totalPoints"])
+            raw_teams = sorted(
+                [match["away"], match["home"]],
+                key=lambda i: i["totalPoints"],
+            )
             teams = []
             for i in raw_teams:
                 score = i['totalPoints']
@@ -124,96 +126,78 @@ def times_chosen_wrong():
                         Positions.FLEX: 1,
                     },
                 ]:
-                    continue
-                for position in [Positions.QB, Positions.DST, Positions.K]:
-                    started_player = [
-                        j for j in i['rosterForMatchupPeriod']["entries"]
-                        if j["playerPoolEntry"]["player"]["defaultPositionId"]
-                        == position
-                    ][0]["playerPoolEntry"]
-                    best_player = sorted(
-                        [
-                            j for j in i['rosterForCurrentScoringPeriod']
-                            ["entries"] if j["playerPoolEntry"]["player"]
-                            ["defaultPositionId"] == position
-                        ],
-                        key=lambda j: -(j["playerPoolEntry"][
-                            "appliedStatTotal"]))[0]["playerPoolEntry"]
-                    if started_player["id"] != best_player["id"]:
-                        superscore += best_player[
-                            "appliedStatTotal"] - started_player[
-                                "appliedStatTotal"]
-                        better_starts.append(
-                            f"[{best_player['player']['fullName']} {get_points(best_player['appliedStatTotal'])} / {started_player['player']['fullName']} {get_points(started_player['appliedStatTotal'])}]"
-                        )
-                # WRT
-                started_flexes = [
-                    j for j in i['rosterForMatchupPeriod']["entries"]
-                    if j["playerPoolEntry"]["player"]["defaultPositionId"] in
-                    [Positions.RB, Positions.WR, Positions.TE]
-                ]
-                started_ids = {
-                    j["playerId"]: j["playerPoolEntry"]["player"]["fullName"]
-                    for j in started_flexes
-                }
-                best_flexes = sorted(
-                    [
-                        j
-                        for j in i['rosterForCurrentScoringPeriod']["entries"]
-                        if j["playerPoolEntry"]["player"]["defaultPositionId"]
-                        in [Positions.RB, Positions.WR, Positions.TE]
-                    ],
-                    key=lambda j: -(j["playerPoolEntry"]["appliedStatTotal"]))
-                best_ids = {}
-                for position in [
-                        Positions.WR, Positions.WR, Positions.RB, Positions.RB,
-                        Positions.TE
-                ]:
-                    best_flex_id = list(
-                        filter(
-                            lambda j: j["playerId"] not in best_ids and
-                            j["playerPoolEntry"]["player"]["defaultPositionId"
-                                                           ] == position,
-                            best_flexes,
-                        ))[0]["playerId"]
-                    best_ids[best_flex_id] = True
-                best_flex_id = list(
-                    filter(
-                        lambda j: j["playerId"] not in best_ids,
-                        best_flexes,
-                    ))[0]["playerId"]
-                best_ids[best_flex_id] = True
-                for id in list(started_ids.keys()):
-                    if id in best_ids:
-                        del best_ids[id]
-                        del started_ids[id]
-                if best_ids:
-                    best_starts = []
-                    for id in best_ids:
-                        best_player = list(
-                            filter(
-                                lambda j: j["playerId"] == id,
-                                best_flexes,
-                            ))[0]['playerPoolEntry']
-                        best_starts.append(
-                            f"{best_player['player']['fullName']} {get_points(best_player['appliedStatTotal'])}"
-                        )
-                        superscore += best_player["appliedStatTotal"]
-                    started_starts = []
-                    for id in started_ids:
-                        started_player = list(
-                            filter(
-                                lambda j: j["playerId"] == id,
-                                best_flexes,
-                            ))[0]['playerPoolEntry']
-                        started_starts.append(
-                            f"{started_player['player']['fullName']} {get_points(started_player['appliedStatTotal'])}"
-                        )
-                        superscore -= started_player["appliedStatTotal"]
-                    better_starts.append(
-                        f"[{','.join(best_starts)} / {','.join(started_starts)}]"
+                    started_players = filter(
+                        lambda j: j["playerPoolEntry"]["player"][
+                            "defaultPositionId"] in choices,
+                        i['rosterForMatchupPeriod']["entries"],
                     )
-                    #
+                    started_ids = {
+                        j["playerId"]:
+                        j["playerPoolEntry"]["player"]["fullName"]
+                        for j in started_players
+                    }
+                    best_players = sorted(
+                        filter(
+                            lambda j: j["playerPoolEntry"]["player"][
+                                "defaultPositionId"] in choices,
+                            i['rosterForCurrentScoringPeriod']["entries"],
+                        ),
+                        key=lambda j: -j["playerPoolEntry"]["appliedStatTotal"
+                                                            ],
+                    )
+                    best_ids = {}
+                    for position in choices:
+                        if position == Positions.FLEX:
+                            continue  # handle flex later
+                        for _ in range(choices[position]):
+                            best_id = list(
+                                filter(
+                                    lambda j: j["playerId"] not in best_ids and
+                                    j["playerPoolEntry"]["player"][
+                                        "defaultPositionId"] == position,
+                                    best_players,
+                                ))[0]["playerId"]
+                            best_ids[best_id] = True
+                    for _ in range(choices.get(Positions.FLEX, 0)):
+                        best_flex_id = list(
+                            filter(
+                                lambda j: j not in best_ids,
+                                map(
+                                    lambda j: j["playerId"],
+                                    best_players,
+                                ),
+                            ))[0]
+                        best_ids[best_flex_id] = True
+                    for id in list(started_ids.keys()):
+                        if id in best_ids:
+                            del best_ids[id]
+                            del started_ids[id]
+                    if best_ids:
+                        best_starts = []
+                        for id in best_ids:
+                            best_player = list(
+                                filter(
+                                    lambda j: j["playerId"] == id,
+                                    best_players,
+                                ))[0]['playerPoolEntry']
+                            superscore += best_player["appliedStatTotal"]
+                            best_starts.append(
+                                f"{best_player['player']['fullName']} {get_points(best_player['appliedStatTotal'])}"
+                            )
+                        started_starts = []
+                        for id in started_ids:
+                            started_player = list(
+                                filter(
+                                    lambda j: j["playerId"] == id,
+                                    best_players,
+                                ))[0]['playerPoolEntry']
+                            superscore -= started_player["appliedStatTotal"]
+                            started_starts.append(
+                                f"{started_player['player']['fullName']} {get_points(started_player['appliedStatTotal'])}"
+                            )
+                        better_starts.append(
+                            f"[{','.join(best_starts)} / {','.join(started_starts)}]"
+                        )
 
                 desc = f"{team_names[i['teamId']-1]} {score} (ss {get_points(superscore)})"
                 teams.append([

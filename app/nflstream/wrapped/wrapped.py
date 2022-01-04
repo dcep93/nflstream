@@ -4,7 +4,7 @@ import collections
 import json
 import requests
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup  # type: ignore
 
 joiner = "\t"
 

@@ -41,13 +41,10 @@ def main():
         print()
 
 
-def metric_d():
-    def d(f):
-        name = f.__name__
-        metrics.append((name, f))
-        return f
-
-    return d
+def metric_d(f):
+    name = f.__name__
+    metrics.append((name, f))
+    return f
 
 
 def load_cache():
@@ -95,10 +92,6 @@ def get_points(raw_points):
     return round(raw_points, 2)
 
 
-def is_bust(points, projected_points):
-    return points < projected_points / 2
-
-
 def brackets(obj):
     return f'[{obj}]'
 
@@ -116,14 +109,15 @@ def get_play_by_play(pro_team_id, week):
     return
 
 
+# TODO
 def get_box_score(pro_team_id, week):
-    return
+    print(pro_team_id, week)
 
 
 ###
 
 
-# @metric_d()
+@metric_d
 def games_determined_by_discrete_scoring():
     weeks = range(1, 18)
     preload_matches(weeks)
@@ -270,7 +264,7 @@ def games_determined_by_discrete_scoring():
     return points
 
 
-@metric_d()
+@metric_d
 def best_by_streaming_position():
     weeks = range(1, 18)
     preload_matches(weeks)
@@ -308,7 +302,7 @@ def best_by_streaming_position():
     return points
 
 
-@metric_d()
+@metric_d
 def times_chosen_wrong():
     weeks = range(1, 14)
     preload_matches(weeks)

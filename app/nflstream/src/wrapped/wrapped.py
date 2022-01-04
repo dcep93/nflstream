@@ -160,13 +160,13 @@ def populate_boxscores(weeks):
     for week in weeks:
         for match in week["matches"]:
             for team in match:
-                for player in team["roster"].values():
+                for player in team["roster"]:
                     if player["position"] == 16:  # DST
                         key = (player["team"], week["number"])
                         to_fetch.append(key)
 
     with concurrent.futures.ThreadPoolExecutor(num_threads) as executor:
-        fetched_arr = executor.map(lambda f: get_boxscore(*f), to_fetch)
+        fetched_arr = list(executor.map(lambda f: get_boxscore(*f), to_fetch))
     for week in weeks:
         week["boxscores"] = [
             fetched_arr[i] for i, j in enumerate(to_fetch)
@@ -216,13 +216,14 @@ def populate_playbyplays(weeks):
     for week in weeks:
         for match in week["matches"]:
             for team in match:
-                for player in team["roster"].values():
+                for player in team["roster"]:
                     if player["position"] == 5:  # K
                         key = (player["team"], week["number"])
                         to_fetch.append(key)
 
     with concurrent.futures.ThreadPoolExecutor(num_threads) as executor:
-        fetched_arr = executor.map(lambda f: get_play_by_play(*f), to_fetch)
+        fetched_arr = list(
+            executor.map(lambda f: get_play_by_play(*f), to_fetch))
     for week in weeks:
         week["playbyplays"] = [
             fetched_arr[i] for i, j in enumerate(to_fetch)

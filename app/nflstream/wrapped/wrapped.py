@@ -399,9 +399,9 @@ def best_by_streaming_position():
         )
         for team_id in best_team_ids:
             points.append([
+                position_to_name[position],
                 get_points(scores[team_id]),
                 team_names[team_id - 1],
-                position_to_name[position],
             ])
         points.append([])
     return points
@@ -542,6 +542,7 @@ def times_chosen_wrong():
                     '\t'.join(teams[0]["better_starts_strings"]),
                 ])
     points.sort(reverse=True)
+    points = [point[1:] for point in points]
     return points
 
 

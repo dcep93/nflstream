@@ -33,14 +33,9 @@ lock = Lock()
 
 
 def main():
-    with concurrent.futures.ThreadPoolExecutor(len(metrics)) as executor:
-        fetched_metrics = executor.map(
-            lambda metric: (metric, metric[1]()),
-            metrics,
-        )
-    for metric in fetched_metrics:
-        print(metric[0][0])
-        points = metric[1]
+    for metric in metrics:
+        print(metric[0])
+        points = metric[1]()
         if points:
             for point in points:
                 print(joiner.join(map(str, point)))
@@ -60,11 +55,11 @@ def metric_d():
 
 def fetch(url):
     if "cache" not in g:
-        with open(cache_path) as fh:
-            try:
+        try:
+            with open(cache_path) as fh:
                 g["cache"] = json.load(fh)
-            except:
-                g["cache"] = {}
+        except:
+            g["cache"] = {}
     cache = g["cache"]
     if url in cache:
         return cache[url]
@@ -110,14 +105,24 @@ def brackets(obj):
     return f'[{obj}]'
 
 
+def preload_matches(weeks):
+    with concurrent.futures.ThreadPoolExecutor(len(weeks)) as executor:
+        executor.map(
+            lambda week: get_matches(week),
+            weeks,
+        )
+
+
 ###
 
 
-@metric_d()
+# @metric_d()
 def games_determined_by_discrete_scoring():
+    weeks = range(1, 18)
+    preload_matches(weeks)
     points = []
     team_names = get_team_names()
-    for week in range(1, 18):
+    for week in weeks:
         matches = get_matches(week)
         for match in matches:
             teams = []
@@ -258,8 +263,10 @@ def games_determined_by_discrete_scoring():
     return points
 
 
-# @metric_d()
+@metric_d()
 def best_by_streaming_position():
+    weeks = range(1, 18)
+    preload_matches(weeks)
     points = []
     team_names = get_team_names()
     position_to_name = {
@@ -269,7 +276,7 @@ def best_by_streaming_position():
     }
     for position in [Positions.QB, Positions.DST, Positions.K]:
         scores = collections.defaultdict(float)
-        for week in range(1, 18):
+        for week in weeks:
             matches = get_matches(week)
             for match in matches:
                 for team in [match["away"], match["home"]]:
@@ -294,11 +301,13 @@ def best_by_streaming_position():
     return points
 
 
-# @metric_d()
+@metric_d()
 def times_chosen_wrong():
+    weeks = range(1, 14)
+    preload_matches(weeks)
     points = []
     team_names = get_team_names()
-    for week in range(1, 14):
+    for week in weeks:
         matches = get_matches(week)
         for match in matches:
             raw_teams = sorted(

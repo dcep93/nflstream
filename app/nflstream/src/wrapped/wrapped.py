@@ -3,7 +3,9 @@ import concurrent.futures
 import json
 import requests
 
-from bs4 import BeautifulSoup  # type: ignore
+from bs4 import BeautifulSoup
+
+from nflstream.app.nflstream.src.wrapped.wrapped_old import get_play_by_play  # type: ignore
 
 year = 2021
 league_ids = [203836968]
@@ -121,19 +123,21 @@ def get_team(raw_team):
     }
     lineup = list(
         map(
-            lambda player: str(player["playerId"]),
+            lambda player: player["playerId"],
             raw_team["rosterForMatchupPeriod"]["entries"],
         ))
-    roster = {}
+    roster = []
     for raw_player in raw_team["rosterForCurrentScoringPeriod"]["entries"]:
         player = raw_player["playerPoolEntry"]["player"]
-        roster[player["id"]] = {
+        player_obj = {
+            "id": player["id"],
             "name": player["fullName"],
             "score":
             get_points(raw_player["playerPoolEntry"]["appliedStatTotal"]),
             "position": player["defaultPositionId"],
             "team": pro_team_names[player['proTeamId']].upper(),
         }
+        roster.append(player_obj)
     return {
         "teamIndex": raw_team["teamId"] - 1,
         "score": get_points(raw_team["totalPoints"]),
@@ -165,18 +169,11 @@ def populate_boxscores(weeks):
 
     with concurrent.futures.ThreadPoolExecutor(num_threads) as executor:
         fetched_arr = executor.map(lambda f: get_boxscore(*f), to_fetch)
-    fetched_dict = {}
-    for i, fetched in enumerate(fetched_arr):
-        fetched_dict[to_fetch[i]] = fetched
     for week in weeks:
-        boxscores = []
-        for match in week["matches"]:
-            for team in match:
-                for player in team["roster"].values():
-                    if player["position"] == 16:  # DST
-                        key = (player["team"], week["number"])
-                        boxscores.append(fetched_dict[key])
-        week["boxscores"] = boxscores
+        week["boxscores"] = [
+            fetched_arr[i] for i, j in enumerate(to_fetch)
+            if j[1] == week["number"]
+        ]
 
 
 def get_boxscore(pro_team_name, week):
@@ -217,7 +214,26 @@ def get_boxscore(pro_team_name, week):
 
 
 def populate_playbyplays(weeks):
-    pass
+    to_fetch = []
+    for week in weeks:
+        for match in week["matches"]:
+            for team in match:
+                for player in team["roster"].values():
+                    if player["position"] == 5:  # K
+                        key = (player["team"], week["number"])
+                        to_fetch.append(key)
+
+    with concurrent.futures.ThreadPoolExecutor(num_threads) as executor:
+        fetched_arr = executor.map(lambda f: get_play_by_play(*f), to_fetch)
+    for week in weeks:
+        week["playbyplays"] = [
+            fetched_arr[i] for i, j in enumerate(to_fetch)
+            if j[1] == week["number"]
+        ]
+
+
+def get_play_by_play(pro_team_name, week):
+    return []
 
 
 def get_points(raw_points):

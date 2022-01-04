@@ -113,6 +113,14 @@ def preload_matches(weeks):
         )
 
 
+def get_play_by_play(pro_team_id, week):
+    return
+
+
+def get_box_score(pro_team_id, week):
+    return
+
+
 ###
 
 

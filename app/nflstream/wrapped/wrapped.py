@@ -408,6 +408,50 @@ def best_by_streaming_position():
 
 
 @metric_d
+def squeezes_and_stomps():
+    weeks = range(1, 14)
+    preload_matches(weeks)
+    points = []
+    raw_points = []
+    team_names = get_team_names()
+    for week in weeks:
+        matches = get_matches(week)
+        for match in matches:
+            raw_teams = sorted(
+                [match["away"], match["home"]],
+                key=lambda team: team["totalPoints"],
+            )
+            raw_points.append([
+                raw_teams[1]["totalPoints"] - raw_teams[0]["totalPoints"],
+                week,
+                raw_teams,
+            ])
+    raw_points.sort()
+    for diff, week, raw_teams in raw_points[:5]:
+        points.append([
+            brackets(team_names[raw_teams[1]["teamId"] - 1]),
+            "beat",
+            brackets(team_names[raw_teams[0]["teamId"] - 1]),
+            "by",
+            get_points(diff),
+            "points during week",
+            week,
+        ])
+    points.append([])
+    for diff, week, raw_teams in raw_points[-5:]:
+        points.append([
+            brackets(team_names[raw_teams[1]["teamId"] - 1]),
+            "beat",
+            brackets(team_names[raw_teams[0]["teamId"] - 1]),
+            "by",
+            get_points(diff),
+            "points during week",
+            week,
+        ])
+    return points
+
+
+@metric_d
 def times_chosen_wrong():
     weeks = range(1, 14)
     preload_matches(weeks)

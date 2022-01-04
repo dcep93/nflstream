@@ -4,6 +4,8 @@ import collections
 import json
 import requests
 
+from bs4 import BeautifulSoup
+
 joiner = " "
 
 league_id = 203836968
@@ -56,12 +58,13 @@ def load_cache():
             g["cache"] = {}
 
 
-def fetch(url):
+def fetch(url, decode_json=True):
     cache = g["cache"]
     if url in cache:
         return cache[url]
     print("fetching", url)
-    data = requests.get(url).json()
+    raw_data = requests.get(url)
+    data = raw_data.json() if decode_json else raw_data.text
     cache[url] = data
     with open(cache_path, "w") as fh:
         json.dump(cache, fh)
@@ -104,14 +107,94 @@ def preload_matches(weeks):
         )
 
 
+def get_game_id(pro_team_id, week):
+    pro_team_names = {
+        0: 'FA',
+        1: 'Atl',
+        2: 'Buf',
+        3: 'Chi',
+        4: 'Cin',
+        5: 'Cle',
+        6: 'Dal',
+        7: 'Den',
+        8: 'Det',
+        9: 'GB',
+        10: 'Ten',
+        11: 'Ind',
+        12: 'KC',
+        13: 'LV',
+        14: 'LAR',
+        15: 'Mia',
+        16: 'Min',
+        17: 'NE',
+        18: 'NO',
+        19: 'NYG',
+        20: 'NYJ',
+        21: 'Phi',
+        22: 'Ari',
+        23: 'Pit',
+        24: 'LAC',
+        25: 'SF',
+        26: 'Sea',
+        27: 'TB',
+        28: 'Wsh',
+        29: 'Car',
+        30: 'Jax',
+        33: 'Bal',
+        34: 'Hou',
+        "": 'All'
+    }
+    pro_team_name = pro_team_names[pro_team_id]
+    schedule_html = fetch(
+        f'https://www.espn.com/nfl/team/schedule/_/name/{pro_team_name}',
+        decode_json=False,
+    )
+    soup = BeautifulSoup(schedule_html, features="html.parser")
+    t = soup.find("table")
+    for row in t.findAll("tr"):
+        if row.find("span") and row.find("span").text == str(week):
+            game_url = row.findAll("a", href=True)[2]['href']
+            return game_url.split("espn.com/nfl/game/_/gameId/")[-1]
+
+
 # TODO
 def get_play_by_play(pro_team_id, week):
     return
 
 
-# TODO
 def get_box_score(pro_team_id, week):
-    print(pro_team_id, week)
+    game_id = get_game_id(pro_team_id, week)
+    box_score_html = fetch(
+        f'https://www.espn.com/nfl/boxscore/_/gameId/{game_id}',
+        decode_json=False,
+    )
+    soup = BeautifulSoup(box_score_html, features="html.parser")
+    teams = []
+    for i in range(2):
+        team_name_div = soup.findAll("a", class_="team-name")[i]
+        team_name = team_name_div.find(class_="short-name").text
+
+        all_passing = soup.find(id="gamepackage-passing")
+        table = all_passing.findAll("table")[i]
+        row = table.findAll("tr")[-1]
+        passing_cell = row.findAll("td")[2]
+        passing = int(passing_cell.text)
+
+        all_rushing = soup.find(id="gamepackage-rushing")
+        table = all_rushing.findAll("table")[i]
+        row = table.findAll("tr")[-1]
+        rushing_cell = row.findAll("td")[2]
+        rushing = int(rushing_cell.text)
+
+        score = int(soup.findAll(class_="score")[i].text)
+
+        teams.append({
+            "name": team_name,
+            "passing": passing,
+            "rushing": rushing,
+            "score": score
+        })
+    return teams
 
 
 ###
@@ -126,6 +209,9 @@ def games_determined_by_discrete_scoring():
     for week in weeks:
         matches = get_matches(week)
         for match in matches:
+            if abs(match["away"]["totalPoints"] -
+                   match["home"]["totalPoints"]) > 10:
+                continue
             teams = []
             for team in sorted(
                 [match["away"], match["home"]],
@@ -147,11 +233,18 @@ def games_determined_by_discrete_scoring():
                     pro_team_id,
                     week,
                 )
-                offense = [
-                    team for team in box_score if team["id"] != pro_team_id
-                ][0]
-                yards = offense["passing"]["total"] + offense["rushing"][
-                    "total"]
+                offenses = [
+                    team for team in box_score
+                    if started_dst["playerPoolEntry"]["player"]["firstName"]
+                    not in team["name"]
+                ]
+                if len(offenses) != 1:
+                    print("invalid game found")
+                    print(offenses)
+                    print(started_dst["playerPoolEntry"]["player"])
+                    exit()
+                offense = offenses[0]
+                yards = offense["passing"] + offense["rushing"]
                 continuous_points = 0
                 discrete_points = 0
                 if yards >= 550:
@@ -206,41 +299,41 @@ def games_determined_by_discrete_scoring():
                 diff = continuous_points - discrete_points
                 superscore += diff
                 differences.append(
-                    f'{started_kicker["playerPoolEntry"]["player"]["fullName"]} {diff}'
+                    f'{started_dst["playerPoolEntry"]["player"]["fullName"]} {diff}'
                 )
                 # K
-                started_kicker = list(
-                    filter(
-                        lambda player: player["playerPoolEntry"]["player"][
-                            "defaultPositionId"] == Positions.K,
-                        team["rosterForMatchupPeriod"]["entries"],
-                    ))[0]
-                pro_team_id = started_kicker['playerPoolEntry']['player'][
-                    'proTeamId']
-                play_by_play = get_play_by_play(
-                    pro_team_id,
-                    week,
-                )
-                for drive in play_by_play:
-                    if drive["outcome"] == "FIELD GOAL":
-                        if drive["team"] == pro_team_id:
-                            play = drive["plays"][-1]["message"]
-                            prefix = play.split("Yd Field Goal")[0]
-                            yards = int(prefix.split(" ")[-1])
-                            continuous_points = yards / 10.
-                            if yards >= 60:
-                                discrete_points = 6
-                            elif yards >= 50:
-                                discrete_points = 5
-                            elif yards >= 40:
-                                discrete_points = 4
-                            else:
-                                discrete_points = 3
-                            diff = continuous_points - discrete_points
-                            superscore += diff
-                            differences.append(
-                                f'{started_kicker["playerPoolEntry"]["player"]["fullName"]} {diff}'
-                            )
+                # started_kicker = list(
+                #     filter(
+                #         lambda player: player["playerPoolEntry"]["player"][
+                #             "defaultPositionId"] == Positions.K,
+                #         team["rosterForMatchupPeriod"]["entries"],
+                #     ))[0]
+                # pro_team_id = started_kicker['playerPoolEntry']['player'][
+                #     'proTeamId']
+                # play_by_play = get_play_by_play(
+                #     pro_team_id,
+                #     week,
+                # )
+                # for drive in play_by_play:
+                #     if drive["outcome"] == "FIELD GOAL":
+                #         if drive["team"] == pro_team_id:
+                #             play = drive["plays"][-1]["message"]
+                #             prefix = play.split("Yd Field Goal")[0]
+                #             yards = int(prefix.split(" ")[-1])
+                #             continuous_points = yards / 10.
+                #             if yards >= 60:
+                #                 discrete_points = 6
+                #             elif yards >= 50:
+                #                 discrete_points = 5
+                #             elif yards >= 40:
+                #                 discrete_points = 4
+                #             else:
+                #                 discrete_points = 3
+                #             diff = continuous_points - discrete_points
+                #             superscore += diff
+                #             differences.append(
+                #                 f'{started_kicker["playerPoolEntry"]["player"]["fullName"]} {diff}'
+                #             )
                 #
                 teams.append({
                     "name":

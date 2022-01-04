@@ -4,8 +4,6 @@ import collections
 import json
 import requests
 
-from threading import Lock
-
 joiner = " "
 
 league_id = 203836968
@@ -29,10 +27,9 @@ metrics = []  # type: ignore
 
 g = {}
 
-lock = Lock()
-
 
 def main():
+    load_cache()
     for metric in metrics:
         print(metric[0])
         points = metric[1]()
@@ -53,23 +50,24 @@ def metric_d():
     return d
 
 
-def fetch(url):
+def load_cache():
     if "cache" not in g:
         try:
             with open(cache_path) as fh:
                 g["cache"] = json.load(fh)
         except:
             g["cache"] = {}
+
+
+def fetch(url):
     cache = g["cache"]
     if url in cache:
         return cache[url]
     print("fetching", url)
     data = requests.get(url).json()
     cache[url] = data
-    lock.acquire()
     with open(cache_path, "w") as fh:
         json.dump(cache, fh)
-    lock.release()
     return data
 
 

@@ -6,7 +6,7 @@ import requests
 
 from bs4 import BeautifulSoup
 
-joiner = " "
+joiner = "\t"
 
 league_id = 203836968
 
@@ -40,6 +40,8 @@ def main():
                 print(joiner.join(map(str, point)))
         else:
             print("no points")
+        print()
+        print()
         print()
 
 
@@ -401,6 +403,7 @@ def best_by_streaming_position():
                 team_names[team_id - 1],
                 position_to_name[position],
             ])
+        points.append([])
     return points
 
 

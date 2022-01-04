@@ -4,9 +4,13 @@ import collections
 import json
 import requests
 
+from threading import Lock
+
 joiner = " "
 
 league_id = 203836968
+
+year = 2021
 
 cache_path = "cache.json"
 
@@ -24,6 +28,8 @@ class Positions:
 metrics = []  # type: ignore
 
 g = {}
+
+lock = Lock()
 
 
 def main():
@@ -65,13 +71,15 @@ def fetch(url):
     print("fetching", url)
     data = requests.get(url).json()
     cache[url] = data
+    lock.acquire()
     with open(cache_path, "w") as fh:
         json.dump(cache, fh)
+    lock.release()
     return data
 
 
 def get_matches(week):
-    url = f"https://fantasy.espn.com/apis/v3/games/ffl/seasons/2021/segments/0/leagues/{league_id}?view=mScoreboard&scoringPeriodId={week}"
+    url = f"https://fantasy.espn.com/apis/v3/games/ffl/seasons/{year}/segments/0/leagues/{league_id}?view=mScoreboard&scoringPeriodId={week}"
     data = fetch(url)
     return filter(
         lambda match: "rosterForCurrentScoringPeriod" in match["away"],
@@ -81,7 +89,7 @@ def get_matches(week):
 
 def get_team_names():
     data = fetch(
-        f"https://fantasy.espn.com/apis/v3/games/ffl/seasons/2021/segments/0/leagues/{league_id}?view=mTeam"
+        f"https://fantasy.espn.com/apis/v3/games/ffl/seasons/{year}/segments/0/leagues/{league_id}?view=mTeam"
     )
     return list(
         map(
@@ -94,10 +102,163 @@ def get_points(raw_points):
     return round(raw_points, 2)
 
 
+def is_bust(points, projected_points):
+    return points < projected_points / 2
+
+
+def brackets(obj):
+    return f'[{obj}]'
+
+
 ###
 
 
 @metric_d()
+def games_determined_by_discrete_scoring():
+    points = []
+    team_names = get_team_names()
+    for week in range(1, 18):
+        matches = get_matches(week)
+        for match in matches:
+            teams = []
+            for team in sorted(
+                [match["away"], match["home"]],
+                    key=lambda team: team["totalPoints"],
+            ):
+                score = get_points(team["totalPoints"])
+                superscore = score
+                differences = []
+                # DST
+                started_dst = list(
+                    filter(
+                        lambda player: player["playerPoolEntry"]["player"][
+                            "defaultPositionId"] == Positions.DST,
+                        team["rosterForMatchupPeriod"]["entries"],
+                    ))[0]
+                pro_team_id = started_dst['playerPoolEntry']['player'][
+                    'proTeamId']
+                box_score = get_box_score(
+                    pro_team_id,
+                    week,
+                )
+                offense = [
+                    team for team in box_score if team["id"] != pro_team_id
+                ][0]
+                yards = offense["passing"]["total"] + offense["rushing"][
+                    "total"]
+                continuous_points = 0
+                discrete_points = 0
+                if yards >= 550:
+                    continuous_points += -6 - 1 * ((yards - 500) / 50)
+                    discrete_points += -7
+                elif yards >= 500:
+                    continuous_points += -6 - 1 * ((yards - 500) / 50)
+                    discrete_points += -6
+                elif yards >= 450:
+                    continuous_points += -5 - 1 * ((yards - 450) / 50)
+                    discrete_points += -5
+                elif yards >= 400:
+                    continuous_points += -3 - 2 * ((yards - 400) / 50)
+                    discrete_points += -3
+                elif yards >= 350:
+                    continuous_points += -1 - 2 * ((yards - 350) / 50)
+                    discrete_points += -1
+                elif yards >= 300:
+                    continuous_points += 0 - 1 * ((yards - 300) / 50)
+                    discrete_points += 0
+                elif yards >= 200:
+                    continuous_points += 2 - 2 * ((yards - 200) / 100)
+                    discrete_points += 2
+                elif yards >= 100:
+                    continuous_points += 3 - 1 * ((yards - 100) / 100)
+                    discrete_points += 3
+                else:
+                    continuous_points += 5 - 2 * ((yards) / 100)
+                    discrete_points += 5
+                score = offense["score"]
+                if score >= 46:
+                    continuous_points += -3 - 2 * ((score - 35) / 11)
+                    discrete_points += -5
+                elif score >= 35:
+                    continuous_points += -3 - 2 * ((score - 35) / 11)
+                    discrete_points += -3
+                elif score >= 28:
+                    continuous_points += -1 - 2 * ((score - 28) / 7)
+                    discrete_points += -1
+                elif score >= 14:
+                    continuous_points += 1 - 2 * ((score - 14) / 14)
+                    discrete_points += 1
+                elif score >= 7:
+                    continuous_points += 3 - 2 * ((score - 7) / 7)
+                    discrete_points += 3
+                elif score >= 1:
+                    continuous_points += 4 - ((score - 1) / 6)
+                    discrete_points += 4
+                else:
+                    continuous_points += 5
+                    discrete_points += 5
+                diff = continuous_points - discrete_points
+                superscore += diff
+                differences.append(
+                    f'{started_kicker["playerPoolEntry"]["player"]["fullName"]} {diff}'
+                )
+                # K
+                started_kicker = list(
+                    filter(
+                        lambda player: player["playerPoolEntry"]["player"][
+                            "defaultPositionId"] == Positions.K,
+                        team["rosterForMatchupPeriod"]["entries"],
+                    ))[0]
+                pro_team_id = started_kicker['playerPoolEntry']['player'][
+                    'proTeamId']
+                play_by_play = get_play_by_play(
+                    pro_team_id,
+                    week,
+                )
+                for drive in play_by_play:
+                    if drive["outcome"] == "FIELD GOAL":
+                        if drive["team"] == pro_team_id:
+                            play = drive["plays"][-1]["message"]
+                            prefix = play.split("Yd Field Goal")[0]
+                            yards = int(prefix.split(" ")[-1])
+                            continuous_points = yards / 10.
+                            if yards >= 60:
+                                discrete_points = 6
+                            elif yards >= 50:
+                                discrete_points = 5
+                            elif yards >= 40:
+                                discrete_points = 4
+                            else:
+                                discrete_points = 3
+                            diff = continuous_points - discrete_points
+                            superscore += diff
+                            differences.append(
+                                f'{started_kicker["playerPoolEntry"]["player"]["fullName"]} {diff}'
+                            )
+                #
+                teams.append({
+                    "name":
+                    f'{team_names[team["teamId"] - 1]}: {score} ss {superscore}',
+                    "differences": differences,
+                    "score": score,
+                    "superscore": superscore,
+                })
+            if teams[0]["superscore"] > teams[1]["superscore"]:
+                points.append([
+                    brackets(teams[0]["name"]),
+                    "would have beaten",
+                    brackets(teams[1]["name"]),
+                    "week",
+                    week,
+                    "if K and DST used continuous scoring:",
+                    '\t'.join(teams[0]["differences"]),
+                    'vs',
+                    '\t'.join(teams[1]["differences"]),
+                ])
+    return points
+
+
+# @metric_d()
 def best_by_streaming_position():
     points = []
     team_names = get_team_names()
@@ -133,7 +294,7 @@ def best_by_streaming_position():
     return points
 
 
-@metric_d()
+# @metric_d()
 def times_chosen_wrong():
     points = []
     team_names = get_team_names()
@@ -146,8 +307,8 @@ def times_chosen_wrong():
             )
             teams = []
             for team in raw_teams:
-                score = get_points(team["totalPoints"])
-                superscore = get_points(team["totalPoints"])
+                score = team["totalPoints"]
+                superscore = score
                 better_starts = []
                 better_starts_strings = []
                 for choices in [
@@ -257,9 +418,9 @@ def times_chosen_wrong():
             if teams[0]["superscore"] > teams[1]["score"]:
                 points.append([
                     get_points(teams[0]["superscore"] - teams[0]["score"]),
-                    f'[{teams[0]["name"]}]',
+                    brackets(teams[0]["name"]),
                     "could have beaten",
-                    f'[{teams[1]["name"]}]',
+                    brackets(teams[1]["name"]),
                     "week",
                     week,
                     "if they had started:",

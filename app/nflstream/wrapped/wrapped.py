@@ -364,7 +364,7 @@ def games_determined_by_discrete_scoring():
     return points
 
 
-# @metric_d
+@metric_d
 def best_by_streaming_position():
     weeks = range(1, 18)
     preload_matches(weeks)
@@ -402,7 +402,7 @@ def best_by_streaming_position():
     return points
 
 
-# @metric_d
+@metric_d
 def times_chosen_wrong():
     weeks = range(1, 14)
     preload_matches(weeks)

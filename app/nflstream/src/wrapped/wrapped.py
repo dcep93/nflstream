@@ -5,8 +5,6 @@ import requests
 
 from bs4 import BeautifulSoup
 
-from nflstream.app.nflstream.src.wrapped.wrapped_old import get_play_by_play  # type: ignore
-
 year = 2021
 league_ids = [203836968]
 

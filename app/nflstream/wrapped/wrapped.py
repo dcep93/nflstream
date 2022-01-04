@@ -274,29 +274,29 @@ def games_determined_by_discrete_scoring():
                 else:
                     continuous_points += 5 - 2 * ((yards) / 100)
                     discrete_points += 5
-                score = offense["score"]
-                if score >= 46:
-                    continuous_points += -3 - 2 * ((score - 35) / 11)
+                nfl_score = offense["score"]
+                if nfl_score >= 46:
+                    continuous_points += -3 - 2 * ((nfl_score - 35) / 11)
                     discrete_points += -5
-                elif score >= 35:
-                    continuous_points += -3 - 2 * ((score - 35) / 11)
+                elif nfl_score >= 35:
+                    continuous_points += -3 - 2 * ((nfl_score - 35) / 11)
                     discrete_points += -3
-                elif score >= 28:
-                    continuous_points += -1 - 2 * ((score - 28) / 7)
+                elif nfl_score >= 28:
+                    continuous_points += -1 - 2 * ((nfl_score - 28) / 7)
                     discrete_points += -1
-                elif score >= 14:
-                    continuous_points += 1 - 2 * ((score - 14) / 14)
+                elif nfl_score >= 14:
+                    continuous_points += 1 - 2 * ((nfl_score - 14) / 14)
                     discrete_points += 1
-                elif score >= 7:
-                    continuous_points += 3 - 2 * ((score - 7) / 7)
+                elif nfl_score >= 7:
+                    continuous_points += 3 - 2 * ((nfl_score - 7) / 7)
                     discrete_points += 3
-                elif score >= 1:
-                    continuous_points += 4 - ((score - 1) / 6)
+                elif nfl_score >= 1:
+                    continuous_points += 4 - ((nfl_score - 1) / 6)
                     discrete_points += 4
                 else:
                     continuous_points += 5
                     discrete_points += 5
-                diff = continuous_points - discrete_points
+                diff = get_points(continuous_points - discrete_points)
                 superscore += diff
                 differences.append(
                     f'{started_dst["playerPoolEntry"]["player"]["fullName"]} {diff}'
@@ -329,12 +329,13 @@ def games_determined_by_discrete_scoring():
                 #                 discrete_points = 4
                 #             else:
                 #                 discrete_points = 3
-                #             diff = continuous_points - discrete_points
+                #             diff = get_points(continuous_points - discrete_points)
                 #             superscore += diff
                 #             differences.append(
                 #                 f'{started_kicker["playerPoolEntry"]["player"]["fullName"]} {diff}'
                 #             )
                 #
+                superscore = get_points(superscore)
                 teams.append({
                     "name":
                     f'{team_names[team["teamId"] - 1]}: {score} ss {superscore}',
@@ -357,7 +358,7 @@ def games_determined_by_discrete_scoring():
     return points
 
 
-@metric_d
+# @metric_d
 def best_by_streaming_position():
     weeks = range(1, 18)
     preload_matches(weeks)
@@ -395,7 +396,7 @@ def best_by_streaming_position():
     return points
 
 
-@metric_d
+# @metric_d
 def times_chosen_wrong():
     weeks = range(1, 14)
     preload_matches(weeks)

@@ -359,9 +359,9 @@ def games_determined_by_discrete_scoring():
                     "week",
                     week,
                     "if K and DST used continuous scoring:",
-                    '\t'.join(teams[0]["differences"]),
+                    ' '.join(teams[0]["differences"]),
                     'vs',
-                    '\t'.join(teams[1]["differences"]),
+                    ' '.join(teams[1]["differences"]),
                 ])
     return points
 

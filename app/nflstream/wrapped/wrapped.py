@@ -208,7 +208,7 @@ def get_box_score(pro_team_id, week):
 
 @metric_d
 def games_determined_by_discrete_scoring():
-    weeks = range(1, 18)
+    weeks = range(1, 14)
     preload_matches(weeks)
     points = []
     team_names = get_team_names()
@@ -322,24 +322,26 @@ def games_determined_by_discrete_scoring():
                 )
                 kicker_name = started_kicker['playerPoolEntry']['player'][
                     "fullName"]
+                continuous_points = 0
+                discrete_points = 0
                 for headline in play_by_play:
                     if headline.startswith(kicker_name):
                         prefix = headline.split(" Yd Field Goal")[0]
                         yards = int(prefix.split(" ")[-1])
-                        continuous_points = yards / 10.
+                        continuous_points += yards / 10.
                         if yards >= 60:
-                            discrete_points = 6
+                            discrete_points += 6
                         elif yards >= 50:
-                            discrete_points = 5
+                            discrete_points += 5
                         elif yards >= 40:
-                            discrete_points = 4
+                            discrete_points += 4
                         else:
-                            discrete_points = 3
-                        diff = get_points(continuous_points - discrete_points)
-                        superscore += diff
-                        differences.append(
-                            f'{started_kicker["playerPoolEntry"]["player"]["fullName"]} {diff}'
-                        )
+                            discrete_points += 3
+                diff = get_points(continuous_points - discrete_points)
+                superscore += diff
+                differences.append(
+                    f'{started_kicker["playerPoolEntry"]["player"]["fullName"]} {diff}'
+                )
                 #
                 superscore = get_points(superscore)
                 teams.append({

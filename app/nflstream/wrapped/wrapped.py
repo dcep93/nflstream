@@ -157,9 +157,15 @@ def get_game_id(pro_team_id, week):
             return game_url.split("espn.com/nfl/game/_/gameId/")[-1]
 
 
-# TODO
 def get_play_by_play(pro_team_id, week):
-    return
+    game_id = get_game_id(pro_team_id, week)
+    play_by_play_html = fetch(
+        f'https://www.espn.com/nfl/playbyplay/_/gameId/{game_id}',
+        decode_json=False,
+    )
+    soup = BeautifulSoup(play_by_play_html, features="html.parser")
+    headlines = soup.findAll("div", class_="headline")
+    return [h.text for h in headlines]
 
 
 def get_box_score(pro_team_id, week):
@@ -302,38 +308,38 @@ def games_determined_by_discrete_scoring():
                     f'{started_dst["playerPoolEntry"]["player"]["fullName"]} {diff}'
                 )
                 # K
-                # started_kicker = list(
-                #     filter(
-                #         lambda player: player["playerPoolEntry"]["player"][
-                #             "defaultPositionId"] == Positions.K,
-                #         team["rosterForMatchupPeriod"]["entries"],
-                #     ))[0]
-                # pro_team_id = started_kicker['playerPoolEntry']['player'][
-                #     'proTeamId']
-                # play_by_play = get_play_by_play(
-                #     pro_team_id,
-                #     week,
-                # )
-                # for drive in play_by_play:
-                #     if drive["outcome"] == "FIELD GOAL":
-                #         if drive["team"] == pro_team_id:
-                #             play = drive["plays"][-1]["message"]
-                #             prefix = play.split("Yd Field Goal")[0]
-                #             yards = int(prefix.split(" ")[-1])
-                #             continuous_points = yards / 10.
-                #             if yards >= 60:
-                #                 discrete_points = 6
-                #             elif yards >= 50:
-                #                 discrete_points = 5
-                #             elif yards >= 40:
-                #                 discrete_points = 4
-                #             else:
-                #                 discrete_points = 3
-                #             diff = get_points(continuous_points - discrete_points)
-                #             superscore += diff
-                #             differences.append(
-                #                 f'{started_kicker["playerPoolEntry"]["player"]["fullName"]} {diff}'
-                #             )
+                started_kicker = list(
+                    filter(
+                        lambda player: player["playerPoolEntry"]["player"][
+                            "defaultPositionId"] == Positions.K,
+                        team["rosterForMatchupPeriod"]["entries"],
+                    ))[0]
+                pro_team_id = started_kicker['playerPoolEntry']['player'][
+                    'proTeamId']
+                play_by_play = get_play_by_play(
+                    pro_team_id,
+                    week,
+                )
+                kicker_name = started_kicker['playerPoolEntry']['player'][
+                    "fullName"]
+                for headline in play_by_play:
+                    if headline.startswith(kicker_name):
+                        prefix = headline.split(" Yd Field Goal")[0]
+                        yards = int(prefix.split(" ")[-1])
+                        continuous_points = yards / 10.
+                        if yards >= 60:
+                            discrete_points = 6
+                        elif yards >= 50:
+                            discrete_points = 5
+                        elif yards >= 40:
+                            discrete_points = 4
+                        else:
+                            discrete_points = 3
+                        diff = get_points(continuous_points - discrete_points)
+                        superscore += diff
+                        differences.append(
+                            f'{started_kicker["playerPoolEntry"]["player"]["fullName"]} {diff}'
+                        )
                 #
                 superscore = get_points(superscore)
                 teams.append({

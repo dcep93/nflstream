@@ -18,6 +18,8 @@ enum Position {
 function Wrapped() {
   const data = all_data[leagueId];
   if (!data) return <div>no data found for league {leagueId}</div>;
+  // TODO
+  data.weeks = data.weeks.filter((w) => w.number === 14);
   return (
     <div>
       {/* {games_determined_by_discrete_scoring(data)} */}
@@ -95,7 +97,7 @@ function timesChosenWrong(data: WrappedType) {
                     const startedIds = team.lineup.filter(
                       (playerId) => !bestIds.includes(playerId)
                     );
-                    const bestStarts = bestIds.map((id) => {
+                    const bestStarts = betterStartIds.map((id) => {
                       const player = team.roster.find(
                         (player) => player.id === id
                       )!;

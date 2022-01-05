@@ -15,6 +15,7 @@ enum Position {
 }
 
 function Wrapped() {
+  document.title = "Fantasy Wrapped";
   const data = all_data[leagueId];
   if (!data) return <div>no data found for league {leagueId}</div>;
   return (

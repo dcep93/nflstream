@@ -303,10 +303,11 @@ function timesChosenWrong(data: WrappedType) {
                   <div className={css.bubble}>
                     <div>week {week.number}:</div>
                     <b>{teams[0].name}</b> {teams[0].score} (ss{" "}
-                    {teams[0].superscore})<div>could have beaten</div>
+                    {teams[0].superscore.toFixed(2)})
+                    <div>could have beaten</div>
                     <div>
                       <b>{teams[1].name}</b> {teams[1].score} (ss{" "}
-                      {teams[1].superscore})
+                      {teams[1].superscore.toFixed(2)})
                     </div>
                     <div>if they had started</div>
                     <div className={css.bubble}>

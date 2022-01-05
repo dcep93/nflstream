@@ -20,17 +20,70 @@ function Wrapped() {
   if (!data) return <div>no data found for league {leagueId}</div>;
   return (
     <div>
-      {/* {games_determined_by_discrete_scoring(data)} */}
-      {timesChosenWrong(data)}
+      {gamesDeterminedByDiscreteScoring(data)}
       {/* {bestByStreamingPosition(data)} */}
       {/* {squeezesAndStomps(data)} */}
       {/* {weekWinnersAndLosers(data)} */}
+      {/* {timesChosenWrong(data)} */}
     </div>
   );
 }
 
-function games_determined_by_discrete_scoring(data: WrappedType) {
-  return <div className={style.bubble}>{JSON.stringify(data)}</div>;
+function gamesDeterminedByDiscreteScoring(data: WrappedType) {
+  function calculateDSTDifference(
+    team: TeamType,
+    differences: string[]
+  ): number {
+    return 0;
+  }
+  function calculateKDifference(team: TeamType, differences: string[]): number {
+    return 0;
+  }
+  return (
+    <div>
+      <div className={style.bubble}>
+        <h1>Games Determined By Discrete Scoring</h1>
+        {data.weeks
+          .filter((week) => week.number <= 13)
+          .flatMap((week) =>
+            week.matches.map((match) => ({ week: week.number, match }))
+          )
+          .map((match) => {
+            if (match.match[1].score - match.match[0].score > 10) return null;
+            const mapped = match.match.map((team) => {
+              const differences: string[] = [];
+              const superscore =
+                team.score +
+                calculateDSTDifference(team, differences) +
+                calculateKDifference(team, differences);
+              return {
+                name: `${data.teamNames[team.teamIndex]} ${
+                  team.score
+                } (ss ${superscore.toFixed(2)})`,
+                differences: differences.join(" "),
+                superscore,
+              };
+            });
+            return { week: match.week, loser: mapped[0], winner: mapped[1] };
+          })
+          .filter(
+            (match) =>
+              match !== null && match.loser.superscore > match.winner.superscore
+          )
+          .map(
+            (match, i) =>
+              match && (
+                <div key={i}>
+                  week {match.week}: {match.loser.name} would have beaten{" "}
+                  {match.winner.name} if K and DST used continuous scoring:
+                  <div>{match.loser.differences}</div>
+                  <div>{match.winner.differences}</div>
+                </div>
+              )
+          )}
+      </div>
+    </div>
+  );
 }
 
 function timesChosenWrong(data: WrappedType) {
@@ -198,14 +251,16 @@ function bestByStreamingPosition(data: WrappedType) {
 function squeezesAndStomps(data: WrappedType) {
   const num = 3;
   const rawPoints = sortByKey(
-    data.weeks.flatMap((week) =>
-      week.matches.map((teams) => ({
-        week: week.number,
-        diff: teams[1].score - teams[0].score,
-        winner: teams[1].teamIndex,
-        loser: teams[0].teamIndex,
-      }))
-    ),
+    data.weeks
+      .filter((week) => week.number <= 13)
+      .flatMap((week) =>
+        week.matches.map((teams) => ({
+          week: week.number,
+          diff: teams[1].score - teams[0].score,
+          winner: teams[1].teamIndex,
+          loser: teams[0].teamIndex,
+        }))
+      ),
     (match) => match.diff
   );
   return (

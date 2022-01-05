@@ -194,132 +194,145 @@ function gamesDeterminedByDiscreteScoring(data: WrappedType) {
 }
 
 function timesChosenWrong(data: WrappedType) {
+  const wrongChoices = data.weeks
+    .filter((week) => week.number <= 13)
+    .flatMap((week) =>
+      week.matches
+        .map((teams) =>
+          teams.map((team) => {
+            var superscore = team.score;
+            const betterStarts = [
+              {
+                [Position.QB]: 1,
+              },
+              {
+                [Position.DST]: 1,
+              },
+              {
+                [Position.K]: 1,
+              },
+              {
+                [Position.RB]: 2,
+                [Position.WR]: 2,
+                [Position.TE]: 1,
+                [Position.FLEX]: 1,
+              },
+            ]
+              .map((choices) => {
+                const bestIds: number[] = [];
+                const filteredRoster = sortByKey(
+                  team.roster.filter((player) => choices[player.position]),
+                  (player) => -player.score
+                );
+                Object.keys(choices)
+                  .map((position) => parseInt(position) as Position)
+                  .filter((position) => position !== Position.FLEX)
+                  .forEach((position) => {
+                    const subFilteredRoster = filteredRoster.filter(
+                      (player) => player.position === position
+                    );
+                    Array.from(new Array(choices[position])).forEach(() => {
+                      const bestId = subFilteredRoster.find(
+                        (player) => !bestIds.includes(player.id)
+                      )!.id;
+                      bestIds.push(bestId);
+                    });
+                  });
+                Array.from(new Array(choices[Position.FLEX] || 0)).forEach(
+                  () => {
+                    const bestId = filteredRoster.find(
+                      (player) => !bestIds.includes(player.id)
+                    )!.id;
+                    bestIds.push(bestId);
+                  }
+                );
+                const betterStartIds = bestIds.filter(
+                  (playerId) => !team.lineup.includes(playerId)
+                );
+                if (betterStartIds.length === 0) return null;
+                const bestStarts = betterStartIds.map((id) => {
+                  const player = team.roster.find(
+                    (player) => player.id === id
+                  )!;
+                  superscore += player.score;
+                  return `${player.name} ${player.score}`;
+                });
+                const startedStarts = team.lineup
+                  .filter(
+                    (playerId) =>
+                      choices[
+                        team.roster.find((player) => player.id === playerId)!
+                          .position
+                      ]
+                  )
+                  .filter((playerId) => !bestIds.includes(playerId))
+                  .map((id) => {
+                    const player = team.roster.find(
+                      (player) => player.id === id
+                    )!;
+                    superscore -= player.score;
+                    return `${player.name} ${player.score.toFixed(2)}`;
+                  });
+                return [bestStarts, startedStarts]
+                  .map((s) => s.join(","))
+                  .join(" / ");
+              })
+              .filter((i) => i);
+
+            const teamData = {
+              name: data.teamNames[team.teamIndex],
+              teamIndex: team.teamIndex,
+              superscore,
+              betterStarts,
+              score: team.score,
+            };
+            return teamData;
+          })
+        )
+        .filter((teams) => teams[0].superscore > teams[1].score)
+        .map((teams) => ({ teams, week: week.number }))
+    );
   return (
     <div>
       <div className={[css.bubble, css.grey].join(" ")}>
         <h1>Times Chosen Wrong</h1>
-        {data.weeks
-          .filter((week) => week.number <= 13)
-          .map((week) =>
-            week.matches
-              .map((teams) =>
-                teams.map((team) => {
-                  var superscore = team.score;
-                  const betterStarts = [
-                    {
-                      [Position.QB]: 1,
-                    },
-                    {
-                      [Position.DST]: 1,
-                    },
-                    {
-                      [Position.K]: 1,
-                    },
-                    {
-                      [Position.RB]: 2,
-                      [Position.WR]: 2,
-                      [Position.TE]: 1,
-                      [Position.FLEX]: 1,
-                    },
-                  ]
-                    .map((choices) => {
-                      const bestIds: number[] = [];
-                      const filteredRoster = sortByKey(
-                        team.roster.filter(
-                          (player) => choices[player.position]
-                        ),
-                        (player) => -player.score
-                      );
-                      Object.keys(choices)
-                        .map((position) => parseInt(position) as Position)
-                        .filter((position) => position !== Position.FLEX)
-                        .forEach((position) => {
-                          const subFilteredRoster = filteredRoster.filter(
-                            (player) => player.position === position
-                          );
-                          Array.from(new Array(choices[position])).forEach(
-                            () => {
-                              const bestId = subFilteredRoster.find(
-                                (player) => !bestIds.includes(player.id)
-                              )!.id;
-                              bestIds.push(bestId);
-                            }
-                          );
-                        });
-                      Array.from(
-                        new Array(choices[Position.FLEX] || 0)
-                      ).forEach(() => {
-                        const bestId = filteredRoster.find(
-                          (player) => !bestIds.includes(player.id)
-                        )!.id;
-                        bestIds.push(bestId);
-                      });
-                      const betterStartIds = bestIds.filter(
-                        (playerId) => !team.lineup.includes(playerId)
-                      );
-                      if (betterStartIds.length === 0) return null;
-                      const bestStarts = betterStartIds.map((id) => {
-                        const player = team.roster.find(
-                          (player) => player.id === id
-                        )!;
-                        superscore += player.score;
-                        return `${player.name} ${player.score}`;
-                      });
-                      const startedStarts = team.lineup
-                        .filter(
-                          (playerId) =>
-                            choices[
-                              team.roster.find(
-                                (player) => player.id === playerId
-                              )!.position
-                            ]
-                        )
-                        .filter((playerId) => !bestIds.includes(playerId))
-                        .map((id) => {
-                          const player = team.roster.find(
-                            (player) => player.id === id
-                          )!;
-                          superscore -= player.score;
-                          return `${player.name} ${player.score.toFixed(2)}`;
-                        });
-                      return [bestStarts, startedStarts]
-                        .map((s) => s.join(","))
-                        .join(" / ");
-                    })
-                    .filter((i) => i);
-
-                  const teamData = {
-                    name: data.teamNames[team.teamIndex],
-                    teamIndex: team.teamIndex,
-                    superscore,
-                    betterStarts,
-                    score: team.score,
-                  };
-                  return teamData;
-                })
-              )
-              .filter((teams) => teams[0].superscore > teams[1].score)
-              .map((teams, i) => (
+        <div>
+          <div className={css.bubble}>
+            {data.teamNames
+              .map((teamName, index) => ({
+                teamName,
+                wrong: wrongChoices
+                  .filter((choice) => choice.teams[0].teamIndex === index)
+                  .map((choice) => choice.week),
+              }))
+              .map((obj, i) => (
                 <div key={i}>
-                  <div className={css.bubble}>
-                    <div>week {week.number}:</div>
-                    <b>{teams[0].name}</b> {teams[0].score} (ss{" "}
-                    {teams[0].superscore.toFixed(2)})
-                    <div>could have beaten</div>
-                    <div>
-                      <b>{teams[1].name}</b> {teams[1].score} (ss{" "}
-                      {teams[1].superscore.toFixed(2)})
-                    </div>
-                    <div>if they had started</div>
-                    <div className={css.bubble}>
-                      {teams[0].betterStarts.map((betterStart, j) => (
-                        <div key={j}>{betterStart}</div>
-                      ))}
-                    </div>
-                  </div>
+                  <b>{obj.teamName}</b> chose wrong weeks ({obj.wrong.join(",")}
+                  )
                 </div>
-              ))
-          )}
+              ))}
+          </div>
+        </div>
+        {wrongChoices.map((choice, i) => (
+          <div key={i}>
+            <div className={css.bubble}>
+              <div>week {choice.week}:</div>
+              <b>{choice.teams[0].name}</b> {choice.teams[0].score} (ss{" "}
+              {choice.teams[0].superscore.toFixed(2)})
+              <div>could have beaten</div>
+              <div>
+                <b>{choice.teams[1].name}</b> {choice.teams[1].score} (ss{" "}
+                {choice.teams[1].superscore.toFixed(2)})
+              </div>
+              <div>if they had started</div>
+              <div className={css.bubble}>
+                {choice.teams[0].betterStarts.map((betterStart, j) => (
+                  <div key={j}>{betterStart}</div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

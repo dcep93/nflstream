@@ -350,6 +350,7 @@ function bestByStreamingPosition(data: WrappedType) {
               data.teamNames.map((teamName, index) => ({
                 teamName,
                 score: data.weeks
+                  .filter((week) => week.number <= 13)
                   .flatMap((week) => week.matches)
                   .flatMap((teams) => teams)
                   .filter((team) => team.teamIndex === index)

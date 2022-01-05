@@ -37,6 +37,28 @@ function games_determined_by_discrete_scoring(data: WrappedType) {
 
 function timesChosenWrong(data: WrappedType) {
   return (
+    <pre>
+      {JSON.stringify(
+        data.weeks
+          .flatMap((week) =>
+            week.matches.flatMap((match) =>
+              match.map((team) => ({
+                team: data.teamNames[team.teamIndex],
+                week: week.number,
+                missing: team.lineup.filter(
+                  (playerId) =>
+                    !team.roster.find((player) => player.id === playerId)
+                ),
+              }))
+            )
+          )
+          .filter((obj) => obj.missing.length > 0),
+        null,
+        2
+      )}
+    </pre>
+  );
+  return (
     <div>
       <div className={style.bubble}>
         <h1>Times Chosen Wrong</h1>
@@ -94,9 +116,6 @@ function timesChosenWrong(data: WrappedType) {
                       (playerId) => !team.lineup.includes(playerId)
                     );
                     if (betterStartIds.length === 0) return null;
-                    const startedIds = team.lineup.filter(
-                      (playerId) => !bestIds.includes(playerId)
-                    );
                     const bestStarts = betterStartIds.map((id) => {
                       const player = team.roster.find(
                         (player) => player.id === id
@@ -104,13 +123,15 @@ function timesChosenWrong(data: WrappedType) {
                       superscore += player.score;
                       return `${player.name} ${player.score}`;
                     });
-                    const startedStarts = startedIds.map((id) => {
-                      const player = team.roster.find(
-                        (player) => player.id === id
-                      )!;
-                      superscore -= player.score;
-                      return `${player.name} ${player.score}`;
-                    });
+                    const startedStarts = team.lineup
+                      .filter((playerId) => !bestIds.includes(playerId))
+                      .map((id) => {
+                        const player = team.roster.find(
+                          (player) => player.id === id
+                        )!;
+                        superscore -= player.score;
+                        return `${player.name} ${player.score}`;
+                      });
                     return [bestStarts, startedStarts]
                       .map((s) => s.join(","))
                       .join(" / ");

@@ -7,9 +7,9 @@ from bs4 import BeautifulSoup
 
 year = 2021
 league_ids = [203836968]
+num_weeks = 17
 
 wrapped_path = "wrapped.json"
-
 num_threads = 32
 
 fetch_cache = {}
@@ -25,7 +25,7 @@ def main():
 
 
 def get_wrapped(league_id):
-    weeks_range = range(1, 3)
+    weeks_range = range(1, num_weeks + 1)
     team_names = get_team_names(league_id)
     weeks = get_weeks(league_id, weeks_range)
     populate_boxscores(weeks)
@@ -133,7 +133,7 @@ def get_team(raw_team):
             "score":
             get_points(raw_player["playerPoolEntry"]["appliedStatTotal"]),
             "position": player["defaultPositionId"],
-            "team": pro_team_names[player['proTeamId']].upper(),
+            "team": pro_team_names[player["proTeamId"]].upper(),
         }
         roster.append(player_obj)
     return {
@@ -151,7 +151,7 @@ def get_game_id(pro_team_name, week):
     t = soup.find("table")
     for row in t.findAll("tr"):
         if row.find("span") and row.find("span").text == str(week):
-            game_url = row.findAll("a", href=True)[2]['href']
+            game_url = row.findAll("a", href=True)[2]["href"]
             return game_url.split("espn.com/nfl/game/_/gameId/")[-1]
 
 

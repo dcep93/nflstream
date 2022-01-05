@@ -1,8 +1,19 @@
 import React from "react";
 import style from "../nflstream/index.module.css";
+import css from "./index.module.css";
 import all_data from "./wrapped.json";
 
 const leagueId = 203836968;
+
+enum Position {
+  QB = 1,
+  RB = 2,
+  WR = 3,
+  TE = 4,
+  K = 5,
+  DST = 16,
+  FLEX = -1,
+}
 
 function Wrapped() {
   const data = all_data[leagueId];
@@ -10,8 +21,8 @@ function Wrapped() {
   return (
     <div>
       {/* {games_determined_by_discrete_scoring(data)} */}
-      {/* {best_by_streaming_position(data)} */}
       {/* {times_chosen_wrong(data)} */}
+      {bestByStreamingPosition(data)}
       {squeezesAndStomps(data)}
       {weekWinnersAndLosers(data)}
     </div>
@@ -22,12 +33,45 @@ function games_determined_by_discrete_scoring(data: WrappedType) {
   return <div className={style.bubble}>{JSON.stringify(data)}</div>;
 }
 
-function best_by_streaming_position(data: WrappedType) {
+function times_chosen_wrong(data: WrappedType) {
   return <div className={style.bubble}>{JSON.stringify(data)}</div>;
 }
 
-function times_chosen_wrong(data: WrappedType) {
-  return <div className={style.bubble}>{JSON.stringify(data)}</div>;
+function bestByStreamingPosition(data: WrappedType) {
+  return (
+    <div>
+      <div className={style.bubble}>
+        <h1>Best By Streaming Position</h1>
+        {[Position.QB, Position.DST, Position.K].map((position, i) => (
+          <div key={i} className={style.bubble}>
+            <h3>{Position[position]}</h3>
+            {sortByKey(
+              data.teamNames.map((teamName, index) => ({
+                teamName,
+                score: data.weeks
+                  .flatMap((week) => week.matches)
+                  .flatMap((teams) => teams)
+                  .filter((team) => team.teamIndex === index)
+                  .flatMap((team) =>
+                    team.roster.filter((player) =>
+                      team.lineup.includes(player.id)
+                    )
+                  )
+                  .filter((player) => player.position === position)
+                  .map((player) => player.score)
+                  .reduce((a, b) => a + b, 0),
+              })),
+              (obj) => -obj.score
+            ).map((obj, i) => (
+              <div key={i}>
+                ({i + 1}) {obj.score.toFixed(2)} [{obj.teamName}]
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 function squeezesAndStomps(data: WrappedType) {
@@ -65,8 +109,8 @@ function squeezesAndStomps(data: WrappedType) {
               .reverse()
               .map((point, i) => (
                 <div key={i}>
-                  {point.diff.toFixed(2)} point squeeze during week {point.week}{" "}
-                  [{data.teamNames[point.winner]}] beat [
+                  {point.diff.toFixed(2)} point stomp during week {point.week} [
+                  {data.teamNames[point.winner]}] beat [
                   {data.teamNames[point.loser]}]
                 </div>
               ))}
@@ -79,8 +123,8 @@ function squeezesAndStomps(data: WrappedType) {
 
 function weekWinnersAndLosers(data: WrappedType) {
   const counts = Array.from(new Array(data.teamNames.length)).map((_, i) => ({
-    wins: [] as number[],
-    losses: [] as number[],
+    tops: [] as number[],
+    bottoms: [] as number[],
   }));
   const vals = data.weeks.map((week, i) => {
     const sortedTeams = sortByKey(
@@ -92,42 +136,44 @@ function weekWinnersAndLosers(data: WrappedType) {
       winner: sortedTeams[sortedTeams.length - 1],
       number: week.number,
     };
-    counts[winnerAndLoser.winner.teamIndex].wins.push(week.number);
-    counts[winnerAndLoser.loser.teamIndex].losses.push(week.number);
+    counts[winnerAndLoser.winner.teamIndex].tops.push(week.number);
+    counts[winnerAndLoser.loser.teamIndex].bottoms.push(week.number);
     return winnerAndLoser;
   });
   return (
     <div>
       <div className={style.bubble}>
         <h1>Week Winners And Losers</h1>
-        <div>
-          <div className={style.bubble}>
-            {vals.map((week, i) => (
-              <div key={i}>
-                week {week.number} top score {week.winner.score}{" "}
-                {data.teamNames[week.winner.teamIndex]}{" "}
-              </div>
-            ))}
-          </div>
-        </div>
-        <div>
-          <div className={style.bubble}>
-            {vals.map((week, i) => (
-              <div key={i}>
-                week {week.number} bottom score {week.loser.score}{" "}
-                {data.teamNames[week.loser.teamIndex]}{" "}
-              </div>
-            ))}
-          </div>
-        </div>
-        <div>
+        <div className={css.flex}>
           <div className={style.bubble}>
             {counts.map((count, i) => (
               <div key={i}>
-                wins: ({count.wins.join(",")}) losses: ({count.losses.join(",")}
-                ) - {data.teamNames[i]}{" "}
+                tops: ({count.tops.join(",")}) bottoms: (
+                {count.bottoms.join(",")}) - {data.teamNames[i]}{" "}
               </div>
             ))}
+          </div>
+          <div className={style.bubble}>
+            <div>
+              <div className={style.bubble}>
+                {vals.map((week, i) => (
+                  <div key={i}>
+                    week {week.number} top score {week.winner.score}{" "}
+                    {data.teamNames[week.winner.teamIndex]}{" "}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div className={style.bubble}>
+                {vals.map((week, i) => (
+                  <div key={i}>
+                    week {week.number} bottom score {week.loser.score}{" "}
+                    {data.teamNames[week.loser.teamIndex]}{" "}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -173,15 +219,5 @@ type PlayerType = {
   position: Position;
   team: string;
 };
-
-enum Position {
-  QB = 1,
-  RB = 2,
-  WR = 3,
-  TE = 4,
-  K = 5,
-  DST = 16,
-  FLEX = -1,
-}
 
 export default Wrapped;

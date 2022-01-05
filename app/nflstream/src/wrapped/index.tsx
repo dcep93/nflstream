@@ -417,7 +417,7 @@ function weekWinnersAndLosers(data: WrappedType) {
     bottoms: [] as number[],
   }));
   const vals = data.weeks
-    .filter((week) => week.number <= 13)
+    .filter((week) => week.number !== 14 && week.number !== 16)
     .map((week, i) => {
       const sortedTeams = sortByKey(
         week.matches.flatMap((match) =>

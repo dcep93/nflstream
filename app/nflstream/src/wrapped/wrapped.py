@@ -195,7 +195,7 @@ def get_boxscore(pro_team_name, week):
             lambda span: span.text,
             soup.findAll("span", class_="abbrev"),
         ))
-    key = teamabbrevs.index(pro_team_name)
+    key = 1 - teamabbrevs.index(pro_team_name)
 
     all_passing = soup.find(id="gamepackage-passing")
     table = all_passing.findAll("table")[key]
@@ -212,8 +212,8 @@ def get_boxscore(pro_team_name, week):
     score = int(soup.findAll(class_="score")[key].text)
 
     boxscore = {
-        "team": pro_team_name,
-        "oppTeam": teamabbrevs[1 - key],
+        "team": teamabbrevs[1 - key],
+        "oppTeam": pro_team_name,
         "passing": passing,
         "rushing": rushing,
         "score": score
@@ -226,8 +226,14 @@ def populate_playbyplays(weeks):
 
 
 def get_play_by_play(pro_team_name, week):
-    # TODO
-    return {"team": pro_team_name, "headlines": []}
+    game_id = get_game_id(pro_team_name, week)
+    if game_id is None: return None
+    url = f'https://www.espn.com/nfl/playbyplay/_/gameId/{game_id}'
+    play_by_play_html = fetch(url, decode_json=False)
+    soup = BeautifulSoup(play_by_play_html, features="html.parser")
+    headline_divs = soup.findAll("div", class_="headline")
+    headlines = [h.text for h in headline_divs]
+    return {"team": pro_team_name, "headlines": headlines}
 
 
 def get_points(raw_points):

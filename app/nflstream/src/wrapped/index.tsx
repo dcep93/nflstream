@@ -21,10 +21,10 @@ function Wrapped() {
   return (
     <div>
       {gamesDeterminedByDiscreteScoring(data)}
-      {/* {bestByStreamingPosition(data)} */}
-      {/* {squeezesAndStomps(data)} */}
-      {/* {weekWinnersAndLosers(data)} */}
-      {/* {timesChosenWrong(data)} */}
+      {bestByStreamingPosition(data)}
+      {squeezesAndStomps(data)}
+      {weekWinnersAndLosers(data)}
+      {timesChosenWrong(data)}
     </div>
   );
 }
@@ -32,12 +32,104 @@ function Wrapped() {
 function gamesDeterminedByDiscreteScoring(data: WrappedType) {
   function calculateDSTDifference(
     team: TeamType,
+    boxscores: BoxscoreType[],
     differences: string[]
   ): number {
-    return 0;
+    const started = team.roster.find(
+      (player) =>
+        player.position === Position.DST && team.lineup.includes(player.id)
+    )!;
+    const offense = boxscores.find(
+      (boxscore) => boxscore.oppTeam === started.team
+    )!;
+    const yards = offense.passing + offense.rushing;
+    var superscore = 0;
+    if (yards >= 550) {
+      superscore += -6 - 1 * ((yards - 500) / 50);
+      superscore -= -7;
+    } else if (yards >= 500) {
+      superscore += -6 - 1 * ((yards - 500) / 50);
+      superscore -= -6;
+    } else if (yards >= 450) {
+      superscore += -5 - 1 * ((yards - 450) / 50);
+      superscore -= -5;
+    } else if (yards >= 400) {
+      superscore += -3 - 2 * ((yards - 400) / 50);
+      superscore -= -3;
+    } else if (yards >= 350) {
+      superscore += -1 - 2 * ((yards - 350) / 50);
+      superscore -= -1;
+    } else if (yards >= 300) {
+      superscore += 0 - 1 * ((yards - 300) / 50);
+      superscore -= 0;
+    } else if (yards >= 200) {
+      superscore += 2 - 2 * ((yards - 200) / 100);
+      superscore -= 2;
+    } else if (yards >= 100) {
+      superscore += 3 - 1 * ((yards - 100) / 100);
+      superscore -= 3;
+    } else {
+      superscore += 5 - 2 * (yards / 100);
+      superscore -= 5;
+    }
+    if (offense.score >= 46) {
+      superscore += -3 - 2 * ((offense.score - 35) / 11);
+      superscore -= -5;
+    } else if (offense.score >= 35) {
+      superscore += -3 - 2 * ((offense.score - 35) / 11);
+      superscore -= -3;
+    } else if (offense.score >= 28) {
+      superscore += -1 - 2 * ((offense.score - 28) / 7);
+      superscore -= -1;
+    } else if (offense.score >= 14) {
+      superscore += 1 - 2 * ((offense.score - 14) / 14);
+      superscore -= 1;
+    } else if (offense.score >= 7) {
+      superscore += 3 - 2 * ((offense.score - 7) / 7);
+      superscore -= 3;
+    } else if (offense.score >= 1) {
+      superscore += 4 - 1 * ((offense.score - 1) / 6);
+      superscore -= 4;
+    } else {
+      superscore += 5 - (1 * (offense.score - 0)) / 1;
+      superscore -= 5;
+    }
+    differences.push(`${started.name} ${superscore.toFixed(2)}`);
+    return superscore;
   }
-  function calculateKDifference(team: TeamType, differences: string[]): number {
-    return 0;
+  function calculateKDifference(
+    team: TeamType,
+    playbyplays: PlaybyplayType[],
+    differences: string[]
+  ): number {
+    const started = team.roster.find(
+      (player) =>
+        player.position === Position.K && team.lineup.includes(player.id)
+    )!;
+    const playbyplay = playbyplays.find(
+      (playbyplay) => playbyplay.team === started.team
+    )!;
+    const superscore = playbyplay.headlines
+      .map((headline) => {
+        if (headline.indexOf(started.name) !== 0) return 0;
+        const yards = parseInt(
+          headline.split(" Yd Field Goal")[0].split(" ").reverse()[0]
+        );
+        var points = yards / 10;
+        if (yards >= 60) {
+          points -= 6;
+        } else if (yards >= 50) {
+          points -= 5;
+        } else if (yards >= 40) {
+          points -= 4;
+        } else {
+          points -= 3;
+        }
+        return points;
+      })
+      .reduce((a, b) => a + b, 0);
+    differences.push(`${started.name} ${superscore.toFixed(2)}`);
+    return superscore;
   }
   return (
     <div>
@@ -45,17 +137,19 @@ function gamesDeterminedByDiscreteScoring(data: WrappedType) {
         <h1>Games Determined By Discrete Scoring</h1>
         {data.weeks
           .filter((week) => week.number <= 13)
-          .flatMap((week) =>
-            week.matches.map((match) => ({ week: week.number, match }))
-          )
+          .flatMap((week) => week.matches.map((match) => ({ week, match })))
           .map((match) => {
             if (match.match[1].score - match.match[0].score > 10) return null;
             const mapped = match.match.map((team) => {
               const differences: string[] = [];
               const superscore =
                 team.score +
-                calculateDSTDifference(team, differences) +
-                calculateKDifference(team, differences);
+                calculateDSTDifference(
+                  team,
+                  match.week.boxscores,
+                  differences
+                ) +
+                calculateKDifference(team, match.week.playbyplays, differences);
               return {
                 name: `${data.teamNames[team.teamIndex]} ${
                   team.score
@@ -73,9 +167,10 @@ function gamesDeterminedByDiscreteScoring(data: WrappedType) {
           .map(
             (match, i) =>
               match && (
-                <div key={i}>
-                  week {match.week}: {match.loser.name} would have beaten{" "}
-                  {match.winner.name} if K and DST used continuous scoring:
+                <div key={i} className={style.bubble}>
+                  week {match.week.number}: [{match.loser.name}] would have
+                  beaten [{match.winner.name}] if K and DST used continuous
+                  scoring:
                   <div>{match.loser.differences}</div>
                   <div>{match.winner.differences}</div>
                 </div>
@@ -212,6 +307,7 @@ function timesChosenWrong(data: WrappedType) {
 }
 
 function bestByStreamingPosition(data: WrappedType) {
+  // TODO
   return (
     <div>
       <div className={style.bubble}>
@@ -249,7 +345,7 @@ function bestByStreamingPosition(data: WrappedType) {
 }
 
 function squeezesAndStomps(data: WrappedType) {
-  const num = 3;
+  const num = 5;
   const rawPoints = sortByKey(
     data.weeks
       .filter((week) => week.number <= 13)
@@ -316,6 +412,7 @@ function weekWinnersAndLosers(data: WrappedType) {
     counts[winnerAndLoser.loser.teamIndex].bottoms.push(week.number);
     return winnerAndLoser;
   });
+  // TODO
   return (
     <div>
       <div className={style.bubble}>
@@ -372,14 +469,18 @@ type WrappedType = {
 type WeekType = {
   number: number;
   matches: TeamType[][];
-  boxscores: {
-    oppTeam: string;
-    passing: number;
-    rushing: number;
-    score: number;
-  }[];
-  playbyplays: { team: string; headlines: string[] }[];
+  boxscores: BoxscoreType[];
+  playbyplays: PlaybyplayType[];
 };
+
+type BoxscoreType = {
+  oppTeam: string;
+  passing: number;
+  rushing: number;
+  score: number;
+};
+
+type PlaybyplayType = { team: string; headlines: string[] };
 
 type TeamType = {
   teamIndex: number;

@@ -120,7 +120,7 @@ function timesChosenWrong(data: WrappedType) {
                             (player) => player.id === id
                           )!;
                           superscore -= player.score;
-                          return `${player.name} ${player.score}`;
+                          return `${player.name} ${player.score.toFixed(2)}`;
                         });
                       return [bestStarts, startedStarts]
                         .map((s) => s.join(","))
@@ -145,7 +145,11 @@ function timesChosenWrong(data: WrappedType) {
                 <div key={i} className={style.bubble}>
                   week {week.number}: [{teams[0].name}] could have beaten [
                   {teams[1].name}] if they had started{" "}
-                  {teams[0].betterStarts.join(" ")}
+                  <div className={style.bubble}>
+                    {teams[0].betterStarts.map((betterStart, j) => (
+                      <div key={j}>{betterStart}</div>
+                    ))}
+                  </div>
                 </div>
               ))
           )}

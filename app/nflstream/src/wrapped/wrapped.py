@@ -151,31 +151,41 @@ def get_game_id(pro_team_name, week):
     t = soup.find("table")
     for row in t.findAll("tr"):
         if row.find("span") and row.find("span").text == str(week):
-            game_url = row.findAll("a", href=True)[2]["href"]
+            hrefs = row.findAll("a", href=True)
+            if len(hrefs) < 3:
+                return None
+            game_url = hrefs[2]["href"]
             return game_url.split("espn.com/nfl/game/_/gameId/")[-1]
 
 
-def populate_boxscores(weeks):
+def populate(weeks, week_key, f, position):
     to_fetch = []
     for week in weeks:
         for match in week["matches"]:
             for team in match:
                 for player in team["roster"]:
-                    if player["position"] == 16:  # DST
+                    if player["position"] == position:
                         key = (player["team"], week["number"])
                         to_fetch.append(key)
 
     with concurrent.futures.ThreadPoolExecutor(num_threads) as executor:
-        fetched_arr = list(executor.map(lambda f: get_boxscore(*f), to_fetch))
+        fetched_arr = list(executor.map(lambda g: f(*g), to_fetch))
     for week in weeks:
-        week["boxscores"] = [
-            fetched_arr[i] for i, j in enumerate(to_fetch)
-            if j[1] == week["number"]
+        week[week_key] = [
+            i for i in [
+                fetched_arr[i] for i, j in enumerate(to_fetch)
+                if j[1] == week["number"]
+            ] if i
         ]
+
+
+def populate_boxscores(weeks):
+    populate(weeks, "boxscores", get_boxscore, 16)  # DST = 16
 
 
 def get_boxscore(pro_team_name, week):
     game_id = get_game_id(pro_team_name, week)
+    if game_id is None: return None
     url = f'https://www.espn.com/nfl/boxscore/_/gameId/{game_id}'
     box_score_html = fetch(url, decode_json=False)
     soup = BeautifulSoup(box_score_html, features="html.parser")
@@ -212,23 +222,7 @@ def get_boxscore(pro_team_name, week):
 
 
 def populate_playbyplays(weeks):
-    to_fetch = []
-    for week in weeks:
-        for match in week["matches"]:
-            for team in match:
-                for player in team["roster"]:
-                    if player["position"] == 5:  # K
-                        key = (player["team"], week["number"])
-                        to_fetch.append(key)
-
-    with concurrent.futures.ThreadPoolExecutor(num_threads) as executor:
-        fetched_arr = list(
-            executor.map(lambda f: get_play_by_play(*f), to_fetch))
-    for week in weeks:
-        week["playbyplays"] = [
-            fetched_arr[i] for i, j in enumerate(to_fetch)
-            if j[1] == week["number"]
-        ]
+    populate(weeks, "playbyplays", get_play_by_play, 5)  # K = 5
 
 
 def get_play_by_play(pro_team_name, week):

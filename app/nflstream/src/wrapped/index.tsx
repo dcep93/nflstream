@@ -21,10 +21,10 @@ function Wrapped() {
   return (
     <div>
       {/* {games_determined_by_discrete_scoring(data)} */}
-      {/* {times_chosen_wrong(data)} */}
-      {bestByStreamingPosition(data)}
-      {squeezesAndStomps(data)}
-      {weekWinnersAndLosers(data)}
+      {timesChosenWrong(data)}
+      {/* {bestByStreamingPosition(data)} */}
+      {/* {squeezesAndStomps(data)} */}
+      {/* {weekWinnersAndLosers(data)} */}
     </div>
   );
 }
@@ -33,8 +33,45 @@ function games_determined_by_discrete_scoring(data: WrappedType) {
   return <div className={style.bubble}>{JSON.stringify(data)}</div>;
 }
 
-function times_chosen_wrong(data: WrappedType) {
-  return <div className={style.bubble}>{JSON.stringify(data)}</div>;
+function timesChosenWrong(data: WrappedType) {
+  return (
+    <div>
+      <div className={style.bubble}>
+        <h1>Times Chosen Wrong</h1>
+        {data.weeks.map((week) =>
+          week.matches.map((teams) =>
+            teams.map((team) => {
+              var superscore = team.score;
+              const betterStarts: string[] = [];
+              [
+                {
+                  [Position.QB]: 1,
+                },
+                {
+                  [Position.DST]: 1,
+                },
+                {
+                  [Position.K]: 1,
+                },
+                {
+                  [Position.RB]: 2,
+                  [Position.WR]: 2,
+                  [Position.TE]: 1,
+                  [Position.FLEX]: 1,
+                },
+              ].forEach((choice) => {});
+              return {
+                teamIndex: team.teamIndex,
+                superscore,
+                betterStarts,
+                score: team.score,
+              };
+            })
+          )
+        )}
+      </div>
+    </div>
+  );
 }
 
 function bestByStreamingPosition(data: WrappedType) {

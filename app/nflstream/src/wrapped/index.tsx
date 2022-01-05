@@ -18,8 +18,6 @@ enum Position {
 function Wrapped() {
   const data = all_data[leagueId];
   if (!data) return <div>no data found for league {leagueId}</div>;
-  // TODO
-  data.weeks = data.weeks.filter((w) => w.number === 14);
   return (
     <div>
       {/* {games_determined_by_discrete_scoring(data)} */}
@@ -36,28 +34,6 @@ function games_determined_by_discrete_scoring(data: WrappedType) {
 }
 
 function timesChosenWrong(data: WrappedType) {
-  return (
-    <pre>
-      {JSON.stringify(
-        data.weeks
-          .flatMap((week) =>
-            week.matches.flatMap((match) =>
-              match.map((team) => ({
-                team: data.teamNames[team.teamIndex],
-                week: week.number,
-                missing: team.lineup.filter(
-                  (playerId) =>
-                    !team.roster.find((player) => player.id === playerId)
-                ),
-              }))
-            )
-          )
-          .filter((obj) => obj.missing.length > 0),
-        null,
-        2
-      )}
-    </pre>
-  );
   return (
     <div>
       <div className={style.bubble}>

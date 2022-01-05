@@ -418,8 +418,16 @@ function weekWinnersAndLosers(data: WrappedType) {
   }));
   const vals = data.weeks.map((week, i) => {
     const sortedTeams = sortByKey(
-      week.matches.flatMap((match) => match.flatMap((team) => team)),
-      (team) => team.score
+      week.matches.flatMap((match) =>
+        match.flatMap((team) => ({
+          ...team,
+          trueScore: team.roster
+            .filter((player) => team.lineup.includes(player.id))
+            .map((player) => player.score)
+            .reduce((a, b) => a + b, 0),
+        }))
+      ),
+      (team) => team.trueScore
     );
     const winnerAndLoser = {
       loser: sortedTeams[0],
@@ -447,7 +455,8 @@ function weekWinnersAndLosers(data: WrappedType) {
             <div className={css.bubble}>
               {vals.map((week, i) => (
                 <div key={i}>
-                  week {week.number}: top score {week.winner.score}:{" "}
+                  week {week.number}: top score{" "}
+                  {week.winner.trueScore.toFixed(2)}:{" "}
                   <b>{data.teamNames[week.winner.teamIndex]}</b>
                 </div>
               ))}
@@ -457,7 +466,8 @@ function weekWinnersAndLosers(data: WrappedType) {
             <div className={css.bubble}>
               {vals.map((week, i) => (
                 <div key={i}>
-                  week {week.number}: bottom score {week.loser.score}{" "}
+                  week {week.number}: bottom score{" "}
+                  {week.loser.trueScore.toFixed(2)}{" "}
                   <b>{data.teamNames[week.loser.teamIndex]}</b>
                 </div>
               ))}

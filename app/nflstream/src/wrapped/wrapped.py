@@ -233,7 +233,7 @@ def populate_playbyplays(weeks):
 
 def get_play_by_play(pro_team_name, week):
     # TODO
-    return []
+    return {"team": pro_team_name, "headlines": []}
 
 
 def get_points(raw_points):

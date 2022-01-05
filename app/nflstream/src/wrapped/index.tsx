@@ -11,9 +11,9 @@ function Wrapped() {
     <div>
       {/* {games_determined_by_discrete_scoring(data)} */}
       {/* {best_by_streaming_position(data)} */}
-      {squeezesAndStomps(data)}
       {/* {times_chosen_wrong(data)} */}
-      {/* {weekWinnersAndLosers(data)} */}
+      {squeezesAndStomps(data)}
+      {weekWinnersAndLosers(data)}
     </div>
   );
 }
@@ -26,21 +26,55 @@ function best_by_streaming_position(data: WrappedType) {
   return <div className={style.bubble}>{JSON.stringify(data)}</div>;
 }
 
+function times_chosen_wrong(data: WrappedType) {
+  return <div className={style.bubble}>{JSON.stringify(data)}</div>;
+}
+
 function squeezesAndStomps(data: WrappedType) {
-  const rawPoints = data.weeks.map((week) => week.matches);
+  const num = 3;
+  const rawPoints = sortByKey(
+    data.weeks.flatMap((week) =>
+      week.matches.map((teams) => ({
+        week: week.number,
+        diff: teams[1].score - teams[0].score,
+        winner: teams[1].teamIndex,
+        loser: teams[0].teamIndex,
+      }))
+    ),
+    (match) => match.diff
+  );
   return (
     <div>
       <div className={style.bubble}>
-        {rawPoints.map((point, i) => (
-          <div key={i}>{point.teams[1]}</div>
-        ))}
+        <h1>Squeezes and Stomps</h1>
+        <div>
+          <div className={style.bubble}>
+            {rawPoints.slice(0, num).map((point, i) => (
+              <div key={i}>
+                {point.diff.toFixed(2)} point squeeze during week {point.week} [
+                {data.teamNames[point.winner]}] beat [
+                {data.teamNames[point.loser]}]
+              </div>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div className={style.bubble}>
+            {rawPoints
+              .slice(-num)
+              .reverse()
+              .map((point, i) => (
+                <div key={i}>
+                  {point.diff.toFixed(2)} point squeeze during week {point.week}{" "}
+                  [{data.teamNames[point.winner]}] beat [
+                  {data.teamNames[point.loser]}]
+                </div>
+              ))}
+          </div>
+        </div>
       </div>
     </div>
   );
-}
-
-function times_chosen_wrong(data: WrappedType) {
-  return <div className={style.bubble}>{JSON.stringify(data)}</div>;
 }
 
 function weekWinnersAndLosers(data: WrappedType) {

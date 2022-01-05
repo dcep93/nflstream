@@ -1,5 +1,4 @@
 import React from "react";
-import style from "../nflstream/index.module.css";
 import css from "./index.module.css";
 import all_data from "./wrapped.json";
 
@@ -20,11 +19,11 @@ function Wrapped() {
   if (!data) return <div>no data found for league {leagueId}</div>;
   return (
     <div>
-      {gamesDeterminedByDiscreteScoring(data)}
-      {bestByStreamingPosition(data)}
-      {squeezesAndStomps(data)}
       {weekWinnersAndLosers(data)}
+      {squeezesAndStomps(data)}
+      {bestByStreamingPosition(data)}
       {timesChosenWrong(data)}
+      {gamesDeterminedByDiscreteScoring(data)}
     </div>
   );
 }
@@ -133,7 +132,7 @@ function gamesDeterminedByDiscreteScoring(data: WrappedType) {
   }
   return (
     <div>
-      <div className={style.bubble}>
+      <div className={[css.bubble, css.grey].join(" ")}>
         <h1>Games Determined By Discrete Scoring</h1>
         {data.weeks
           .filter((week) => week.number <= 13)
@@ -142,19 +141,19 @@ function gamesDeterminedByDiscreteScoring(data: WrappedType) {
             if (match.match[1].score - match.match[0].score > 10) return null;
             const mapped = match.match.map((team) => {
               const differences: string[] = [];
-              const superscore =
+              const superscore = (
                 team.score +
                 calculateDSTDifference(
                   team,
                   match.week.boxscores,
                   differences
                 ) +
-                calculateKDifference(team, match.week.playbyplays, differences);
+                calculateKDifference(team, match.week.playbyplays, differences)
+              ).toFixed(2);
               return {
-                name: `${data.teamNames[team.teamIndex]} ${
-                  team.score
-                } (ss ${superscore.toFixed(2)})`,
-                differences: differences.join(" "),
+                name: data.teamNames[team.teamIndex],
+                score: team.score,
+                differences,
                 superscore,
               };
             });
@@ -167,12 +166,24 @@ function gamesDeterminedByDiscreteScoring(data: WrappedType) {
           .map(
             (match, i) =>
               match && (
-                <div key={i} className={style.bubble}>
-                  week {match.week.number}: [{match.loser.name}] would have
-                  beaten [{match.winner.name}] if K and DST used continuous
-                  scoring:
-                  <div>{match.loser.differences}</div>
-                  <div>{match.winner.differences}</div>
+                <div key={i}>
+                  <div className={css.bubble}>
+                    <div>week {match.week.number}:</div>
+                    <div>
+                      <b>{match.loser.name}</b> {match.loser.score} (ss{" "}
+                      {match.loser.superscore})
+                    </div>
+                    <div>would have beaten</div>
+                    <div>
+                      <b>{match.winner.name}</b> {match.winner.score} (ss{" "}
+                      {match.winner.superscore})
+                    </div>
+                    <div>if K and DST used continuous scoring:</div>
+                    <div className={css.bubble}>
+                      <div>{match.loser.differences.join(" ")}</div>
+                      <div>{match.winner.differences.join(" ")}</div>
+                    </div>
+                  </div>
                 </div>
               )
           )}
@@ -184,7 +195,7 @@ function gamesDeterminedByDiscreteScoring(data: WrappedType) {
 function timesChosenWrong(data: WrappedType) {
   return (
     <div>
-      <div className={style.bubble}>
+      <div className={[css.bubble, css.grey].join(" ")}>
         <h1>Times Chosen Wrong</h1>
         {data.weeks
           .filter((week) => week.number <= 13)
@@ -277,9 +288,7 @@ function timesChosenWrong(data: WrappedType) {
                     .filter((i) => i);
 
                   const teamData = {
-                    name: `${data.teamNames[team.teamIndex]} ${
-                      team.score
-                    } (ss ${superscore.toFixed(2)})`,
+                    name: data.teamNames[team.teamIndex],
                     teamIndex: team.teamIndex,
                     superscore,
                     betterStarts,
@@ -290,13 +299,21 @@ function timesChosenWrong(data: WrappedType) {
               )
               .filter((teams) => teams[0].superscore > teams[1].score)
               .map((teams, i) => (
-                <div key={i} className={style.bubble}>
-                  week {week.number}: [{teams[0].name}] could have beaten [
-                  {teams[1].name}] if they had started{" "}
-                  <div className={style.bubble}>
-                    {teams[0].betterStarts.map((betterStart, j) => (
-                      <div key={j}>{betterStart}</div>
-                    ))}
+                <div key={i}>
+                  <div className={css.bubble}>
+                    <div>week {week.number}:</div>
+                    <b>{teams[0].name}</b> {teams[0].score} (ss{" "}
+                    {teams[0].superscore})<div>could have beaten</div>
+                    <div>
+                      <b>{teams[1].name}</b> {teams[1].score} (ss{" "}
+                      {teams[1].superscore})
+                    </div>
+                    <div>if they had started</div>
+                    <div className={css.bubble}>
+                      {teams[0].betterStarts.map((betterStart, j) => (
+                        <div key={j}>{betterStart}</div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               ))
@@ -307,13 +324,12 @@ function timesChosenWrong(data: WrappedType) {
 }
 
 function bestByStreamingPosition(data: WrappedType) {
-  // TODO
   return (
     <div>
-      <div className={style.bubble}>
+      <div className={[css.bubble, css.grey].join(" ")}>
         <h1>Best By Streaming Position</h1>
         {[Position.QB, Position.DST, Position.K].map((position, i) => (
-          <div key={i} className={style.bubble}>
+          <div key={i} className={css.bubble}>
             <h3>{Position[position]}</h3>
             {sortByKey(
               data.teamNames.map((teamName, index) => ({
@@ -334,7 +350,7 @@ function bestByStreamingPosition(data: WrappedType) {
               (obj) => -obj.score
             ).map((obj, i) => (
               <div key={i}>
-                ({i + 1}) {obj.score.toFixed(2)} [{obj.teamName}]
+                ({i + 1}) {obj.score.toFixed(2)} <b>{obj.teamName}</b>
               </div>
             ))}
           </div>
@@ -361,29 +377,29 @@ function squeezesAndStomps(data: WrappedType) {
   );
   return (
     <div>
-      <div className={style.bubble}>
+      <div className={[css.bubble, css.grey].join(" ")}>
         <h1>Squeezes and Stomps</h1>
         <div>
-          <div className={style.bubble}>
+          <div className={css.bubble}>
             {rawPoints.slice(0, num).map((point, i) => (
               <div key={i}>
-                {point.diff.toFixed(2)} point squeeze during week {point.week} [
-                {data.teamNames[point.winner]}] beat [
-                {data.teamNames[point.loser]}]
+                week {point.week}: {point.diff.toFixed(2)} point squeeze /{" "}
+                <b>{data.teamNames[point.winner]}</b> beat{" "}
+                <b>{data.teamNames[point.loser]}</b>
               </div>
             ))}
           </div>
         </div>
         <div>
-          <div className={style.bubble}>
+          <div className={css.bubble}>
             {rawPoints
               .slice(-num)
               .reverse()
               .map((point, i) => (
                 <div key={i}>
-                  {point.diff.toFixed(2)} point stomp during week {point.week} [
-                  {data.teamNames[point.winner]}] beat [
-                  {data.teamNames[point.loser]}]
+                  week {point.week}: {point.diff.toFixed(2)} point stomp /{" "}
+                  <b>{data.teamNames[point.winner]}</b> beat{" "}
+                  <b>{data.teamNames[point.loser]}</b>
                 </div>
               ))}
           </div>
@@ -412,40 +428,37 @@ function weekWinnersAndLosers(data: WrappedType) {
     counts[winnerAndLoser.loser.teamIndex].bottoms.push(week.number);
     return winnerAndLoser;
   });
-  // TODO
   return (
     <div>
-      <div className={style.bubble}>
+      <div className={[css.bubble, css.grey].join(" ")}>
         <h1>Week Winners And Losers</h1>
-        <div className={css.flex}>
-          <div className={style.bubble}>
+        <div className={css.flexx}>
+          <div className={css.bubble}>
             {counts.map((count, i) => (
               <div key={i}>
-                tops: ({count.tops.join(",")}) bottoms: (
-                {count.bottoms.join(",")}) - {data.teamNames[i]}{" "}
+                <b>{data.teamNames[i]}</b> / tops: ({count.tops.join(",")}) /
+                bottoms: ({count.bottoms.join(",")})
               </div>
             ))}
           </div>
-          <div className={style.bubble}>
-            <div>
-              <div className={style.bubble}>
-                {vals.map((week, i) => (
-                  <div key={i}>
-                    week {week.number} top score {week.winner.score}{" "}
-                    {data.teamNames[week.winner.teamIndex]}{" "}
-                  </div>
-                ))}
-              </div>
+          <div>
+            <div className={css.bubble}>
+              {vals.map((week, i) => (
+                <div key={i}>
+                  week {week.number}: top score {week.winner.score}:{" "}
+                  <b>{data.teamNames[week.winner.teamIndex]}</b>
+                </div>
+              ))}
             </div>
-            <div>
-              <div className={style.bubble}>
-                {vals.map((week, i) => (
-                  <div key={i}>
-                    week {week.number} bottom score {week.loser.score}{" "}
-                    {data.teamNames[week.loser.teamIndex]}{" "}
-                  </div>
-                ))}
-              </div>
+          </div>
+          <div>
+            <div className={css.bubble}>
+              {vals.map((week, i) => (
+                <div key={i}>
+                  week {week.number}: bottom score {week.loser.score}{" "}
+                  <b>{data.teamNames[week.loser.teamIndex]}</b>
+                </div>
+              ))}
             </div>
           </div>
         </div>

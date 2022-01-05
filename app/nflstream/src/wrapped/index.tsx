@@ -416,28 +416,30 @@ function weekWinnersAndLosers(data: WrappedType) {
     tops: [] as number[],
     bottoms: [] as number[],
   }));
-  const vals = data.weeks.map((week, i) => {
-    const sortedTeams = sortByKey(
-      week.matches.flatMap((match) =>
-        match.flatMap((team) => ({
-          ...team,
-          trueScore: team.roster
-            .filter((player) => team.lineup.includes(player.id))
-            .map((player) => player.score)
-            .reduce((a, b) => a + b, 0),
-        }))
-      ),
-      (team) => team.trueScore
-    );
-    const winnerAndLoser = {
-      loser: sortedTeams[0],
-      winner: sortedTeams[sortedTeams.length - 1],
-      number: week.number,
-    };
-    counts[winnerAndLoser.winner.teamIndex].tops.push(week.number);
-    counts[winnerAndLoser.loser.teamIndex].bottoms.push(week.number);
-    return winnerAndLoser;
-  });
+  const vals = data.weeks
+    .filter((week) => week.number <= 13)
+    .map((week, i) => {
+      const sortedTeams = sortByKey(
+        week.matches.flatMap((match) =>
+          match.flatMap((team) => ({
+            ...team,
+            trueScore: team.roster
+              .filter((player) => team.lineup.includes(player.id))
+              .map((player) => player.score)
+              .reduce((a, b) => a + b, 0),
+          }))
+        ),
+        (team) => team.trueScore
+      );
+      const winnerAndLoser = {
+        loser: sortedTeams[0],
+        winner: sortedTeams[sortedTeams.length - 1],
+        number: week.number,
+      };
+      counts[winnerAndLoser.winner.teamIndex].tops.push(week.number);
+      counts[winnerAndLoser.loser.teamIndex].bottoms.push(week.number);
+      return winnerAndLoser;
+    });
   return (
     <div>
       <div className={[css.bubble, css.grey].join(" ")}>

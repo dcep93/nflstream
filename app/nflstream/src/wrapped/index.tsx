@@ -55,10 +55,12 @@ function GamesDeterminedByDiscreteScoring(data: WrappedType) {
     boxscores: BoxscoreType[],
     differences: string[]
   ): number {
-    const started = team.roster.find(
-      (player) =>
-        player.position === Position.DST && team.lineup.includes(player.id)
-    )!;
+    const started =
+      data.players[
+        team.lineup.find(
+          (playerId) => data.players[playerId].position === Position.DST
+        )!
+      ];
     const offense = boxscores.find(
       (boxscore) => boxscore.oppTeam === started.team
     )!;
@@ -119,17 +121,19 @@ function GamesDeterminedByDiscreteScoring(data: WrappedType) {
   }
   function calculateKDifference(
     team: TeamType,
-    playbyplays: PlaybyplayType[],
+    fieldgoals: FieldGoalType[],
     differences: string[]
   ): number {
-    const started = team.roster.find(
-      (player) =>
-        player.position === Position.K && team.lineup.includes(player.id)
-    )!;
-    const playbyplay = playbyplays.find(
-      (playbyplay) => playbyplay.team === started.team
-    )!;
-    const superscore = playbyplay.headlines
+    const started =
+      data.players[
+        team.lineup.find(
+          (playerId) => data.players[playerId].position === Position.K
+        )!
+      ];
+    const headlines = fieldgoals.find(
+      (fieldgoal) => fieldgoal.team === started.team
+    )!.fieldgoals;
+    const superscore = headlines
       .map((headline) => {
         if (headline.indexOf(started.name) !== 0) return 0;
         const yards = parseInt(
@@ -162,7 +166,7 @@ function GamesDeterminedByDiscreteScoring(data: WrappedType) {
             const superscore = (
               team.score +
               calculateDSTDifference(team, match.week.boxscores, differences) +
-              calculateKDifference(team, match.week.playbyplays, differences)
+              calculateKDifference(team, match.week.fieldgoals, differences)
             ).toFixed(2);
             return {
               name: data.teamNames[team.teamIndex],
@@ -229,29 +233,31 @@ function TimesChosenWrong(data: WrappedType) {
             },
           ]
             .map((choices) => {
-              const bestIds: number[] = [];
+              const bestIds: string[] = [];
               const filteredRoster = sortByKey(
-                team.roster.filter((player) => choices[player.position]),
-                (player) => -player.score
+                Object.keys(team.roster).filter(
+                  (playerId) => choices[data.players[playerId].position]
+                ),
+                (playerId) => -team.roster[playerId]
               );
               Object.keys(choices)
                 .map((position) => parseInt(position) as Position)
                 .filter((position) => position !== Position.FLEX)
                 .forEach((position) => {
                   const subFilteredRoster = filteredRoster.filter(
-                    (player) => player.position === position
+                    (playerId) => data.players[playerId].position === position
                   );
                   Array.from(new Array(choices[position])).forEach(() => {
                     const bestId = subFilteredRoster.find(
-                      (player) => !bestIds.includes(player.id)
-                    )!.id;
+                      (playerId) => !bestIds.includes(playerId)
+                    )!;
                     bestIds.push(bestId);
                   });
                 });
               Array.from(new Array(choices[Position.FLEX] || 0)).forEach(() => {
                 const bestId = filteredRoster.find(
-                  (player) => !bestIds.includes(player.id)
-                )!.id;
+                  (playerId) => !bestIds.includes(playerId)
+                )!;
                 bestIds.push(bestId);
               });
               const betterStartIds = bestIds.filter(
@@ -259,25 +265,17 @@ function TimesChosenWrong(data: WrappedType) {
               );
               if (betterStartIds.length === 0) return null;
               const bestStarts = betterStartIds.map((id) => {
-                const player = team.roster.find((player) => player.id === id)!;
-                superscore += player.score;
-                return `${player.name} ${player.score}`;
+                const score = team.roster[id];
+                superscore += score;
+                return `${data.players[id].name} ${score}`;
               });
               const startedStarts = team.lineup
-                .filter(
-                  (playerId) =>
-                    choices[
-                      team.roster.find((player) => player.id === playerId)!
-                        .position
-                    ]
-                )
+                .filter((playerId) => choices[data.players[playerId].position])
                 .filter((playerId) => !bestIds.includes(playerId))
                 .map((id) => {
-                  const player = team.roster.find(
-                    (player) => player.id === id
-                  )!;
-                  superscore -= player.score;
-                  return `${player.name} ${player.score.toFixed(2)}`;
+                  const score = team.roster[id];
+                  superscore -= score;
+                  return `${data.players[id].name} ${score}`;
                 });
               return [bestStarts, startedStarts]
                 .map((s) => s.join(","))
@@ -373,12 +371,12 @@ function BestByStreamingPosition(data: WrappedType) {
                 .flatMap((teams) => teams)
                 .filter((team) => team.teamIndex === index)
                 .flatMap((team) =>
-                  team.roster.filter((player) =>
-                    team.lineup.includes(player.id)
-                  )
+                  team.lineup
+                    .filter(
+                      (playerId) => data.players[playerId].position === position
+                    )
+                    .map((playerId) => team.roster[playerId])
                 )
-                .filter((player) => player.position === position)
-                .map((player) => player.score)
                 .reduce((a, b) => a + b, 0),
             })),
             (obj) => -obj.score
@@ -502,13 +500,14 @@ function sortByKey<T>(arr: T[], f: (t: T) => number): T[] {
 type WrappedType = {
   teamNames: string[];
   weeks: WeekType[];
+  players: { [playerId: string]: PlayerType };
 };
 
 type WeekType = {
   number: number;
   matches: TeamType[][];
   boxscores: BoxscoreType[];
-  playbyplays: PlaybyplayType[];
+  fieldgoals: FieldGoalType[];
 };
 
 type BoxscoreType = {
@@ -518,19 +517,17 @@ type BoxscoreType = {
   score: number;
 };
 
-type PlaybyplayType = { team: string; headlines: string[] };
+type FieldGoalType = { team: string; fieldgoals: string[] };
 
 type TeamType = {
   teamIndex: number;
   score: number;
-  lineup: number[];
-  roster: PlayerType[];
+  lineup: string[];
+  roster: { [playerId: string]: number };
 };
 
 type PlayerType = {
-  id: number;
   name: string;
-  score: number;
   position: Position;
   team: string;
 };

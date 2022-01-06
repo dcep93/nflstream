@@ -36,8 +36,9 @@ def get_wrapped(league_id):
     team_names = get_team_names(league_id)
     weeks = get_weeks(league_id, weeks_range)
     populate_boxscores(weeks)
-    populate_playbyplays(weeks)
-    return {"teamNames": team_names, "weeks": weeks}
+    populate_fieldgoals(weeks)
+    players = get_players(weeks)
+    return {"teamNames": team_names, "weeks": weeks, "players": players}
 
 
 def fetch(url, decode_json=True):
@@ -155,8 +156,8 @@ def get_team(raw_team):
     return {
         "teamIndex": raw_team["teamId"] - 1,
         "score": score,
-        "lineup": lineup,
-        "roster": roster,
+        "lineup": [str(i) for i in lineup],
+        "fullRoster": roster,
     }
 
 
@@ -179,7 +180,7 @@ def populate(weeks, week_key, f, position):
     for week in weeks:
         for match in week["matches"]:
             for team in match:
-                for player in team["roster"]:
+                for player in team["fullRoster"]:
                     if player["position"] == position:
                         if player["team"] != "FA":
                             key = (player["team"], week["number"])
@@ -238,19 +239,37 @@ def get_boxscore(pro_team_name, week):
     return boxscore
 
 
-def populate_playbyplays(weeks):
-    populate(weeks, "playbyplays", get_play_by_play, 5)  # K = 5
+def populate_fieldgoals(weeks):
+    populate(weeks, "fieldgoals", get_fieldgoals, 5)  # K = 5
 
 
-def get_play_by_play(pro_team_name, week):
+def get_fieldgoals(pro_team_name, week):
     game_id = get_game_id(pro_team_name, week)
     if game_id is None: return None
     url = f'https://www.espn.com/nfl/playbyplay/_/gameId/{game_id}'
     play_by_play_html = fetch(url, decode_json=False)
     soup = BeautifulSoup(play_by_play_html, features="html.parser")
     headline_divs = soup.findAll("div", class_="headline")
-    headlines = [h.text for h in headline_divs]
-    return {"team": pro_team_name, "headlines": headlines}
+    headlines = [h.text for h in headline_divs if "Field Goal" in h.text]
+    return {"team": pro_team_name, "fieldgoals": headlines}
+
+
+def get_players(weeks):
+    players = {}
+    for week in weeks:
+        for match in week["matches"]:
+            for team in match:
+                roster = {}
+                for p in team["fullRoster"]:
+                    players[p["id"]] = {
+                        "name": p["name"],
+                        "position": p["position"],
+                        "team": p["team"]
+                    }
+                    roster[p["id"]] = p["score"]
+                team["roster"] = roster
+                del team["fullRoster"]
+    return players
 
 
 def get_points(raw_points):

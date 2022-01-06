@@ -43,7 +43,7 @@ def get_wrapped(league_id):
 def fetch(url, decode_json=True):
     if url in fetch_cache:
         return fetch_cache[url]
-    print("fetching", url)
+    print(url)
     raw_data = requests.get(url, cookies={'espn_s2': espn_s2})
     data = raw_data.json() if decode_json else raw_data.text
     fetch_cache[url] = data
@@ -126,11 +126,18 @@ def get_team(raw_team):
         33: 'Bal',
         34: 'Hou',
     }
-    lineup = list(
-        map(
-            lambda player: player["playerId"],
-            raw_team["rosterForMatchupPeriod"]["entries"],
-        ))
+    lineup = []
+    for player in raw_team["rosterForMatchupPeriod"]["entries"]:
+        scoring_players = list(
+            filter(
+                lambda scoring_player: scoring_player["playerId"] == player[
+                    "playerId"],
+                raw_team["rosterForCurrentScoringPeriod"]["entries"],
+            ))
+        if scoring_players and scoring_players[0]["lineupSlotId"] not in [
+                20, 21
+        ]:
+            lineup.append(player["playerId"])
     roster = []
     for raw_player in raw_team["rosterForCurrentScoringPeriod"]["entries"]:
         player = raw_player["playerPoolEntry"]["player"]
@@ -143,8 +150,8 @@ def get_team(raw_team):
             "team": pro_team_names[player["proTeamId"]].upper(),
         }
         roster.append(player_obj)
-    score = sum(
-        [player["score"] for player in roster if player["id"] in lineup])
+    score = get_points(
+        sum([player["score"] for player in roster if player["id"] in lineup]))
     return {
         "teamIndex": raw_team["teamId"] - 1,
         "score": score,

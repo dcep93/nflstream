@@ -6,13 +6,20 @@ import requests
 from bs4 import BeautifulSoup
 
 year = 2021
-league_ids = [203836968]
+league_ids = [67201591, 203836968]
 num_weeks = 17
 
 wrapped_path = "wrapped.json"
 num_threads = 32
 
 fetch_cache = {}
+
+# for private leagues, need to store the cookie value of espn_s2 in espn_s2.txt
+try:
+    with open('espn_s2.txt') as fh:
+        espn_s2 = fh.read().strip()
+except:
+    espn_s2 = None
 
 
 def main():
@@ -37,7 +44,7 @@ def fetch(url, decode_json=True):
     if url in fetch_cache:
         return fetch_cache[url]
     print("fetching", url)
-    raw_data = requests.get(url)
+    raw_data = requests.get(url, cookies={'espn_s2': espn_s2})
     data = raw_data.json() if decode_json else raw_data.text
     fetch_cache[url] = data
     return data

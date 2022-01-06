@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import generateWrapped from "./generate_wrapped";
 import css from "./index.module.css";
 import all_data from "./wrapped.json";
 
@@ -15,6 +16,7 @@ enum Position {
 
 function Wrapped() {
   document.title = "Fantasy Wrapped";
+  console.log(`(${generateWrapped.toString().replaceAll("\n", "")})()`);
   const [toRenderKey, update] = useState("");
   const [searchParams] = useSearchParams();
   const leagueId = searchParams.get("league_id") || 203836968;
@@ -497,36 +499,36 @@ function sortByKey<T>(arr: T[], f: (t: T) => number): T[] {
     .map((w) => w.obj);
 }
 
-type WrappedType = {
+export type WrappedType = {
   teamNames: string[];
   weeks: WeekType[];
   players: { [playerId: string]: PlayerType };
 };
 
-type WeekType = {
+export type WeekType = {
   number: number;
   matches: TeamType[][];
   boxscores: BoxscoreType[];
   fieldgoals: FieldGoalType[];
 };
 
-type BoxscoreType = {
+export type BoxscoreType = {
   oppTeam: string;
   passing: number;
   rushing: number;
   score: number;
 };
 
-type FieldGoalType = { team: string; fieldgoals: string[] };
+export type FieldGoalType = { team: string; fieldgoals: string[] };
 
-type TeamType = {
+export type TeamType = {
   teamIndex: number;
   score: number;
   lineup: string[];
   roster: { [playerId: string]: number };
 };
 
-type PlayerType = {
+export type PlayerType = {
   name: string;
   position: Position;
   team: string;

@@ -154,7 +154,6 @@ function GamesDeterminedByDiscreteScoring(data: WrappedType) {
   return (
     <div>
       {data.weeks
-        .filter((week) => week.number <= 13)
         .flatMap((week) => week.matches.map((match) => ({ week, match })))
         .map((match) => {
           if (match.match[1].score - match.match[0].score > 10) return null;
@@ -207,104 +206,98 @@ function GamesDeterminedByDiscreteScoring(data: WrappedType) {
 }
 
 function TimesChosenWrong(data: WrappedType) {
-  const wrongChoices = data.weeks
-    .filter((week) => week.number <= 13)
-    .flatMap((week) =>
-      week.matches
-        .map((teams) =>
-          teams.map((team) => {
-            var superscore = team.score;
-            const betterStarts = [
-              {
-                [Position.QB]: 1,
-              },
-              {
-                [Position.DST]: 1,
-              },
-              {
-                [Position.K]: 1,
-              },
-              {
-                [Position.RB]: 2,
-                [Position.WR]: 2,
-                [Position.TE]: 1,
-                [Position.FLEX]: 1,
-              },
-            ]
-              .map((choices) => {
-                const bestIds: number[] = [];
-                const filteredRoster = sortByKey(
-                  team.roster.filter((player) => choices[player.position]),
-                  (player) => -player.score
-                );
-                Object.keys(choices)
-                  .map((position) => parseInt(position) as Position)
-                  .filter((position) => position !== Position.FLEX)
-                  .forEach((position) => {
-                    const subFilteredRoster = filteredRoster.filter(
-                      (player) => player.position === position
-                    );
-                    Array.from(new Array(choices[position])).forEach(() => {
-                      const bestId = subFilteredRoster.find(
-                        (player) => !bestIds.includes(player.id)
-                      )!.id;
-                      bestIds.push(bestId);
-                    });
-                  });
-                Array.from(new Array(choices[Position.FLEX] || 0)).forEach(
-                  () => {
-                    const bestId = filteredRoster.find(
+  const wrongChoices = data.weeks.flatMap((week) =>
+    week.matches
+      .map((teams) =>
+        teams.map((team) => {
+          var superscore = team.score;
+          const betterStarts = [
+            {
+              [Position.QB]: 1,
+            },
+            {
+              [Position.DST]: 1,
+            },
+            {
+              [Position.K]: 1,
+            },
+            {
+              [Position.RB]: 2,
+              [Position.WR]: 2,
+              [Position.TE]: 1,
+              [Position.FLEX]: 1,
+            },
+          ]
+            .map((choices) => {
+              const bestIds: number[] = [];
+              const filteredRoster = sortByKey(
+                team.roster.filter((player) => choices[player.position]),
+                (player) => -player.score
+              );
+              Object.keys(choices)
+                .map((position) => parseInt(position) as Position)
+                .filter((position) => position !== Position.FLEX)
+                .forEach((position) => {
+                  const subFilteredRoster = filteredRoster.filter(
+                    (player) => player.position === position
+                  );
+                  Array.from(new Array(choices[position])).forEach(() => {
+                    const bestId = subFilteredRoster.find(
                       (player) => !bestIds.includes(player.id)
                     )!.id;
                     bestIds.push(bestId);
-                  }
-                );
-                const betterStartIds = bestIds.filter(
-                  (playerId) => !team.lineup.includes(playerId)
-                );
-                if (betterStartIds.length === 0) return null;
-                const bestStarts = betterStartIds.map((id) => {
+                  });
+                });
+              Array.from(new Array(choices[Position.FLEX] || 0)).forEach(() => {
+                const bestId = filteredRoster.find(
+                  (player) => !bestIds.includes(player.id)
+                )!.id;
+                bestIds.push(bestId);
+              });
+              const betterStartIds = bestIds.filter(
+                (playerId) => !team.lineup.includes(playerId)
+              );
+              if (betterStartIds.length === 0) return null;
+              const bestStarts = betterStartIds.map((id) => {
+                const player = team.roster.find((player) => player.id === id)!;
+                superscore += player.score;
+                return `${player.name} ${player.score}`;
+              });
+              const startedStarts = team.lineup
+                .filter(
+                  (playerId) =>
+                    choices[
+                      team.roster.find((player) => player.id === playerId)!
+                        .position
+                    ]
+                )
+                .filter((playerId) => !bestIds.includes(playerId))
+                .map((id) => {
                   const player = team.roster.find(
                     (player) => player.id === id
                   )!;
-                  superscore += player.score;
-                  return `${player.name} ${player.score}`;
+                  superscore -= player.score;
+                  return `${player.name} ${player.score.toFixed(2)}`;
                 });
-                const startedStarts = team.lineup
-                  .filter(
-                    (playerId) =>
-                      choices[
-                        team.roster.find((player) => player.id === playerId)!
-                          .position
-                      ]
-                  )
-                  .filter((playerId) => !bestIds.includes(playerId))
-                  .map((id) => {
-                    const player = team.roster.find(
-                      (player) => player.id === id
-                    )!;
-                    superscore -= player.score;
-                    return `${player.name} ${player.score.toFixed(2)}`;
-                  });
-                return [bestStarts, startedStarts]
-                  .map((s) => s.join(","))
-                  .join(" / ");
-              })
-              .filter((i) => i);
+              return [bestStarts, startedStarts]
+                .map((s) => s.join(","))
+                .join(" / ");
+            })
+            .filter((i) => i);
 
-            const teamData = {
-              name: data.teamNames[team.teamIndex],
-              teamIndex: team.teamIndex,
-              superscore,
-              betterStarts,
-              score: team.score,
-            };
-            return teamData;
-          })
-        )
-        .filter((teams) => teams[0].superscore > teams[1].score)
-        .map((teams) => ({ teams, week: week.number }))
-    );
+          const teamData = {
+            name: data.teamNames[team.teamIndex],
+            teamIndex: team.teamIndex,
+            superscore,
+            betterStarts,
+            score: team.score,
+          };
+          return teamData;
+        })
+      )
+      .filter((teams) => teams[0].superscore > teams[1].score)
+      .map((teams) => ({ teams, week: week.number }))
+  );
   const [filterTeam, update] = useState(-1);
   return (
     <div>
@@ -376,7 +369,6 @@ function BestByStreamingPosition(data: WrappedType) {
             data.teamNames.map((teamName, index) => ({
               teamName,
               score: data.weeks
-                .filter((week) => week.number <= 13)
                 .flatMap((week) => week.matches)
                 .flatMap((teams) => teams)
                 .filter((team) => team.teamIndex === index)
@@ -404,16 +396,14 @@ function BestByStreamingPosition(data: WrappedType) {
 function SqueezesAndStomps(data: WrappedType) {
   const num = 5;
   const rawPoints = sortByKey(
-    data.weeks
-      .filter((week) => week.number <= 13)
-      .flatMap((week) =>
-        week.matches.map((teams) => ({
-          week: week.number,
-          diff: teams[1].score - teams[0].score,
-          winner: teams[1].teamIndex,
-          loser: teams[0].teamIndex,
-        }))
-      ),
+    data.weeks.flatMap((week) =>
+      week.matches.map((teams) => ({
+        week: week.number,
+        diff: teams[1].score - teams[0].score,
+        winner: teams[1].teamIndex,
+        loser: teams[0].teamIndex,
+      }))
+    ),
     (match) => match.diff
   );
   return (
@@ -452,22 +442,20 @@ function WeekWinnersAndLosers(data: WrappedType) {
     tops: [] as number[],
     bottoms: [] as number[],
   }));
-  const vals = data.weeks
-    .filter((week) => week.number !== 14 && week.number !== 16)
-    .map((week, i) => {
-      const sortedTeams = sortByKey(
-        week.matches.flatMap((match) => match.flatMap((team) => team)),
-        (team) => team.score
-      );
-      const winnerAndLoser = {
-        loser: sortedTeams[0],
-        winner: sortedTeams[sortedTeams.length - 1],
-        number: week.number,
-      };
-      counts[winnerAndLoser.winner.teamIndex].tops.push(week.number);
-      counts[winnerAndLoser.loser.teamIndex].bottoms.push(week.number);
-      return winnerAndLoser;
-    });
+  const vals = data.weeks.map((week, i) => {
+    const sortedTeams = sortByKey(
+      week.matches.flatMap((match) => match.flatMap((team) => team)),
+      (team) => team.score
+    );
+    const winnerAndLoser = {
+      loser: sortedTeams[0],
+      winner: sortedTeams[sortedTeams.length - 1],
+      number: week.number,
+    };
+    counts[winnerAndLoser.winner.teamIndex].tops.push(week.number);
+    counts[winnerAndLoser.loser.teamIndex].bottoms.push(week.number);
+    return winnerAndLoser;
+  });
   return (
     <div>
       <div className={css.flexx}>

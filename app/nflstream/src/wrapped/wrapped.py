@@ -143,9 +143,11 @@ def get_team(raw_team):
             "team": pro_team_names[player["proTeamId"]].upper(),
         }
         roster.append(player_obj)
+    score = sum(
+        [player["score"] for player in roster if player["id"] in lineup])
     return {
         "teamIndex": raw_team["teamId"] - 1,
-        "score": get_points(raw_team["totalPoints"]),
+        "score": score,
         "lineup": lineup,
         "roster": roster,
     }

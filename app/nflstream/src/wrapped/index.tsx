@@ -1,8 +1,7 @@
 import React, { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import css from "./index.module.css";
 import all_data from "./wrapped.json";
-
-const leagueId = 203836968;
 
 enum Position {
   QB = 1,
@@ -16,7 +15,11 @@ enum Position {
 
 function Wrapped() {
   document.title = "Fantasy Wrapped";
-  const data = all_data[leagueId];
+  const [toRenderKey, update] = useState("");
+  const [searchParams] = useSearchParams();
+  const leagueId = searchParams.get("league_id") || 203836968;
+  const data: WrappedType | undefined = (all_data as any)[leagueId];
+  if (!data) return <>no data found for league {leagueId}</>;
   const toRender: { [key: string]: any } = {
     "Week Winners and Losers": WeekWinnersAndLosers(data),
     "Squeezes and Stomps": SqueezesAndStomps(data),
@@ -26,7 +29,7 @@ function Wrapped() {
     "raw_data.json": JSON.stringify(data),
   };
   const defaultToRenderKey = Object.keys(toRender)[0]!;
-  const [toRenderKey, update] = useState(defaultToRenderKey);
+  if (toRenderKey === "") update(defaultToRenderKey);
   return (
     <div>
       <div className={[css.flex, css.grey].join(" ")}>
@@ -37,7 +40,9 @@ function Wrapped() {
         ))}
       </div>
       <div>
-        <h1 className={css.bubble}>{toRenderKey}</h1>
+        <h1 className={css.bubble}>
+          {toRenderKey} - league {leagueId}
+        </h1>
         <div>{toRender[toRenderKey]}</div>
       </div>
     </div>

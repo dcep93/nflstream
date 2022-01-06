@@ -172,8 +172,9 @@ def populate(weeks, week_key, f, position):
             for team in match:
                 for player in team["roster"]:
                     if player["position"] == position:
-                        key = (player["team"], week["number"])
-                        to_fetch.append(key)
+                        if player["team"] != "FA":
+                            key = (player["team"], week["number"])
+                            to_fetch.append(key)
 
     with concurrent.futures.ThreadPoolExecutor(num_threads) as executor:
         fetched_arr = list(executor.map(lambda g: f(*g), to_fetch))

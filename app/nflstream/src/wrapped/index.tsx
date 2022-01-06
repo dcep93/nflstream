@@ -21,7 +21,7 @@ function Wrapped() {
   const data: WrappedType | undefined = (all_data as any)[leagueId];
   if (!data) return <>no data found for league {leagueId}</>;
   const toRender: { [key: string]: any } = {
-    "Week Winners and Losers": WeekWinnersAndLosers(data),
+    "Week Tops and Bottoms": WeekWinnersAndLosers(data),
     "Squeezes and Stomps": SqueezesAndStomps(data),
     "Best By Position": BestByStreamingPosition(data),
     "Determined By Discrete Scoring": GamesDeterminedByDiscreteScoring(data),

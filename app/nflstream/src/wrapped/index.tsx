@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import css from "./index.module.css";
 import all_data from "./wrapped.json";
 
@@ -17,19 +17,34 @@ enum Position {
 function Wrapped() {
   document.title = "Fantasy Wrapped";
   const data = all_data[leagueId];
-  if (!data) return <div>no data found for league {leagueId}</div>;
+  const toRender: { [key: string]: any } = {
+    "Week Winners and Losers": WeekWinnersAndLosers(data),
+    "Squeezes and Stomps": SqueezesAndStomps(data),
+    "Best By Position": BestByStreamingPosition(data),
+    "Determined By Discrete Scoring": GamesDeterminedByDiscreteScoring(data),
+    "Chosen Wrong": TimesChosenWrong(data),
+    "raw_data.json": JSON.stringify(data),
+  };
+  const defaultToRenderKey = Object.keys(toRender)[0]!;
+  const [toRenderKey, update] = useState(defaultToRenderKey);
   return (
     <div>
-      {weekWinnersAndLosers(data)}
-      {squeezesAndStomps(data)}
-      {bestByStreamingPosition(data)}
-      {timesChosenWrong(data)}
-      {gamesDeterminedByDiscreteScoring(data)}
+      <div className={[css.flex, css.grey].join(" ")}>
+        {Object.keys(toRender).map((key, i) => (
+          <div key={i} className={css.bubble} onClick={() => update(key)}>
+            {key}
+          </div>
+        ))}
+      </div>
+      <div>
+        <h1 className={css.bubble}>{toRenderKey}</h1>
+        <div>{toRender[toRenderKey]}</div>
+      </div>
     </div>
   );
 }
 
-function gamesDeterminedByDiscreteScoring(data: WrappedType) {
+function GamesDeterminedByDiscreteScoring(data: WrappedType) {
   function calculateDSTDifference(
     team: TeamType,
     boxscores: BoxscoreType[],
@@ -133,67 +148,60 @@ function gamesDeterminedByDiscreteScoring(data: WrappedType) {
   }
   return (
     <div>
-      <div className={[css.bubble, css.grey].join(" ")}>
-        <h1>Games Determined By Discrete Scoring</h1>
-        {data.weeks
-          .filter((week) => week.number <= 13)
-          .flatMap((week) => week.matches.map((match) => ({ week, match })))
-          .map((match) => {
-            if (match.match[1].score - match.match[0].score > 10) return null;
-            const mapped = match.match.map((team) => {
-              const differences: string[] = [];
-              const superscore = (
-                team.score +
-                calculateDSTDifference(
-                  team,
-                  match.week.boxscores,
-                  differences
-                ) +
-                calculateKDifference(team, match.week.playbyplays, differences)
-              ).toFixed(2);
-              return {
-                name: data.teamNames[team.teamIndex],
-                score: team.score,
-                differences,
-                superscore,
-              };
-            });
-            return { week: match.week, loser: mapped[0], winner: mapped[1] };
-          })
-          .filter(
-            (match) =>
-              match !== null && match.loser.superscore > match.winner.superscore
-          )
-          .map(
-            (match, i) =>
-              match && (
-                <div key={i}>
+      {data.weeks
+        .filter((week) => week.number <= 13)
+        .flatMap((week) => week.matches.map((match) => ({ week, match })))
+        .map((match) => {
+          if (match.match[1].score - match.match[0].score > 10) return null;
+          const mapped = match.match.map((team) => {
+            const differences: string[] = [];
+            const superscore = (
+              team.score +
+              calculateDSTDifference(team, match.week.boxscores, differences) +
+              calculateKDifference(team, match.week.playbyplays, differences)
+            ).toFixed(2);
+            return {
+              name: data.teamNames[team.teamIndex],
+              score: team.score,
+              differences,
+              superscore,
+            };
+          });
+          return { week: match.week, loser: mapped[0], winner: mapped[1] };
+        })
+        .filter(
+          (match) =>
+            match !== null && match.loser.superscore > match.winner.superscore
+        )
+        .map(
+          (match, i) =>
+            match && (
+              <div key={i}>
+                <div className={css.bubble}>
+                  <div>week {match.week.number}:</div>
+                  <div>
+                    <b>{match.loser.name}</b> {match.loser.score} (ss{" "}
+                    {match.loser.superscore})
+                  </div>
+                  <div>would have beaten</div>
+                  <div>
+                    <b>{match.winner.name}</b> {match.winner.score} (ss{" "}
+                    {match.winner.superscore})
+                  </div>
+                  <div>if K and DST used continuous scoring:</div>
                   <div className={css.bubble}>
-                    <div>week {match.week.number}:</div>
-                    <div>
-                      <b>{match.loser.name}</b> {match.loser.score} (ss{" "}
-                      {match.loser.superscore})
-                    </div>
-                    <div>would have beaten</div>
-                    <div>
-                      <b>{match.winner.name}</b> {match.winner.score} (ss{" "}
-                      {match.winner.superscore})
-                    </div>
-                    <div>if K and DST used continuous scoring:</div>
-                    <div className={css.bubble}>
-                      <div>{match.loser.differences.join(" ")}</div>
-                      <div>{match.winner.differences.join(" ")}</div>
-                    </div>
+                    <div>{match.loser.differences.join(" ")}</div>
+                    <div>{match.winner.differences.join(" ")}</div>
                   </div>
                 </div>
-              )
-          )}
-      </div>
+              </div>
+            )
+        )}
     </div>
   );
 }
 
-function timesChosenWrong(data: WrappedType) {
+function TimesChosenWrong(data: WrappedType) {
   const wrongChoices = data.weeks
     .filter((week) => week.number <= 13)
     .flatMap((week) =>
@@ -292,28 +300,44 @@ function timesChosenWrong(data: WrappedType) {
         .filter((teams) => teams[0].superscore > teams[1].score)
         .map((teams) => ({ teams, week: week.number }))
     );
+  const [filterTeam, update] = useState(-1);
   return (
     <div>
-      <div className={[css.bubble, css.grey].join(" ")}>
-        <h1>Times Chosen Wrong</h1>
-        <div>
-          <div className={css.bubble}>
-            {data.teamNames
-              .map((teamName, index) => ({
-                teamName,
-                wrong: wrongChoices
-                  .filter((choice) => choice.teams[0].teamIndex === index)
-                  .map((choice) => choice.week),
-              }))
-              .map((obj, i) => (
-                <div key={i}>
-                  <b>{obj.teamName}</b> chose wrong weeks ({obj.wrong.join(",")}
-                  )
-                </div>
-              ))}
-          </div>
+      <div>
+        <div className={css.bubble}>
+          {data.teamNames
+            .map((teamName, index) => ({
+              teamName,
+              index,
+              wrong: wrongChoices
+                .filter((choice) => choice.teams[0].teamIndex === index)
+                .map((choice) => choice.week),
+            }))
+            .map((obj, i) => (
+              <div key={i}>
+                <b
+                  className={[
+                    css.hover,
+                    filterTeam === obj.index && css.grey,
+                  ].join(" ")}
+                  onClick={() =>
+                    update(filterTeam === obj.index ? -1 : obj.index)
+                  }
+                >
+                  {obj.teamName}
+                </b>{" "}
+                chose wrong weeks ({obj.wrong.join(",")})
+              </div>
+            ))}
         </div>
-        {wrongChoices.map((choice, i) => (
+      </div>
+      {wrongChoices
+        .filter(
+          (choice) =>
+            filterTeam === -1 ||
+            choice.teams.map((team) => team.teamIndex).includes(filterTeam)
+        )
+        .map((choice, i) => (
           <div key={i}>
             <div className={css.bubble}>
               <div>week {choice.week}:</div>
@@ -333,50 +357,46 @@ function timesChosenWrong(data: WrappedType) {
             </div>
           </div>
         ))}
-      </div>
     </div>
   );
 }
 
-function bestByStreamingPosition(data: WrappedType) {
+function BestByStreamingPosition(data: WrappedType) {
   return (
     <div>
-      <div className={[css.bubble, css.grey].join(" ")}>
-        <h1>Best By Streaming Position</h1>
-        {[Position.QB, Position.DST, Position.K].map((position, i) => (
-          <div key={i} className={css.bubble}>
-            <h3>{Position[position]}</h3>
-            {sortByKey(
-              data.teamNames.map((teamName, index) => ({
-                teamName,
-                score: data.weeks
-                  .filter((week) => week.number <= 13)
-                  .flatMap((week) => week.matches)
-                  .flatMap((teams) => teams)
-                  .filter((team) => team.teamIndex === index)
-                  .flatMap((team) =>
-                    team.roster.filter((player) =>
-                      team.lineup.includes(player.id)
-                    )
+      {[Position.QB, Position.DST, Position.K].map((position, i) => (
+        <div key={i} className={css.bubble}>
+          <h3>{Position[position]}</h3>
+          {sortByKey(
+            data.teamNames.map((teamName, index) => ({
+              teamName,
+              score: data.weeks
+                .filter((week) => week.number <= 13)
+                .flatMap((week) => week.matches)
+                .flatMap((teams) => teams)
+                .filter((team) => team.teamIndex === index)
+                .flatMap((team) =>
+                  team.roster.filter((player) =>
+                    team.lineup.includes(player.id)
                   )
-                  .filter((player) => player.position === position)
-                  .map((player) => player.score)
-                  .reduce((a, b) => a + b, 0),
-              })),
-              (obj) => -obj.score
-            ).map((obj, i) => (
-              <div key={i}>
-                ({i + 1}) {obj.score.toFixed(2)} <b>{obj.teamName}</b>
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
+                )
+                .filter((player) => player.position === position)
+                .map((player) => player.score)
+                .reduce((a, b) => a + b, 0),
+            })),
+            (obj) => -obj.score
+          ).map((obj, i) => (
+            <div key={i}>
+              ({i + 1}) {obj.score.toFixed(2)} <b>{obj.teamName}</b>
+            </div>
+          ))}
+        </div>
+      ))}
     </div>
   );
 }
 
-function squeezesAndStomps(data: WrappedType) {
+function SqueezesAndStomps(data: WrappedType) {
   const num = 5;
   const rawPoints = sortByKey(
     data.weeks
@@ -393,39 +413,36 @@ function squeezesAndStomps(data: WrappedType) {
   );
   return (
     <div>
-      <div className={[css.bubble, css.grey].join(" ")}>
-        <h1>Squeezes and Stomps</h1>
-        <div>
-          <div className={css.bubble}>
-            {rawPoints.slice(0, num).map((point, i) => (
+      <div>
+        <div className={css.bubble}>
+          {rawPoints.slice(0, num).map((point, i) => (
+            <div key={i}>
+              week {point.week}: {point.diff.toFixed(2)} point squeeze /{" "}
+              <b>{data.teamNames[point.winner]}</b> beat{" "}
+              <b>{data.teamNames[point.loser]}</b>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div>
+        <div className={css.bubble}>
+          {rawPoints
+            .slice(-num)
+            .reverse()
+            .map((point, i) => (
               <div key={i}>
-                week {point.week}: {point.diff.toFixed(2)} point squeeze /{" "}
+                week {point.week}: {point.diff.toFixed(2)} point stomp /{" "}
                 <b>{data.teamNames[point.winner]}</b> beat{" "}
                 <b>{data.teamNames[point.loser]}</b>
               </div>
             ))}
-          </div>
-        </div>
-        <div>
-          <div className={css.bubble}>
-            {rawPoints
-              .slice(-num)
-              .reverse()
-              .map((point, i) => (
-                <div key={i}>
-                  week {point.week}: {point.diff.toFixed(2)} point stomp /{" "}
-                  <b>{data.teamNames[point.winner]}</b> beat{" "}
-                  <b>{data.teamNames[point.loser]}</b>
-                </div>
-              ))}
-          </div>
         </div>
       </div>
     </div>
   );
 }
 
-function weekWinnersAndLosers(data: WrappedType) {
+function WeekWinnersAndLosers(data: WrappedType) {
   const counts = Array.from(new Array(data.teamNames.length)).map((_, i) => ({
     tops: [] as number[],
     bottoms: [] as number[],
@@ -448,36 +465,33 @@ function weekWinnersAndLosers(data: WrappedType) {
     });
   return (
     <div>
-      <div className={[css.bubble, css.grey].join(" ")}>
-        <h1>Week Winners And Losers</h1>
-        <div className={css.flexx}>
+      <div className={css.flexx}>
+        <div className={css.bubble}>
+          {counts.map((count, i) => (
+            <div key={i}>
+              <b>{data.teamNames[i]}</b> / tops: ({count.tops.join(",")}) /
+              bottoms: ({count.bottoms.join(",")})
+            </div>
+          ))}
+        </div>
+        <div>
           <div className={css.bubble}>
-            {counts.map((count, i) => (
+            {vals.map((week, i) => (
               <div key={i}>
-                <b>{data.teamNames[i]}</b> / tops: ({count.tops.join(",")}) /
-                bottoms: ({count.bottoms.join(",")})
+                week {week.number}: top score {week.winner.score.toFixed(2)}:{" "}
+                <b>{data.teamNames[week.winner.teamIndex]}</b>
               </div>
             ))}
           </div>
-          <div>
-            <div className={css.bubble}>
-              {vals.map((week, i) => (
-                <div key={i}>
-                  week {week.number}: top score {week.winner.score.toFixed(2)}:{" "}
-                  <b>{data.teamNames[week.winner.teamIndex]}</b>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div>
-            <div className={css.bubble}>
-              {vals.map((week, i) => (
-                <div key={i}>
-                  week {week.number}: bottom score {week.loser.score.toFixed(2)}{" "}
-                  <b>{data.teamNames[week.loser.teamIndex]}</b>
-                </div>
-              ))}
-            </div>
+        </div>
+        <div>
+          <div className={css.bubble}>
+            {vals.map((week, i) => (
+              <div key={i}>
+                week {week.number}: bottom score {week.loser.score.toFixed(2)}{" "}
+                <b>{data.teamNames[week.loser.teamIndex]}</b>
+              </div>
+            ))}
           </div>
         </div>
       </div>

@@ -1,4 +1,11 @@
-import { PlayerType, TeamType, WeekType, WrappedType } from ".";
+import {
+  BoxscoreType,
+  FieldGoalType,
+  PlayerType,
+  TeamType,
+  WeekType,
+  WrappedType,
+} from ".";
 
 function generateWrapped() {
   const year = 2021;
@@ -29,7 +36,7 @@ function generateWrapped() {
     return fetch(
       `https://fantasy.espn.com/apis/v3/games/ffl/seasons/${year}/segments/0/leagues/${id}?view=mTeam`
     )
-      .then((resp) => resp.json() as any)
+      .then((resp) => resp.json())
       .then((resp) =>
         resp.teams.map((team: any) => `${team.location} ${team.nickname}`)
       );
@@ -84,7 +91,7 @@ function generateWrapped() {
               )?.lineupSlotId
             )
         );
-      const fullRoster = rawTeam.rosterForCurrentScoringPeriod.entries
+      const fullRoster: any[] = rawTeam.rosterForCurrentScoringPeriod.entries
         .map((rawPlayer: any) => ({
           rawPlayer,
           player: rawPlayer.playerPoolEntry.player,
@@ -96,7 +103,7 @@ function generateWrapped() {
           position: obj.player.defaultPositionId,
           team: proTeams[obj.player.proTeamId].toUpperCase(),
         }));
-      fullRoster.forEach((obj: any) => {
+      fullRoster.forEach((obj) => {
         players[obj.id] = {
           name: obj.name,
           position: obj.position,
@@ -104,9 +111,9 @@ function generateWrapped() {
         };
       });
       const score = fullRoster
-        .filter((p: any) => lineupInts.includes(p.id))
-        .map((p: any) => p.score)
-        .reduce((a: any, b: any) => a + b, 0);
+        .filter((p) => lineupInts.includes(p.id))
+        .map((p) => p.score)
+        .reduce((a, b) => a + b, 0);
       return {
         teamIndex: rawTeam.teamId - 1,
         score: score,
@@ -114,9 +121,21 @@ function generateWrapped() {
         roster: Object.fromEntries(fullRoster.map((p: any) => [p.id, p.score])),
       };
     }
-    const promises = Array.from(new Array(numWeeks)).map((_, number) =>
+    function getBoxscores(
+      weekNumber: number,
+      matches: TeamType[][]
+    ): BoxscoreType[] {
+      return [];
+    }
+    function getFieldGoals(
+      weekNumber: number,
+      matches: TeamType[][]
+    ): FieldGoalType[] {
+      return [];
+    }
+    const promises = Array.from(new Array(numWeeks)).map((_, weekNumber) =>
       fetch(
-        `https://fantasy.espn.com/apis/v3/games/ffl/seasons/${year}/segments/0/leagues/${id}?view=mScoreboard&scoringPeriodId=${number}`
+        `https://fantasy.espn.com/apis/v3/games/ffl/seasons/${year}/segments/0/leagues/${id}?view=mScoreboard&scoringPeriodId=${weekNumber}`
       )
         .then((resp) => resp.json())
         .then((resp) =>
@@ -131,7 +150,18 @@ function generateWrapped() {
               )
             )
         )
-        .then((matches) => ({ matches, number, boxscores: [], fieldgoals: [] }))
+        .then((matches) => [
+          Promise.resolve(matches),
+          getBoxscores(weekNumber, matches),
+          getFieldGoals(weekNumber, matches),
+        ])
+        .then((ps) => Promise.all(ps))
+        .then(([matches, boxscores, fieldgoals]) => ({
+          matches,
+          number: weekNumber,
+          boxscores,
+          fieldgoals,
+        }))
     );
     return Promise.all(promises);
   }

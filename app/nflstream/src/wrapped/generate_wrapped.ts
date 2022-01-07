@@ -121,17 +121,76 @@ function generateWrapped() {
         roster: Object.fromEntries(fullRoster.map((p: any) => [p.id, p.score])),
       };
     }
+    function parseHTML(text: string) {
+      return Promise.resolve(text).then((text) => {
+        const newHTMLDocument =
+          document.implementation.createHTMLDocument("preview");
+        const html = newHTMLDocument.createElement("html");
+        html.innerHTML = text;
+        return html;
+      });
+    }
+    function getGameId(team: string, weekNumber: number): Promise<string> {
+      return fetch(`https://espn.com/nfl/team/schedule/_/name/${team}`)
+        .then((resp) => resp.text())
+        .then(parseHTML)
+        .then((soup) => Array.from(soup.getElementsByTagName("table"))[0])
+        .then(
+          (table) =>
+            Array.from(table.getElementsByTagName("tr")).find(
+              (row) =>
+                Array.from(row.getElementsByTagName("span"))[0].textContent ===
+                weekNumber.toString()
+            )!
+        )
+        .then((row) => Array.from(row.getElementsByTagName("a")))
+        .then((hrefs) =>
+          hrefs.length < 3
+            ? ""
+            : hrefs[2]
+                .getAttribute("href")!
+                .split("espn.com/nfl/game/_/gameId/")
+                .reverse()[0]
+        );
+    }
     function getBoxscores(
       weekNumber: number,
       matches: TeamType[][]
-    ): BoxscoreType[] {
-      return [];
+    ): Promise<BoxscoreType[]> {
+      /* TODO */
+      return Promise.resolve([]);
     }
     function getFieldGoals(
       weekNumber: number,
       matches: TeamType[][]
-    ): FieldGoalType[] {
-      return [];
+    ): Promise<FieldGoalType[]> {
+      const promises: Promise<FieldGoalType | undefined>[] = matches
+        .flatMap((match) => match)
+        .flatMap((team) => team.lineup)
+        .map((playerId) => players[playerId])
+        .filter((p) => p.position === 5) /* K */
+        .map((p) => p.team)
+        .map((team) =>
+          getGameId(team, weekNumber).then((gameId) =>
+            gameId === ""
+              ? undefined
+              : fetch(`https://espn.com/nfl/playbyplay/_/gameId/${gameId}`)
+                  .then((resp) => resp.text())
+                  .then(parseHTML)
+                  .then((soup) => ({
+                    team,
+                    fieldgoals: Array.from(
+                      soup.getElementsByClassName("headline")
+                    )
+                      .map((div) => div.textContent!)
+                      .filter((text) => text.includes("Field Goal")),
+                  }))
+          )
+        );
+      return Promise.all(promises).then(
+        (fieldgoals: (FieldGoalType | undefined)[]) =>
+          fieldgoals.filter((fg) => fg !== undefined) as FieldGoalType[]
+      );
     }
     const promises = Array.from(new Array(numWeeks)).map((_, weekNumber) =>
       fetch(
@@ -151,7 +210,7 @@ function generateWrapped() {
             )
         )
         .then((matches) => [
-          Promise.resolve(matches),
+          matches,
           getBoxscores(weekNumber, matches),
           getFieldGoals(weekNumber, matches),
         ])

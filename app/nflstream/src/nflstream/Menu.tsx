@@ -119,6 +119,11 @@ function click(
   invalid: boolean,
   skipLog: boolean
 ) {
+  // mobile
+  if (window.innerWidth < 768) {
+    window.open(stream.url);
+    return;
+  }
   if (invalid) {
     fetch("iframe.html")
       .then((response) => response.blob())

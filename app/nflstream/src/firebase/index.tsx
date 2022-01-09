@@ -15,7 +15,6 @@ if (!window.firebaseinitialized) {
 export type NFLStreamType = {
   other?: StreamType[];
   streams?: StreamType[];
-  logs?: LogType[];
   version: string;
 };
 
@@ -58,15 +57,10 @@ function updateStreams(streams: StreamType[]) {
   firebase._set(`/streams`, streams);
 }
 
-function updateLogs(logs: LogType[]) {
-  firebase._set(`/logs`, logs);
-}
-
 const ex = {
   connect,
   updateNFLStream,
   updateStreams,
-  updateLogs,
 };
 
 export default ex;

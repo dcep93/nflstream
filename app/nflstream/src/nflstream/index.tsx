@@ -1,5 +1,5 @@
 import React from "react";
-import firebase, { NFLStreamType, StreamType } from "../firebase";
+import firebase, { LogType, NFLStreamType, StreamType } from "../firebase";
 import DelayedLog from "./DelayedLog";
 import style from "./index.module.css";
 import Menu from "./Menu";
@@ -33,20 +33,20 @@ class FirebaseWrapper extends React.Component<
 
 class NFLStream extends React.Component<
   { nflStream: NFLStreamType },
-  { screens: ScreenType[] }
+  { screens: ScreenType[]; logs: LogType[] }
 > {
   constructor(props: { nflStream: NFLStreamType }) {
     super(props);
-    this.state = { screens: [] };
+    this.state = { screens: [], logs: [] };
   }
 
   render() {
     return (
       <div className={style.main}>
-        <DelayedLog logs={this.props.nflStream.logs || []} />
+        <DelayedLog logs={this.state.logs} />
         <MessageExtension
+          setLogs={(logs: LogType[]) => this.setState({ logs })}
           streams={this.props.nflStream.streams || []}
-          logs={this.props.nflStream.logs || []}
           version={this.props.nflStream.version}
         />
         <Menu

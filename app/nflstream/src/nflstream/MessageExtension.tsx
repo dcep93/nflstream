@@ -9,8 +9,8 @@ const streamsVersion = "1.0.0";
 const logsVersion = "1.0.0";
 
 function MessageExtension(props: {
+  setLogs: (logs: LogType[]) => void;
   streams: StreamType[];
-  logs: LogType[];
   version: string;
 }) {
   const streamsRef: React.RefObject<HTMLTextAreaElement> = React.createRef();
@@ -67,12 +67,8 @@ function MessageExtension(props: {
                 );
                 return;
               }
-              if (isIdentical(message.logs, props.logs)) {
-                console.log(`identical updateLogs`);
-                return;
-              }
               console.log("updateLogs", message);
-              firebase.updateLogs(message.logs);
+              props.setLogs(message.logs);
             }}
           />
         </>

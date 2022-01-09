@@ -2,7 +2,7 @@
     display: flex;
 }
 
-* {
+.wrapped {
     font-family: 'Courier New', Courier, monospace;
 }
 

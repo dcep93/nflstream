@@ -33,7 +33,7 @@ function Wrapped() {
   const defaultToRenderKey = Object.keys(toRender)[0]!;
   if (toRenderKey === "") update(defaultToRenderKey);
   return (
-    <div>
+    <div className={css.wrapped}>
       <div className={[css.flex, css.grey].join(" ")}>
         {Object.keys(toRender).map((key, i) => (
           <div key={i} className={css.bubble} onClick={() => update(key)}>

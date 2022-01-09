@@ -9,8 +9,8 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<NFLStream />} />
         <Route path="wrapped" element={<Wrapped />} />
+        <Route path="*" element={<NFLStream />} />
       </Routes>
     </BrowserRouter>
   );

@@ -9,6 +9,7 @@ function Menu(props: {
   sendStream: (stream: StreamType, skipLog: boolean) => void;
   nflStream: NFLStreamType;
 }) {
+  if (!props.nflStream.other) props.nflStream.other = [];
   const [hidden, update] = useState(true);
   const title = recorded_sha;
   return (

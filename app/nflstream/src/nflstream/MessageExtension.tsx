@@ -13,6 +13,10 @@ function MessageExtension(props: {
   streams: StreamType[];
   version: string;
 }) {
+  window.addEventListener(
+    "message",
+    (event) => event.data?.type === "logs" && props.setLogs(event.data.logs)
+  );
   const streamsRef: React.RefObject<HTMLTextAreaElement> = React.createRef();
   const logsRef: React.RefObject<HTMLTextAreaElement> = React.createRef();
   return (
@@ -69,6 +73,10 @@ function MessageExtension(props: {
               }
               console.log("updateLogs", message);
               props.setLogs(message.logs);
+              window.parent.postMessage(
+                { type: "logs", logs: message.logs },
+                "*"
+              );
             }}
           />
         </>

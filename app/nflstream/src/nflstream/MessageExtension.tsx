@@ -8,15 +8,19 @@ const nflstream_url = "https://nflstream.web.app/";
 const streamsVersion = "1.0.0";
 const logsVersion = "1.0.0";
 
+var setLogs: (logs: LogType[]) => void = () => null;
+
+window.addEventListener(
+  "message",
+  (event) => event.data?.type === "logs" && setLogs(event.data.logs)
+);
+
 function MessageExtension(props: {
   setLogs: (logs: LogType[]) => void;
   streams: StreamType[];
   version: string;
 }) {
-  window.addEventListener(
-    "message",
-    (event) => event.data?.type === "logs" && props.setLogs(event.data.logs)
-  );
+  setLogs = props.setLogs;
   const streamsRef: React.RefObject<HTMLTextAreaElement> = React.createRef();
   const logsRef: React.RefObject<HTMLTextAreaElement> = React.createRef();
   return (

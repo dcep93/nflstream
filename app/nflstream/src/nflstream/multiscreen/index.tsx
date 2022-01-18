@@ -35,6 +35,7 @@ function Multiscreen(props: {
         <div className={msStyle.screens}>
           {props.screens.map((screen, i) => (
             <Singlescreen
+              key={screen.iFrameTitle}
               i={i}
               screenRefs={screenRefs}
               iframeRefs={iframeRefs}

@@ -1,5 +1,4 @@
 console.log("content_script", location.href);
-const start = new Date().getTime();
 
 function init() {
   if (location.href.startsWith("http://weakstreams.com/streams/")) {
@@ -53,10 +52,13 @@ function update(id, payload) {
 }
 
 function receive(payload, sender, sendResponse) {
-  console.log("receive", new Date().getTime() - start, payload.type, payload);
+  console.log("receive", payload.type, payload);
   Promise.resolve(payload.message)
     .then({ parseGames, parseLinks, parseTinyUrl, parseSchedule }[payload.type])
-    .then(sendResponse);
+    .then((response) => {
+      console.log("respond", payload.type, response);
+      sendResponse(response);
+    });
 }
 
 function parse(text) {
@@ -76,8 +78,8 @@ function parseGames(message) {
       .then(Array.from)
       .then((competitions) =>
         competitions.find((competition) =>
-          Array.from(competition.getElementsByClassName("name")).find(
-            (name) => name.innerHTML === "NFL, Regular Season"
+          Array.from(competition.getElementsByClassName("name")).find((name) =>
+            name.innerHTML.startsWith("NFL")
           )
         )
       )

@@ -49,9 +49,8 @@ function Log(props: { log: LogType | undefined }) {
             <div>
               {(drive.plays || []).map((play, j) => (
                 <div key={j} className={ofStyle.playByPlayContent}>
-                  <div>
-                    {play.down} {play.clock}
-                  </div>
+                  <div>{play.down}</div>
+                  <div>{play.clock}</div>
                   <div>{play.text}</div>
                 </div>
               ))}

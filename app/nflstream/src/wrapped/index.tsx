@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import generateWrapped from "./generate_wrapped";
 import css from "./index.module.css";
@@ -23,11 +23,12 @@ function Wrapped() {
   const data: WrappedType | undefined = (all_data as any)[leagueId];
   if (!data) return <>no data found for league {leagueId}</>;
   const toRender: { [key: string]: any } = {
-    "Week Tops and Bottoms": WeekWinnersAndLosers(data),
-    "Squeezes and Stomps": SqueezesAndStomps(data),
-    "Best By Position": BestByStreamingPosition(data),
-    "Determined By Discrete Scoring": GamesDeterminedByDiscreteScoring(data),
-    "Chosen Wrong": TimesChosenWrong(data),
+    WeekTopsAndBottoms: WeekWinnersAndLosers(data),
+    SqueezesAndStomps: SqueezesAndStomps(data),
+    BestByPosition: BestByStreamingPosition(data),
+    DeterminedByDiscreteScoring: GamesDeterminedByDiscreteScoring(data),
+    ChosenWrong: TimesChosenWrong(data),
+    GooseEggs: GooseEggs(data),
     "raw_data.json": JSON.stringify(data),
   };
   const defaultToRenderKey = Object.keys(toRender)[0]!;
@@ -355,6 +356,51 @@ function TimesChosenWrong(data: WrappedType) {
             </div>
           </div>
         ))}
+    </div>
+  );
+}
+
+function GooseEggs(data: WrappedType) {
+  return (
+    <div>
+      {data.teamNames.map((teamName, teamIndex) => (
+        <div key={teamIndex}>
+          <div className={css.bubble}>
+            <h4>{teamName}</h4>
+            <div>
+              {Object.entries(
+                data.weeks
+                  .flatMap((week, weekNum) =>
+                    week.matches
+                      .flatMap((teams) => teams)
+                      .filter((team) => team.teamIndex === teamIndex)
+                      .flatMap((team) => Object.entries(team.roster))
+                      .filter(
+                        ([id, score]) =>
+                          score === 0 &&
+                          ![Position.K, Position.DST].includes(
+                            data.players[id].position
+                          )
+                      )
+                      .map(([id, score]) => id)
+                      .map((id) => ({ id, weekNum }))
+                  )
+                  .reduce((prev, current) => {
+                    if (!prev[current.id]) prev[current.id] = [];
+                    prev[current.id].push(current.weekNum + 1);
+                    return prev;
+                  }, {} as { [id: string]: number[] })
+              )
+                .map(([id, weeks]) => ({ id, weeks }))
+                .sort((a, b) => b.weeks.length - a.weeks.length)
+                .map(({ id, weeks }) => `${data.players[id].name} -> ${weeks}`)
+                .map((str, i) => (
+                  <div key={i}>{str}</div>
+                ))}
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

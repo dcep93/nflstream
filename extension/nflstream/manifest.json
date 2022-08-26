@@ -3,16 +3,25 @@
   "description": "On click or page load, runs a background script to scrape a URL and update firebase with the response.",
   "version": "1.0.1",
   "permissions": ["tabs"],
-  "host_permissions": ["https://api.aworldofstruggle.com/proxy", "http://weakstreams.com/**", "https://reddit.nflbite.com/**", "https://tinyurl.is/**", "https://www.espn.com/nfl/**"],
+  "host_permissions": [
+    "https://api.aworldofstruggle.com/proxy",
+    "http://weakstreams.com/**",
+    "https://reddit.nflbite.com/**",
+    "https://tinyurl.is/**",
+    "https://www.espn.com/nfl/**"
+  ],
   "icons": {
     "16": "favicon.png",
     "48": "favicon.png",
     "128": "favicon.png"
   },
-  "background": {"service_worker": "background.js"},
+  "background": { "service_worker": "background.js" },
   "content_scripts": [
     {
-      "matches": ["https://nflstream.web.app/", "http://weakstreams.com/streams/**"],
+      "matches": [
+        "https://nflstream.web.app/",
+        "http://weakstreams.com/streams/**"
+      ],
       "js": ["content_script.js"],
       "all_frames": true
     }

@@ -81,18 +81,7 @@ const maxAge = 24 * 60 * 60 * 1000;
 function fetchSC(url) {
   const scData = allScData[url] || {};
   if (Date.now() - allScData.date < maxAge) return Promise.resolve(scData.text);
-  return fetch("https://api.aworldofstruggle.com/proxy", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      url,
-      params: {
-        headers: { Referer: "https://reddit.nflbite.com/" },
-      },
-    }),
-  })
+  return fetch(url)
     .then((resp) => resp.text())
     .then((text) => {
       scData[url] = { date: Date.now(), text };

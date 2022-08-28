@@ -55,7 +55,7 @@ function getStreams(tabId) {
                   sendMessage(tabId, { type: "parseTinyUrl", message })
                 )
                 .then(({ name, href }) =>
-                  fetch(href)
+                  fetchP(href)
                     .then((resp) => resp.text())
                     .then((message) => ({
                       name,
@@ -87,6 +87,16 @@ function fetchSC(url) {
       scData[url] = { date: Date.now(), text };
       return text;
     });
+}
+
+function fetchP(url) {
+  console.log(url);
+  return fetch(url);
+  return fetch("https://proxy420.web.app", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ url }),
+  });
 }
 
 function getLogs(tabId) {
@@ -143,7 +153,7 @@ function getLogs(tabId) {
             }));
             return { id, name, timestamp, playByPlay, boxScore };
           })
-          .catch((e) => log(e) && false)
+          .catch((e) => console.log(e) && false)
       )
     )
     .then((promises) => Promise.all(promises))

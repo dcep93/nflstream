@@ -122,10 +122,6 @@ function parseTinyUrl(message) {
     for (i = 0; i < s1.length; i++) {
       t += String.fromCharCode(s1.charCodeAt(i) - s.substr(s.length - 1, 1));
     }
-    console.log(
-      "debug TODO dcep93",
-      s1.charCodeAt(0) - s.substr(s.length - 1, 1)
-    );
     return unescape(t);
   }
   return Promise.resolve(message)

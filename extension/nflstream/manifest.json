@@ -4,7 +4,6 @@
   "version": "1.1.0",
   "permissions": ["tabs"],
   "host_permissions": [
-    "https://api.aworldofstruggle.com/proxy",
     "http://weakstreams.com/**",
     "https://reddit.nflbite.com/**",
     "https://tinyurl.is/**",

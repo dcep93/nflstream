@@ -8,10 +8,10 @@ import Multiscreen, { ScreenType } from "./multiscreen";
 class FetchWrapper extends React.Component<{}, { nflStream: NFLStreamType }> {
   render() {
     return (
-      <>
+      <div>
         <Fetcher setNflStream={(nflStream) => this.setState({ nflStream })} />
         <NFLStream nflStream={this.state?.nflStream || {}} />
-      </>
+      </div>
     );
   }
 }

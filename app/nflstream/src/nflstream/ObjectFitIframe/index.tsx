@@ -1,6 +1,5 @@
 import Log from "../Log";
 import { ScreenType } from "../Multiscreen";
-import { default as ofStyle } from "./index.module.css";
 
 function ObjectFitIframe(props: {
   screen: ScreenType;
@@ -8,7 +7,13 @@ function ObjectFitIframe(props: {
   updateDrivingTeam: (drivingTeam: string) => void;
 }) {
   return (
-    <div className={ofStyle.container}>
+    <div
+      style={{
+        height: "100%",
+        width: "100%",
+        display: "flex",
+      }}
+    >
       {props.screen.skipLog ? null : (
         <Log
           espnId={props.screen.espnId}
@@ -19,7 +24,7 @@ function ObjectFitIframe(props: {
       <iframe
         ref={props.screen.ref}
         sandbox={"allow-scripts allow-same-origin"}
-        className={ofStyle.fill}
+        style={{ flexGrow: 1 }}
         title={props.screen.name}
         srcDoc={`
 <meta data-url="${props.screen.url}" />

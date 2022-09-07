@@ -1,7 +1,7 @@
 import React from "react";
 import { LogType } from "../Fetcher";
 import LogFetcher from "../Fetcher/LogFetcher";
-import ofStyle from "./index.module.css";
+import logStyle from "./index.module.css";
 
 const delayMs = 4 * 60 * 1000;
 
@@ -20,7 +20,7 @@ class Log extends React.Component<
           payload={this.props.espnId}
           handleResponse={(log) => log && this.setState({ log })}
         />
-        <div className={ofStyle.logWrapper}>
+        <div className={logStyle.logWrapper}>
           <DelayedLog
             log={this.state.log}
             updateDrivingTeam={this.props.updateDrivingTeam}
@@ -69,12 +69,12 @@ function SubLog(props: { log: LogType }) {
     playByPlay.shift();
   }
   return (
-    <div className={ofStyle.log}>
-      <div className={ofStyle.logContent}>
+    <div className={logStyle.log}>
+      <div className={logStyle.logContent}>
         <div>{new Date(props.log.timestamp).toLocaleTimeString()}</div>
         {(playByPlay || []).map((drive, i) => (
           <div key={i}>
-            <div className={ofStyle.logHeader}>
+            <div className={logStyle.logHeader}>
               <div>
                 {drive.team}: {drive.result || "*"}
               </div>
@@ -83,7 +83,7 @@ function SubLog(props: { log: LogType }) {
             </div>
             <div>
               {(drive.plays || []).map((play, j) => (
-                <div key={j} className={ofStyle.playByPlayContent}>
+                <div key={j} className={logStyle.playByPlayContent}>
                   <div>{play.down}</div>
                   <div>{play.clock}</div>
                   <div>{play.text}</div>
@@ -93,10 +93,10 @@ function SubLog(props: { log: LogType }) {
           </div>
         ))}
       </div>
-      <div className={ofStyle.logContent}>
+      <div className={logStyle.logContent}>
         {(props.log.boxScore || []).map((boxScore, i) => (
-          <div key={i} className={ofStyle.boxScore}>
-            <div className={ofStyle.logHeader}>{boxScore.key}</div>
+          <div key={i} className={logStyle.boxScore}>
+            <div className={logStyle.logHeader}>{boxScore.key}</div>
             <table>
               <thead>
                 <tr>

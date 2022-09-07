@@ -1,13 +1,3 @@
-.container {
-  height: 100%;
-  width: 100%;
-  display: flex;
-}
-
-.fill {
-  flex-grow: 1;
-}
-
 .logWrapper {
   width: 13%;
   position:relative;

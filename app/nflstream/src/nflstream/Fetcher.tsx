@@ -35,15 +35,15 @@ function Fetcher(props: { setNflStream: (nflStream: NFLStreamType) => void }) {
   return (
     <iframe
       title="fetcher"
-      srcDoc={`<script>${script.toString()}</script>`}
+      srcDoc={`<script>(${script.toString()})()</script>`}
     ></iframe>
   );
 }
 
-function script() {
+const script = () => {
   fetch("https://reddit.nflbite.com/")
     .then((resp) => resp.text())
     .then(console.log);
-}
+};
 
 export default Fetcher;

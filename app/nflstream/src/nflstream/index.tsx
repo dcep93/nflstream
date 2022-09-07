@@ -1,56 +1,50 @@
 import React from "react";
 import DelayedLog from "./DelayedLog";
-import Fetcher, { LogType, NFLStreamType } from "./Fetcher";
+import Fetcher, { LogType, StreamType } from "./Fetcher";
 import style from "./index.module.css";
 import Menu from "./Menu";
-import Multiscreen, { ScreenType } from "./multiscreen";
-
-class FetchWrapper extends React.Component<{}, { nflStream: NFLStreamType }> {
-  render() {
-    return (
-      <div>
-        <Fetcher setNflStream={(nflStream) => this.setState({ nflStream })} />
-        <NFLStream nflStream={this.state?.nflStream || {}} />
-      </div>
-    );
-  }
-}
+import Multiscreen, { ScreenType } from "./Multiscreen";
 
 class NFLStream extends React.Component<
-  { nflStream: NFLStreamType },
-  { screens: ScreenType[]; logs: LogType[] }
-> {
-  constructor(props: { nflStream: NFLStreamType }) {
-    super(props);
-    this.state = { screens: [], logs: [] };
+  {},
+  {
+    backgroundColor: string;
+    streams: StreamType[];
+    screens: ScreenType[];
+    logs: LogType[];
   }
-
+> {
   render() {
     return (
-      <div className={style.main}>
+      <div
+        className={style.main}
+        style={{ backgroundColor: this.state.backgroundColor }}
+      >
+        <Fetcher setStreams={(streams) => this.setState({ streams })} />
         <DelayedLog logs={this.state.logs} />
         <Menu
-          addScreen={this.addScreen.bind(this)}
-          nflStream={this.props.nflStream}
+          addScreen={(screen) =>
+            this.setState({
+              screens: (this.state?.screens || []).concat(screen),
+            })
+          }
+          streams={this.state.streams}
+          setBackground={(backgroundColor) =>
+            this.setState({ backgroundColor })
+          }
         />
         <Multiscreen
           screens={this.state.screens}
-          removeScreen={this.removeScreen.bind(this)}
+          removeScreen={(iFrameTitle) =>
+            this.setState({
+              screens: this.state.screens.filter(
+                (o) => o.iFrameTitle !== iFrameTitle
+              ),
+            })
+          }
         />
       </div>
     );
   }
-
-  addScreen(screen: ScreenType) {
-    this.setState({
-      screens: this.state.screens.concat(screen),
-    });
-  }
-
-  removeScreen(iFrameTitle: string) {
-    this.setState({
-      screens: this.state.screens.filter((o) => o.iFrameTitle !== iFrameTitle),
-    });
-  }
 }
-export default FetchWrapper;
+export default NFLStream;

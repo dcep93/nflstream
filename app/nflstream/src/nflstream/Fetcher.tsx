@@ -1,9 +1,3 @@
-export type NFLStreamType = {
-  other?: StreamType[];
-  streams?: StreamType[];
-  version: string;
-};
-
 export type StreamType = {
   url: string;
   name: string;
@@ -31,7 +25,7 @@ export type BoxScoreType = {
   players?: { name: string; stats: string[] }[];
 };
 
-function Fetcher(props: { setNflStream: (nflStream: NFLStreamType) => void }) {
+function Fetcher(props: { setStreams: (streams: StreamType[]) => void }) {
   return (
     <div style={{ height: 0 }}>
       <iframe

@@ -1,96 +1,84 @@
 import React from "react";
-import { NFLStreamType, StreamType } from "./Fetcher";
+import { StreamType } from "./Fetcher";
 import style from "./index.module.css";
-import { ScreenType, screenWrapperRef } from "./multiscreen";
+import { ScreenType } from "./Multiscreen";
 import recorded_sha from "./recorded_sha";
-
-function Menu(props: {
-  addScreen: (screen: ScreenType) => void;
-  nflStream: NFLStreamType;
-}) {
-  return (
-    <div className={style.menu}>
-      <h1 className={style.header} title={recorded_sha}>
-        NFL Stream
-      </h1>
-      <Streams
-        streams={(props.nflStream.streams || []).concat(
-          props.nflStream?.other || []
-        )}
-        addScreen={props.addScreen}
-      />
-      <Guide />
-    </div>
-  );
-}
 
 type StreamsPropsType = {
   streams: StreamType[];
   addScreen: (screen: ScreenType) => void;
+  setBackground: (backgroundColor: string) => void;
 };
-class Streams extends React.Component<StreamsPropsType, {}> {
+class Menu extends React.Component<StreamsPropsType, {}> {
   componentDidUpdate(prevProps: StreamsPropsType) {
     if (
       this.props.streams.filter(
         (s) => !prevProps.streams?.map((prevS) => prevS.name).includes(s.name)
       ).length > 0
     ) {
-      screenWrapperRef.current!.style.backgroundColor = "darkgrey";
-      setTimeout(
-        () => (screenWrapperRef.current!.style.backgroundColor = ""),
-        2000
-      );
+      this.props.setBackground("darkgrey");
+      setTimeout(() => this.props.setBackground(""), 2000);
     }
   }
 
   render() {
     return (
-      <div>
-        {(this.props.streams || [])
-          .map((stream, i) => ({
-            stream,
-            i,
-            invalid:
-              stream.url.startsWith("http://") &&
-              window.location.protocol === "https:",
-          }))
-          .map((obj) => (
-            <div key={obj.i}>
-              <div
-                className={[
-                  style.bubble,
-                  style.hover,
-                  obj.invalid && style.red,
-                ].join(" ")}
-                onClick={(e) => {
-                  // mobile
-                  if (window.innerWidth < 768) {
-                    window.open(obj.stream.url);
-                    return;
-                  }
-                  if (obj.invalid) {
-                    fetch("iframe.html")
-                      .then((response) => response.blob())
-                      .then((blob) => {
-                        const a = document.createElement("a");
-                        a.href = window.URL.createObjectURL(blob);
-                        a.download = "nflstream.html";
-                        a.click();
-                      });
-                    return;
-                  }
+      <div className={style.menu}>
+        <h1 className={style.header} title={recorded_sha}>
+          NFL Stream
+        </h1>
+        (
+        <div>
+          {(this.props.streams || [])
+            .map((stream, i) => ({
+              stream,
+              i,
+              invalid:
+                stream.url.startsWith("http://") &&
+                window.location.protocol === "https:",
+            }))
+            .map((obj) => (
+              <div key={obj.i}>
+                <div
+                  className={[
+                    style.bubble,
+                    style.hover,
+                    obj.invalid && style.red,
+                  ].join(" ")}
+                  onClick={(e) => {
+                    // mobile
+                    if (window.innerWidth < 768) {
+                      window.open(obj.stream.url);
+                      return;
+                    }
+                    if (obj.invalid) {
+                      fetch("iframe.html")
+                        .then((response) => response.blob())
+                        .then((blob) => {
+                          const a = document.createElement("a");
+                          a.href = window.URL.createObjectURL(blob);
+                          a.download = "nflstream.html";
+                          a.click();
+                        });
+                      return;
+                    }
 
-                  this.props.addScreen({
-                    iFrameTitle: (Math.random() + 1).toString(36).substring(2),
-                    skipLog: e.shiftKey,
-                    ...obj.stream,
-                  });
-                }}
-              >
-                <div title={obj.stream.url}>{obj.stream.name}</div>
+                    this.props.addScreen({
+                      iFrameTitle: (Math.random() + 1)
+                        .toString(36)
+                        .substring(2),
+                      skipLog: e.shiftKey,
+                      ...obj.stream,
+                    });
+                  }}
+                >
+                  <div title={obj.stream.url}>{obj.stream.name}</div>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+        </div>
+        )
+        <Guide />
       </div>
     );
   }

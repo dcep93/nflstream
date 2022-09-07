@@ -5,36 +5,36 @@ import style from "../index.module.css";
 import ObjectFitIframe from "../ObjectFitIframe";
 import msStyle from "./index.module.css";
 
-export type ScreenType = StreamType & { iFrameTitle: string; skipLog: boolean };
-export const screenWrapperRef: React.RefObject<HTMLDivElement> =
-  React.createRef();
+export type ScreenType = StreamType & {
+  iFrameTitle: string;
+  ref: React.RefObject<HTMLIFrameElement>;
+  skipLog: boolean;
+};
 
 function Multiscreen(props: {
   screens: ScreenType[];
   removeScreen: (iFrameTitle: string) => void;
 }) {
-  const [rawSelected, updateSelected] = useState("");
-  const selected = (
-    props.screens.find((s) => s.iFrameTitle === rawSelected) || props.screens[0]
-  )?.iFrameTitle;
-  const iframeRefs = Object.fromEntries(
-    props.screens.map((s) => [
-      s.iFrameTitle,
-      React.createRef() as React.RefObject<HTMLIFrameElement>,
-    ])
-  );
+  const [selected, updateSelected] = useState("");
+  const selectedScreen =
+    props.screens.find((s) => s.iFrameTitle === selected) || props.screens[0];
+  muteUnmute(selectedScreen.ref, false);
   return (
-    <div ref={screenWrapperRef} className={msStyle.screens_wrapper}>
+    <div className={msStyle.screens_wrapper}>
       {props.screens.length === 0 ? null : (
         <div className={msStyle.screens}>
           {props.screens.map((screen, i) => (
             <Singlescreen
               key={screen.iFrameTitle}
               screen={screen}
-              selected={selected}
-              iframeRefs={iframeRefs}
-              removeScreen={props.removeScreen}
-              updateSelected={updateSelected}
+              isSelected={screen === selectedScreen}
+              removeScreen={() => props.removeScreen(screen.iFrameTitle)}
+              updateSelected={() => {
+                muteUnmute(screen.ref, false);
+                muteUnmute(selectedScreen.ref, true);
+                updateSelected(screen.iFrameTitle);
+              }}
+              numScreens={props.screens.length}
             />
           ))}
         </div>
@@ -45,10 +45,10 @@ function Multiscreen(props: {
 
 function Singlescreen(props: {
   screen: ScreenType;
-  iframeRefs: { [iframeTitle: string]: React.RefObject<HTMLIFrameElement> };
-  selected: string;
-  removeScreen: (iframeTitle: string) => void;
-  updateSelected: (iframeTitle: string) => void;
+  isSelected: boolean;
+  removeScreen: () => void;
+  updateSelected: () => void;
+  numScreens: number;
 }) {
   const screenTitleParts = [props.screen.name];
   const drive = ((
@@ -62,46 +62,38 @@ function Singlescreen(props: {
     ]("🏈");
   }
   const screenTitle = screenTitleParts.join(" ");
-  const numScreens = Object.keys(props.iframeRefs).length;
   return (
     <div
       style={{
-        width:
-          props.selected === props.screen.iFrameTitle
-            ? "100%"
-            : `${100 / (numScreens - 1)}%`,
+        width: props.isSelected ? "100%" : `${100 / (props.numScreens - 1)}%`,
       }}
       className={[
-        props.selected === props.screen.iFrameTitle && msStyle.selected_screen,
-        props.selected !== props.screen.iFrameTitle &&
-          msStyle.unselected_screen,
+        props.isSelected ? msStyle.selected_screen : msStyle.unselected_screen,
         msStyle.screen_wrapper,
       ].join(" ")}
     >
       <div
         className={[msStyle.title, style.hover].join(" ")}
-        onClick={() => props.removeScreen(props.screen.iFrameTitle)}
+        onClick={() => props.removeScreen()}
       >
         {screenTitle}
       </div>
       <div className={msStyle.screen}>
         <div className={msStyle.subscreen}>
           <div
-            hidden={props.selected === props.screen.iFrameTitle}
+            hidden={props.isSelected}
             className={msStyle.screen_mask}
             onClick={() => {
-              muteUnmute(props.iframeRefs[props.screen.iFrameTitle]!, false);
-              muteUnmute(props.iframeRefs[props.selected]!, true);
-              props.updateSelected(props.screen.iFrameTitle);
+              props.updateSelected();
             }}
           ></div>
           <ObjectFitIframe
-            iframeRef={props.iframeRefs[props.screen.iFrameTitle]}
+            iframeRef={props.screen.ref}
             url={props.screen.url}
             name={props.screen.name}
             skipLog={
               props.screen.skipLog ||
-              (numScreens > 1 && props.selected !== props.screen.iFrameTitle)
+              (props.numScreens > 1 && !props.isSelected)
             }
           />
         </div>

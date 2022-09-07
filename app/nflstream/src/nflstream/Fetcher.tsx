@@ -32,7 +32,13 @@ export type BoxScoreType = {
 };
 
 function Fetcher(props: { setNflStream: (nflStream: NFLStreamType) => void }) {
-  return null;
+  return <iframe srcDoc={`<script>${script.toString()}</script>`}></iframe>;
+}
+
+function script() {
+  fetch("https://reddit.nflbite.com/")
+    .then((resp) => resp.text())
+    .then(console.log);
 }
 
 export default Fetcher;

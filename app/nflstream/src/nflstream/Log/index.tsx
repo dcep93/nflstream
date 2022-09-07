@@ -1,9 +1,9 @@
 import React from "react";
 import { LogType } from "../Fetcher";
 import { delayedLogComponent } from "./DelayedLog";
-import { default as ofStyle } from "./index.module.css";
+import ofStyle from "./index.module.css";
 
-class LogWrapper extends React.Component<{
+class Log extends React.Component<{
   espnId: string;
   updateDrivingTeam: (drivingTeam: string) => void;
   hidden: boolean;
@@ -25,13 +25,13 @@ class LogWrapper extends React.Component<{
           setTimeout(() => this.forceUpdate(), 100);
         }}
       >
-        <Log log={log || undefined} />
+        <SubLog log={log || undefined} />
       </div>
     );
   }
 }
 
-function Log(props: { log: LogType | undefined }) {
+function SubLog(props: { log: LogType | undefined }) {
   if (props.log === undefined) return null;
   const playByPlay = props.log.playByPlay || [];
   if (
@@ -96,4 +96,4 @@ function Log(props: { log: LogType | undefined }) {
   );
 }
 
-export default LogWrapper;
+export default Log;

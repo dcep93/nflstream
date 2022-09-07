@@ -20,7 +20,9 @@ class NFLStream extends React.Component<
         className={style.main}
         style={{ backgroundColor: this.state.backgroundColor }}
       >
-        <StreamsFetcher setPayload={(streams) => this.setState({ streams })} />
+        <StreamsFetcher
+          handleResponse={(streams) => this.setState({ streams })}
+        />
         <DelayedLog logs={this.state.logs} />
         <Menu
           addScreen={(screen) =>

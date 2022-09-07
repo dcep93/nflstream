@@ -26,20 +26,21 @@ export type BoxScoreType = {
   players?: { name: string; stats: string[] }[];
 };
 
-abstract class Fetcher<T> extends React.Component<{
-  setPayload: (t: T) => void;
+abstract class Fetcher<T, U = undefined> extends React.Component<{
+  handleResponse: (t: T) => void;
+  payload?: U;
 }> {
-  abstract getPayload(): Promise<T>;
+  abstract getResponse(): Promise<T>;
 }
 
 export class StreamsFetcher extends Fetcher<StreamType[]> {
-  getPayload() {
+  getResponse() {
     return Promise.resolve([]);
   }
 }
 
-export class LogFetcher extends Fetcher<LogType> {
-  getPayload() {
+export class LogFetcher extends Fetcher<LogType, string> {
+  getResponse() {
     return Promise.resolve({ timestamp: Date.now() });
   }
 }

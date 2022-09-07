@@ -1,5 +1,6 @@
 import React from "react";
-import { LogFetcher, LogType } from "../Fetcher";
+import { LogType } from "../Fetcher";
+import LogFetcher from "../Fetcher/LogFetcher";
 import ofStyle from "./index.module.css";
 
 const delayMs = 4 * 60 * 1000;

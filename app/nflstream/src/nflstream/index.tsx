@@ -1,7 +1,7 @@
 import React from "react";
-import { LogType, StreamsFetcher, StreamType } from "./Fetcher";
+import { StreamType } from "./Fetcher";
+import StreamsFetcher from "./Fetcher/StreamsFetcher";
 import style from "./index.module.css";
-import DelayedLog from "./Log/DelayedLog";
 import Menu from "./Menu";
 import Multiscreen, { ScreenType } from "./Multiscreen";
 
@@ -11,7 +11,6 @@ class NFLStream extends React.Component<
     backgroundColor: string;
     streams: StreamType[];
     screens: ScreenType[];
-    logs: LogType[];
   }
 > {
   render() {
@@ -23,7 +22,6 @@ class NFLStream extends React.Component<
         <StreamsFetcher
           handleResponse={(streams) => this.setState({ streams })}
         />
-        <DelayedLog logs={this.state.logs} />
         <Menu
           addScreen={(screen) =>
             this.setState({

@@ -26,7 +26,7 @@ export type BoxScoreType = {
   players?: { name: string; stats: string[] }[];
 };
 
-abstract class Fetcher<T, U = undefined> extends React.Component<
+export default abstract class Fetcher<T, U = undefined> extends React.Component<
   {
     handleResponse: (t: T) => void;
     payload?: U;
@@ -54,16 +54,10 @@ abstract class Fetcher<T, U = undefined> extends React.Component<
   }
 }
 
-export class StreamsFetcher extends Fetcher<StreamType[]> {
-  intervalMs = 10 * 60 * 1000;
-  getResponse() {
-    return Promise.resolve([]);
-  }
+export function fetchP(url: string): Promise<Response> {
+  return fetch(url);
 }
 
-export class LogFetcher extends Fetcher<LogType, string> {
-  intervalMs = 10 * 1000;
-  getResponse() {
-    return Promise.resolve({ timestamp: Date.now() });
-  }
+export function parse(rawHtml: string): Document {
+  return new DOMParser().parseFromString(rawHtml, "text/html");
 }

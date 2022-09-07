@@ -68,6 +68,7 @@ class Menu extends React.Component<StreamsPropsType, {}> {
                         .toString(36)
                         .substring(2),
                       skipLog: e.shiftKey,
+                      ref: React.createRef() as React.RefObject<HTMLIFrameElement>,
                       ...obj.stream,
                     });
                   }}

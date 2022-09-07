@@ -26,20 +26,43 @@ export type BoxScoreType = {
   players?: { name: string; stats: string[] }[];
 };
 
-abstract class Fetcher<T, U = undefined> extends React.Component<{
-  handleResponse: (t: T) => void;
-  payload?: U;
-}> {
+abstract class Fetcher<T, U = undefined> extends React.Component<
+  {
+    handleResponse: (t: T) => void;
+    payload?: U;
+  },
+  { timeout: NodeJS.Timeout }
+> {
   abstract getResponse(): Promise<T>;
+  abstract intervalMs: number;
+
+  run() {
+    this.getResponse()
+      .then(this.props.handleResponse)
+      .then(() => {
+        const timeout = setTimeout(this.run.bind(this), this.intervalMs);
+        this.setState({ timeout });
+      });
+  }
+
+  componentDidMount() {
+    this.run();
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.state.timeout);
+  }
 }
 
 export class StreamsFetcher extends Fetcher<StreamType[]> {
+  intervalMs = 10 * 60 * 1000;
   getResponse() {
     return Promise.resolve([]);
   }
 }
 
 export class LogFetcher extends Fetcher<LogType, string> {
+  intervalMs = 10 * 1000;
   getResponse() {
     return Promise.resolve({ timestamp: Date.now() });
   }

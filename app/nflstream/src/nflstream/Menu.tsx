@@ -27,7 +27,7 @@ class Menu extends React.Component<StreamsPropsType, {}> {
         <h1 className={style.header} title={recorded_sha}>
           NFL Stream
         </h1>
-        (
+
         <div>
           {(this.props.streams || [])
             .map((stream, i) => ({
@@ -78,7 +78,6 @@ class Menu extends React.Component<StreamsPropsType, {}> {
               </div>
             ))}
         </div>
-        )
         <Guide />
       </div>
     );
@@ -114,8 +113,7 @@ function Guide() {
           <a href="https://chrome.google.com/webstore/detail/nfl-stream/jjlokcmkcepehbfepbffkmkkbnggkmje?hl=en&u_producttype=chrome-extension-667709&u_country=au&funnel=convert-pdf&gclid=Cj0KCQjwwNWKBhDAARIsAJ8HkhfEFO3SAM6aK42aSfntfnUY6yIRKS6A7DiyPG00l1mf8743CELeGaQaAksoEALw_wcB">
             chrome extension
           </a>{" "}
-          offers additional functionality, like keeping the list of streams
-          updated, and muting non-spotlighted streams.
+          offers additional functionality, like muting non-spotlighted streams.
         </li>
       </ol>
     </div>

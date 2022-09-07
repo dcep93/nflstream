@@ -52,6 +52,10 @@ export default abstract class Fetcher<T, U = undefined> extends React.Component<
   componentWillUnmount() {
     clearTimeout(this.state.timeout);
   }
+
+  render() {
+    return null;
+  }
 }
 
 export function fetchP(url: string): Promise<Response> {

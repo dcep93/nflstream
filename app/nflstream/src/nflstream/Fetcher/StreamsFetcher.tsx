@@ -62,11 +62,6 @@ class StreamsFetcher extends Fetcher<StreamType[]> {
                         }))
                     )
             )
-            .catch((e) => {
-              console.log("failed promise");
-              console.log(e);
-              return null;
-            })
         )
       )
       .then((promises) => Promise.all(promises))

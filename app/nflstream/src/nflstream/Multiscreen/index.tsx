@@ -17,7 +17,7 @@ function Multiscreen(props: {
   const [selected, updateSelected] = useState("");
   const selectedScreen =
     props.screens.find((s) => s.iFrameTitle === selected) || props.screens[0];
-  muteUnmute(selectedScreen.ref, false);
+  if (selectedScreen) muteUnmute(selectedScreen.ref, false);
   return (
     <div className={msStyle.screens_wrapper}>
       {props.screens.length === 0 ? null : (

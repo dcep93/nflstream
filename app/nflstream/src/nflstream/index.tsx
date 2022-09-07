@@ -28,13 +28,13 @@ class NFLStream extends React.Component<
               screens: (this.state?.screens || []).concat(screen),
             })
           }
-          streams={this.state?.streams}
+          streams={this.state?.streams || []}
           setBackground={(backgroundColor) =>
             this.setState({ backgroundColor })
           }
         />
         <Multiscreen
-          screens={this.state?.screens}
+          screens={this.state?.screens || []}
           removeScreen={(iFrameTitle) =>
             this.setState({
               screens: this.state.screens.filter(

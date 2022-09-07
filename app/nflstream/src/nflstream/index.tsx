@@ -1,32 +1,18 @@
 import React from "react";
-import firebase, { LogType, NFLStreamType } from "../firebase";
 import DelayedLog from "./DelayedLog";
+import Fetcher, { LogType, NFLStreamType } from "./Fetcher";
 import style from "./index.module.css";
 import Menu from "./Menu";
 import Multiscreen, { ScreenType } from "./multiscreen";
 
-var firebaseWrapperComponent: FirebaseWrapper;
-class FirebaseWrapper extends React.Component<
-  {},
-  { nflStream: NFLStreamType }
-> {
-  componentDidMount() {
-    const oldComponent = firebaseWrapperComponent;
-    firebaseWrapperComponent = this;
-    if (oldComponent) {
-      this.setState(oldComponent.state);
-    } else {
-      document.title = "NFL Stream";
-      firebase.connect((nflStream) =>
-        firebaseWrapperComponent.setState.bind(firebaseWrapperComponent)({
-          nflStream,
-        })
-      );
-    }
-  }
-
+class FetchWrapper extends React.Component<{}, { nflStream: NFLStreamType }> {
   render() {
-    return <NFLStream nflStream={this.state?.nflStream || {}} />;
+    return (
+      <>
+        <Fetcher setNflStream={(nflStream) => this.setState({ nflStream })} />
+        <NFLStream nflStream={this.state?.nflStream || {}} />
+      </>
+    );
   }
 }
 
@@ -67,4 +53,4 @@ class NFLStream extends React.Component<
     });
   }
 }
-export default FirebaseWrapper;
+export default FetchWrapper;

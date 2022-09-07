@@ -1,30 +1,18 @@
-import React, { useState } from "react";
-import firebase, { NFLStreamType, StreamType } from "../firebase";
+import React from "react";
+import { NFLStreamType, StreamType } from "./Fetcher";
 import style from "./index.module.css";
 import { ScreenType, screenWrapperRef } from "./multiscreen";
 import recorded_sha from "./recorded_sha";
 
-const ref: React.RefObject<HTMLTextAreaElement> = React.createRef();
 function Menu(props: {
   addScreen: (screen: ScreenType) => void;
   nflStream: NFLStreamType;
 }) {
-  const [hidden, update] = useState(true);
   return (
     <div className={style.menu}>
-      <h1
-        className={style.header}
-        title={recorded_sha}
-        onClick={() => {
-          ref.current!.value = JSON.stringify(props.nflStream, null, 2);
-          update(!hidden);
-        }}
-      >
+      <h1 className={style.header} title={recorded_sha}>
         NFL Stream
       </h1>
-      <div hidden={hidden}>
-        <ManualUpdate />
-      </div>
       <Streams
         streams={(props.nflStream.streams || []).concat(
           props.nflStream?.other || []
@@ -32,24 +20,6 @@ function Menu(props: {
         addScreen={props.addScreen}
       />
       <Guide />
-    </div>
-  );
-}
-
-function ManualUpdate() {
-  return (
-    <div>
-      <textarea className={style.menu_textarea} ref={ref} />
-      <div>
-        <button
-          onClick={() => {
-            const nflStream: NFLStreamType = JSON.parse(ref.current!.value);
-            firebase.updateNFLStream(nflStream);
-          }}
-        >
-          Update
-        </button>
-      </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import React from "react";
-import { LogType } from "../../firebase";
 import { delayedLogComponent } from "../DelayedLog";
+import { LogType } from "../Fetcher";
 import { default as ofStyle } from "./index.module.css";
 
 class LogWrapper extends React.Component<{ name?: string }> {

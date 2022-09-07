@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { StreamType } from "../../firebase";
 import { delayedLogComponent } from "../DelayedLog";
+import { StreamType } from "../Fetcher";
 import style from "../index.module.css";
 import ObjectFitIframe from "../ObjectFitIframe";
 import msStyle from "./index.module.css";

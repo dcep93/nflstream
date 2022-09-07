@@ -39,7 +39,7 @@ abstract class Fetcher<T, U = undefined> extends React.Component<
   run() {
     this.getResponse()
       .then(this.props.handleResponse)
-      .then(() => {
+      .finally(() => {
         const timeout = setTimeout(this.run.bind(this), this.intervalMs);
         this.setState({ timeout });
       });

@@ -1,22 +1,20 @@
 import React, { useState } from "react";
 import firebase, { NFLStreamType, StreamType } from "../firebase";
 import style from "./index.module.css";
-import { screenWrapperRef } from "./multiscreen";
+import { ScreenType, screenWrapperRef } from "./multiscreen";
 import recorded_sha from "./recorded_sha";
 
 const ref: React.RefObject<HTMLTextAreaElement> = React.createRef();
 function Menu(props: {
-  sendStream: (stream: StreamType, skipLog: boolean) => void;
+  addScreen: (screen: ScreenType) => void;
   nflStream: NFLStreamType;
 }) {
-  if (!props.nflStream.other) props.nflStream.other = [];
   const [hidden, update] = useState(true);
-  const title = recorded_sha;
   return (
     <div className={style.menu}>
       <h1
         className={style.header}
-        title={title}
+        title={recorded_sha}
         onClick={() => {
           ref.current!.value = JSON.stringify(props.nflStream, null, 2);
           update(!hidden);
@@ -25,22 +23,20 @@ function Menu(props: {
         NFL Stream
       </h1>
       <div hidden={hidden}>
-        <ManualUpdate nflStream={props.nflStream} />
+        <ManualUpdate />
       </div>
       <Streams
         streams={(props.nflStream.streams || []).concat(
-          (props.nflStream?.other || []).filter((s) => s.url !== "")
+          props.nflStream?.other || []
         )}
-        sendStream={props.sendStream}
+        addScreen={props.addScreen}
       />
       <Guide />
     </div>
   );
 }
 
-function ManualUpdate(props: { nflStream: NFLStreamType }) {
-  if (!props.nflStream.streams) props.nflStream.streams = [];
-
+function ManualUpdate() {
   return (
     <div>
       <textarea className={style.menu_textarea} ref={ref} />
@@ -60,7 +56,7 @@ function ManualUpdate(props: { nflStream: NFLStreamType }) {
 
 type StreamsPropsType = {
   streams: StreamType[];
-  sendStream: (stream: StreamType, skipLog: boolean) => void;
+  addScreen: (screen: ScreenType) => void;
 };
 class Streams extends React.Component<StreamsPropsType, {}> {
   componentDidUpdate(prevProps: StreamsPropsType) {
@@ -96,14 +92,30 @@ class Streams extends React.Component<StreamsPropsType, {}> {
                   style.hover,
                   obj.invalid && style.red,
                 ].join(" ")}
-                onClick={(e) =>
-                  click(
-                    this.props.sendStream,
-                    obj.stream,
-                    obj.invalid,
-                    e.shiftKey
-                  )
-                }
+                onClick={(e) => {
+                  // mobile
+                  if (window.innerWidth < 768) {
+                    window.open(obj.stream.url);
+                    return;
+                  }
+                  if (obj.invalid) {
+                    fetch("iframe.html")
+                      .then((response) => response.blob())
+                      .then((blob) => {
+                        const a = document.createElement("a");
+                        a.href = window.URL.createObjectURL(blob);
+                        a.download = "nflstream.html";
+                        a.click();
+                      });
+                    return;
+                  }
+
+                  this.props.addScreen({
+                    iFrameTitle: (Math.random() + 1).toString(36).substring(2),
+                    skipLog: e.shiftKey,
+                    ...obj.stream,
+                  });
+                }}
               >
                 <div title={obj.stream.url}>{obj.stream.name}</div>
               </div>
@@ -112,31 +124,6 @@ class Streams extends React.Component<StreamsPropsType, {}> {
       </div>
     );
   }
-}
-
-function click(
-  sendStream: (stream: StreamType, skipLog: boolean) => void,
-  stream: StreamType,
-  invalid: boolean,
-  skipLog: boolean
-) {
-  // mobile
-  if (window.innerWidth < 768) {
-    window.open(stream.url);
-    return;
-  }
-  if (invalid) {
-    fetch("iframe.html")
-      .then((response) => response.blob())
-      .then((blob) => {
-        const a = document.createElement("a");
-        a.href = window.URL.createObjectURL(blob);
-        a.download = "nflstream.html";
-        a.click();
-      });
-    return;
-  }
-  sendStream(stream, skipLog);
 }
 
 function Guide() {

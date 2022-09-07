@@ -11,18 +11,12 @@ export const screenWrapperRef: React.RefObject<HTMLDivElement> =
 
 function Multiscreen(props: {
   screens: ScreenType[];
-  removeScreen: (index: number) => void;
+  removeScreen: (iFrameTitle: string) => void;
 }) {
   const [rawSelected, updateSelected] = useState("");
-  const selected =
-    props.screens.find((s) => s.iFrameTitle === rawSelected)?.iFrameTitle ||
-    props.screens[0]?.iFrameTitle;
-  const screenRefs = Object.fromEntries(
-    props.screens.map((s) => [
-      s.iFrameTitle,
-      React.createRef() as React.RefObject<HTMLDivElement>,
-    ])
-  );
+  const selected = (
+    props.screens.find((s) => s.iFrameTitle === rawSelected) || props.screens[0]
+  )?.iFrameTitle;
   const iframeRefs = Object.fromEntries(
     props.screens.map((s) => [
       s.iFrameTitle,
@@ -36,12 +30,9 @@ function Multiscreen(props: {
           {props.screens.map((screen, i) => (
             <Singlescreen
               key={screen.iFrameTitle}
-              i={i}
-              screenRefs={screenRefs}
-              iframeRefs={iframeRefs}
               screen={screen}
               selected={selected}
-              screens={props.screens}
+              iframeRefs={iframeRefs}
               removeScreen={props.removeScreen}
               updateSelected={updateSelected}
             />
@@ -53,42 +44,35 @@ function Multiscreen(props: {
 }
 
 function Singlescreen(props: {
-  i: number;
   screen: ScreenType;
-  screenRefs: { [iframeTitle: string]: React.RefObject<HTMLDivElement> };
   iframeRefs: { [iframeTitle: string]: React.RefObject<HTMLIFrameElement> };
   selected: string;
-  screens: ScreenType[];
-  removeScreen: (index: number) => void;
+  removeScreen: (iframeTitle: string) => void;
   updateSelected: (iframeTitle: string) => void;
 }) {
-  const screenTitleParts = props.screen.name.split(" vs ");
-  screenTitleParts.splice(1, 0, "vs");
+  const screenTitleParts = [props.screen.name];
   const drive = ((
     (delayedLogComponent?.state?.logs || []).find(
-      (l) =>
-        l.name.replace("Washington", "Washington Football Team") ===
-        props.screen.name
+      (l) => l.name === props.screen.name
     ) || {}
   ).playByPlay || [])[0];
   if (drive) {
-    const firstTeamHasBall = screenTitleParts[0].endsWith(drive.team);
-    screenTitleParts.splice(firstTeamHasBall ? 0 : 3, 0, "🏈");
+    screenTitleParts[
+      props.screen.name.endsWith(drive.team) ? "push" : "unshift"
+    ]("🏈");
   }
   const screenTitle = screenTitleParts.join(" ");
+  const numScreens = Object.keys(props.iframeRefs).length;
   return (
     <div
-      key={props.screen.iFrameTitle}
       style={{
         width:
           props.selected === props.screen.iFrameTitle
             ? "100%"
-            : `${100 / (props.screens.length - 1)}%`,
+            : `${100 / (numScreens - 1)}%`,
       }}
       className={[
-        props.screens.length > 1 &&
-          props.selected === props.screen.iFrameTitle &&
-          msStyle.selected_screen,
+        props.selected === props.screen.iFrameTitle && msStyle.selected_screen,
         props.selected !== props.screen.iFrameTitle &&
           msStyle.unselected_screen,
         msStyle.screen_wrapper,
@@ -96,26 +80,16 @@ function Singlescreen(props: {
     >
       <div
         className={[msStyle.title, style.hover].join(" ")}
-        onClick={() => props.removeScreen(props.i)}
+        onClick={() => props.removeScreen(props.screen.iFrameTitle)}
       >
         {screenTitle}
       </div>
-      <div
-        className={msStyle.screen}
-        ref={props.screenRefs[props.screen.iFrameTitle]}
-      >
+      <div className={msStyle.screen}>
         <div className={msStyle.subscreen}>
           <div
             hidden={props.selected === props.screen.iFrameTitle}
             className={msStyle.screen_mask}
             onClick={() => {
-              const height =
-                props.screenRefs[props.selected]!.current!.style.height;
-              props.screenRefs[props.selected]!.current!.style.height =
-                "initial";
-              props.screenRefs[
-                props.screen.iFrameTitle
-              ]!.current!.style.height = height;
               muteUnmute(props.iframeRefs[props.screen.iFrameTitle]!, false);
               muteUnmute(props.iframeRefs[props.selected]!, true);
               props.updateSelected(props.screen.iFrameTitle);
@@ -127,8 +101,7 @@ function Singlescreen(props: {
             name={props.screen.name}
             skipLog={
               props.screen.skipLog ||
-              (props.screens.length > 1 &&
-                props.selected !== props.screen.iFrameTitle)
+              (numScreens > 1 && props.selected !== props.screen.iFrameTitle)
             }
           />
         </div>
@@ -145,7 +118,7 @@ function muteUnmute(
     iframeRef.current!.contentWindow!.document.getElementsByTagName(
       "iframe"
     )[0] as HTMLIFrameElement
-  ).contentWindow!.postMessage({ mute }, "*");
+  ).contentWindow!.postMessage({ mute, source: "nflstream" }, "*");
 }
 
 export default Multiscreen;

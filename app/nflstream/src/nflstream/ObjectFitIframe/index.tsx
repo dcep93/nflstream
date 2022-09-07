@@ -1,4 +1,3 @@
-import { CSSProperties } from "react";
 import { default as ofStyle } from "./index.module.css";
 import Log from "./Log";
 
@@ -29,7 +28,7 @@ function ObjectFitIframe(props: {
 
 const script = () => {
   document.addEventListener("DOMContentLoaded", () => {
-    const style: CSSProperties = {
+    Object.assign(document.body.style, {
       width: "100vw",
       height: "100vh",
       margin: 0,
@@ -37,16 +36,14 @@ const script = () => {
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-    };
-    Object.assign(document.body.style, style);
+    });
     const meta = document.getElementsByTagName("meta")[0];
     const iframeE = document.createElement("iframe");
     iframeE.allowFullscreen = true;
-    const iframeStyle = {
+    Object.assign(iframeE.style, {
       border: 0,
       opacity: 0,
-    };
-    Object.assign(iframeE.style, iframeStyle);
+    });
     iframeE.onload = () => {
       // const [width, height] = [iframeE.offsetWidth, iframeE.offsetHeight];
       const [width, height] = [812, 477]; // on weakstreams, height is dynamic
@@ -67,8 +64,8 @@ const script = () => {
                     }
                 }
             `;
-      iframeE.style.opacity = "1";
       document.head.appendChild(style);
+      iframeE.style.opacity = "1";
     };
     iframeE.src = meta.getAttribute("data-url")!;
     document.body.appendChild(iframeE);

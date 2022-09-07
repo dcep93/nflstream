@@ -6,9 +6,7 @@ import { default as ofStyle } from "./index.module.css";
 class LogWrapper extends React.Component<{ name?: string }> {
   render() {
     const log = (delayedLogComponent?.state?.logs || []).find(
-      (l) =>
-        l.name.replace("Washington", "Washington Football Team") ===
-        this.props.name
+      (l) => l.name === this.props.name
     );
     return (
       <div

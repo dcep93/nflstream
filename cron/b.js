@@ -1,32 +1,3 @@
-var version;
-fetch(chrome.runtime.getURL("manifest.json"))
-  .then((response) => response.json())
-  .then((json) => json.version)
-  .then((_version) => (version = _version))
-  .then(() => console.log("version", version));
-
-function sendMessage(tabId, payload) {
-  return new Promise((resolve) => {
-    chrome.tabs.sendMessage(tabId, payload, resolve);
-  });
-}
-
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  ({
-    getVersion,
-    getStreams,
-    getLogs,
-  }
-    [message.action](sender.tab.id)
-    .then(log)
-    .then(sendResponse));
-  return true;
-});
-
-function getVersion(tabId) {
-  return Promise.resolve(version);
-}
-
 function getStreams(tabId) {
   return fetch("https://reddit.nflbite.com/")
     .then((resp) => resp.text())
@@ -55,7 +26,7 @@ function getStreams(tabId) {
                   sendMessage(tabId, { type: "parseTinyUrl", message })
                 )
                 .then(({ name, href }) =>
-                  fetchP(href)
+                  fetch(href)
                     .then((resp) => resp.text())
                     .then((message) => ({
                       name,
@@ -73,7 +44,7 @@ function getStreams(tabId) {
       )
     )
     .then((promises) => Promise.all(promises))
-    .then((logs) => logs.filter(Boolean));
+    .then((links) => links.filter(Boolean));
 }
 
 const allScData = {};
@@ -87,16 +58,6 @@ function fetchSC(url) {
       scData[url] = { date: Date.now(), text };
       return text;
     });
-}
-
-function fetchP(url) {
-  console.log(url);
-  return fetch(url);
-  return fetch("https://proxy420.web.app", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ url }),
-  });
 }
 
 function getLogs(tabId) {
@@ -158,9 +119,4 @@ function getLogs(tabId) {
     )
     .then((promises) => Promise.all(promises))
     .then((logs) => logs.filter(Boolean));
-}
-
-function log(arg) {
-  console.log(arg);
-  return arg;
 }

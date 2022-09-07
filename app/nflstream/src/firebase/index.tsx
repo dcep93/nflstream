@@ -53,14 +53,9 @@ function updateNFLStream(nflStream: NFLStreamType) {
   firebase._set(`/`, nflStream);
 }
 
-function updateStreams(streams: StreamType[]) {
-  firebase._set(`/streams`, streams);
-}
-
 const ex = {
   connect,
   updateNFLStream,
-  updateStreams,
 };
 
 export default ex;

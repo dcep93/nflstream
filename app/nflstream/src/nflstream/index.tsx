@@ -1,9 +1,8 @@
 import React from "react";
-import firebase, { LogType, NFLStreamType, StreamType } from "../firebase";
+import firebase, { LogType, NFLStreamType } from "../firebase";
 import DelayedLog from "./DelayedLog";
 import style from "./index.module.css";
 import Menu from "./Menu";
-import MessageExtension from "./MessageExtension";
 import Multiscreen, { ScreenType } from "./multiscreen";
 
 var firebaseWrapperComponent: FirebaseWrapper;
@@ -44,13 +43,8 @@ class NFLStream extends React.Component<
     return (
       <div className={style.main}>
         <DelayedLog logs={this.state.logs} />
-        <MessageExtension
-          setLogs={(logs: LogType[]) => this.setState({ logs })}
-          streams={this.props.nflStream.streams || []}
-          version={this.props.nflStream.version}
-        />
         <Menu
-          sendStream={this.sendStream.bind(this)}
+          addScreen={this.addScreen.bind(this)}
           nflStream={this.props.nflStream}
         />
         <Multiscreen
@@ -61,19 +55,15 @@ class NFLStream extends React.Component<
     );
   }
 
-  sendStream(stream: StreamType, skipLog: boolean) {
+  addScreen(screen: ScreenType) {
     this.setState({
-      screens: this.state.screens.concat({
-        iFrameTitle: (Math.random() + 1).toString(36).substring(2),
-        skipLog,
-        ...stream,
-      }),
+      screens: this.state.screens.concat(screen),
     });
   }
 
-  removeScreen(index: number) {
+  removeScreen(iFrameTitle: string) {
     this.setState({
-      screens: this.state.screens.filter((_, i) => i !== index),
+      screens: this.state.screens.filter((o) => o.iFrameTitle !== iFrameTitle),
     });
   }
 }

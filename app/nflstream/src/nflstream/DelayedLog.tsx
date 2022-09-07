@@ -1,10 +1,13 @@
 import React from "react";
 import { LogType } from "../firebase";
-import { isIdentical } from "./MessageExtension";
 
 export var delayedLogComponent: DelayedLog;
 
 const delayMs = 4 * 60 * 1000;
+
+function isIdentical<T>(a: T, b: T): boolean {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
 
 class DelayedLog extends React.Component<
   { logs: LogType[] },

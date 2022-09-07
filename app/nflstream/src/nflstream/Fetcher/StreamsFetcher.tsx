@@ -96,10 +96,10 @@ function fetchCache(url: string): Promise<string> {
   if (Date.now() - scData.date < maxAge) return Promise.resolve(scData.text);
   return fetchP(url)
     .then((resp) => resp.text())
-    .then(
-      (text) =>
-        Object.assign(allData, { url: { date: Date.now(), text } })[url].text
-    );
+    .then((text) => {
+      allData[url] = { date: Date.now(), text };
+      return text;
+    });
 }
 
 function parseTinyUrl(message: string) {

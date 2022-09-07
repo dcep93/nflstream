@@ -8,8 +8,8 @@ export type StreamType = {
 
 export type LogType = {
   timestamp: number;
-  playByPlay?: DriveType[];
-  boxScore?: BoxScoreType[];
+  playByPlay: DriveType[];
+  boxScore: BoxScoreType[];
 };
 
 export type DriveType = {

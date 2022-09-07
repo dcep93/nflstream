@@ -18,7 +18,7 @@ class Log extends React.Component<
       <div>
         <LogFetcher
           payload={this.props.espnId}
-          handleResponse={(log) => this.setState({ log })}
+          handleResponse={(log) => log && this.setState({ log })}
         />
         <div className={ofStyle.logWrapper}>
           <DelayedLog

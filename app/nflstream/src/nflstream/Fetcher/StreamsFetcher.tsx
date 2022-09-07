@@ -32,7 +32,7 @@ class StreamsFetcher extends Fetcher<StreamType[]> {
               const origin = href.split("//")[1].split("/")[0];
               return `https://sportscentral.io/streams-table/${matchId}/${sport}?new-ui=1&origin=${origin}`;
             })
-            .then(fetchSC)
+            .then(fetchCache)
             .then(parse)
             .then((html) => html.getElementsByTagName("tr"))
             .then((arr) => Array.from(arr))
@@ -44,7 +44,7 @@ class StreamsFetcher extends Fetcher<StreamType[]> {
                   )?.innerText.trim() === "Weak_Spell"
               )
             )
-            .then((tr) => tr?.getAttribute("data-stream-link") || undefined)
+            .then((tr) => tr?.getAttribute("data-stream-link"))
             .then((link) =>
               !link
                 ? undefined
@@ -52,7 +52,7 @@ class StreamsFetcher extends Fetcher<StreamType[]> {
                     .then((resp) => resp.text())
                     .then(parseTinyUrl)
                     .then(({ name, href }) =>
-                      fetch(href)
+                      fetchP(href)
                         .then((resp) => resp.text())
                         .then((message) => ({
                           name,
@@ -61,7 +61,6 @@ class StreamsFetcher extends Fetcher<StreamType[]> {
                           )![0],
                         }))
                     )
-                    .then(({ name, ...s }) => ({ name, espnId: "", ...s }))
             )
             .catch((e) => {
               console.log("failed promise");
@@ -71,20 +70,40 @@ class StreamsFetcher extends Fetcher<StreamType[]> {
         )
       )
       .then((promises) => Promise.all(promises))
-      .then((links) => links.filter(Boolean) as StreamType[]);
+      .then((streams) => streams.filter(Boolean))
+      .then((streams) =>
+        fetchCache("https://www.espn.com/nfl/schedule")
+          .then(parse)
+          .then((html) => html.getElementsByTagName("tr"))
+          .then((arr) => Array.from(arr))
+          .then((trs) =>
+            trs.map((tr) => ({
+              espnId: "",
+              awayTeam: (tr.children[0] as HTMLElement).innerText,
+            }))
+          )
+          .then((objs) =>
+            streams.map((stream) => ({
+              espnId: objs.find((obj) => stream!.name.includes(obj.awayTeam))
+                ?.espnId,
+              ...stream,
+            }))
+          )
+      )
+      .then((streams) => streams as StreamType[]);
   }
 }
 
-const allScData: { [url: string]: { date: number; text: string } } = {};
+const allData: { [url: string]: { date: number; text: string } } = {};
 const maxAge = 24 * 60 * 60 * 1000;
-function fetchSC(url: string): Promise<string> {
-  const scData = allScData[url] || {};
+function fetchCache(url: string): Promise<string> {
+  const scData = allData[url] || {};
   if (Date.now() - scData.date < maxAge) return Promise.resolve(scData.text);
   return fetchP(url)
     .then((resp) => resp.text())
     .then(
       (text) =>
-        Object.assign(allScData, { url: { date: Date.now(), text } })[url].text
+        Object.assign(allData, { url: { date: Date.now(), text } })[url].text
     );
 }
 

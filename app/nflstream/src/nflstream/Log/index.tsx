@@ -1,37 +1,64 @@
 import React from "react";
-import { LogType } from "../Fetcher";
-import { delayedLogComponent } from "./DelayedLog";
+import { LogFetcher, LogType } from "../Fetcher";
 import ofStyle from "./index.module.css";
 
-class Log extends React.Component<{
-  espnId: string;
-  updateDrivingTeam: (drivingTeam: string) => void;
-  hidden: boolean;
-}> {
-  // const drive = ((
-  //   (delayedLogComponent?.state?.logs || []).find(
-  //     (l) => l.name === props.screen.name
-  //   ) || {}
-  // ).playByPlay || [])[0];
+const delayMs = 4 * 60 * 1000;
+
+class Log extends React.Component<
+  {
+    espnId: string;
+    updateDrivingTeam: (drivingTeam: string) => void;
+    hidden: boolean;
+  },
+  { log: LogType }
+> {
   render() {
-    const log = (delayedLogComponent?.state?.logs || []).find(
-      (l) => l.name === this.props.name
-    );
     return (
-      <div
-        className={ofStyle.logWrapper}
-        onClick={() => {
-          delayedLogComponent.updateNow();
-          setTimeout(() => this.forceUpdate(), 100);
-        }}
-      >
-        <SubLog log={log || undefined} />
+      <div>
+        <LogFetcher
+          payload={this.props.espnId}
+          handleResponse={(log) => this.setState({ log })}
+        />
+        <div className={ofStyle.logWrapper}>
+          <DelayedLog
+            log={this.state.log}
+            updateDrivingTeam={this.props.updateDrivingTeam}
+          />
+        </div>
       </div>
     );
   }
 }
 
-function SubLog(props: { log: LogType | undefined }) {
+class DelayedLog extends React.Component<
+  { log: LogType; updateDrivingTeam: (drivingTeam: string) => void },
+  { log: LogType }
+> {
+  componentDidUpdate() {
+    setTimeout(() => this.updateNow(this.props.log), delayMs);
+  }
+
+  updateNow(log: LogType) {
+    this.setState({ log });
+    const drivingTeam = (log.playByPlay || [])[0]?.team;
+    this.props.updateDrivingTeam(drivingTeam);
+  }
+
+  render() {
+    return (
+      <div
+        onClick={() => {
+          this.updateNow(this.props.log);
+          // setTimeout(() => this.forceUpdate(), 100);
+        }}
+      >
+        <SubLog log={this.state.log} />
+      </div>
+    );
+  }
+}
+
+function SubLog(props: { log: LogType }) {
   if (props.log === undefined) return null;
   const playByPlay = props.log.playByPlay || [];
   if (

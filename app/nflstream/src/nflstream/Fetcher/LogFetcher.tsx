@@ -10,13 +10,7 @@ class LogFetcher extends Fetcher<LogType | null, string> {
         if (!match) return null;
         const json = match[1].slice(0, -1);
         const obj = JSON.parse(json);
-        const name = obj.boxscore.teams
-          .map((team: any) => team.team.displayName)
-          .reverse()
-          .join(" vs ");
-        if (obj.drives === undefined) {
-          return null;
-        }
+        if (obj.drives === undefined) return null;
         const playByPlay = [obj.drives.current]
           .concat(obj.drives.previous.reverse())
           .filter((drive) => drive.team)
@@ -43,7 +37,6 @@ class LogFetcher extends Fetcher<LogType | null, string> {
                 .map((team: any) =>
                   team.statistics.find((s: any) => s.name === key)
                 )
-
                 .map((t: any) => t.athletes)
             )
             .map((a: any) => ({
@@ -52,8 +45,6 @@ class LogFetcher extends Fetcher<LogType | null, string> {
             })),
         }));
         return {
-          espnId: this.props.payload,
-          name,
           timestamp,
           playByPlay,
           boxScore,

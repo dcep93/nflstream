@@ -1,22 +1,28 @@
+import Log from "../Log";
+import { ScreenType } from "../Multiscreen";
 import { default as ofStyle } from "./index.module.css";
-import Log from "./Log";
 
 function ObjectFitIframe(props: {
-  iframeRef: React.RefObject<HTMLIFrameElement>;
-  url: string;
-  name: string;
-  skipLog: boolean;
+  screen: ScreenType;
+  hiddenLog: boolean;
+  updateDrivingTeam: (drivingTeam: string) => void;
 }) {
   return (
     <div className={ofStyle.container}>
-      {props.skipLog ? null : <Log name={props.name}></Log>}
+      {props.screen.skipLog ? null : (
+        <Log
+          espnId={props.screen.espnId}
+          updateDrivingTeam={props.updateDrivingTeam}
+          hidden={props.hiddenLog}
+        />
+      )}
       <iframe
-        ref={props.iframeRef}
+        ref={props.screen.ref}
         sandbox={"allow-scripts allow-same-origin"}
         className={ofStyle.fill}
-        title={props.name}
+        title={props.screen.name}
         srcDoc={`
-<meta data-url="${props.url}" data-title="${props.name}" />
+<meta data-url="${props.screen.url}" />
 <script>
 (${script.toString()})();
 </script>

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { delayedLogComponent } from "../DelayedLog";
 import { StreamType } from "../Fetcher";
 import style from "../index.module.css";
 import ObjectFitIframe from "../ObjectFitIframe";
@@ -50,15 +49,13 @@ function Singlescreen(props: {
   updateSelected: () => void;
   numScreens: number;
 }) {
+  const [drivingTeam, updateDrivingTeam] = useState<string | undefined>(
+    undefined
+  );
   const screenTitleParts = [props.screen.name];
-  const drive = ((
-    (delayedLogComponent?.state?.logs || []).find(
-      (l) => l.name === props.screen.name
-    ) || {}
-  ).playByPlay || [])[0];
-  if (drive) {
+  if (drivingTeam) {
     screenTitleParts[
-      props.screen.name.endsWith(drive.team) ? "push" : "unshift"
+      props.screen.name.endsWith(drivingTeam) ? "push" : "unshift"
     ]("🏈");
   }
   const screenTitle = screenTitleParts.join(" ");
@@ -88,13 +85,9 @@ function Singlescreen(props: {
             }}
           ></div>
           <ObjectFitIframe
-            iframeRef={props.screen.ref}
-            url={props.screen.url}
-            name={props.screen.name}
-            skipLog={
-              props.screen.skipLog ||
-              (props.numScreens > 1 && !props.isSelected)
-            }
+            screen={props.screen}
+            updateDrivingTeam={updateDrivingTeam}
+            hiddenLog={props.numScreens > 1 && !props.isSelected}
           />
         </div>
       </div>

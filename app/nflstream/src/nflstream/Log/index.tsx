@@ -1,9 +1,18 @@
 import React from "react";
-import { delayedLogComponent } from "../DelayedLog";
 import { LogType } from "../Fetcher";
+import { delayedLogComponent } from "./DelayedLog";
 import { default as ofStyle } from "./index.module.css";
 
-class LogWrapper extends React.Component<{ name?: string }> {
+class LogWrapper extends React.Component<{
+  espnId: string;
+  updateDrivingTeam: (drivingTeam: string) => void;
+  hidden: boolean;
+}> {
+  // const drive = ((
+  //   (delayedLogComponent?.state?.logs || []).find(
+  //     (l) => l.name === props.screen.name
+  //   ) || {}
+  // ).playByPlay || [])[0];
   render() {
     const log = (delayedLogComponent?.state?.logs || []).find(
       (l) => l.name === this.props.name

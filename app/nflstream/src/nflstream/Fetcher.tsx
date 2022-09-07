@@ -1,12 +1,13 @@
+import React from "react";
+
 export type StreamType = {
   url: string;
   name: string;
+  espnId: string;
 };
 
 export type LogType = {
-  id: string;
-  name: string;
-  timestamp: string;
+  timestamp: number;
   playByPlay?: DriveType[];
   boxScore?: BoxScoreType[];
 };
@@ -25,21 +26,20 @@ export type BoxScoreType = {
   players?: { name: string; stats: string[] }[];
 };
 
-function Fetcher(props: { setStreams: (streams: StreamType[]) => void }) {
-  return (
-    <div style={{ height: 0 }}>
-      <iframe
-        title="fetcher"
-        srcDoc={`<script>(${script.toString()})()</script>`}
-      ></iframe>
-    </div>
-  );
+abstract class Fetcher<T> extends React.Component<{
+  setPayload: (t: T) => void;
+}> {
+  abstract getPayload(): Promise<T>;
 }
 
-const script = () => {
-  fetch("https://reddit.nflbite.com/")
-    .then((resp) => resp.text())
-    .then(console.log);
-};
+export class StreamsFetcher extends Fetcher<StreamType[]> {
+  getPayload() {
+    return Promise.resolve([]);
+  }
+}
 
-export default Fetcher;
+export class LogFetcher extends Fetcher<LogType> {
+  getPayload() {
+    return Promise.resolve({ timestamp: Date.now() });
+  }
+}

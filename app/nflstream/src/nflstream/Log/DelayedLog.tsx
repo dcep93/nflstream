@@ -1,5 +1,5 @@
 import React from "react";
-import { LogType } from "./Fetcher";
+import { LogType } from "../Fetcher";
 
 export var delayedLogComponent: DelayedLog;
 

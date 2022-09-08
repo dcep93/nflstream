@@ -20,7 +20,10 @@ class NFLStream extends React.Component<
         style={{ backgroundColor: this.state?.backgroundColor }}
       >
         <StreamsFetcher
-          handleResponse={(streams) => this.setState({ streams })}
+          handleResponse={(streams) => {
+            this.setState({ streams, backgroundColor: "darkgrey" });
+            setTimeout(() => this.setState({ backgroundColor: "" }), 2000);
+          }}
         />
         <Menu
           addScreen={(screen) =>
@@ -29,9 +32,6 @@ class NFLStream extends React.Component<
             })
           }
           streams={this.state?.streams || []}
-          setBackground={(backgroundColor) =>
-            this.setState({ backgroundColor })
-          }
         />
         <Multiscreen
           screens={this.state?.screens || []}

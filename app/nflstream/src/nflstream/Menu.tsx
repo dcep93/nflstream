@@ -4,23 +4,13 @@ import style from "./index.module.css";
 import { ScreenType } from "./Multiscreen";
 import recorded_sha from "./recorded_sha";
 
-type StreamsPropsType = {
-  streams: StreamType[];
-  addScreen: (screen: ScreenType) => void;
-  setBackground: (backgroundColor: string) => void;
-};
-class Menu extends React.Component<StreamsPropsType, {}> {
-  componentDidUpdate(prevProps: StreamsPropsType) {
-    if (
-      this.props.streams.filter(
-        (s) => !prevProps.streams?.map((prevS) => prevS.name).includes(s.name)
-      ).length > 0
-    ) {
-      this.props.setBackground("darkgrey");
-      setTimeout(() => this.props.setBackground(""), 2000);
-    }
-  }
-
+class Menu extends React.Component<
+  {
+    streams: StreamType[];
+    addScreen: (screen: ScreenType) => void;
+  },
+  {}
+> {
   render() {
     return (
       <div className={style.menu}>

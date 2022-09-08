@@ -36,31 +36,23 @@ class Menu extends React.Component<
                     obj.invalid && style.red,
                   ].join(" ")}
                   onClick={(e) => {
-                    // mobile
-                    if (window.innerWidth < 768) {
-                      window.open(obj.stream.url);
-                      return;
-                    }
-                    if (obj.invalid) {
-                      fetch("iframe.html")
-                        .then((response) => response.blob())
-                        .then((blob) => {
-                          const a = document.createElement("a");
-                          a.href = window.URL.createObjectURL(blob);
-                          a.download = "nflstream.html";
-                          a.click();
+                    obj.invalid
+                      ? fetch("iframe.html")
+                          .then((response) => response.blob())
+                          .then((blob) => {
+                            const a = document.createElement("a");
+                            a.href = window.URL.createObjectURL(blob);
+                            a.download = "nflstream.html";
+                            a.click();
+                          })
+                      : this.props.addScreen({
+                          iFrameTitle: (Math.random() + 1)
+                            .toString(36)
+                            .substring(2),
+                          skipLog: e.shiftKey,
+                          ref: React.createRef() as React.RefObject<HTMLIFrameElement>,
+                          ...obj.stream,
                         });
-                      return;
-                    }
-
-                    this.props.addScreen({
-                      iFrameTitle: (Math.random() + 1)
-                        .toString(36)
-                        .substring(2),
-                      skipLog: e.shiftKey,
-                      ref: React.createRef() as React.RefObject<HTMLIFrameElement>,
-                      ...obj.stream,
-                    });
                   }}
                 >
                   <div title={obj.stream.url}>{obj.stream.name}</div>

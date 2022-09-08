@@ -3,6 +3,7 @@ import { StreamType } from "./Fetcher";
 import StreamsFetcher from "./Fetcher/StreamsFetcher";
 import style from "./index.module.css";
 import Menu from "./Menu";
+import Mobile from "./Mobile";
 import Multiscreen, { ScreenType } from "./Multiscreen";
 
 class NFLStream extends React.Component<
@@ -14,7 +15,9 @@ class NFLStream extends React.Component<
   }
 > {
   render() {
-    return (
+    return window.innerWidth < 768 ? (
+      <Mobile />
+    ) : (
       <div
         className={style.main}
         style={{ backgroundColor: this.state?.backgroundColor }}

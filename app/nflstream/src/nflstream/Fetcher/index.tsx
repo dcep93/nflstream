@@ -37,6 +37,7 @@ export default abstract class Fetcher<T, U = undefined> extends React.Component<
   abstract intervalMs: number;
 
   run() {
+    console.log("run", this.props.payload);
     this.getResponse()
       .then(this.props.handleResponse)
       .finally(() => {

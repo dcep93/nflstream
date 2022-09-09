@@ -100,10 +100,10 @@ function muteUnmute(
   mute: boolean
 ) {
   (
-    iframeRef.current!.contentWindow!.document.getElementsByTagName(
+    iframeRef.current?.contentWindow!.document.getElementsByTagName(
       "iframe"
     )[0] as HTMLIFrameElement
-  ).contentWindow!.postMessage({ mute, source: "nflstream" }, "*");
+  )?.contentWindow!.postMessage({ mute, source: "nflstream" }, "*");
 }
 
 export default Multiscreen;

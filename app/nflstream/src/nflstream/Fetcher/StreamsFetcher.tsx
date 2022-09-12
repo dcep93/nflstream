@@ -1,7 +1,5 @@
 import Fetcher, { fetchP, parse, StreamType } from ".";
 
-const VM_ADDR = "35.224.149.167";
-
 class StreamsFetcher extends Fetcher<StreamType[]> {
   intervalMs = 10 * 60 * 1000;
   getResponse() {
@@ -50,12 +48,12 @@ class StreamsFetcher extends Fetcher<StreamType[]> {
             .then((url) =>
               !url
                 ? undefined
-                : fetchP(VM_ADDR, {
+                : fetch("https://proxy420.appspot.com/proxy", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      url,
-                    }),
+                    body: JSON.stringify({ url }),
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
                   })
                     .then((resp) => resp.text())
                     .then(parseTinyUrl)

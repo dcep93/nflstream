@@ -1,5 +1,7 @@
 import Fetcher, { fetchP, parse, StreamType } from ".";
 
+const VM_ADDR = "35.224.149.167";
+
 class StreamsFetcher extends Fetcher<StreamType[]> {
   intervalMs = 10 * 60 * 1000;
   getResponse() {
@@ -45,10 +47,16 @@ class StreamsFetcher extends Fetcher<StreamType[]> {
               )
             )
             .then((tr) => tr?.getAttribute("data-stream-link"))
-            .then((link) =>
-              !link
+            .then((url) =>
+              !url
                 ? undefined
-                : fetchP(link)
+                : fetchP(VM_ADDR, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      url,
+                    }),
+                  })
                     .then((resp) => resp.text())
                     .then(parseTinyUrl)
                     .then(({ name, href }) =>

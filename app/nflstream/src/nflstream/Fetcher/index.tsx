@@ -59,10 +59,13 @@ export default abstract class Fetcher<T, U = undefined> extends React.Component<
   }
 }
 
-export function fetchP(url: string): Promise<Response> {
+export function fetchP(
+  url: string,
+  options: any = undefined
+): Promise<Response> {
   return fetch("https://proxy420.appspot.com", {
     method: "POST",
-    body: JSON.stringify({ url }),
+    body: JSON.stringify({ url, options }),
     headers: {
       "Content-Type": "application/json",
     },

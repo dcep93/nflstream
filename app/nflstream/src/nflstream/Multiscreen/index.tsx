@@ -72,11 +72,19 @@ function Singlescreen(props: {
         msStyle.screen_wrapper,
       ].join(" ")}
     >
-      <div
-        className={[msStyle.title, style.hover].join(" ")}
-        onClick={() => props.removeScreen()}
-      >
-        {screenTitle}
+      <div className={msStyle.title}>
+        {screenTitle}{" "}
+        <span className={style.hover} onClick={() => props.removeScreen()}>
+          ❌
+        </span>{" "}
+        <span
+          className={style.hover}
+          onClick={() =>
+            props.screen.ref.current!.contentWindow?.location.reload()
+          }
+        >
+          🔄
+        </span>
       </div>
       <div className={msStyle.screen}>
         <div className={msStyle.subscreen}>

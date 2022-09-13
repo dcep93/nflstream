@@ -96,7 +96,6 @@ function Guide() {
           broken links.
         </li>
         <li>Clicking a minimized stream will move it to the spotlight.</li>
-        <li>Clicking the title of a stream will delete it.</li>
         <li>
           Streams will include a delayed play-by-play log. You can disable this
           by holding shift when opening a stream.

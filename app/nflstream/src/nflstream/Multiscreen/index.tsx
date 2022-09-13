@@ -65,7 +65,10 @@ function Singlescreen(props: {
         width: props.isSelected ? "100%" : `${100 / (props.numScreens - 1)}%`,
       }}
       className={[
-        props.isSelected ? msStyle.selected_screen : msStyle.unselected_screen,
+        props.numScreens > 1 &&
+          (props.isSelected
+            ? msStyle.selected_screen
+            : msStyle.unselected_screen),
         msStyle.screen_wrapper,
       ].join(" ")}
     >

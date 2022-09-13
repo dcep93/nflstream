@@ -96,6 +96,8 @@ function Guide() {
             chrome extension
           </a>{" "}
           offers additional functionality, like muting non-spotlighted streams.
+          Click the chrome extension in the toolbar to open the stream-viewable
+          page without downloading.
         </li>
       </ol>
     </div>

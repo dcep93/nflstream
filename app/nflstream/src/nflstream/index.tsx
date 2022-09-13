@@ -6,6 +6,8 @@ import Menu from "./Menu";
 import Mobile from "./Mobile";
 import Multiscreen, { ScreenType } from "./Multiscreen";
 
+const PASSWORD = "mustbeusedlegally";
+
 class NFLStream extends React.Component<
   {},
   {
@@ -15,7 +17,9 @@ class NFLStream extends React.Component<
   }
 > {
   render() {
-    return window.innerWidth < 768 ? (
+    return localStorage.getItem("password") !== PASSWORD ? (
+      <Password />
+    ) : window.innerWidth < 768 ? (
       <Mobile />
     ) : (
       <div
@@ -50,4 +54,12 @@ class NFLStream extends React.Component<
     );
   }
 }
+
+function Password() {
+  const password = window.prompt("enter the password:");
+  if (password) localStorage.setItem("password", password);
+  window.location.reload();
+  return null;
+}
+
 export default NFLStream;

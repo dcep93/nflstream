@@ -3,9 +3,8 @@ import Fetcher, { fetchP, LogType } from ".";
 class LogFetcher extends Fetcher<LogType | null, string> {
   intervalMs = 10 * 1000;
   getResponse() {
-    return fetchP(`https://www.espn.com${this.props.payload}`)
-      .then((resp) => resp.text())
-      .then((message) => {
+    return fetchP(`https://www.espn.com${this.props.payload}`, 5 * 1000).then(
+      (message) => {
         const match = message.match(/espn\.gamepackage\.data =(.*?)\n/);
         if (!match) return null;
         const json = match[1].slice(0, -1);
@@ -49,7 +48,8 @@ class LogFetcher extends Fetcher<LogType | null, string> {
           playByPlay,
           boxScore,
         };
-      });
+      }
+    );
   }
 }
 

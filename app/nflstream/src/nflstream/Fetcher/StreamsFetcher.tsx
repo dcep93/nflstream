@@ -1,10 +1,9 @@
-import Fetcher, { fetchP, parse, StreamType } from ".";
+import Fetcher, { cacheF, fetchP, parse, StreamType } from ".";
 
 class StreamsFetcher extends Fetcher<StreamType[]> {
   intervalMs = 10 * 60 * 1000;
   getResponse() {
-    return fetchP("https://reddit.nflbite.com/")
-      .then((resp) => resp.text())
+    return fetchP("https://reddit.nflbite.com/", 10 * 60 * 1000)
       .then(parse)
       .then((html) => html.getElementsByClassName("competition"))
       .then((arr) => Array.from(arr))
@@ -24,15 +23,14 @@ class StreamsFetcher extends Fetcher<StreamType[]> {
       )
       .then((hrefs) =>
         hrefs.map((href) =>
-          fetchP(href)
-            .then((resp) => resp.text())
+          fetchP(href, 10 * 60 * 1000)
             .then((text) => {
               const matchId = text.match(/var streamsMatchId = (\d+);/)![1];
               const sport = text.match(/var streamsSport = "(\S+)"/)![1];
               const origin = href.split("//")[1].split("/")[0];
               return `https://sportscentral.io/streams-table/${matchId}/${sport}?new-ui=1&origin=${origin}`;
             })
-            .then(fetchCache)
+            .then((url) => fetchP(url, 10 * 60 * 1000))
             .then(parse)
             .then((html) => html.getElementsByTagName("tr"))
             .then((arr) => Array.from(arr))
@@ -48,26 +46,26 @@ class StreamsFetcher extends Fetcher<StreamType[]> {
             .then((url) =>
               !url
                 ? undefined
-                : fetch("https://proxy420.appspot.com/proxy", {
-                    method: "POST",
-                    body: JSON.stringify({ url }),
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                  })
+                : cacheF(url, 10 * 60 * 1000, () =>
+                    fetch("https://proxy420.appspot.com/proxy", {
+                      method: "POST",
+                      body: JSON.stringify({ url, maxAgeMs: 10 * 60 * 1000 }),
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                    })
+                  )
                     .then((resp) => resp.text())
                     .then(parseTinyUrl)
                     .then((href) =>
-                      fetchP(href)
-                        .then((resp) => resp.text())
-                        .then((message) => ({
-                          name: parse(message).title.split(
-                            " - WeakStreams.com - "
-                          )[0],
-                          url: message.match(
-                            /http:\/\/weakstreams.com\/streams\/\d+/
-                          )![0],
-                        }))
+                      fetchP(href, 24 * 60 * 60 * 1000).then((message) => ({
+                        name: parse(message).title.split(
+                          " - WeakStreams.com - "
+                        )[0],
+                        url: message.match(
+                          /http:\/\/weakstreams.com\/streams\/\d+/
+                        )![0],
+                      }))
                     )
             )
         )
@@ -75,7 +73,7 @@ class StreamsFetcher extends Fetcher<StreamType[]> {
       .then((promises) => Promise.all(promises))
       .then((streams) => streams.filter(Boolean))
       .then((streams) =>
-        fetchCache("https://www.espn.com/nfl/schedule")
+        fetchP("https://www.espn.com/nfl/schedule", 60 * 60 * 1000)
           .then(parse)
           .then((html) => html.getElementsByTagName("tr"))
           .then((arr) => Array.from(arr))
@@ -98,19 +96,6 @@ class StreamsFetcher extends Fetcher<StreamType[]> {
       )
       .then((streams) => streams as StreamType[]);
   }
-}
-
-const allData: { [url: string]: { date: number; text: string } } = {};
-const maxAge = 24 * 60 * 60 * 1000;
-function fetchCache(url: string): Promise<string> {
-  const scData = allData[url] || {};
-  if (Date.now() - scData.date < maxAge) return Promise.resolve(scData.text);
-  return fetchP(url)
-    .then((resp) => resp.text())
-    .then((text) => {
-      allData[url] = { date: Date.now(), text };
-      return text;
-    });
 }
 
 function parseTinyUrl(message: string) {

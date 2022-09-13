@@ -80,9 +80,12 @@ class StreamsFetcher extends Fetcher<StreamType[]> {
           .then((html) => html.getElementsByTagName("tr"))
           .then((arr) => Array.from(arr))
           .then((trs) =>
-            trs.map((tr) => ({
-              espnId: "",
-              awayTeam: (tr.children[0] as HTMLElement).innerText,
+            trs.map((tr) => tr.children as unknown as HTMLElement[])
+          )
+          .then((trs) =>
+            trs.map((tds) => ({
+              espnId: tds[2].getElementsByTagName("a")[0]?.href.split("=")[1],
+              awayTeam: tds[0].innerText,
             }))
           )
           .then((objs) =>

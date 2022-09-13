@@ -109,6 +109,10 @@ function Guide() {
           Click the chrome extension in the toolbar to open the stream-viewable
           page without downloading.
         </li>
+        <li>
+          You can only use this tool if you legally have access to the stream
+          and the game.
+        </li>
       </ol>
     </div>
   );

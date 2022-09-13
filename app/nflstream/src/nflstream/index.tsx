@@ -10,7 +10,7 @@ class NFLStream extends React.Component<
   {},
   {
     backgroundColor: string;
-    streams: StreamType[];
+    streams?: StreamType[];
     screens: ScreenType[];
   }
 > {
@@ -34,7 +34,7 @@ class NFLStream extends React.Component<
               screens: (this.state?.screens || []).concat(screen),
             })
           }
-          streams={this.state?.streams || []}
+          streams={this.state?.streams}
         />
         <Multiscreen
           screens={this.state?.screens || []}

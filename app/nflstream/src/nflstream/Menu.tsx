@@ -1,12 +1,13 @@
 import React from "react";
 import { StreamType } from "./Fetcher";
 import style from "./index.module.css";
+import loading from "./loading.gif";
 import { ScreenType } from "./Multiscreen";
 import recorded_sha from "./recorded_sha";
 
 class Menu extends React.Component<
   {
-    streams: StreamType[];
+    streams?: StreamType[];
     addScreen: (screen: ScreenType) => void;
   },
   {}
@@ -18,48 +19,58 @@ class Menu extends React.Component<
           NFL Stream
         </h1>
 
-        <div>
-          {(this.props.streams || [])
-            .map((stream, i) => ({
-              stream,
-              i,
-              invalid:
-                stream.url.startsWith("http://") &&
-                window.location.protocol === "https:",
-            }))
-            .map((obj) => (
-              <div key={obj.i}>
-                <div
-                  className={[
-                    style.bubble,
-                    style.hover,
-                    obj.invalid && style.red,
-                  ].join(" ")}
-                  onClick={(e) => {
-                    obj.invalid
-                      ? fetch("iframe.html")
-                          .then((response) => response.blob())
-                          .then((blob) => {
-                            const a = document.createElement("a");
-                            a.href = window.URL.createObjectURL(blob);
-                            a.download = "nflstream.html";
-                            a.click();
-                          })
-                      : this.props.addScreen({
-                          iFrameTitle: (Math.random() + 1)
-                            .toString(36)
-                            .substring(2),
-                          skipLog: e.shiftKey,
-                          ref: React.createRef() as React.RefObject<HTMLIFrameElement>,
-                          ...obj.stream,
-                        });
-                  }}
-                >
-                  <div title={obj.stream.url}>{obj.stream.name}</div>
+        {this.props.streams === undefined ? (
+          <div>
+            <img
+              style={{ height: "100px", marginLeft: "100px" }}
+              src={loading}
+              alt="loading"
+            />
+          </div>
+        ) : (
+          <div>
+            {this.props.streams
+              .map((stream, i) => ({
+                stream,
+                i,
+                invalid:
+                  stream.url.startsWith("http://") &&
+                  window.location.protocol === "https:",
+              }))
+              .map((obj) => (
+                <div key={obj.i}>
+                  <div
+                    className={[
+                      style.bubble,
+                      style.hover,
+                      obj.invalid && style.red,
+                    ].join(" ")}
+                    onClick={(e) => {
+                      obj.invalid
+                        ? fetch("iframe.html")
+                            .then((response) => response.blob())
+                            .then((blob) => {
+                              const a = document.createElement("a");
+                              a.href = window.URL.createObjectURL(blob);
+                              a.download = "nflstream.html";
+                              a.click();
+                            })
+                        : this.props.addScreen({
+                            iFrameTitle: (Math.random() + 1)
+                              .toString(36)
+                              .substring(2),
+                            skipLog: e.shiftKey,
+                            ref: React.createRef() as React.RefObject<HTMLIFrameElement>,
+                            ...obj.stream,
+                          });
+                    }}
+                  >
+                    <div title={obj.stream.url}>{obj.stream.name}</div>
+                  </div>
                 </div>
-              </div>
-            ))}
-        </div>
+              ))}
+          </div>
+        )}
         <Guide />
       </div>
     );

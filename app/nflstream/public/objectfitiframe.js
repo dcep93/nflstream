@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   const meta = document.getElementsByTagName("meta")[0];
   const iframeE = document.createElement("iframe");
-  // iframeE.sandbox = true;
+  iframeE.sandbox = "allow-same-origin	allow-scripts";
   iframeE.allowFullscreen = true;
   Object.assign(iframeE.style, {
     border: 0,

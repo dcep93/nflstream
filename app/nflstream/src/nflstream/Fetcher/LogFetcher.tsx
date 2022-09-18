@@ -3,8 +3,9 @@ import Fetcher, { fetchP, LogType } from ".";
 class LogFetcher extends Fetcher<LogType | null, string> {
   intervalMs = 10 * 1000;
   getResponse() {
-    return fetchP(`https://www.espn.com${this.props.payload}`, 5 * 1000).then(
+    return fetchP(`https://www.espn.com/${this.props.payload}`, 5 * 1000).then(
       (message) => {
+        console.log(message);
         const match = message.match(/espn\.gamepackage\.data =(.*?)\n/);
         if (!match) return null;
         const json = match[1].slice(0, -1);

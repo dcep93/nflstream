@@ -5,11 +5,10 @@ class LogFetcher extends Fetcher<LogType | null, string> {
   getResponse() {
     return fetchP(`https://www.espn.com/${this.props.payload}`, 5 * 1000).then(
       (message) => {
-        console.log(message);
-        const match = message.match(/espn\.gamepackage\.data =(.*?)\n/);
+        const match = message.match(/data: (.*?),\n/);
         if (!match) return null;
-        const json = match[1].slice(0, -1);
-        const obj = JSON.parse(json);
+        const obj = JSON.parse(match[1]).sports[0].leagues[0];
+        console.log(obj);
         if (obj.drives === undefined) return null;
         const playByPlay = [obj.drives.current]
           .concat(obj.drives.previous.reverse())

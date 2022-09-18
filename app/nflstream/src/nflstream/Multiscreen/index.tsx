@@ -73,9 +73,8 @@ function Singlescreen(props: {
       ].join(" ")}
     >
       <div className={msStyle.title}>
-        {screenTitle}{" "}
         <span className={style.hover} onClick={() => props.removeScreen()}>
-          ❌
+          {screenTitle}
         </span>{" "}
         <span
           className={style.hover}

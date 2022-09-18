@@ -58,14 +58,18 @@ class StreamsFetcher extends Fetcher<StreamType[]> {
                     .then((resp) => resp.text())
                     .then(parseTinyUrl)
                     .then((href) =>
-                      fetchP(href, 24 * 60 * 60 * 1000).then((message) => ({
-                        name: parse(message).title.split(
-                          " - WeakStreams.com - "
-                        )[0],
-                        url: message.match(
-                          /http:\/\/weakstreams.com\/streams\/\d+/
-                        )![0],
-                      }))
+                      !href
+                        ? undefined
+                        : fetchP(href!, 24 * 60 * 60 * 1000).then(
+                            (message) => ({
+                              name: parse(message).title.split(
+                                " - WeakStreams.com - "
+                              )[0],
+                              url: message.match(
+                                /http:\/\/weakstreams.com\/streams\/\d+/
+                              )![0],
+                            })
+                          )
                     )
             )
         )
@@ -117,7 +121,11 @@ function parseTinyUrl(message: string) {
     .then(
       (html) =>
         html.body.innerHTML.match(/href="(.*?)".*Click Here to Watch/)![1]
-    );
+    )
+    .catch((err) => {
+      console.error(err);
+      return null;
+    });
 }
 
 export default StreamsFetcher;

@@ -10,17 +10,25 @@ class LogFetcher extends Fetcher<LogType | null, string> {
             (key) =>
               `https://www.espn.com/nfl/${key}/_/gameId/${this.props.payload}`
           )
-          .map((url) => fetchP(url, 5 * 1000))
+          .map((url) =>
+            fetchP(url, 5 * 1000).then((resp) => {
+              try {
+                return JSON.parse(resp);
+              } catch {
+                console.log(url, resp);
+                return null;
+              }
+            })
+          )
       )
       .then((promises) => Promise.all(promises))
-      .then(([boxscoreResp, playbyplayResp]) => {
-        console.log(this.props.payload, boxscoreResp, playbyplayResp);
-        const drives = JSON.parse(playbyplayResp);
-        const boxscore = JSON.parse(boxscoreResp);
-        const drivesArr = [drives.current]
-          .concat(drives.previous.reverse())
+      .then(([rawBoxscore, rawDrives]) => {
+        console.log(this.props.payload, rawBoxscore, rawDrives);
+        if (!rawBoxscore || !rawDrives) return null;
+        const drives = [rawDrives.current]
+          .concat(rawDrives.previous.reverse())
           .filter((drive) => drive.team);
-        const playByPlay = drivesArr.map((drive) => ({
+        const playByPlay = drives.map((drive) => ({
           team: drive.team.shortDisplayName,
           result: drive.displayResult,
           plays: drive.plays.reverse().map((p: any) => ({
@@ -32,22 +40,22 @@ class LogFetcher extends Fetcher<LogType | null, string> {
           score: `${drive.plays[0].awayScore} - ${drive.plays[0].homeScore}`,
         }));
         const jerseys = Object.fromEntries(
-          drivesArr
+          drives
             .flatMap((drive) => drive.plays)
             .map((play) => play.participants)
             .map(({ athlete }) => [athlete.fullName, parseInt(athlete.jersey)])
         );
         alert(JSON.stringify(jerseys));
         return null;
-        const timestamp = drives.current.plays[0].modified;
+        const timestamp = rawDrives.current.plays[0].modified;
         const boxScore = ["passing", "rushing", "receiving"].map((key) => ({
           key,
-          labels: boxscore.players[0].statistics.find(
+          labels: rawBoxscore.players[0].statistics.find(
             (s: any) => s.name === key
           ).labels,
           players: []
             .concat(
-              ...boxscore.players
+              ...rawBoxscore.players
                 .map((team: any) =>
                   team.statistics.find((s: any) => s.name === key)
                 )

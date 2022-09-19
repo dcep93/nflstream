@@ -105,7 +105,15 @@ export function SubLog(props: { log: LogType }) {
               <tbody>
                 {(boxScore.players || []).map((player, j) => (
                   <tr key={j}>
-                    <td>{player.name}</td>
+                    <td
+                      style={{
+                        width: "8em",
+                        overflow: "hidden",
+                        display: "inline-block",
+                      }}
+                    >
+                      ({player.jersey}) {player.name}
+                    </td>
                     {player.stats.map((stat, j) => (
                       <td key={j}>{stat}</td>
                     ))}

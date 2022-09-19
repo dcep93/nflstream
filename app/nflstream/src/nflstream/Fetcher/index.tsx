@@ -23,7 +23,7 @@ export type DriveType = {
 export type BoxScoreType = {
   key: string;
   labels: string[];
-  players?: { name: string; stats: string[] }[];
+  players?: { name: string; stats: string[]; jersey: number }[];
 };
 
 export default abstract class Fetcher<T, U = undefined> extends React.Component<

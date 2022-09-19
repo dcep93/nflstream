@@ -112,7 +112,7 @@ export function SubLog(props: { log: LogType }) {
                         display: "inline-block",
                       }}
                     >
-                      ({player.jersey}) {player.name}
+                      {player.name}
                     </td>
                     {player.stats.map((stat, j) => (
                       <td key={j}>{stat}</td>

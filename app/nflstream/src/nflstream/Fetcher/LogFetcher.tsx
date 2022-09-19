@@ -10,8 +10,15 @@ class LogFetcher extends Fetcher<LogType | null, string> {
       const match = message.match(/espn\.gamepackage\.data =(.*?);\n/);
       if (!match) return null;
       const obj = JSON.parse(match[1]);
+      console.log(this.props.payload, obj);
       const drives = [obj.drives.current]
-        .concat(obj.drives.previous.reverse())
+        .concat(
+          obj.drives.previous
+            .reverse()
+            .filter(
+              (drive: { id: string }) => drive.id !== obj.drives.current?.id
+            )
+        )
         .filter((drive) => drive.team);
       const playByPlay = drives.map((drive) => ({
         team: drive.team.shortDisplayName,
@@ -24,13 +31,6 @@ class LogFetcher extends Fetcher<LogType | null, string> {
         description: drive.description,
         score: `${drive.plays[0].awayScore} - ${drive.plays[0].homeScore}`,
       }));
-      const jerseys = Object.fromEntries(
-        drives
-          .flatMap((drive) => drive.plays)
-          .map((play) => play.participants)
-          .map(({ athlete }) => [athlete.fullName, parseInt(athlete.jersey)])
-      );
-      alert(JSON.stringify(jerseys));
       const timestamp = obj.drives.current.plays[0].modified;
       const boxScore = ["passing", "rushing", "receiving"].map((key) => ({
         key,
@@ -48,8 +48,7 @@ class LogFetcher extends Fetcher<LogType | null, string> {
           .map((a: any) => ({
             name: a.athlete.displayName,
             stats: a.stats,
-          }))
-          .map((a) => ({ jersey: jerseys[a.name], ...a })),
+          })),
       }));
       return {
         timestamp,

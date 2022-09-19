@@ -112,6 +112,11 @@ function Guide() {
           page without downloading.
         </li>
         <li>
+          If you get an error like "redirected too many times", try clearing the
+          cache here{" "}
+          <a href="chrome://net-internals/#dns">chrome://net-internals/#dns</a>
+        </li>
+        <li>
           You can only use this tool if you legally have access to the stream
           and the game.
         </li>

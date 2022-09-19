@@ -56,7 +56,7 @@ class DelayedLog extends React.Component<
 }
 
 export function SubLog(props: { log: LogType }) {
-  if (props.log === undefined) return null;
+  if (!props.log) return null;
   const playByPlay = props.log.playByPlay || [];
   if (
     playByPlay.length > 1 &&

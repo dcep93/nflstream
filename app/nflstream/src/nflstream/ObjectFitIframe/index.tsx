@@ -14,7 +14,7 @@ function ObjectFitIframe(props: {
         display: "flex",
       }}
     >
-      {true || props.screen.skipLog ? null : (
+      {props.screen.skipLog ? null : (
         <Log
           espnId={props.screen.espnId}
           updateDrivingTeam={props.updateDrivingTeam}

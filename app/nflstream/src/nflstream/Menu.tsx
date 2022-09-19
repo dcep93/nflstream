@@ -45,8 +45,10 @@ class Menu extends React.Component<
                       style.hover,
                       obj.invalid && style.red,
                     ].join(" ")}
-                    onClick={(e) => {
-                      obj.invalid
+                    onClick={(e) =>
+                      e.metaKey
+                        ? window.open(obj.stream.url)
+                        : obj.invalid
                         ? fetch("iframe.html")
                             .then((response) => response.blob())
                             .then((blob) => {
@@ -62,8 +64,8 @@ class Menu extends React.Component<
                             skipLog: e.shiftKey,
                             ref: React.createRef() as React.RefObject<HTMLIFrameElement>,
                             ...obj.stream,
-                          });
-                    }}
+                          })
+                    }
                   >
                     <div title={obj.stream.url}>{obj.stream.name}</div>
                   </div>

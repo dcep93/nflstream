@@ -15,17 +15,15 @@ class Log extends React.Component<
 > {
   render() {
     return (
-      <div>
+      <div className={logStyle.logWrapper}>
         <LogFetcher
           payload={this.props.espnId}
           handleResponse={(log) => log && this.setState({ log })}
         />
-        <div className={logStyle.logWrapper}>
-          <DelayedLog
-            log={this.state?.log}
-            updateDrivingTeam={this.props.updateDrivingTeam}
-          />
-        </div>
+        <DelayedLog
+          log={this.state?.log}
+          updateDrivingTeam={this.props.updateDrivingTeam}
+        />
       </div>
     );
   }
@@ -48,10 +46,8 @@ class DelayedLog extends React.Component<
   render() {
     return (
       <div
-        onClick={() => {
-          this.updateNow(this.props.log);
-          // setTimeout(() => this.forceUpdate(), 100);
-        }}
+        style={{ width: "100%", height: "100%" }}
+        onClick={() => this.updateNow(this.props.log)}
       >
         <SubLog log={this.state?.log} />
       </div>

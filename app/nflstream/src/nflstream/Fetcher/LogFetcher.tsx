@@ -49,7 +49,9 @@ class LogFetcher extends Fetcher<LogType | null, string> {
           .map((a: any) => ({
             name: a.athlete.displayName,
             stats: a.stats,
-          })),
+            rank: parseInt(a.stats[0].split("/")[0]),
+          }))
+          .sort((a, b) => b.rank - a.rank),
       }));
       return {
         timestamp,

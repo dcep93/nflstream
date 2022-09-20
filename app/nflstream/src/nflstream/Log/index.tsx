@@ -3,7 +3,7 @@ import { LogType } from "../Fetcher";
 import LogFetcher from "../Fetcher/LogFetcher";
 import logStyle from "./index.module.css";
 
-const delayMs = 4 * 60 * 1000;
+const delayMs = 6 * 60 * 1000;
 
 class Log extends React.Component<
   {
@@ -45,7 +45,7 @@ class DelayedLog extends React.Component<
 
   updateNow(log: LogType) {
     this.setState({ log });
-    const drivingTeam = (log.playByPlay || [])[0]?.team;
+    const drivingTeam = (log?.playByPlay || [])[0]?.team;
     this.props.updateDrivingTeam(drivingTeam);
   }
 

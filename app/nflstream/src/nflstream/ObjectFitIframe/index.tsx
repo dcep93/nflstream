@@ -5,6 +5,7 @@ function ObjectFitIframe(props: {
   screen: ScreenType;
   hiddenLog: boolean;
   updateDrivingTeam: (drivingTeam: string) => void;
+  isSelected: boolean;
 }) {
   return (
     <div
@@ -19,6 +20,7 @@ function ObjectFitIframe(props: {
           espnId={props.screen.espnId}
           updateDrivingTeam={props.updateDrivingTeam}
           hidden={props.hiddenLog}
+          isSelected={props.isSelected}
         />
       )}
       <iframe

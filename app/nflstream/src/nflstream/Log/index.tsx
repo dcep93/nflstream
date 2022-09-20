@@ -10,12 +10,13 @@ class Log extends React.Component<
     espnId: string;
     updateDrivingTeam: (drivingTeam: string) => void;
     hidden: boolean;
+    isSelected: boolean;
   },
   { log: LogType }
 > {
   render() {
     return (
-      <div className={logStyle.logWrapper}>
+      <>
         <LogFetcher
           payload={this.props.espnId}
           handleResponse={(log) => log && this.setState({ log })}
@@ -23,14 +24,19 @@ class Log extends React.Component<
         <DelayedLog
           log={this.state?.log}
           updateDrivingTeam={this.props.updateDrivingTeam}
+          isSelected={this.props.isSelected}
         />
-      </div>
+      </>
     );
   }
 }
 
 class DelayedLog extends React.Component<
-  { log: LogType; updateDrivingTeam: (drivingTeam: string) => void },
+  {
+    isSelected: boolean;
+    log: LogType;
+    updateDrivingTeam: (drivingTeam: string) => void;
+  },
   { log: LogType }
 > {
   componentDidUpdate() {
@@ -44,9 +50,9 @@ class DelayedLog extends React.Component<
   }
 
   render() {
-    return (
+    return !this.props.isSelected ? null : (
       <div
-        style={{ width: "100%", height: "100%" }}
+        className={logStyle.logWrapper}
         onClick={() => this.updateNow(this.props.log)}
       >
         <SubLog log={this.state?.log} />

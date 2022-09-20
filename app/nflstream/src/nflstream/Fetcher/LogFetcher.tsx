@@ -11,6 +11,7 @@ class LogFetcher extends Fetcher<LogType | null, string> {
       if (!match) return null;
       const obj = JSON.parse(match[1]);
       console.log(this.props.payload, obj);
+      if (!obj.drives) return null;
       const drives = [obj.drives.current]
         .concat(
           obj.drives.previous

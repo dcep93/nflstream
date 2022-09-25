@@ -112,9 +112,10 @@ function Guide() {
           page without downloading.
         </li>
         <li>
-          If you get an error like "redirected too many times", try clearing the
-          cache here{" "}
-          <a href="chrome://net-internals/#dns">chrome://net-internals/#dns</a>
+          If you get an error like "redirected too many times", visit{" "}
+          <input readOnly value="chrome://net-internals/#hsts" />
+          then scroll down to "Delete domain security policies", and delete for{" "}
+          <input readOnly value="weakstreams.com" />
         </li>
         <li>
           You can only use this tool if you legally have access to the stream

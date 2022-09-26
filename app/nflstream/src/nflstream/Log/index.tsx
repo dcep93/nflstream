@@ -3,7 +3,7 @@ import { LogType } from "../Fetcher";
 import LogFetcher from "../Fetcher/LogFetcher";
 import logStyle from "./index.module.css";
 
-const delayMs = 6 * 60 * 1000;
+const delayMs = 7 * 60 * 1000;
 
 class Log extends React.Component<
   {

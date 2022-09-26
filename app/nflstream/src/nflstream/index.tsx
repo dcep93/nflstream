@@ -10,25 +10,36 @@ const PASSWORD = "mustbeusedlegally";
 class NFLStream extends React.Component<
   {},
   {
-    backgroundColor: string;
+    backgroundColor?: string;
     streams?: StreamType[];
     screens: ScreenType[];
+    protocol?: string;
   }
 > {
+  componentDidMount() {
+    this.setState({ protocol: "http" });
+  }
+
   render() {
     return localStorage.getItem("password") !== PASSWORD ? (
       <Password />
-    ) : (
-      <div
-        className={style.main}
-        style={{ backgroundColor: this.state?.backgroundColor }}
-      >
+    ) : !this.state?.protocol ? null : (
+      <div className={style.main}>
         <StreamsFetcher
           handleResponse={(streams) => {
-            this.setState({ streams, backgroundColor: "darkgrey" });
-            setTimeout(() => this.setState({ backgroundColor: "" }), 2000);
+            if (
+              streams.map((s) => s.url).join(" ") !==
+              (this.state.streams || []).map((s) => s.url).join(" ")
+            ) {
+              this.setState({ backgroundColor: "darkgrey" });
+              setTimeout(
+                () => this.setState({ backgroundColor: undefined }),
+                2000
+              );
+            }
+            this.setState({ streams });
           }}
-          payload={"http://"}
+          payload={this.state.protocol!}
         />
         <Menu
           addScreen={(screen) =>
@@ -39,6 +50,7 @@ class NFLStream extends React.Component<
           streams={this.state?.streams}
         />
         <Multiscreen
+          backgroundColor={this.state?.backgroundColor}
           screens={this.state?.screens || []}
           removeScreen={(iFrameTitle) =>
             this.setState({

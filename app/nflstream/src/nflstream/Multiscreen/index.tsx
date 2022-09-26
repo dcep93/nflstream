@@ -11,6 +11,7 @@ export type ScreenType = StreamType & {
 };
 
 function Multiscreen(props: {
+  backgroundColor?: string;
   screens: ScreenType[];
   removeScreen: (iFrameTitle: string) => void;
 }) {
@@ -19,7 +20,10 @@ function Multiscreen(props: {
     props.screens.find((s) => s.iFrameTitle === selected) || props.screens[0];
   if (selectedScreen) muteUnmute(selectedScreen.ref, false);
   return (
-    <div className={msStyle.screens_wrapper}>
+    <div
+      className={msStyle.screens_wrapper}
+      style={{ backgroundColor: props.backgroundColor || "black" }}
+    >
       {props.screens.length === 0 ? null : (
         <div className={msStyle.screens}>
           {props.screens.map((screen, i) => (

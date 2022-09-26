@@ -3,7 +3,6 @@ import { StreamType } from "./Fetcher";
 import StreamsFetcher from "./Fetcher/StreamsFetcher";
 import style from "./index.module.css";
 import Menu from "./Menu";
-import Mobile from "./Mobile";
 import Multiscreen, { ScreenType } from "./Multiscreen";
 
 const PASSWORD = "mustbeusedlegally";
@@ -19,8 +18,6 @@ class NFLStream extends React.Component<
   render() {
     return localStorage.getItem("password") !== PASSWORD ? (
       <Password />
-    ) : window.innerWidth < 768 ? (
-      <Mobile />
     ) : (
       <div
         className={style.main}
@@ -31,6 +28,7 @@ class NFLStream extends React.Component<
             this.setState({ streams, backgroundColor: "darkgrey" });
             setTimeout(() => this.setState({ backgroundColor: "" }), 2000);
           }}
+          payload={"http://"}
         />
         <Menu
           addScreen={(screen) =>

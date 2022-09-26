@@ -26,10 +26,10 @@ export type BoxScoreType = {
   players?: { name: string; stats: string[] }[];
 };
 
-export default abstract class Fetcher<T, U = undefined> extends React.Component<
+export default abstract class Fetcher<T, U> extends React.Component<
   {
     handleResponse: (t: T) => void;
-    payload?: U;
+    payload: U;
   },
   { timeout: NodeJS.Timeout }
 > {

@@ -3,14 +3,15 @@ import Fetcher, { fetchP, LogType } from ".";
 class LogFetcher extends Fetcher<LogType | null, string> {
   intervalMs = 10 * 1000;
   getResponse() {
+    const gameId = this.props.payload;
     return fetchP(
-      `https://www.espn.com/nfl/playbyplay/_/gameId/${this.props.payload}`,
+      `https://www.espn.com/nfl/playbyplay/_/gameId/${gameId}`,
       5 * 1000
     ).then((message) => {
       const match = message.match(/espn\.gamepackage\.data =(.*?);\n/);
       if (!match) return null;
       const obj = JSON.parse(match[1]);
-      console.log(this.props.payload, obj);
+      console.log(gameId, obj);
       if (!obj.drives) return null;
       const drives = [obj.drives.current]
         .concat(

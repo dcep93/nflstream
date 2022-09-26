@@ -3,7 +3,7 @@ import { LogType } from "../Fetcher";
 import LogFetcher from "../Fetcher/LogFetcher";
 import logStyle from "./index.module.css";
 
-const delayMs = 7 * 60 * 1000;
+const delayMs = 2 * 60 * 1000;
 
 class Log extends React.Component<
   {
@@ -31,16 +31,15 @@ class Log extends React.Component<
   }
 }
 
-class DelayedLog extends React.Component<
-  {
-    isSelected: boolean;
-    log: LogType;
-    updateDrivingTeam: (drivingTeam: string) => void;
-  },
-  { log: LogType }
-> {
-  componentDidUpdate() {
-    setTimeout(() => this.updateNow(this.props.log), delayMs);
+type PropsType = {
+  isSelected: boolean;
+  log: LogType;
+  updateDrivingTeam: (drivingTeam: string) => void;
+};
+class DelayedLog extends React.Component<PropsType, { log: LogType }> {
+  componentDidUpdate(prevProps: PropsType) {
+    if (this.props.log.timestamp !== prevProps?.log?.timestamp)
+      setTimeout(() => this.updateNow(this.props.log), delayMs);
   }
 
   updateNow(log: LogType) {

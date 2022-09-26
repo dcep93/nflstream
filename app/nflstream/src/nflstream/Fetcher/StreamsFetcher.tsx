@@ -1,8 +1,9 @@
 import Fetcher, { cacheF, fetchP, parse, StreamType } from ".";
 
-class StreamsFetcher extends Fetcher<StreamType[]> {
+class StreamsFetcher extends Fetcher<StreamType[], string> {
   intervalMs = 10 * 60 * 1000;
   getResponse() {
+    const protocol = this.props.payload;
     return fetchP("https://reddit.nflbite.com/", 10 * 60 * 1000)
       .then(parse)
       .then((html) => html.getElementsByClassName("competition"))
@@ -60,16 +61,19 @@ class StreamsFetcher extends Fetcher<StreamType[]> {
                     .then((href) =>
                       !href
                         ? undefined
-                        : fetchP(href!, 24 * 60 * 60 * 1000).then(
-                            (message) => ({
+                        : fetchP(href!, 24 * 60 * 60 * 1000)
+                            .then((message) => ({
                               name: parse(message).title.split(
                                 " - WeakStreams.com - "
                               )[0],
                               url: message.match(
-                                /http:\/\/weakstreams.com\/streams\/\d+/
-                              )![0],
-                            })
-                          )
+                                /http:\/\/(weakstreams.com\/streams\/\d+)/
+                              )![1],
+                            }))
+                            .then(({ url, ...obj }) => ({
+                              url: `${protocol}://${url}`,
+                              ...obj,
+                            }))
                     )
             )
         )

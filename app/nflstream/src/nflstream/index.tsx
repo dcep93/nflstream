@@ -27,16 +27,20 @@ class NFLStream extends React.Component<
       console.log("not chrome, using http");
       this.setState({ protocol: "http" });
     } else {
-      const extension_id = "idejabpndfcphdflfdbionahnlnphlnf";
-      window.chrome.runtime
-        .sendMessage(extension_id, {}, () => {
+      new Promise((resolve, reject) => {
+        const extension_id = "idejabpndfcphdflfdbionahnlnphlnf";
+        window.chrome.runtime.sendMessage(extension_id, {}, (response: any) => {
+          if (response === undefined) return reject("empty response");
           console.log("extension detected, using https");
           this.setState({ protocol: "https" });
-        })
-        .catch((err: Error) => {
-          console.log("extension not detected, using http");
-          this.setState({ protocol: "http" });
+          resolve(null);
         });
+      }).catch((err: Error) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        window.chrome.runtime.lastError;
+        console.log("extension not detected, using http");
+        this.setState({ protocol: "http" });
+      });
     }
   }
 

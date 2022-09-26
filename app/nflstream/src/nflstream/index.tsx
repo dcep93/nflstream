@@ -7,6 +7,12 @@ import Multiscreen, { ScreenType } from "./Multiscreen";
 
 const PASSWORD = "mustbeusedlegally";
 
+declare global {
+  interface Window {
+    chrome: any;
+  }
+}
+
 class NFLStream extends React.Component<
   {},
   {
@@ -17,7 +23,21 @@ class NFLStream extends React.Component<
   }
 > {
   componentDidMount() {
-    this.setState({ protocol: "http" });
+    if (!window.chrome) {
+      console.log("not chrome, using http");
+      this.setState({ protocol: "http" });
+    } else {
+      const extension_id = "idejabpndfcphdflfdbionahnlnphlnf";
+      window.chrome.runtime
+        .sendMessage(extension_id, {}, () => {
+          console.log("extension detected, using https");
+          this.setState({ protocol: "https" });
+        })
+        .catch((err: Error) => {
+          console.log("extension not detected, using http");
+          this.setState({ protocol: "http" });
+        });
+    }
   }
 
   render() {

@@ -23,7 +23,7 @@ class NFLStream extends React.Component<
   }
 > {
   componentDidMount() {
-    if (!window.chrome) {
+    if (!window.chrome?.runtime) {
       console.log("not chrome, using http");
       this.setState({ protocol: "http" });
     } else {

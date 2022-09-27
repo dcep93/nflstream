@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "responseHeaders": [{ "header": "location", "operation": "remove" }]
+    },
+    "condition": {
+      "requestDomains": ["weakstreams.com"],
+      "resourceTypes": ["main_frame"]
+    }
+  }
+]

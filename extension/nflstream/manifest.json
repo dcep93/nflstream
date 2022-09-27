@@ -9,21 +9,27 @@
   },
   "content_scripts": [
     {
-      "matches": ["http://weakstreams.com/streams/**"],
+      "matches": ["https://weakstreams.com/streams/**"],
       "js": ["content_script.js"],
       "all_frames": true
     }
   ],
-  "action": {
-    "default_icon": "favicon.png"
+  "permissions": ["declarativeNetRequest"],
+  "host_permissions": ["https://weakstreams.com/streams/*"],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset_1",
+        "enabled": true,
+        "path": "weakstreams_ruleset_1.json"
+      }
+    ]
   },
-  "background": {
-    "service_worker": "background.js"
-  },
-  "incognito": "split",
-  "externally_connectable": {
-    "matches": ["http://localhost/*"],
-    "accept_tls_channel_id": true
-  },
+  "web_accessible_resources": [
+    {
+      "resources": ["weakstreams_scripts/*"],
+      "matches": ["https://weakstreams.com/*"]
+    }
+  ],
   "manifest_version": 3
 }

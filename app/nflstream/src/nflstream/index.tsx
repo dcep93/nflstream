@@ -19,27 +19,27 @@ class NFLStream extends React.Component<
     backgroundColor?: string;
     streams?: StreamType[];
     screens: ScreenType[];
-    protocol?: string;
+    hasExtension?: boolean;
   }
 > {
   componentDidMount() {
     if (!window.chrome?.runtime) {
       console.log("not chrome, using http");
-      this.setState({ protocol: "http" });
+      this.setState({ hasExtension: false });
     } else {
       new Promise((resolve, reject) => {
         const extension_id = "idejabpndfcphdflfdbionahnlnphlnf";
         window.chrome.runtime.sendMessage(extension_id, {}, (response: any) => {
           if (response === undefined) return reject("empty response");
           console.log("extension detected, using https");
-          this.setState({ protocol: "https" });
+          this.setState({ hasExtension: true });
           resolve(null);
         });
       }).catch((err: Error) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         window.chrome.runtime.lastError;
-        console.log("extension not detected, using http");
-        this.setState({ protocol: "http" });
+        console.log("extension not detected, using http", err);
+        this.setState({ hasExtension: false });
       });
     }
   }
@@ -47,7 +47,7 @@ class NFLStream extends React.Component<
   render() {
     return localStorage.getItem("password") !== PASSWORD ? (
       <Password />
-    ) : !this.state?.protocol ? null : (
+    ) : this.state?.hasExtension === undefined ? null : (
       <div className={style.main}>
         <StreamsFetcher
           handleResponse={(streams) => {
@@ -63,7 +63,7 @@ class NFLStream extends React.Component<
             }
             this.setState({ streams });
           }}
-          payload={this.state.protocol!}
+          payload={this.state.hasExtension!}
         />
         <Menu
           addScreen={(screen) =>
@@ -91,8 +91,10 @@ class NFLStream extends React.Component<
 
 function Password() {
   const password = window.prompt("enter the password:");
-  if (password) localStorage.setItem("password", password);
-  window.location.reload();
+  if (password) {
+    localStorage.setItem("password", password);
+    window.location.reload();
+  }
   return null;
 }
 

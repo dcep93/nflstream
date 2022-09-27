@@ -3,7 +3,7 @@ import React from "react";
 export type StreamType = {
   url: string;
   name: string;
-  espnId: string;
+  espnId?: string;
 };
 
 export type LogType = {

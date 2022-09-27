@@ -33,30 +33,14 @@ class Menu extends React.Component<
               .map((stream, i) => ({
                 stream,
                 i,
-                invalid:
-                  stream.url.startsWith("http://") &&
-                  window.location.protocol === "https:",
               }))
               .map((obj) => (
                 <div key={obj.i}>
                   <div
-                    className={[
-                      style.bubble,
-                      style.hover,
-                      obj.invalid && style.red,
-                    ].join(" ")}
+                    className={[style.bubble, style.hover].join(" ")}
                     onClick={(e) =>
                       e.metaKey
                         ? window.open(obj.stream.url)
-                        : obj.invalid
-                        ? fetch("iframe.html")
-                            .then((response) => response.blob())
-                            .then((blob) => {
-                              const a = document.createElement("a");
-                              a.href = window.URL.createObjectURL(blob);
-                              a.download = "nflstream.html";
-                              a.click();
-                            })
                         : this.props.addScreen({
                             iFrameTitle: (Math.random() + 1)
                               .toString(36)

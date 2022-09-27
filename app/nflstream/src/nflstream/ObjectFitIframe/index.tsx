@@ -15,9 +15,9 @@ function ObjectFitIframe(props: {
         display: "flex",
       }}
     >
-      {props.screen.skipLog ? null : (
+      {props.screen.espnId && props.screen.skipLog ? null : (
         <Log
-          espnId={props.screen.espnId}
+          espnId={props.screen.espnId!}
           updateDrivingTeam={props.updateDrivingTeam}
           hidden={props.hiddenLog}
           isSelected={props.isSelected}

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { StreamType } from "../Fetcher";
 import style from "../index.module.css";
-import ObjectFitIframe from "../ObjectFitIframe";
+import Log from "../Log";
 import msStyle from "./index.module.css";
 
 export type ScreenType = StreamType & {
@@ -105,6 +105,40 @@ function Singlescreen(props: {
           />
         </div>
       </div>
+    </div>
+  );
+}
+
+function ObjectFitIframe(props: {
+  screen: ScreenType;
+  updateDrivingTeam: (drivingTeam: string) => void;
+  isSelected: boolean;
+}) {
+  return (
+    <div
+      style={{
+        height: "100%",
+        width: "100%",
+        display: "flex",
+      }}
+    >
+      {props.screen.espnId && props.screen.skipLog ? null : (
+        <Log
+          espnId={props.screen.espnId!}
+          updateDrivingTeam={props.updateDrivingTeam}
+          isSelected={props.isSelected}
+        />
+      )}
+      <iframe
+        ref={props.screen.ref}
+        sandbox={"allow-scripts allow-same-origin"}
+        style={{ flexGrow: 1 }}
+        title={props.screen.name}
+        srcDoc={`
+          <meta data-url="${props.screen.url}" />
+          <script src="${process.env.PUBLIC_URL}/objectfitiframe.js"></script>
+        `}
+      ></iframe>
     </div>
   );
 }

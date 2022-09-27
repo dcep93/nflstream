@@ -26,20 +26,20 @@ class NFLStream extends React.Component<
 > {
   componentDidMount() {
     if (!window.chrome?.runtime) {
-      console.log("not chrome, using http");
+      console.log("componentDidMount", "no chrome runtime");
       this.setState({ hasExtension: false });
     } else {
       new Promise((resolve, reject) => {
         window.chrome.runtime.sendMessage(extension_id, {}, (response: any) => {
           if (response === undefined) return reject("empty response");
-          console.log("extension detected, using https");
+          console.log("componentDidMount", "extension detected");
           this.setState({ hasExtension: true });
           resolve(null);
         });
       }).catch((err: Error) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         window.chrome.runtime.lastError;
-        console.log("extension not detected, using http", err);
+        console.log("componentDidMount", "extension not detected", err);
         this.setState({ hasExtension: false });
       });
     }

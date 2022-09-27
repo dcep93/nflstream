@@ -9,7 +9,6 @@ class Log extends React.Component<
   {
     espnId: string;
     updateDrivingTeam: (drivingTeam: string) => void;
-    hidden: boolean;
     isSelected: boolean;
   },
   { log: LogType }

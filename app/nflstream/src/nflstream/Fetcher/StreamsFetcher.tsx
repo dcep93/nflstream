@@ -1,4 +1,4 @@
-import Fetcher, { cacheF, fetchP, parse, StreamType } from ".";
+import Fetcher, { cacheF, parse, StreamType } from ".";
 
 class StreamsFetcher extends Fetcher<StreamType[], boolean> {
   intervalMs = 10 * 60 * 1000;
@@ -132,6 +132,22 @@ function parseTinyUrl(message: string) {
       console.error(err);
       return null;
     });
+}
+
+function fetchP(
+  url: string,
+  maxAgeMs: number,
+  options: any = undefined
+): Promise<string> {
+  return cacheF(url, maxAgeMs, () =>
+    fetch("https://proxy420.appspot.com", {
+      method: "POST",
+      body: JSON.stringify({ maxAgeMs, url, options }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((resp) => resp.text())
+  );
 }
 
 export default StreamsFetcher;

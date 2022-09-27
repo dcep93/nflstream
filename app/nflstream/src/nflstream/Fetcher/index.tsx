@@ -59,22 +59,6 @@ export default abstract class Fetcher<T, U> extends React.Component<
   }
 }
 
-export function fetchP(
-  url: string,
-  maxAgeMs: number,
-  options: any = undefined
-): Promise<string> {
-  return cacheF(url, maxAgeMs, () =>
-    fetch("https://proxy420.appspot.com", {
-      method: "POST",
-      body: JSON.stringify({ maxAgeMs, url, options }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then((resp) => resp.text())
-  );
-}
-
 const cache: { [key: string]: { timestamp: number; data: any } } = {};
 export function cacheF<T>(
   key: string,

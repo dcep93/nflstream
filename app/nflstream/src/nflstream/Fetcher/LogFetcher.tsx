@@ -1,10 +1,11 @@
-import Fetcher, { fetchP, LogType } from ".";
+import Fetcher, { cacheF, LogType } from ".";
+import { extension_id } from "..";
 
 class LogFetcher extends Fetcher<LogType | null, string> {
   intervalMs = 10 * 1000;
   getResponse() {
     const gameId = this.props.payload;
-    return fetchP(
+    return fetchE(
       `https://www.espn.com/nfl/playbyplay/_/gameId/${gameId}`,
       5 * 1000
     ).then((message) => {
@@ -63,4 +64,22 @@ class LogFetcher extends Fetcher<LogType | null, string> {
   }
 }
 
+function fetchE(
+  url: string,
+  maxAgeMs: number,
+  options: any = undefined
+): Promise<string> {
+  return cacheF(
+    url,
+    maxAgeMs,
+    () =>
+      new Promise((resolve) =>
+        window.chrome.runtime.sendMessage(
+          extension_id,
+          { url, options },
+          (response: any) => resolve(response)
+        )
+      )
+  );
+}
 export default LogFetcher;

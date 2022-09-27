@@ -101,7 +101,6 @@ function Singlescreen(props: {
           <ObjectFitIframe
             screen={props.screen}
             updateDrivingTeam={updateDrivingTeam}
-            hiddenLog={props.numScreens > 1}
             isSelected={props.isSelected}
           />
         </div>

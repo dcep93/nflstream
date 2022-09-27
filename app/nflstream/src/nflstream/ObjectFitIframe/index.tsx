@@ -3,7 +3,6 @@ import { ScreenType } from "../Multiscreen";
 
 function ObjectFitIframe(props: {
   screen: ScreenType;
-  hiddenLog: boolean;
   updateDrivingTeam: (drivingTeam: string) => void;
   isSelected: boolean;
 }) {
@@ -19,7 +18,6 @@ function ObjectFitIframe(props: {
         <Log
           espnId={props.screen.espnId!}
           updateDrivingTeam={props.updateDrivingTeam}
-          hidden={props.hiddenLog}
           isSelected={props.isSelected}
         />
       )}

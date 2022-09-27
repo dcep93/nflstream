@@ -13,6 +13,8 @@ declare global {
   }
 }
 
+export const extension_id = "idejabpndfcphdflfdbionahnlnphlnf";
+
 class NFLStream extends React.Component<
   {},
   {
@@ -28,7 +30,6 @@ class NFLStream extends React.Component<
       this.setState({ hasExtension: false });
     } else {
       new Promise((resolve, reject) => {
-        const extension_id = "idejabpndfcphdflfdbionahnlnphlnf";
         window.chrome.runtime.sendMessage(extension_id, {}, (response: any) => {
           if (response === undefined) return reject("empty response");
           console.log("extension detected, using https");

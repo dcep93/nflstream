@@ -14,11 +14,10 @@ function muteUnmute(event) {
 
 function fetchFromHTTP() {
   // document.body.style.backgroundColor = "black";
-  const maxAgeMs = 60 * 1000;
   const url = location.href;
   fetch("https://proxy420.appspot.com", {
     method: "POST",
-    body: JSON.stringify({ maxAgeMs, url }),
+    body: JSON.stringify({ url }),
     headers: {
       "Content-Type": "application/json",
     },

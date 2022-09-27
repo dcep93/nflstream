@@ -3,15 +3,16 @@ function gethlsUrl(UrlID, serverid, cid) {
   fetch("https://proxy420.appspot.com", {
     method: "POST",
     body: JSON.stringify({
-      url: "http://weakstreams.com/gethls",
+      url: `http://weakstreams.com/gethls?idgstream=${UrlID}&serverid=&cid=`,
       options: {
-        data: { idgstream: UrlID, serverid: serverid, cid: cid },
+        method: "GET",
       },
     }),
     headers: {
       "Content-Type": "application/json",
     },
   })
+    .then((resp) => resp.json())
     .then((data) => {
       var rawUrl = data.rawUrl;
       var playerElement = document.getElementById("video-player");
@@ -71,7 +72,10 @@ gethlsUrl(vidgstream);
       method: "POST",
       body: JSON.stringify({
         url: this.args.url,
-        options: { method: this.args.method },
+        options: {
+          method: this.args.method,
+          headers: { Referer: "http://weakstreams.com/" },
+        },
       }),
       headers: {
         "Content-Type": "application/json",
@@ -79,10 +83,14 @@ gethlsUrl(vidgstream);
     })
       .then((resp) => resp.text())
       .then((text) => {
-        this.readyState == XMLHttpRequest.DONE;
-        this.status = 200;
-        this.responseText = text;
-        this.onreadystatechange({ currentTarget: this });
+        this.onreadystatechange({
+          currentTarget: {
+            readyState: XMLHttpRequest.DONE,
+            status: 200,
+            responseText: text,
+            responseURL: this.args.url,
+          },
+        });
       });
   };
 })(XMLHttpRequest.prototype.send);

@@ -99,4 +99,15 @@ function Password() {
   return null;
 }
 
+export function downloadIframe() {
+  fetch("iframe.html")
+    .then((response) => response.blob())
+    .then((blob) => {
+      const a = document.createElement("a");
+      a.href = window.URL.createObjectURL(blob);
+      a.download = "nflstream.html";
+      a.click();
+    });
+}
+
 export default NFLStream;

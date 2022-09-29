@@ -8,7 +8,7 @@ function muteUnmute(event) {
   if (event.data.source !== "nflstream") return;
   const video = document.getElementsByTagName("video")[0];
   console.log(event.data, "muteUnmute", video);
-  video.muted = event.data.mute;
+  if (video) video.muted = event.data.mute;
 }
 
 init();

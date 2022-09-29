@@ -6,6 +6,9 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
     return Promise.resolve([
       { url: "http://example.org/", name: "example", espnId: "" },
     ]);
+  }
+
+  example() {
     const hasExtension = this.props.payload;
     return fetchP("https://reddit.nflbite.com/", 10 * 60 * 1000)
       .then(parse)

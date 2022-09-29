@@ -114,6 +114,9 @@ function ObjectFitIframe(props: {
   updateDrivingTeam: (drivingTeam: string) => void;
   isSelected: boolean;
 }) {
+  const [width, height] = [812, 477]; // on weakstreams, height is dynamic
+  const ratioStr = width + "/" + height;
+  const ratio = width / height;
   return (
     <div
       style={{
@@ -135,8 +138,35 @@ function ObjectFitIframe(props: {
         style={{ flexGrow: 1 }}
         title={props.screen.name}
         srcDoc={`
-          <meta data-url="${props.screen.url}" />
-          <script src="https://nflstream.web.app/objectfitiframe.js"></script>
+        <head>
+          <style>
+            body {
+              width: 100vw;
+              height: 100vh;
+              margin: 0;
+              border: 0;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            }
+
+            @media (min-aspect-ratio: ${ratioStr}) {
+              iframe {
+                height: 100vh;
+                width: ${100 * ratio}vh;
+              }
+            }
+            @media (max-aspect-ratio: ${ratioStr}) {
+              iframe {
+                width: 100vw;
+                height: ${100 / ratio}vw;
+              }
+            }
+          </style>
+        </head>
+        <body>
+            <iframe style="border: 0" src="${props.screen.url}">
+        </body>
         `}
       ></iframe>
     </div>

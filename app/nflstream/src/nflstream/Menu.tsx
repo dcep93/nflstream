@@ -1,7 +1,6 @@
 import React from "react";
 import { StreamType } from "./Fetcher";
 import style from "./index.module.css";
-import loading from "./loading.gif";
 import { ScreenType } from "./Multiscreen";
 import recorded_sha from "./recorded_sha";
 
@@ -23,7 +22,7 @@ class Menu extends React.Component<
           <div>
             <img
               style={{ height: "100px", marginLeft: "100px" }}
-              src={loading}
+              src={"https://nflstream.web.app/loading.gif"}
               alt="loading"
             />
           </div>
@@ -71,12 +70,27 @@ function Guide() {
         <li>This app is used to watch multiple NFL streams.</li>
         <li>
           By default, chrome blocks mixed content http resources on an https
-          page. This can be fixed by navigating to{" "}
-          <input
-            readOnly
-            value="chrome://settings/content/siteDetails?site=https%3A%2F%2Fnflstream.web.app"
-          />
-          . Then, scroll down to "Insecure content", and change to "Allow".
+          page.
+          <ul>
+            <li>
+              This can be fixed by navigating to{" "}
+              <input
+                readOnly
+                value="chrome://settings/content/siteDetails?site=https%3A%2F%2Fnflstream.web.app"
+              />
+              . Then, scroll down to "Insecure content", and change to "Allow".
+            </li>
+            <li>
+              If you don't want to do that,{" "}
+              <a download href={"iframe.html"}>
+                this downloaded page might work
+              </a>
+            </li>
+            <li>
+              If that doesn't work, holding ctrl/cmd and clicking a link will
+              open it in a new tab.
+            </li>
+          </ul>
         </li>
         <li>
           Clicking a game will open a stream and place it on the multiscreen.
@@ -110,5 +124,16 @@ function Guide() {
     </div>
   );
 }
+
+// function downloadIframe() {
+//   fetch("iframe.html")
+//     .then((response) => response.blob())
+//     .then((blob) => {
+//       const a = document.createElement("a");
+//       a.href = window.URL.createObjectURL(blob);
+//       a.download = "nflstream.html";
+//       a.click();
+//     });
+// }
 
 export default Menu;

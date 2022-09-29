@@ -136,7 +136,7 @@ function ObjectFitIframe(props: {
         title={props.screen.name}
         srcDoc={`
           <meta data-url="${props.screen.url}" />
-          <script src="${process.env.PUBLIC_URL}/objectfitiframe.js"></script>
+          <script src="https://nflstream.web.app/objectfitiframe.js"></script>
         `}
       ></iframe>
     </div>

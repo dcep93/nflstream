@@ -82,7 +82,7 @@ function Guide() {
             </li>
             <li>
               If you don't want to do that,{" "}
-              <a download href={"iframe.html"}>
+              <a download href={"nflstream.html"}>
                 this downloaded page might work
               </a>
             </li>

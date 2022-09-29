@@ -14,10 +14,23 @@
       "all_frames": true
     }
   ],
+  "permissions": ["declarativeNetRequest"],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset_1",
+        "enabled": true,
+        "path": "weakstreams_ruleset_1.json"
+      }
+    ]
+  },
   "background": {
     "service_worker": "background.js"
   },
-  "host_permissions": ["https://www.espn.com/*"],
+  "host_permissions": [
+    "https://www.espn.com/*",
+    "https://weakstreams.com/streams/*"
+  ],
   "externally_connectable": {
     "matches": ["http://localhost/*", "https://nflstream.web.app/"],
     "accept_tls_channel_id": true

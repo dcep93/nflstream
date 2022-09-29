@@ -68,13 +68,15 @@ function Guide() {
     <div className={style.bubble}>
       <h3>User Guide</h3>
       <ol>
+        <li>This app is used to watch multiple NFL streams.</li>
         <li>
-          This app is used to watch multiple NFL streams free with no popups.
-        </li>
-        <li>
-          Because of CORS policies, most streams will be colored in red. These
-          http links cannot be loaded over https, so clicking one will instead
-          download an HTML page that will work properly.
+          By default, chrome blocks mixed content http resources on an https
+          page. This can be fixed by navigating to{" "}
+          <input
+            readOnly
+            value="chrome://settings/content/siteDetails?site=https%3A%2F%2Fnflstream.web.app"
+          />
+          . Then, scroll down to "Insecure content", and change to "Allow".
         </li>
         <li>
           Clicking a game will open a stream and place it on the multiscreen.
@@ -83,23 +85,22 @@ function Guide() {
         </li>
         <li>Clicking a minimized stream will move it to the spotlight.</li>
         <li>
-          Streams will include a delayed play-by-play log. You can disable this
-          by holding shift when opening a stream.
-        </li>
-        <li>
           Downloading the{" "}
           <a href="https://chrome.google.com/webstore/detail/nfl-stream/jjlokcmkcepehbfepbffkmkkbnggkmje?hl=en&u_producttype=chrome-extension-667709&u_country=au&funnel=convert-pdf&gclid=Cj0KCQjwwNWKBhDAARIsAJ8HkhfEFO3SAM6aK42aSfntfnUY6yIRKS6A7DiyPG00l1mf8743CELeGaQaAksoEALw_wcB">
             chrome extension
           </a>{" "}
           offers additional functionality, like muting non-spotlighted streams.
-          Click the chrome extension in the toolbar to open the stream-viewable
-          page without downloading.
+        </li>
+        <li>
+          If you have the chrome extension, streams will include a delayed
+          play-by-play log. You can disable this by holding shift when opening a
+          stream.
         </li>
         <li>
           If you get an error like "redirected too many times", visit{" "}
-          <input readOnly value="chrome://net-internals/#hsts" />
-          then scroll down to "Delete domain security policies", and delete for{" "}
-          <input readOnly value="weakstreams.com" />
+          <input readOnly value="chrome://net-internals/#dns" />. Then, perform
+          DNS -&gt; Clear Host Cache and Sockets -&gt; Flush socket pools. The
+          chrome extension should make this step unnecessary.
         </li>
         <li>
           You can only use this tool if you legally have access to the stream

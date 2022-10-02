@@ -114,9 +114,9 @@ function ObjectFitIframe(props: {
   updateDrivingTeam: (drivingTeam: string) => void;
   isSelected: boolean;
 }) {
-  const [width, height] = [812, 477]; // on weakstreams, height is dynamic
-  const ratioStr = width + "/" + height;
-  const ratio = width / height;
+  // const [width, height] = [812, 477]; // on weakstreams, height is dynamic
+  // const ratioStr = width + "/" + height;
+  // const ratio = width / height;
   return (
     <div
       style={{

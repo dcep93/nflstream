@@ -132,9 +132,10 @@ function ObjectFitIframe(props: {
           isSelected={props.isSelected}
         />
       )}
-      <iframe
+      <iframe title={props.screen.name} src={props.screen.url} />
+      {/* <iframe
         ref={props.screen.ref}
-        // sandbox={"allow-scripts allow-same-origin"}
+        sandbox={"allow-scripts allow-same-origin"}
         style={{ flexGrow: 1 }}
         title={props.screen.name}
         srcDoc={`
@@ -168,7 +169,7 @@ function ObjectFitIframe(props: {
             <iframe style="border: 0" src="${props.screen.url}">
         </body>
         `}
-      ></iframe>
+      ></iframe> */}
     </div>
   );
 }

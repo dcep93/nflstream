@@ -39,7 +39,7 @@ class LogFetcher extends Fetcher<LogType | null, string> {
         key,
         labels: obj.boxscore.players[0].statistics.find(
           (s: any) => s.name === key
-        ).labels,
+        )?.labels,
         players: []
           .concat(
             ...obj.boxscore.players

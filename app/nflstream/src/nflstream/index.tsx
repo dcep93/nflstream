@@ -4,6 +4,7 @@ import StreamsFetcher from "./Fetcher/StreamsFetcher";
 import style from "./index.module.css";
 import Menu from "./Menu";
 import Multiscreen, { ScreenType } from "./Multiscreen";
+import recorded_sha from "./recorded_sha";
 
 const PASSWORD = "mustbeusedlegally";
 
@@ -25,6 +26,7 @@ class NFLStream extends React.Component<
   }
 > {
   componentDidMount() {
+    console.log(recorded_sha);
     if (!window.chrome?.runtime) {
       console.log("componentDidMount", "no chrome runtime");
       this.setState({ hasExtension: false });

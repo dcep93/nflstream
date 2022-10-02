@@ -134,7 +134,7 @@ function ObjectFitIframe(props: {
       )}
       <iframe
         ref={props.screen.ref}
-        sandbox={"allow-scripts allow-same-origin"}
+        // sandbox={"allow-scripts allow-same-origin"}
         style={{ flexGrow: 1 }}
         title={props.screen.name}
         srcDoc={`

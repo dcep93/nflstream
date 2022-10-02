@@ -29,7 +29,8 @@
   },
   "host_permissions": [
     "https://www.espn.com/*",
-    "*://weakstreams.com/streams/*"
+    "https://weakstreams.com/streams/*",
+    "http://weakstreams.com/streams/*"
   ],
   "externally_connectable": {
     "matches": ["http://localhost/*", "https://nflstream.web.app/"],

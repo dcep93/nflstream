@@ -40,6 +40,7 @@ export default abstract class Fetcher<T, U> extends React.Component<
     console.log("run", this.props.payload);
     this.getResponse()
       .then(this.props.handleResponse)
+      .catch((err) => console.error(err))
       .finally(() => {
         const timeout = setTimeout(this.run.bind(this), this.intervalMs);
         this.setState({ timeout });

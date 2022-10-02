@@ -37,15 +37,16 @@ class LogFetcher extends Fetcher<LogType | null, string> {
       const timestamp = obj.drives.current.plays[0].modified;
       const boxScore = ["passing", "rushing", "receiving"].map((key) => ({
         key,
-        labels: obj.boxscore.players[0].statistics.find(
-          (s: any) => s.name === key
-        )?.labels,
+        labels:
+          obj.boxscore.players[0].statistics.find((s: any) => s.name === key)
+            ?.labels || [],
         players: []
           .concat(
             ...obj.boxscore.players
               .map((team: any) =>
                 team.statistics.find((s: any) => s.name === key)
               )
+              .filter(Boolean)
               .map((t: any) => t.athletes)
           )
           .map((a: any) => ({

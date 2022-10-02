@@ -114,9 +114,9 @@ function ObjectFitIframe(props: {
   updateDrivingTeam: (drivingTeam: string) => void;
   isSelected: boolean;
 }) {
-  // const [width, height] = [812, 477]; // on weakstreams, height is dynamic
-  // const ratioStr = width + "/" + height;
-  // const ratio = width / height;
+  const [width, height] = [812, 477]; // on weakstreams, height is dynamic
+  const ratioStr = width + "/" + height;
+  const ratio = width / height;
   return (
     <div
       style={{
@@ -132,8 +132,7 @@ function ObjectFitIframe(props: {
           isSelected={props.isSelected}
         />
       )}
-      <iframe title={props.screen.name} src={props.screen.url} />
-      {/* <iframe
+      <iframe
         ref={props.screen.ref}
         sandbox={"allow-scripts allow-same-origin"}
         style={{ flexGrow: 1 }}
@@ -169,7 +168,7 @@ function ObjectFitIframe(props: {
             <iframe style="border: 0" src="${props.screen.url}">
         </body>
         `}
-      ></iframe> */}
+      ></iframe>
     </div>
   );
 }

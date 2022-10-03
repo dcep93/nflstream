@@ -56,6 +56,7 @@ function Singlescreen(props: {
   const [drivingTeam, updateDrivingTeam] = useState<string | undefined>(
     undefined
   );
+  const [key, updateKey] = useState(Date.now());
   const screenTitleParts = [props.screen.name];
   if (drivingTeam) {
     screenTitleParts[
@@ -80,12 +81,7 @@ function Singlescreen(props: {
         <span className={style.hover} onClick={() => props.removeScreen()}>
           {screenTitle}
         </span>{" "}
-        <span
-          className={style.hover}
-          onClick={() =>
-            props.screen.ref.current!.contentWindow?.location.reload()
-          }
-        >
+        <span className={style.hover} onClick={() => updateKey(Date.now())}>
           🔄
         </span>
       </div>
@@ -99,6 +95,7 @@ function Singlescreen(props: {
             }}
           ></div>
           <ObjectFitIframe
+            key={key}
             screen={props.screen}
             updateDrivingTeam={updateDrivingTeam}
             isSelected={props.isSelected}
@@ -111,12 +108,10 @@ function Singlescreen(props: {
 
 function ObjectFitIframe(props: {
   screen: ScreenType;
+  key: number;
   updateDrivingTeam: (drivingTeam: string) => void;
   isSelected: boolean;
 }) {
-  // const [width, height] = [812, 477]; // on weakstreams, height is dynamic
-  // const ratioStr = width + "/" + height;
-  // const ratio = width / height;
   return (
     <div
       style={{
@@ -132,14 +127,55 @@ function ObjectFitIframe(props: {
           isSelected={props.isSelected}
         />
       )}
-      <iframe
-        ref={props.screen.ref}
-        sandbox={"allow-scripts allow-same-origin"}
-        style={{ flexGrow: 1 }}
-        title={props.screen.iFrameTitle}
-        src={props.screen.url}
-      ></iframe>
+      <IframeWrapper screen={props.screen} key={props.key} />
     </div>
+  );
+}
+
+function IframeWrapper(props: { screen: ScreenType; key: number }) {
+  // const [width, height] = [812, 477]; // on weakstreams, height is dynamic
+  // const ratioStr = width + "/" + height;
+  // const ratio = width / height;
+
+  // srcDoc={`
+  // <head>
+  //     <style>
+  //     body {
+  //         width: 100vw;
+  //         height: 100vh;
+  //         margin: 0;
+  //         border: 0;
+  //         display: flex;
+  //         align-items: center;
+  //         justify-content: center;
+  //     }
+
+  //     @media (min-aspect-ratio: ${ratioStr}) {
+  //         iframe {
+  //         height: 100vh;
+  //         width: ${100 * ratio}vh;
+  //         }
+  //     }
+  //     @media (max-aspect-ratio: ${ratioStr}) {
+  //         iframe {
+  //         width: 100vw;
+  //         height: ${100 / ratio}vw;
+  //         }
+  //     }
+  //     </style>
+  // </head>
+  // <body>
+  //     <iframe style="border: 0" src="${props.screen.url}">
+  // </body>
+  // `}
+  return (
+    <iframe
+      ref={props.screen.ref}
+      sandbox={"allow-scripts allow-same-origin"}
+      style={{ flexGrow: 1 }}
+      title={props.screen.iFrameTitle}
+      src={props.screen.url}
+    ></iframe>
   );
 }
 
@@ -147,11 +183,10 @@ function muteUnmute(
   iframeRef: React.RefObject<HTMLIFrameElement>,
   mute: boolean
 ) {
-  (
-    iframeRef.current?.contentWindow!.document.getElementsByTagName(
-      "iframe"
-    )[0] as HTMLIFrameElement
-  )?.contentWindow!.postMessage({ mute, source: "nflstream" }, "*");
+  iframeRef.current?.contentWindow!.postMessage(
+    { mute, source: "nflstream" },
+    "*"
+  );
 }
 
 export default Multiscreen;

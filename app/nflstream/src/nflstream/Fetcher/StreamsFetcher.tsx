@@ -3,6 +3,13 @@ import Fetcher, { cacheF, parse, StreamType } from ".";
 class StreamsFetcher extends Fetcher<StreamType[], boolean> {
   intervalMs = 10 * 60 * 1000;
   getResponse() {
+    return Promise.resolve([
+      { url: "http://weakstreams.com/streams/10309005", name: "test1" },
+      { url: "http://weakstreams.com/streams/10309005", name: "test2" },
+    ]);
+  }
+
+  real() {
     const hasExtension = this.props.payload;
     return fetchP("https://reddit.nflbite.com/", 10 * 60 * 1000)
       .then(parse)

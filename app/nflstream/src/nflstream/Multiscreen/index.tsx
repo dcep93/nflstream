@@ -56,7 +56,7 @@ function Singlescreen(props: {
   const [drivingTeam, updateDrivingTeam] = useState<string | undefined>(
     undefined
   );
-  const [key, updateKey] = useState(Date.now());
+  const [xkey, updateKey] = useState(Date.now());
   const screenTitleParts = [props.screen.name];
   if (drivingTeam) {
     screenTitleParts[
@@ -70,10 +70,7 @@ function Singlescreen(props: {
         width: props.isSelected ? "100%" : `${100 / (props.numScreens - 1)}%`,
       }}
       className={[
-        props.numScreens > 1 &&
-          (props.isSelected
-            ? msStyle.selected_screen
-            : msStyle.unselected_screen),
+        props.isSelected && msStyle.selected_screen,
         msStyle.screen_wrapper,
       ].join(" ")}
     >
@@ -95,7 +92,7 @@ function Singlescreen(props: {
             }}
           ></div>
           <ObjectFitIframe
-            key={key}
+            xkey={xkey}
             screen={props.screen}
             updateDrivingTeam={updateDrivingTeam}
             isSelected={props.isSelected}
@@ -108,7 +105,7 @@ function Singlescreen(props: {
 
 function ObjectFitIframe(props: {
   screen: ScreenType;
-  key: number;
+  xkey: number;
   updateDrivingTeam: (drivingTeam: string) => void;
   isSelected: boolean;
 }) {
@@ -118,6 +115,7 @@ function ObjectFitIframe(props: {
         height: "100%",
         width: "100%",
         display: "flex",
+        justifyContent: "space-around",
       }}
     >
       {!props.screen.espnId || props.screen.skipLog ? null : (
@@ -127,60 +125,32 @@ function ObjectFitIframe(props: {
           isSelected={props.isSelected}
         />
       )}
-      <IframeWrapper screen={props.screen} key={props.key} />
+      <IframeWrapper screen={props.screen} key={props.xkey} />
     </div>
   );
 }
 
 function IframeWrapper(props: { screen: ScreenType; key: number }) {
-  // var aspectRatio = 9/16,
-  // newWidth = document.getElementById('video-player').parentElement.offsetWidth,
-  // newHeight = 2 * Math.round(newWidth * aspectRatio/2);
-  // player.resize({width: newWidth, height: newHeight});
-
-  // const [width, height] = [812, 477]; // on weakstreams, height is dynamic
-  // const ratioStr = width + "/" + height;
-  // const ratio = width / height;
-
-  // srcDoc={`
-  // <head>
-  //     <style>
-  //     body {
-  //         width: 100vw;
-  //         height: 100vh;
-  //         margin: 0;
-  //         border: 0;
-  //         display: flex;
-  //         align-items: center;
-  //         justify-content: center;
-  //     }
-
-  //     @media (min-aspect-ratio: ${ratioStr}) {
-  //         iframe {
-  //         height: 100vh;
-  //         width: ${100 * ratio}vh;
-  //         }
-  //     }
-  //     @media (max-aspect-ratio: ${ratioStr}) {
-  //         iframe {
-  //         width: 100vw;
-  //         height: ${100 / ratio}vw;
-  //         }
-  //     }
-  //     </style>
-  // </head>
-  // <body>
-  //     <iframe style="border: 0" src="${props.screen.url}">
-  // </body>
-  // `}
   return (
-    <iframe
-      ref={props.screen.ref}
-      sandbox={"allow-scripts allow-same-origin"}
-      style={{ flexGrow: 1 }}
-      title={props.screen.iFrameTitle}
-      src={props.screen.url}
-    ></iframe>
+    <div
+      style={{
+        maxHeight: "100%",
+        maxWidth: "100%",
+        // border: "1px solid lightgrey",
+        aspectRatio: "16 / 9",
+      }}
+    >
+      <iframe
+        ref={props.screen.ref}
+        sandbox={"allow-scripts allow-same-origin"}
+        style={{
+          height: "100%",
+          width: "100%",
+        }}
+        title={props.screen.iFrameTitle}
+        src={props.screen.url}
+      ></iframe>
+    </div>
   );
 }
 

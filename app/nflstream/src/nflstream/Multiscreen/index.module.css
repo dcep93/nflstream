@@ -13,11 +13,7 @@
 .selected_screen {
   width: 100%;
   order: -1;
-  height: 85%;
-}
-
-.unselected_screen {
-  height: 14%;
+  min-height: 50%;
 }
 
 .screen_wrapper {
@@ -35,7 +31,6 @@
   position: relative;
   display: inline-flex;
   flex-grow: 1;
-  resize: both;
   overflow: hidden;
   border: 1px solid lightgray;
 }

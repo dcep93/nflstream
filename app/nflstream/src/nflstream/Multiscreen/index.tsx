@@ -133,6 +133,11 @@ function ObjectFitIframe(props: {
 }
 
 function IframeWrapper(props: { screen: ScreenType; key: number }) {
+  // var aspectRatio = 9/16,
+  // newWidth = document.getElementById('video-player').parentElement.offsetWidth,
+  // newHeight = 2 * Math.round(newWidth * aspectRatio/2);
+  // player.resize({width: newWidth, height: newHeight});
+
   // const [width, height] = [812, 477]; // on weakstreams, height is dynamic
   // const ratioStr = width + "/" + height;
   // const ratio = width / height;

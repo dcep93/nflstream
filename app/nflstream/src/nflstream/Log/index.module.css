@@ -1,9 +1,8 @@
 .logWrapper {
-  min-width: 13%;
+  min-width: 20em;
   position:relative;
   resize: horizontal;
   overflow:scroll;
-  flex-grow: 1;
 }
 
 .log {

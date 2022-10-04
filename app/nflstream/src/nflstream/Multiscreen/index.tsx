@@ -134,22 +134,39 @@ function IframeWrapper(props: { screen: ScreenType; key: number }) {
   return (
     <div
       style={{
-        maxHeight: "100%",
-        maxWidth: "100%",
-        // border: "1px solid lightgrey",
-        aspectRatio: "16 / 9",
+        flexGrow: 1,
+        position: "relative",
       }}
     >
-      <iframe
-        ref={props.screen.ref}
-        sandbox={"allow-scripts allow-same-origin"}
+      <div
         style={{
-          height: "100%",
           width: "100%",
+          height: "100%",
+          display: "inline-flex",
+          justifyContent: "center",
+          position: "absolute",
         }}
-        title={props.screen.iFrameTitle}
-        src={props.screen.url}
-      ></iframe>
+      >
+        <div
+          style={{
+            maxHeight: "100%",
+            maxWidth: "100%",
+            // border: "1px solid lightgrey",
+            aspectRatio: "155 / 90",
+          }}
+        >
+          <iframe
+            ref={props.screen.ref}
+            sandbox={"allow-scripts allow-same-origin"}
+            style={{
+              height: "100%",
+              width: "100%",
+            }}
+            title={props.screen.iFrameTitle}
+            src={props.screen.url}
+          ></iframe>
+        </div>
+      </div>
     </div>
   );
 }

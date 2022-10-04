@@ -100,13 +100,24 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
                   espnId: tds[2]
                     .getElementsByTagName("a")[0]
                     ?.href.split("=")[1],
-                  awayTeam: tds[0].innerText,
+                  awayTeam: (
+                    tds[0].getElementsByClassName(
+                      "Table__Team"
+                    )[0] as HTMLElement
+                  )?.innerText,
+                  homeTeam: (
+                    tds[1].getElementsByClassName(
+                      "Table__Team"
+                    )[0] as HTMLElement
+                  )?.innerText,
                 }))
               )
               .then((objs) =>
                 streams.map((stream) => ({
-                  espnId: objs.find((obj) =>
-                    stream!.name.includes(obj.awayTeam)
+                  espnId: objs.find(
+                    (obj) =>
+                      stream!.name.includes(obj.awayTeam) &&
+                      stream!.name.includes(obj.homeTeam)
                   )?.espnId,
                   ...stream,
                 }))

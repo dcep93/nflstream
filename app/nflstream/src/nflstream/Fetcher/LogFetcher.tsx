@@ -56,11 +56,12 @@ class LogFetcher extends Fetcher<LogType | null, string> {
           }))
           .sort((a, b) => b.rank - a.rank),
       }));
-      return {
+      const log = {
         timestamp,
         playByPlay,
         boxScore,
       };
+      return log;
     });
   }
 }

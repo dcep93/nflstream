@@ -135,24 +135,31 @@ function IframeWrapper(props: { screen: ScreenType; key: number }) {
     <div
       style={{
         flexGrow: 1,
-        position: "relative",
+        display: "inline-flex",
+        alignItems: "center",
       }}
     >
       <div
         style={{
           width: "100%",
-          height: "100%",
-          display: "inline-flex",
+          maxHeight: "100%",
+          position: "relative",
+          display: "flex",
           justifyContent: "center",
-          position: "absolute",
         }}
       >
         <div
           style={{
-            maxHeight: "100%",
+            marginTop: "56.25%",
+          }}
+        ></div>
+        <div
+          style={{
             maxWidth: "100%",
-            // border: "1px solid lightgrey",
-            aspectRatio: "155 / 90",
+            height: "100%",
+            position: "absolute",
+            aspectRatio: "16 / 9",
+            // border: "1px solid lightgray",
           }}
         >
           <iframe

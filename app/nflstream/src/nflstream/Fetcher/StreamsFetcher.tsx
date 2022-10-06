@@ -4,7 +4,6 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
   intervalMs = 10 * 60 * 1000;
   getResponse() {
     //   return Promise.resolve([
-    //     { url: "http://weakstreams.com/streams/10309005", name: "test1" },
     //     { url: "http://weakstreams.com/streams/10309005", name: "test2" },
     //     { url: "http://example.org", name: "example", espnId: "401437761" },
     //   ]);

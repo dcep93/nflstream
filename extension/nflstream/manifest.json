@@ -9,7 +9,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["http://weakstreams.com/streams/**"],
+      "matches": ["http://weakstreams.com/streams/?*"],
       "js": ["content_script.js"],
       "all_frames": true
     }
@@ -29,12 +29,17 @@
   },
   "host_permissions": [
     "https://www.espn.com/*",
-    "https://weakstreams.com/streams/*",
-    "http://weakstreams.com/streams/*"
+    "*://weakstreams.com/streams/"
   ],
   "externally_connectable": {
     "matches": ["http://localhost/*", "https://nflstream.web.app/"],
     "accept_tls_channel_id": true
   },
+  "web_accessible_resources": [
+    {
+      "resources": ["assets/*"],
+      "matches": ["http://weakstreams.com/*"]
+    }
+  ],
   "manifest_version": 3
 }

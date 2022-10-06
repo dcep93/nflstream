@@ -74,9 +74,10 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
                               name: parse(message).title.split(
                                 " - WeakStreams.com - "
                               )[0],
-                              url: message.match(
-                                /http:\/\/weakstreams.com\/streams\/\d+/
-                              )![0],
+                              url: getStreamUrlFromWeakStreamsHTML(
+                                message,
+                                hasExtension
+                              ),
                             })
                           )
                     )
@@ -151,6 +152,21 @@ function parseTinyUrl(message: string) {
       console.error(err);
       return null;
     });
+}
+
+function getStreamUrlFromWeakStreamsHTML(
+  message: string,
+  hasExtension: boolean
+) {
+  if (hasExtension) {
+    const vidgstream = encodeURIComponent(
+      message.match(/var vidgstream = "(.+?)";/)![1]
+    );
+    const token = message.match(/token: '(.+?)',/)![1];
+    return `http://weakstreams.com/streams/?token=${token}&vidgstream=${vidgstream}`;
+  } else {
+    return message.match(/http:\/\/weakstreams.com\/streams\/\d+/)![0];
+  }
 }
 
 function fetchP(

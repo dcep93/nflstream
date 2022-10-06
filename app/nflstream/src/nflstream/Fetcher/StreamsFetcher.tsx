@@ -163,7 +163,7 @@ function getStreamUrlFromWeakStreamsHTML(
       message.match(/var vidgstream = "(.+?)";/)![1]
     );
     const token = message.match(/token: '(.+?)',/)![1];
-    return `http://weakstreams.com/streams/?token=${token}&vidgstream=${vidgstream}`;
+    return `http://weakstreams.com/favicon.ico?token=${token}&vidgstream=${vidgstream}`;
   } else {
     return message.match(/http:\/\/weakstreams.com\/streams\/\d+/)![0];
   }

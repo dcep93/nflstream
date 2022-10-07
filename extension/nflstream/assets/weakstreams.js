@@ -11,9 +11,9 @@ const params = new URLSearchParams(window.location.search);
 const vidgstream = params.get("vidgstream");
 const token = params.get("token");
 
-ChromecastPlugin.prototype.supportedVersion = () => ({
+ChromecastPlugin.prototype.supportedVersion = {
   min: "0.4.0",
-});
+};
 
 var player = null;
 function gethlsUrl(UrlID, serverid, cid) {

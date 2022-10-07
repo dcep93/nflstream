@@ -158,7 +158,7 @@ function IframeWrapper(props: { screen: ScreenType; key: number }) {
             maxWidth: "100%",
             height: "100%",
             position: "absolute",
-            aspectRatio: "16 / 9",
+            aspectRatio: "15 / 9",
             // border: "1px solid lightgray",
           }}
         >

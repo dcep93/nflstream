@@ -8,7 +8,6 @@ function init() {
     "hlsjs-p2p-engine.min.js",
     "clappr-plugin.min.js",
     "level-selector.min.js",
-    "clappr-chromecast-plugin.min.js",
 
     "weakstreams.js",
   ].forEach((src) => {

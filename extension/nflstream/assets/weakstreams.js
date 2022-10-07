@@ -11,10 +11,6 @@ const params = new URLSearchParams(window.location.search);
 const vidgstream = params.get("vidgstream");
 const token = params.get("token");
 
-ChromecastPlugin.prototype.supportedVersion = {
-  min: "0.4.0",
-};
-
 var player = null;
 function gethlsUrl(UrlID, serverid, cid) {
   $.ajax({
@@ -35,7 +31,7 @@ function gethlsUrl(UrlID, serverid, cid) {
         width: "100%",
         autoPlay: false,
         //  poster: '',
-        plugins: [CDNByeClapprPlugin, LevelSelector, ChromecastPlugin],
+        plugins: [CDNByeClapprPlugin, LevelSelector],
         playback: {
           hlsjsConfig: {
             maxBufferSize: 0,
@@ -48,18 +44,6 @@ function gethlsUrl(UrlID, serverid, cid) {
               //	announce: "https://tracker.p2pengine.net:7067/v1",
             },
           },
-        },
-        chromecast: {
-          appId: "9DFB77C0", // clappr app id
-          contentType: "video/mp4",
-          media: {
-            type: ChromecastPlugin.Movie,
-            title: "NFL Stream",
-            subtitle: "",
-          },
-          // customData: {
-          //   licenseURL: "http://widevine/yourLicenseServer",
-          // },
         },
         mediacontrol: { buttons: "#EE0000" },
         mimeType: "application/x-mpegURL",

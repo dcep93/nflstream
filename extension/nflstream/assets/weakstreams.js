@@ -13,7 +13,7 @@ function gethlsUrl(UrlID, serverid, cid) {
     data: { idgstream: UrlID, serverid: serverid, cid: cid },
     contentType: "application/json",
     error: function (err) {
-      window.alert("Server preparing, try again in a few seconds");
+      window.alert(`Server preparing, try again in a few seconds ${err}`);
     },
     success: function (data) {
       var rawUrl = data.rawUrl;

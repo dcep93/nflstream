@@ -15,28 +15,45 @@ function Multiscreen(props: {
   screens: ScreenType[];
   removeScreen: (iFrameTitle: string) => void;
 }) {
-  const [selected, updateSelected] = useState("");
+  const [selected, updateSelectedStr] = useState("");
   const selectedScreen =
     props.screens.find((s) => s.iFrameTitle === selected) || props.screens[0];
   if (selectedScreen) muteUnmute(selectedScreen.ref, false);
+  function updateSelected(screen: ScreenType) {
+    muteUnmute(screen.ref, false);
+    muteUnmute(selectedScreen.ref, true);
+    updateSelectedStr(screen.iFrameTitle);
+  }
+
   return (
     <div
       className={msStyle.screens_wrapper}
       style={{ backgroundColor: props.backgroundColor || "black" }}
     >
       {props.screens.length === 0 ? null : (
-        <div className={msStyle.screens}>
+        <div
+          className={msStyle.screens}
+          onKeyDown={(e) =>
+            Promise.resolve(e)
+              .then((e) => e.key)
+              .then((key) => parseInt(key))
+              .then(
+                (index) =>
+                  props.screens.filter((s) => s.iFrameTitle !== selected)[
+                    index - 1
+                  ]
+              )
+              .then((screen) => screen && updateSelected(screen))
+          }
+          tabIndex={0}
+        >
           {props.screens.map((screen, i) => (
             <Singlescreen
               key={screen.iFrameTitle}
               screen={screen}
               isSelected={screen === selectedScreen}
               removeScreen={() => props.removeScreen(screen.iFrameTitle)}
-              updateSelected={() => {
-                muteUnmute(screen.ref, false);
-                muteUnmute(selectedScreen.ref, true);
-                updateSelected(screen.iFrameTitle);
-              }}
+              updateSelected={() => updateSelected(screen)}
               numScreens={props.screens.length}
             />
           ))}

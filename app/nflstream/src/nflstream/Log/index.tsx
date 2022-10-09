@@ -43,9 +43,10 @@ class DelayedLog extends React.Component<PropsType, { log: LogType }> {
 
   updateNow(log: LogType) {
     this.setState({ log });
-    const drivingTeam =
-      (log?.playByPlay || []).find((drive) => drive.result === undefined)
-        ?.team || "";
+    const playByPlay = log?.playByPlay || [];
+    const drive =
+      playByPlay[0]?.result === undefined ? playByPlay[0] : playByPlay[1];
+    const drivingTeam = drive?.team;
     this.props.updateDrivingTeam(drivingTeam);
   }
 

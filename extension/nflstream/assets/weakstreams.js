@@ -5,13 +5,6 @@ function muteUnmute(event) {
   if (video) video.muted = event.data.mute;
 }
 
-window.addEventListener("message", muteUnmute);
-
-const params = new URLSearchParams(window.location.search);
-const vidgstream = params.get("vidgstream");
-const token = params.get("token");
-
-var player = null;
 function gethlsUrl(UrlID, serverid, cid) {
   $.ajax({
     type: "GET",
@@ -25,7 +18,7 @@ function gethlsUrl(UrlID, serverid, cid) {
     success: function (data) {
       var rawUrl = data.rawUrl;
       var playerElement = document.getElementById("video-player");
-      player = new Clappr.Player({
+      var player = new Clappr.Player({
         source: rawUrl,
         height: "100%",
         width: "100%",
@@ -62,7 +55,19 @@ function gethlsUrl(UrlID, serverid, cid) {
   });
 }
 
-window.addEventListener("load", function () {
-  if (!vidgstream || !token) return alert("invalid params");
-  gethlsUrl(vidgstream);
-});
+function main() {
+  window.addEventListener("message", muteUnmute);
+
+  const params = new URLSearchParams(window.location.search);
+  const vidgstream = params.get("vidgstream");
+  window.token = params.get("token");
+
+  window.addEventListener("load", function () {
+    if (!vidgstream || !token) return alert("invalid params");
+    gethlsUrl(vidgstream);
+  });
+
+  document.body.style = "margin: 0";
+}
+
+main();

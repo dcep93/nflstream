@@ -99,17 +99,17 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
                 trs.map((tds) => ({
                   espnId: tds[2]
                     ?.getElementsByTagName("a")[0]
-                    ?.href.split("=")[1],
+                    .href.split("=")[1],
                   awayTeam: (
-                    tds[0].getElementsByClassName(
+                    tds[0]?.getElementsByClassName(
                       "Table__Team"
                     )[0] as HTMLElement
-                  )?.innerText,
+                  ).innerText,
                   homeTeam: (
-                    tds[1].getElementsByClassName(
+                    tds[1]?.getElementsByClassName(
                       "Table__Team"
                     )[0] as HTMLElement
-                  )?.innerText,
+                  ).innerText,
                 }))
               )
               .then((objs) =>

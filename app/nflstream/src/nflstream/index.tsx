@@ -14,7 +14,8 @@ declare global {
   }
 }
 
-export const extension_id = "idejabpndfcphdflfdbionahnlnphlnf";
+// export const extension_id = "idejabpndfcphdflfdbionahnlnphlnf";
+export const extension_id = "jjlokcmkcepehbfepbffkmkkbnggkmje";
 
 class NFLStream extends React.Component<
   {},

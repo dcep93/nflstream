@@ -27,10 +27,7 @@
   "background": {
     "service_worker": "background.js"
   },
-  "host_permissions": [
-    "https://www.espn.com/*",
-    "*://weakstreams.com/favicon.ico?*"
-  ],
+  "host_permissions": ["*://weakstreams.com/favicon.ico?*"],
   "externally_connectable": {
     "matches": ["http://localhost/*", "https://nflstream.web.app/"],
     "accept_tls_channel_id": true

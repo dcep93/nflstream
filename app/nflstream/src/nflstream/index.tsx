@@ -17,6 +17,8 @@ declare global {
 // export const extension_id = "idejabpndfcphdflfdbionahnlnphlnf";
 export const extension_id = "jjlokcmkcepehbfepbffkmkkbnggkmje";
 
+const expected_version = "3.1.1";
+
 class NFLStream extends React.Component<
   {},
   {
@@ -35,7 +37,8 @@ class NFLStream extends React.Component<
       new Promise((resolve, reject) => {
         window.chrome.runtime.sendMessage(extension_id, {}, (response: any) => {
           if (response === undefined) return reject("empty response");
-          console.log("componentDidMount", "extension detected");
+          // if (response < expected_version) return reject("old version");
+          console.log("componentDidMount", "extension detected", response);
           this.setState({ hasExtension: true });
           resolve(null);
         });

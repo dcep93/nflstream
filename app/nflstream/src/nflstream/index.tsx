@@ -17,7 +17,7 @@ declare global {
 // export const extension_id = "idejabpndfcphdflfdbionahnlnphlnf";
 export const extension_id = "jjlokcmkcepehbfepbffkmkkbnggkmje";
 
-const expected_version = "3.1.1";
+// const expected_version = "3.1.1";
 
 class NFLStream extends React.Component<
   {},

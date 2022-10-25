@@ -8,7 +8,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="referrer" content="no-referrer" />
     <meta charset="utf-8" />
-    <title>PATRIOTS</title>
+    <script>
+      window.addEventListener("message", (event) => {
+        if (event.data.source !== "nflstream") return;
+        console.log(event.data, "receiveMessage");
+        const video = document.getElementsByTagName("video")[0];
+        if (video) video.muted = event.data.mute;
+      });
+    </script>
     <script>
       function setCookie(cname, cvalue) {
         var d = new Date();

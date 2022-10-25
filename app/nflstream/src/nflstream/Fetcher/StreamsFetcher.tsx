@@ -2,6 +2,7 @@ import Fetcher, { cacheF, parse, StreamType } from ".";
 
 class StreamsFetcher extends Fetcher<StreamType[], boolean> {
   intervalMs = 10 * 60 * 1000;
+  static firstTime = true;
   getResponse() {
     //   return Promise.resolve([
     //     { url: "http://weakstreams.com/streams/10309005", name: "test2" },
@@ -11,7 +12,16 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
 
     // real() {
     const hasExtension = this.props.payload;
-    return fetchP("https://reddit.nflbite.com/", 10 * 60 * 1000)
+    return fetchP(
+      "https://reddit.nflbite.com/",
+      (() => {
+        if (StreamsFetcher.firstTime) {
+          StreamsFetcher.firstTime = false;
+          return 0;
+        }
+        return 10 * 60 * 1000;
+      })()
+    )
       .then(parse)
       .then((html) => html.getElementsByClassName("competition"))
       .then((arr) => Array.from(arr))

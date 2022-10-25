@@ -7,6 +7,7 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
     //   return Promise.resolve([
     //     { url: "http://weakstreams.com/streams/10309005", name: "test2" },
     //     { url: "http://example.org", name: "example", espnId: "401437761" },
+    //     { url: "http://localhost:3000/topstream.html", name: "test1" },
     //   ]);
     // }
 
@@ -67,38 +68,33 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
                   )
                 )
                 .then((tr) => tr?.getAttribute("data-stream-link"))
-                .then(
-                  (url) =>
-                    !url
-                      ? undefined
-                      : cacheF(url, 10 * 60 * 1000, () =>
-                          fetch("https://proxy420.appspot.com/proxy", {
-                            method: "POST",
-                            body: JSON.stringify({
-                              url,
-                              maxAgeMs: 10 * 60 * 1000,
-                            }),
-                            headers: {
-                              "Content-Type": "application/json",
-                            },
-                          })
+                .then((url) =>
+                  !url
+                    ? undefined
+                    : cacheF(url, 10 * 60 * 1000, () =>
+                        fetch("https://proxy420.appspot.com/proxy", {
+                          method: "POST",
+                          body: JSON.stringify({
+                            url,
+                            maxAgeMs: 10 * 60 * 1000,
+                          }),
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                        })
+                      )
+                        .then((resp) => resp.text())
+                        .then(parseTinyUrl)
+                        .then((url) =>
+                          !url
+                            ? undefined
+                            : fetchP(url!, 24 * 60 * 60 * 1000).then(
+                                (message) => ({
+                                  name,
+                                  url: getStreamUrl(url, message, hasExtension),
+                                })
+                              )
                         )
-                          .then((resp) => resp.text())
-                          .then(parseTinyUrl)
-                          .then((url) => ({ name, url }))
-                  // .then((href) =>
-                  //   !href
-                  //     ? undefined
-                  //     : fetchP(href!, 24 * 60 * 60 * 1000).then(
-                  //         (message) => ({
-                  //           name,
-                  //           url: getStreamUrlFromHTML(
-                  //             message,
-                  //             hasExtension
-                  //           ),
-                  //         })
-                  //       )
-                  // )
                 )
             )
         )
@@ -173,19 +169,17 @@ function parseTinyUrl(message: string) {
     });
 }
 
-export function getStreamUrlFromWeakStreamsHTML(
-  message: string,
-  hasExtension: boolean
-) {
-  if (hasExtension) {
-    const vidgstream = encodeURIComponent(
-      message.match(/var vidgstream = "(.+?)";/)![1]
-    );
-    const token = message.match(/token: '(.+?)',/)![1];
-    return `http://weakstreams.com/favicon.ico?token=${token}&vidgstream=${vidgstream}`;
-  } else {
-    return message.match(/http:\/\/weakstreams.com\/streams\/\d+/)![0];
-  }
+function getStreamUrl(url: string, message: string, hasExtension: boolean) {
+  return url;
+  // if (hasExtension) {
+  //   const vidgstream = encodeURIComponent(
+  //     message.match(/var vidgstream = "(.+?)";/)![1]
+  //   );
+  //   const token = message.match(/token: '(.+?)',/)![1];
+  //   return `http://weakstreams.com/favicon.ico?token=${token}&vidgstream=${vidgstream}`;
+  // } else {
+  //   return message.match(/http:\/\/weakstreams.com\/streams\/\d+/)![0];
+  // }
 }
 
 function fetchP(

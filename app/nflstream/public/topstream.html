@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html
+  xmlns="https://www.w3.org/1999/xhtml"
+  lang="en"
+  class="hl-en not-logged-in no-touch"
+>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="referrer" content="no-referrer" />
+    <meta charset="utf-8" />
+    <title>PATRIOTS</title>
+    <script>
+      function setCookie(cname, cvalue) {
+        var d = new Date();
+        d.setTime(d.getTime() + 1 * 60 * 60 * 1000 - 2000);
+        var expires = "expires=" + d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+      }
+      function setCookie1h(cname, cvalue) {
+        var d = new Date();
+        d.setTime(d.getTime() + 1 * 60 * 60 * 1000 - 2000);
+        var expires = "expires=" + d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+      }
+      function setCookie15(cname, cvalue) {
+        var d = new Date();
+        d.setTime(d.getTime() + 15 * 60 * 1000 - 2000);
+        var expires = "expires=" + d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+      }
+      function setCookieDay(cname, cvalue) {
+        var d = new Date();
+        d.setTime(d.getTime() + 16 * 60 * 60 * 1000 - 2000);
+        var expires = "expires=" + d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+      }
+      function setCookieMonth(cname, cvalue) {
+        var d = new Date();
+        d.setTime(d.getTime() + 30 * 24 * 60 * 60 * 1000 - 2000);
+        var expires = "expires=" + d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+      }
+      function setCookieYear(cname, cvalue) {
+        var d = new Date();
+        d.setTime(d.getTime() + 365 * 24 * 60 * 60 * 1000 - 2000);
+        var expires = "expires=" + d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+      }
+      function setCookie10Year(cname, cvalue) {
+        var d = new Date();
+        d.setTime(d.getTime() + 10 * 365 * 24 * 60 * 60 * 1000);
+        var expires = "expires=" + d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+      }
+
+      function getCookie(cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(";");
+        for (var i = 0; i < ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0) == " ") {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return "";
+      }
+
+      var popada = getCookie("popada");
+      var popadb = getCookie("popadb");
+      var popadc = getCookie("popadc");
+      var watch = getCookie("watch");
+      console.log(popada);
+      // if (popada != "no" && popada != "") {
+      //   location.reload(true);
+      // }
+      // if (popadb != "no" && popadb != "") {
+      //   location.reload(true);
+      // }
+      // if (popadc != "no" && popadc != "") {
+      //   location.reload(true);
+      // }
+    </script>
+    <!-- skin -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/flowplayer/7.2.7/skin/skin.css"
+    />
+    <script
+      type="text/javascript"
+      src="https://code.jquery.com/jquery-2.1.1.min.js"
+    ></script>
+    <script src="https://topstreams.info/js/hls.forcaster2.js?ver=1.4.5"></script>
+    <script src="https://topstreams.info/js/flowplayer.min.js"></script>
+    <script src="https://topstreams.info/js/p1.js"></script>
+
+    <!-- Compiled and minified CSS -->
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/js/materialize.min.js"></script>
+    <script src="https://topstreams.info/js/moment.js"></script>
+
+    <link
+      rel="stylesheet"
+      href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"
+    />
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://topstreams.info/js/jquery-input-file-text.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.5/ScrollMagic.min.js"></script>
+    <script>
+      var flowapi;
+      var socket;
+      var interval;
+      var interval2;
+      var interval3;
+      var loadcount = 8;
+      var seconds = 540;
+      var adseconds = 900;
+      var alerted = false;
+      var pass_type;
+      var pass_timeout;
+      var user_id;
+      var socket;
+      var gameclock = "";
+      var gameperiod = "";
+      var safety = "";
+      var key = "adiyyt";
+      window.testurl =
+        "https://o300801-mp-lura-live.akamaized.net/live/ephemeral/pbOP2ERal4KKhRCaahAQ5mbdD0Mzq59w/dmla-anvato01/152k/XD3R65aZbOQ/164232/segment_164232267-cvideo.mp4?hdntl=exp=1666671356~acl=/*~hmac=8b846022c2c08c0ba3dd9dade8b2a7432607b83c67d23d817a51fb4257118e9b";
+      var globalurl =
+        "https://live-i-main-nflvideo.akamaized.net/ch07/f597a2da-0443-4292-a8de-53fa06a7477b/f597a2da-0443-4292-a8de-53fa06a7477b.ism/manifest(format=m3u8-aapl-v3,filter=hls)?hdnea=st=1665358008~exp=1665358188~acl=/ch07/f597a2da-0443-4292-a8de-53fa06a7477b/*~data=c83d1dd9-3004-47c6-98ef-7390bdb6b7bb~hmac=4f400743a78275e1e41d69847ad08776bb953368df9b754def34dd461ba4ce8c&hdcore=2.11.3";
+      var view = "-1";
+      var server = "";
+      var teamcode = "NE";
+      var tsfiles = [];
+      var servers = [
+        "34.238.239.255",
+        "52.87.229.49",
+        "18.215.149.220",
+        "34.238.239.255",
+      ];
+      function shuffle(array) {
+        var currentIndex = array.length,
+          temporaryValue,
+          randomIndex;
+
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex) {
+          // Pick a remaining element...
+          randomIndex = Math.floor(Math.random() * currentIndex);
+          currentIndex -= 1;
+          // And swap it with the current element.
+          temporaryValue = array[currentIndex];
+          array[currentIndex] = array[randomIndex];
+          array[randomIndex] = temporaryValue;
+        }
+        return array;
+      }
+
+      window.router = null;
+      //window.router = 'https://tstreams.info/go.php?url=';
+      window.routermode = 1; //1=resolution ,2=cacheproxy ,3=passthru
+      window.routercountry = "us";
+      window.resources = {};
+      window.playlist = "";
+      window.maxage = 0;
+      window.forcaster = true;
+      window.masterloaded = false;
+      window.masterinf = {
+        "2_patriots.m3u8": {
+          inf: '#EXT-X-STREAM-INF:BANDWIDTH=400000,AVERAGE-BANDWIDTH=400000,CODECS="avc1.64001f, mp4a.40.2",RESOLUTION=416x234',
+          backupsubfolder: "",
+          subfolder:
+            "https://o300801-mp-lura-live.akamaized.net/live/ephemeral/pbOP2ERal4KKhRCaahAQ5mbdD0Mzq59w/dmla-anvato01/496k/XD3R65aZbOQ/164232/",
+        },
+        "14_patriots.m3u8": {
+          inf: '#EXT-X-STREAM-INF:BANDWIDTH=3200000,AVERAGE-BANDWIDTH=3200000,CODECS="avc1.64001f, mp4a.40.2",RESOLUTION=1280x720',
+          backupsubfolder: "",
+          subfolder:
+            "https://o300801-mp-lura-live.akamaized.net/live/ephemeral/pbOP2ERal4KKhRCaahAQ5mbdD0Mzq59w/dmla-anvato01/3296k/XD3R65aZbOQ/164232/",
+        },
+        "6_patriots.m3u8": {
+          inf: '#EXT-X-STREAM-INF:BANDWIDTH=1000000,AVERAGE-BANDWIDTH=1000000,CODECS="avc1.64001f, mp4a.40.2",RESOLUTION=640x360',
+          backupsubfolder: "",
+          subfolder:
+            "https://o300801-mp-lura-live.akamaized.net/live/ephemeral/pbOP2ERal4KKhRCaahAQ5mbdD0Mzq59w/dmla-anvato01/1096k/XD3R65aZbOQ/164232/",
+        },
+        "4_patriots.m3u8": {
+          inf: '#EXT-X-STREAM-INF:BANDWIDTH=1500000,AVERAGE-BANDWIDTH=1500000,CODECS="avc1.64001f, mp4a.40.2",RESOLUTION=768x432',
+          backupsubfolder: "",
+          subfolder:
+            "https://o300801-mp-lura-live.akamaized.net/live/ephemeral/pbOP2ERal4KKhRCaahAQ5mbdD0Mzq59w/dmla-anvato01/1596k/XD3R65aZbOQ/164232/",
+        },
+        "8_patriots.m3u8": {
+          inf: '#EXT-X-STREAM-INF:BANDWIDTH=600000,AVERAGE-BANDWIDTH=600000,CODECS="avc1.64001f, mp4a.40.2",RESOLUTION=640x360',
+          backupsubfolder: "",
+          subfolder:
+            "https://o300801-mp-lura-live.akamaized.net/live/ephemeral/pbOP2ERal4KKhRCaahAQ5mbdD0Mzq59w/dmla-anvato01/696k/XD3R65aZbOQ/164232/",
+        },
+        "12_patriots.m3u8": {
+          inf: '#EXT-X-STREAM-INF:BANDWIDTH=56000,AVERAGE-BANDWIDTH=56000,CODECS="avc1.64001f, mp4a.40.2",RESOLUTION=416x234',
+          backupsubfolder: "",
+          subfolder:
+            "https://o300801-mp-lura-live.akamaized.net/live/ephemeral/pbOP2ERal4KKhRCaahAQ5mbdD0Mzq59w/dmla-anvato01/152k/XD3R65aZbOQ/164232/",
+        },
+        "10_patriots.m3u8": {
+          inf: '#EXT-X-STREAM-INF:BANDWIDTH=2000000,AVERAGE-BANDWIDTH=2000000,CODECS="avc1.64001f, mp4a.40.2",RESOLUTION=1280x720',
+          backupsubfolder: "",
+          subfolder:
+            "https://o300801-mp-lura-live.akamaized.net/live/ephemeral/pbOP2ERal4KKhRCaahAQ5mbdD0Mzq59w/dmla-anvato01/2096k/XD3R65aZbOQ/164232/",
+        },
+      };
+      //window.resourceObserver.observe({ type: "resource", buffered: false });
+      var interval3 = setInterval(function () {
+        var records = window.performance.getEntriesByType("resource");
+        for (var i = 0; i < records.length; i++) {
+          record = records[i];
+          window.resources[record.name] = record.responseEnd;
+          //console.log('resource ' + record.name);
+        }
+        window.performance.clearResourceTimings();
+        //debugger;
+        //console.log(window.resourceObserver);
+      }, 200);
+
+      // Register the service worker
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker
+          .register("/sw.js?v=1.0.5")
+          .then(function (registration) {
+            // Registration was successful
+            console.log(
+              "ServiceWorker registration successful with scope: ",
+              registration.scope
+            );
+          })
+          .catch(function (err) {
+            // registration failed :(
+            console.log("ServiceWorker registration failed: ", err);
+          });
+      }
+
+      window.onload = function () {
+        var reloadCount = 0;
+        var reloadStart = true;
+        var isplaying = false;
+
+        var cloudindex = 0;
+        var edges = {};
+
+        var masterkey = "patriots";
+
+        var server = "";
+
+        var globalurl2 = "https://proxy.tstreams.info/playlist/patriots";
+
+        console.log("key " + key + " " + server);
+        //var hlsurl='https://'+server+'/'+key+'.m8';
+        //var hlsurl='https://tstreams.info/1/'+key;
+        //var hlsurl='https://proxy.tstreams.info/master/nfl/us/'+masterkey;
+        var hlsurl = "https://tstreams.info/" + masterkey + ".m3u8";
+
+        var timer;
+        flowplayer.conf = {
+          fullscreen: true,
+          // iOS allows only native fullscreen from within iframes
+          native_fullscreen: true,
+        };
+        var level = getCookie("nfl_level");
+
+        if (!isNaN(level) && level !== "") {
+          flowplayer.conf.hlsjs = {
+            startLevel: parseInt(level),
+          };
+        }
+
+        flowplayer(function (api, root) {
+          api
+            .on("load", function () {
+              // do something when a new video is about to be loaded
+              console.log("Running");
+              //isplaying = false;
+            })
+            .on("ready", function () {
+              console.log("ready");
+              console.log(api.video.time);
+              api.engine.hls.on(Hls.Events.LEVEL_SWITCHED, function (e, data) {
+                console.info(data);
+                setCookieDay("nfl_level", data.level);
+              });
+
+              api.engine.hls.on(Hls.Events.ERROR, function (e, data) {
+                console.info(data);
+                var errorType = data.type;
+                var errorDetails = data.details;
+                var errorFatal = data.fatal;
+
+                switch (data.details) {
+                  case Hls.ErrorDetails.MANIFEST_LOAD_ERROR:
+                    //api.load([{ type: "application/x-mpegurl",src:hlsurlbackup}]);
+                    break;
+                  case Hls.ErrorDetails.LEVEL_LOAD_ERROR:
+                    //api.load([{ type: "application/x-mpegurl",src:hlsurlbackup}]);
+                    break;
+                  default:
+                    break;
+                }
+              });
+
+              var backupurl = "https://topstreams.info/safety.txt";
+
+              if (!isplaying) {
+                isplaying = true;
+                var popada = getCookie("popada");
+                var popadb = getCookie("popadb");
+                var popadc = getCookie("popadc");
+                var watch = getCookie("watch");
+
+                if (popada == "") {
+                  popada = "no";
+                }
+                if (popadb == "") {
+                  popadb = "no";
+                }
+                if (popadc == "") {
+                  popadc = "no";
+                }
+                if (watch == "") {
+                  watch = "1";
+                }
+
+                var watchcurrent = parseInt(watch, 10);
+                var watchnext = watchcurrent + 1;
+
+                setCookieDay("watch", watchnext.toString());
+                if (popada == "no") {
+                  setCookie15("popada", "yes");
+                } else if (popadb == "no") {
+                  setCookie15("popadb", "yes");
+                  if (popadc == "yes") {
+                    //setCookie15("noads","yes");
+                  }
+                } else if (popadc == "no") {
+                  //setCookie15("noads","yes");
+                  setCookieDay("popadc", "yes");
+                }
+              }
+
+              reloadStart = true;
+            })
+            .on("error", function (e, api, data) {
+              console.log(api.video.time);
+              console.log("Error");
+              console.log(data);
+              reloadCount = reloadCount + 1;
+              if (reloadCount < 100) {
+                reloadStart = false;
+                $(".fp-message", root).css({ opacity: 0 });
+                $(root).removeClass("is-error");
+
+                api.load([{ type: "application/x-mpegurl", src: globalurl2 }]);
+
+                clearInterval(timer);
+                timer = setInterval(function () {
+                  clearInterval(timer);
+                  api.error = api.loading = false;
+                  //api.load();
+
+                  //hlsurl='https://'+webcloud+'/tv/'+distribution+'_'+key+'.m3u8';
+                  //api.load([{ type: "application/x-mpegurl",src:hlsurl}]);
+                  //window.location.href = window.location.href;
+                }, 2000);
+              }
+            })
+            .on("hlsFragLoaded", function (e, api, data) {
+              // listen to Hls.Events.LEVEL_SWITCH
+              //var level = api.engine.hlsjs.levels[data.level];
+              //console.info("switched to hls level index:", data.level);
+              //console.info("width:", level.width, "height": level.height);
+              //console.log(data);
+            })
+            .on("hlsLevelLoading", function (e, api, data) {
+              // listen to Hls.Events.LEVEL_SWITCH
+              //var level = api.engine.hlsjs.levels[data.level];
+
+              //console.info("switched to hls level index:", data.level);
+              //console.info("width:", level.width, "height": level.height);
+              currenturl = data.url;
+              //liveurl=currenturl.replace("tv/lb", "tv/");
+              liveurl = currenturl.replace("_lb", "_");
+              //console.log(liveurl);
+              var xmlHttp = new XMLHttpRequest();
+              xmlHttp.onreadystatechange = function () {
+                if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                  var lines = xmlHttp.responseText.split("\n");
+                  var itemsToIterate = lines.slice(0).reverse();
+                  var xt = 0;
+                  for (var i = 0; i < 10; i++) {
+                    var prewarmts = itemsToIterate[i];
+                    //var prewarmts=lines[lines.length - 1];
+                    if (prewarmts.indexOf(".ts") > -1) {
+                      if (xt > 2) {
+                        break;
+                      }
+                      xt = xt + 1;
+                    } else {
+                      continue;
+                    }
+                    if (prewarmts.indexOf("http") == -1) {
+                      prewarmts = "https://" + server + prewarmts;
+                    }
+                    //console.log(prewarmts);
+
+                    if (!tsfiles.includes(prewarmts)) {
+                      tsfiles.push(prewarmts);
+
+                      var tsXhr = new XMLHttpRequest();
+                      tsXhr.onreadystatechange = function () {
+                        if (tsXhr.readyState == 4 && tsXhr.status == 200) {
+                          /*var xcache = tsXhr.getResponseHeader("X-Cache");
+									if (!(xcache == null)){
+										xcache=xcache.toLowerCase()
+										console.log(xcache);
+										//headers=tsXhr.getAllResponseHeaders();
+										//console.log(headers);
+										if (xcache.includes("miss")) {
+											
+											accelerator=prewarmts.replace(".ts", ".accelerator");								
+											console.log(accelerator);
+											var xmlHttp2 = new XMLHttpRequest();								
+											xmlHttp2.open( "HEAD", accelerator, false ); // false for synchronous request
+											//xmlHttp2.setRequestHeader("x-mvp", "yes");
+											xmlHttp2.send( null );
+											headers=xmlHttp2.getAllResponseHeaders();
+											
+											console.log(headers);
+										}
+									}*/
+                        }
+                      };
+                      tsXhr.open("GET", prewarmts, true); // true for asynchronous
+                      tsXhr.timeout = 100;
+                      //tsXhr.setRequestHeader("Range", "bytes=0-10000");
+                      tsXhr.send(null);
+                    }
+                  }
+                }
+              };
+              //xmlHttp.open("GET", liveurl, true); // true for asynchronous
+
+              //xmlHttp.send(null);
+            });
+        });
+
+        if ("playURL" in window.masterinf) {
+          window.forcaster = false;
+          hlsurl = window.masterinf["playURL"];
+        }
+
+        //testurl=window.router+encodeURIComponent(testurl);
+        fetch(window.testurl)
+          .then(function (response) {
+            console.log(response);
+            if (!response.ok) {
+              throw Error(response.statusText);
+            }
+            return response;
+          })
+          .then(function (response) {
+            console.log("ok");
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+
+        var interval4 = setInterval(function () {
+          var n = new Date().getTime() / 1000;
+          var tesurlserver =
+            "https://topstreams.info/tv/testurl-" + masterkey + ".txt";
+          fetch(tesurlserver)
+            .then(function (response) {
+              //console.log(response.status);
+              if (!response.ok) {
+                throw Error(response.statusText);
+              }
+              return response.text();
+            })
+            .then(function (text) {
+              //exptime=parseInt(text.match(/(\d+)~/g)[0].replace("~",""))-earlytme;
+              window.testurl = text.trim();
+              console.log("new testurl " + text);
+              //console.log("new time "+exptime+" | "+earlytme);
+            })
+            .catch(function (error) {
+              //exptime=new Date().getTime();
+              console.log(error);
+            });
+        }, 900000);
+
+        var ticketinterval = setInterval(function () {
+          clearInterval(ticketinterval);
+          var n = new Date().getTime() / 1000;
+          var tciketurl = "https://dev.handshake.gold/ticket";
+          var ticket_id = getCookie("ticket_id");
+          var ticket_duration = getCookie("ticket_duration");
+          if (ticket_id == "") {
+            ticket_duration = "0";
+            ticket_id = guid();
+            setCookie10Year("ticket_id", ticket_id);
+          }
+          var tduration = parseInt(ticket_duration, 10);
+          tduration = tduration + 1;
+          setCookie10Year("ticket_duration", tduration.toString());
+
+          fetch(tciketurl, {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ user_id: ticket_id, duration: tduration }),
+          })
+            .then(function (response) {
+              if (!response.ok) {
+                throw Error(response.statusText);
+              }
+              return response.json();
+            })
+            .then(function (data) {
+              console.log("ticket " + data);
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+        }, 120000);
+
+        interval2 = setInterval(function () {
+          let elm = document.getElementById("message");
+          if (loadcount < 0 || window.testurl in window.resources) {
+            //hlsurl=globalurl;
+            //initPlayer(hlsurl);
+
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+              if (xhr.readyState == 4 && xhr.status == 200) {
+                initPlayer(hlsurl);
+              }
+            };
+            xhr.open("GET", window.testurl, true); // true for asynchronous
+            xhr.onloadend = function () {
+              console.log("status " + xhr.status);
+              if (xhr.status == 403) {
+                window.routercountry = "global";
+                hlsurl = globalurl;
+                initPlayer(hlsurl);
+                fetch(globalurl, { mode: "no-cors" })
+                  .then(function (response) {
+                    console.log(response);
+                    if (!response.ok) {
+                      throw Error(response.statusText);
+                    }
+                    return response;
+                  })
+                  .then(function (response) {
+                    console.log("ok");
+                  })
+                  .catch(function (error) {
+                    console.log(error);
+                  });
+              }
+            };
+            xhr.onerror = function () {
+              console.log("Error ");
+              hlsurl = globalurl;
+              initPlayer(hlsurl);
+            };
+            xhr.send(null);
+
+            clearInterval(interval2);
+            return;
+          }
+          /*if (testurl in window.resources) {
+				//console.log('resourceTime ' + window.resources[context.url]);
+				delete window.resources[testurl];
+				initPlayer(hlsurl);
+				elm.innerHTML="";
+				elm.remove();
+				clearInterval(interval2);				
+				return;
+			}*/
+
+          elm.innerHTML = "Loading... " + loadcount;
+          loadcount--;
+        }, 1000);
+
+        if (view == "replay" || view == "condensed") {
+        } else {
+          initialize();
+        }
+      };
+      function initPlayer(hlsurl) {
+        flowapi = flowplayer("#hlsjslive", {
+          splash: true,
+          preload: "auto",
+          autoplay: false,
+          ratio: 9 / 16,
+
+          // stream only available via https:
+          // force loading of Flash HLS via https
+          swfHls: "https://releases.flowplayer.org/7.0.4/flowplayerhls.swf",
+
+          clip: {
+            // enable hlsjs in desktop Safari for manual quality selection
+            // CAVEAT: may cause decoding problems with some streams!
+            hlsjs: {
+              safari: true,
+              recoverNetworkError: true,
+              listeners: ["hlsFragLoaded", "hlsLevelLoading", "hlsLevelLoaded"],
+            },
+            live: true,
+            dvr: true,
+            sources: [{ type: "application/x-mpegurl", src: hlsurl }],
+          },
+        });
+      }
+
+      function initialize() {
+        interval = setInterval(function () {
+          if (adseconds < 0) {
+            setCookieYear("adtime", "yes");
+            adseconds = 540;
+          }
+          getscores();
+          if (seconds < 0) {
+            //setCookieYear('adtime', 'yes');
+            timeout = Math.floor(Math.random() * 10000);
+            setTimeout(function () {
+              location.reload();
+            }, timeout);
+
+            //clearInterval(interval);
+
+            seconds = 540;
+
+            return;
+          }
+          /*if(seconds==530)
+			{
+				hlsurl='https://'+safety+'/'+key+'.m3u8';
+				console.log(hlsurl);
+				flowplayer(0).load(hlsurl);
+			}*/
+
+          seconds--;
+          adseconds--;
+          //console.log(seconds);
+        }, 10000);
+      }
+
+      function guid() {
+        function _p8(s) {
+          var p = (Math.random().toString(16) + "000000000").substr(2, 8);
+          return s ? "-" + p.substr(0, 4) + "-" + p.substr(4, 4) : p;
+        }
+        return _p8() + _p8(true) + _p8(true) + _p8();
+      }
+      // Changes XML to JSON
+      function xmlToJson(xml) {
+        // Create the return object
+        var obj = {};
+
+        if (xml.nodeType == 1) {
+          // element
+          // do attributes
+          if (xml.attributes.length > 0) {
+            obj["@attributes"] = {};
+            for (var j = 0; j < xml.attributes.length; j++) {
+              var attribute = xml.attributes.item(j);
+              obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
+            }
+          }
+        } else if (xml.nodeType == 3) {
+          // text
+          obj = xml.nodeValue;
+        }
+
+        // do children
+        if (xml.hasChildNodes()) {
+          for (var i = 0; i < xml.childNodes.length; i++) {
+            var item = xml.childNodes.item(i);
+            var nodeName = item.nodeName;
+            if (typeof obj[nodeName] == "undefined") {
+              obj[nodeName] = xmlToJson(item);
+            } else {
+              if (typeof obj[nodeName].push == "undefined") {
+                var old = obj[nodeName];
+                obj[nodeName] = [];
+                obj[nodeName].push(old);
+              }
+              obj[nodeName].push(xmlToJson(item));
+            }
+          }
+        }
+        return obj;
+      }
+      function getsafety() {
+        var urlsafety = "https://topstreams.info/safety.txt";
+        console.log("safety");
+        var tsXhr = new XMLHttpRequest();
+        tsXhr.onreadystatechange = function () {
+          if (tsXhr.readyState == 4 && tsXhr.status == 200) {
+            data = tsXhr.responseText.trim();
+            //console.log(data);
+            if (safety == "" || data == "") {
+              //safety=data;
+            } else {
+              if (safety != data) {
+                safety = data;
+                hlsurl = "https://" + safety + "/" + key + ".m3u8";
+                //flowplayer(0).load(hlsurl);
+                setTimeout(function () {
+                  location.reload();
+                }, 1000);
+              }
+            }
+          }
+        };
+        tsXhr.open("GET", urlsafety, true); // true for asynchronous
+        tsXhr.send(null);
+      }
+      function getscores() {
+        var d = new Date();
+        var n = Math.floor(d.getTime() / 2000);
+        var urlscore = "https:///" + key + ".json?t=" + n;
+        //var urlscore="https://topstreams.info/reg_1.xml?t="+n;
+        $.get(urlscore, function (data) {
+          //console.log(data);
+          let json = JSON.parse(data);
+          let gameclock = null;
+          let gameperiod = null;
+          //console.log(json['scores']['games']['game']);
+          //"detail":{"id":"10160000-0585-5130-3a67-8badf04019ca","gameClock":"08:27","homePointsTotal":0,"period":2,"phase":"INGAME","possessionTeam":
+          var i,
+            game,
+            games = json.games,
+            len = games.length;
+          for (i = 0; i < len; ++i) {
+            game = games[i];
+            away = game.awayTeam.abbreviation;
+            home = game.homeTeam.abbreviation;
+
+            if (teamcode == away || teamcode == home) {
+              if (game.hasOwnProperty("detail")) {
+                gameclock = game.detail.gameClock;
+                gameperiod = game.detail.period;
+              } else {
+                console.log("No Game Details for " + away + " at " + home);
+              }
+              //console.log(game);
+              break;
+            }
+          }
+          var teamcookie = getCookie(teamcode);
+          /*if(gameperiod !== null && gameperiod !== ''){
+			if(teamcookie=="")
+			{
+				setCookieDay(teamcode,gameperiod);
+				console.log("start period "+gameperiod);
+			}
+			else if(teamcookie != gameperiod)
+			{
+				setCookieDay(teamcode,gameperiod);
+				console.log("new period "+gameperiod);
+				//console.log("gamebreak");
+				//closeFullscreen();
+				timeout=Math.floor(Math.random()*10000);
+				console.log(timeout);
+				setTimeout(function() {
+				   location.reload();					   
+				}, timeout);
+			}
+		}*/
+          if (gameclock == null) {
+            gameclock = "15:00";
+          }
+          if (gameclock == "15:00") {
+            if (teamcookie == "") {
+              setCookieDay(teamcode, "pregame");
+              console.log("pregame");
+            }
+            if (teamcookie == "ingame") {
+              setCookieDay(teamcode, "gamebreak");
+              console.log("gamebreak");
+              //closeFullscreen();
+              timeout = Math.floor(Math.random() * 10000);
+              console.log(timeout);
+              setTimeout(function () {
+                location.reload();
+              }, timeout);
+            }
+          } else {
+            if (
+              teamcookie == "" ||
+              teamcookie == "pregame" ||
+              teamcookie == "gamebreak"
+            ) {
+              setCookieDay(teamcode, "ingame");
+              console.log("ingame");
+            }
+          }
+        });
+      }
+
+      function donate() {
+        ga("send", "event", "Donate", "clicked", "Fall Campaign");
+        document.getElementById("donateform").submit();
+        return true;
+      }
+      function report(type) {
+        var d = new Date();
+        $.get(
+          "/badads.php?type=" + type + "&time=" + d.getTime(),
+          function (data) {
+            alert(
+              "Thanks for reporting bad ads, we will alert our ad network."
+            );
+          }
+        );
+      }
+      function closeFullscreen() {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          /* Firefox */
+          document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+          /* Chrome, Safari and Opera */
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+          /* IE/Edge */
+          document.msExitFullscreen();
+        }
+      }
+      function gofullscreen() {
+        var noads = getCookie("no");
+        if (noads == "") {
+          setCookie15("no", "yes");
+          location.reload();
+        } else {
+          flowapi.fullscreen();
+        }
+      }
+
+      (function (global, factory) {
+        typeof exports === "object" && typeof module !== "undefined"
+          ? (module.exports = factory(global))
+          : typeof define === "function" && define.amd
+          ? define(factory)
+          : factory(global);
+      })(
+        typeof self !== "undefined"
+          ? self
+          : typeof window !== "undefined"
+          ? window
+          : typeof global !== "undefined"
+          ? global
+          : this,
+        function (global) {
+          "use strict";
+          global = global || {};
+          var _Base64 = global.Base64;
+          var version = "2.5.1";
+          var buffer;
+          if (typeof module !== "undefined" && module.exports) {
+            try {
+              buffer = eval("require('buffer').Buffer");
+            } catch (err) {
+              buffer = undefined;
+            }
+          }
+          var b64chars =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+          var b64tab = (function (bin) {
+            var t = {};
+            for (var i = 0, l = bin.length; i < l; i++) t[bin.charAt(i)] = i;
+            return t;
+          })(b64chars);
+          var fromCharCode = String.fromCharCode;
+          var cb_utob = function (c) {
+            if (c.length < 2) {
+              var cc = c.charCodeAt(0);
+              return cc < 128
+                ? c
+                : cc < 2048
+                ? fromCharCode(192 | (cc >>> 6)) + fromCharCode(128 | (cc & 63))
+                : fromCharCode(224 | ((cc >>> 12) & 15)) +
+                  fromCharCode(128 | ((cc >>> 6) & 63)) +
+                  fromCharCode(128 | (cc & 63));
+            } else {
+              var cc =
+                65536 +
+                (c.charCodeAt(0) - 55296) * 1024 +
+                (c.charCodeAt(1) - 56320);
+              return (
+                fromCharCode(240 | ((cc >>> 18) & 7)) +
+                fromCharCode(128 | ((cc >>> 12) & 63)) +
+                fromCharCode(128 | ((cc >>> 6) & 63)) +
+                fromCharCode(128 | (cc & 63))
+              );
+            }
+          };
+          var re_utob = /[\uD800-\uDBFF][\uDC00-\uDFFFF]|[^\x00-\x7F]/g;
+          var utob = function (u) {
+            return u.replace(re_utob, cb_utob);
+          };
+          var cb_encode = function (ccc) {
+            var padlen = [0, 2, 1][ccc.length % 3],
+              ord =
+                (ccc.charCodeAt(0) << 16) |
+                ((ccc.length > 1 ? ccc.charCodeAt(1) : 0) << 8) |
+                (ccc.length > 2 ? ccc.charCodeAt(2) : 0),
+              chars = [
+                b64chars.charAt(ord >>> 18),
+                b64chars.charAt((ord >>> 12) & 63),
+                padlen >= 2 ? "=" : b64chars.charAt((ord >>> 6) & 63),
+                padlen >= 1 ? "=" : b64chars.charAt(ord & 63),
+              ];
+            return chars.join("");
+          };
+          var btoa = global.btoa
+            ? function (b) {
+                return global.btoa(b);
+              }
+            : function (b) {
+                return b.replace(/[\s\S]{1,3}/g, cb_encode);
+              };
+          var _encode = buffer
+            ? buffer.from && Uint8Array && buffer.from !== Uint8Array.from
+              ? function (u) {
+                  return (
+                    u.constructor === buffer.constructor ? u : buffer.from(u)
+                  ).toString("base64");
+                }
+              : function (u) {
+                  return (
+                    u.constructor === buffer.constructor ? u : new buffer(u)
+                  ).toString("base64");
+                }
+            : function (u) {
+                return btoa(utob(u));
+              };
+          var encode = function (u, urisafe) {
+            return !urisafe
+              ? _encode(String(u))
+              : _encode(String(u))
+                  .replace(/[+\/]/g, function (m0) {
+                    return m0 == "+" ? "-" : "_";
+                  })
+                  .replace(/=/g, "");
+          };
+          var encodeURI = function (u) {
+            return encode(u, true);
+          };
+          var re_btou = new RegExp(
+            ["[À-ß][-¿]", "[à-ï][-¿]{2}", "[ð-÷][-¿]{3}"].join("|"),
+            "g"
+          );
+          var cb_btou = function (cccc) {
+            switch (cccc.length) {
+              case 4:
+                var cp =
+                    ((7 & cccc.charCodeAt(0)) << 18) |
+                    ((63 & cccc.charCodeAt(1)) << 12) |
+                    ((63 & cccc.charCodeAt(2)) << 6) |
+                    (63 & cccc.charCodeAt(3)),
+                  offset = cp - 65536;
+                return (
+                  fromCharCode((offset >>> 10) + 55296) +
+                  fromCharCode((offset & 1023) + 56320)
+                );
+              case 3:
+                return fromCharCode(
+                  ((15 & cccc.charCodeAt(0)) << 12) |
+                    ((63 & cccc.charCodeAt(1)) << 6) |
+                    (63 & cccc.charCodeAt(2))
+                );
+              default:
+                return fromCharCode(
+                  ((31 & cccc.charCodeAt(0)) << 6) | (63 & cccc.charCodeAt(1))
+                );
+            }
+          };
+          var btou = function (b) {
+            return b.replace(re_btou, cb_btou);
+          };
+          var cb_decode = function (cccc) {
+            var len = cccc.length,
+              padlen = len % 4,
+              n =
+                (len > 0 ? b64tab[cccc.charAt(0)] << 18 : 0) |
+                (len > 1 ? b64tab[cccc.charAt(1)] << 12 : 0) |
+                (len > 2 ? b64tab[cccc.charAt(2)] << 6 : 0) |
+                (len > 3 ? b64tab[cccc.charAt(3)] : 0),
+              chars = [
+                fromCharCode(n >>> 16),
+                fromCharCode((n >>> 8) & 255),
+                fromCharCode(n & 255),
+              ];
+            chars.length -= [0, 0, 2, 1][padlen];
+            return chars.join("");
+          };
+          var _atob = global.atob
+            ? function (a) {
+                return global.atob(a);
+              }
+            : function (a) {
+                return a.replace(/\S{1,4}/g, cb_decode);
+              };
+          var atob = function (a) {
+            return _atob(String(a).replace(/[^A-Za-z0-9\+\/]/g, ""));
+          };
+          var _decode = buffer
+            ? buffer.from && Uint8Array && buffer.from !== Uint8Array.from
+              ? function (a) {
+                  return (
+                    a.constructor === buffer.constructor
+                      ? a
+                      : buffer.from(a, "base64")
+                  ).toString();
+                }
+              : function (a) {
+                  return (
+                    a.constructor === buffer.constructor
+                      ? a
+                      : new buffer(a, "base64")
+                  ).toString();
+                }
+            : function (a) {
+                return btou(_atob(a));
+              };
+          var decode = function (a) {
+            return _decode(
+              String(a)
+                .replace(/[-_]/g, function (m0) {
+                  return m0 == "-" ? "+" : "/";
+                })
+                .replace(/[^A-Za-z0-9\+\/]/g, "")
+            );
+          };
+          var noConflict = function () {
+            var Base64 = global.Base64;
+            global.Base64 = _Base64;
+            return Base64;
+          };
+          global.Base64 = {
+            VERSION: version,
+            atob: atob,
+            btoa: btoa,
+            fromBase64: decode,
+            toBase64: encode,
+            utob: utob,
+            encode: encode,
+            encodeURI: encodeURI,
+            btou: btou,
+            decode: decode,
+            noConflict: noConflict,
+            __buffer__: buffer,
+          };
+          if (typeof Object.defineProperty === "function") {
+            var noEnum = function (v) {
+              return {
+                value: v,
+                enumerable: false,
+                writable: true,
+                configurable: true,
+              };
+            };
+            global.Base64.extendString = function () {
+              Object.defineProperty(
+                String.prototype,
+                "fromBase64",
+                noEnum(function () {
+                  return decode(this);
+                })
+              );
+              Object.defineProperty(
+                String.prototype,
+                "toBase64",
+                noEnum(function (urisafe) {
+                  return encode(this, urisafe);
+                })
+              );
+              Object.defineProperty(
+                String.prototype,
+                "toBase64URI",
+                noEnum(function () {
+                  return encode(this, true);
+                })
+              );
+            };
+          }
+          if (global["Meteor"]) {
+            Base64 = global.Base64;
+          }
+          if (typeof module !== "undefined" && module.exports) {
+            module.exports.Base64 = global.Base64;
+          } else if (typeof define === "function" && define.amd) {
+            define([], function () {
+              return global.Base64;
+            });
+          }
+          return { Base64: global.Base64 };
+        }
+      );
+    </script>
+  </head>
+
+  <body>
+    <div
+      id="hlsjslive"
+      class="fp-slim"
+      style="display: block; outline: none"
+    ></div>
+  </body>
+</html>

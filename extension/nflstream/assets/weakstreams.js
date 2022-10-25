@@ -1,7 +1,7 @@
-function muteUnmute(event) {
+function receiveMessage(event) {
   if (event.data.source !== "nflstream") return;
+  console.log(event.data, "receiveMessage");
   const video = document.getElementsByTagName("video")[0];
-  console.log(event.data, "muteUnmute", video);
   if (video) video.muted = event.data.mute;
 }
 
@@ -56,7 +56,7 @@ function gethlsUrl(UrlID, serverid, cid) {
 }
 
 function main() {
-  window.addEventListener("message", muteUnmute);
+  window.addEventListener("message", receiveMessage);
 
   const params = new URLSearchParams(window.location.search);
   const vidgstream = params.get("vidgstream");

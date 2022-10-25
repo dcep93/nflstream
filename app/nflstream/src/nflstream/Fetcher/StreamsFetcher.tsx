@@ -42,54 +42,64 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
       .then((hrefs) =>
         hrefs.map((href) =>
           fetchP(href, 10 * 60 * 1000)
-            .then((text) => {
-              const matchId = text.match(/var streamsMatchId = (\d+);/)![1];
-              const sport = text.match(/var streamsSport = "(\S+)"/)![1];
-              const origin = href.split("//")[1].split("/")[0];
-              return `https://sportscentral.io/streams-table/${matchId}/${sport}?new-ui=1&origin=${origin}`;
-            })
-            .then((url) => fetchP(url, 10 * 60 * 1000))
-            .then(parse)
-            .then((html) => html.getElementsByTagName("tr"))
-            .then((arr) => Array.from(arr))
-            .then((trs) =>
-              trs.find(
-                (tr) =>
-                  (
-                    tr.getElementsByClassName("username")[0] as HTMLElement
-                  )?.innerText.trim() === "Weak_Spell"
-              )
-            )
-            .then((tr) => tr?.getAttribute("data-stream-link"))
-            .then((url) =>
-              !url
-                ? undefined
-                : cacheF(url, 10 * 60 * 1000, () =>
-                    fetch("https://proxy420.appspot.com/proxy", {
-                      method: "POST",
-                      body: JSON.stringify({ url, maxAgeMs: 10 * 60 * 1000 }),
-                      headers: {
-                        "Content-Type": "application/json",
-                      },
-                    })
+            .then((text) => ({
+              text,
+              name: parse(text).title.split("Live Stream")[0],
+            }))
+            .then(({ text, name }) =>
+              Promise.resolve()
+                .then(() => {
+                  const matchId = text.match(/var streamsMatchId = (\d+);/)![1];
+                  const sport = text.match(/var streamsSport = "(\S+)"/)![1];
+                  const origin = href.split("//")[1].split("/")[0];
+                  return `https://sportscentral.io/streams-table/${matchId}/${sport}?new-ui=1&origin=${origin}`;
+                })
+                .then((url) => fetchP(url, 10 * 60 * 1000))
+                .then(parse)
+                .then((html) => html.getElementsByTagName("tr"))
+                .then((arr) => Array.from(arr))
+                .then((trs) =>
+                  trs.find(
+                    (tr) =>
+                      (
+                        tr.getElementsByClassName("username")[0] as HTMLElement
+                      )?.innerText.trim() === "topstreamer"
                   )
-                    .then((resp) => resp.text())
-                    .then(parseTinyUrl)
-                    .then((href) =>
-                      !href
-                        ? undefined
-                        : fetchP(href!, 24 * 60 * 60 * 1000).then(
-                            (message) => ({
-                              name: parse(message).title.split(
-                                " - WeakStreams.com - "
-                              )[0],
-                              url: getStreamUrlFromWeakStreamsHTML(
-                                message,
-                                hasExtension
-                              ),
-                            })
-                          )
-                    )
+                )
+                .then((tr) => tr?.getAttribute("data-stream-link"))
+                .then(
+                  (url) =>
+                    !url
+                      ? undefined
+                      : cacheF(url, 10 * 60 * 1000, () =>
+                          fetch("https://proxy420.appspot.com/proxy", {
+                            method: "POST",
+                            body: JSON.stringify({
+                              url,
+                              maxAgeMs: 10 * 60 * 1000,
+                            }),
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                          })
+                        )
+                          .then((resp) => resp.text())
+                          .then(parseTinyUrl)
+                          .then((url) => ({ name, url }))
+                  // .then((href) =>
+                  //   !href
+                  //     ? undefined
+                  //     : fetchP(href!, 24 * 60 * 60 * 1000).then(
+                  //         (message) => ({
+                  //           name,
+                  //           url: getStreamUrlFromHTML(
+                  //             message,
+                  //             hasExtension
+                  //           ),
+                  //         })
+                  //       )
+                  // )
+                )
             )
         )
       )
@@ -163,7 +173,7 @@ function parseTinyUrl(message: string) {
     });
 }
 
-function getStreamUrlFromWeakStreamsHTML(
+export function getStreamUrlFromWeakStreamsHTML(
   message: string,
   hasExtension: boolean
 ) {

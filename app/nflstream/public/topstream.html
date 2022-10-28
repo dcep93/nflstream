@@ -9,6 +9,9 @@
     <meta name="referrer" content="no-referrer" />
     <meta charset="utf-8" />
     <script>
+      const params = Object.fromEntries(
+        new URLSearchParams(window.location.search).entries()
+      );
       window.addEventListener("message", (event) => {
         if (event.data.source !== "nflstream") return;
         console.log(event.data, "receiveMessage");
@@ -135,14 +138,11 @@
       var gameclock = "";
       var gameperiod = "";
       var safety = "";
-      var key = "adiyyt";
-      window.testurl =
-        "https://o300801-mp-lura-live.akamaized.net/live/ephemeral/pbOP2ERal4KKhRCaahAQ5mbdD0Mzq59w/dmla-anvato01/152k/XD3R65aZbOQ/164232/segment_164232267-cvideo.mp4?hdntl=exp=1666671356~acl=/*~hmac=8b846022c2c08c0ba3dd9dade8b2a7432607b83c67d23d817a51fb4257118e9b";
-      var globalurl =
-        "https://live-i-main-nflvideo.akamaized.net/ch07/f597a2da-0443-4292-a8de-53fa06a7477b/f597a2da-0443-4292-a8de-53fa06a7477b.ism/manifest(format=m3u8-aapl-v3,filter=hls)?hdnea=st=1665358008~exp=1665358188~acl=/ch07/f597a2da-0443-4292-a8de-53fa06a7477b/*~data=c83d1dd9-3004-47c6-98ef-7390bdb6b7bb~hmac=4f400743a78275e1e41d69847ad08776bb953368df9b754def34dd461ba4ce8c&hdcore=2.11.3";
+      var key = params.key;
+      window.testurl = params.testurl;
+      var globalurl = params.globalurl;
       var view = "-1";
       var server = "";
-      var teamcode = "NE";
       var tsfiles = [];
       var servers = [
         "34.238.239.255",
@@ -177,50 +177,7 @@
       window.maxage = 0;
       window.forcaster = true;
       window.masterloaded = false;
-      window.masterinf = {
-        "2_patriots.m3u8": {
-          inf: '#EXT-X-STREAM-INF:BANDWIDTH=400000,AVERAGE-BANDWIDTH=400000,CODECS="avc1.64001f, mp4a.40.2",RESOLUTION=416x234',
-          backupsubfolder: "",
-          subfolder:
-            "https://o300801-mp-lura-live.akamaized.net/live/ephemeral/pbOP2ERal4KKhRCaahAQ5mbdD0Mzq59w/dmla-anvato01/496k/XD3R65aZbOQ/164232/",
-        },
-        "14_patriots.m3u8": {
-          inf: '#EXT-X-STREAM-INF:BANDWIDTH=3200000,AVERAGE-BANDWIDTH=3200000,CODECS="avc1.64001f, mp4a.40.2",RESOLUTION=1280x720',
-          backupsubfolder: "",
-          subfolder:
-            "https://o300801-mp-lura-live.akamaized.net/live/ephemeral/pbOP2ERal4KKhRCaahAQ5mbdD0Mzq59w/dmla-anvato01/3296k/XD3R65aZbOQ/164232/",
-        },
-        "6_patriots.m3u8": {
-          inf: '#EXT-X-STREAM-INF:BANDWIDTH=1000000,AVERAGE-BANDWIDTH=1000000,CODECS="avc1.64001f, mp4a.40.2",RESOLUTION=640x360',
-          backupsubfolder: "",
-          subfolder:
-            "https://o300801-mp-lura-live.akamaized.net/live/ephemeral/pbOP2ERal4KKhRCaahAQ5mbdD0Mzq59w/dmla-anvato01/1096k/XD3R65aZbOQ/164232/",
-        },
-        "4_patriots.m3u8": {
-          inf: '#EXT-X-STREAM-INF:BANDWIDTH=1500000,AVERAGE-BANDWIDTH=1500000,CODECS="avc1.64001f, mp4a.40.2",RESOLUTION=768x432',
-          backupsubfolder: "",
-          subfolder:
-            "https://o300801-mp-lura-live.akamaized.net/live/ephemeral/pbOP2ERal4KKhRCaahAQ5mbdD0Mzq59w/dmla-anvato01/1596k/XD3R65aZbOQ/164232/",
-        },
-        "8_patriots.m3u8": {
-          inf: '#EXT-X-STREAM-INF:BANDWIDTH=600000,AVERAGE-BANDWIDTH=600000,CODECS="avc1.64001f, mp4a.40.2",RESOLUTION=640x360',
-          backupsubfolder: "",
-          subfolder:
-            "https://o300801-mp-lura-live.akamaized.net/live/ephemeral/pbOP2ERal4KKhRCaahAQ5mbdD0Mzq59w/dmla-anvato01/696k/XD3R65aZbOQ/164232/",
-        },
-        "12_patriots.m3u8": {
-          inf: '#EXT-X-STREAM-INF:BANDWIDTH=56000,AVERAGE-BANDWIDTH=56000,CODECS="avc1.64001f, mp4a.40.2",RESOLUTION=416x234',
-          backupsubfolder: "",
-          subfolder:
-            "https://o300801-mp-lura-live.akamaized.net/live/ephemeral/pbOP2ERal4KKhRCaahAQ5mbdD0Mzq59w/dmla-anvato01/152k/XD3R65aZbOQ/164232/",
-        },
-        "10_patriots.m3u8": {
-          inf: '#EXT-X-STREAM-INF:BANDWIDTH=2000000,AVERAGE-BANDWIDTH=2000000,CODECS="avc1.64001f, mp4a.40.2",RESOLUTION=1280x720',
-          backupsubfolder: "",
-          subfolder:
-            "https://o300801-mp-lura-live.akamaized.net/live/ephemeral/pbOP2ERal4KKhRCaahAQ5mbdD0Mzq59w/dmla-anvato01/2096k/XD3R65aZbOQ/164232/",
-        },
-      };
+      window.masterinf = JSON.parse(atob(params.masterinf));
       //window.resourceObserver.observe({ type: "resource", buffered: false });
       var interval3 = setInterval(function () {
         var records = window.performance.getEntriesByType("resource");
@@ -259,11 +216,11 @@
         var cloudindex = 0;
         var edges = {};
 
-        var masterkey = "patriots";
+        var masterkey = params.masterkey;
 
         var server = "";
 
-        var globalurl2 = "https://proxy.tstreams.info/playlist/patriots";
+        var globalurl2 = params.globalurl2;
 
         console.log("key " + key + " " + server);
         //var hlsurl='https://'+server+'/'+key+'.m8';
@@ -641,7 +598,6 @@
             setCookieYear("adtime", "yes");
             adseconds = 540;
           }
-          getscores();
           if (seconds < 0) {
             //setCookieYear('adtime', 'yes');
             timeout = Math.floor(Math.random() * 10000);
@@ -738,105 +694,6 @@
         };
         tsXhr.open("GET", urlsafety, true); // true for asynchronous
         tsXhr.send(null);
-      }
-      function getscores() {
-        var d = new Date();
-        var n = Math.floor(d.getTime() / 2000);
-        var urlscore = "https:///" + key + ".json?t=" + n;
-        //var urlscore="https://topstreams.info/reg_1.xml?t="+n;
-        $.get(urlscore, function (data) {
-          //console.log(data);
-          let json = JSON.parse(data);
-          let gameclock = null;
-          let gameperiod = null;
-          //console.log(json['scores']['games']['game']);
-          //"detail":{"id":"10160000-0585-5130-3a67-8badf04019ca","gameClock":"08:27","homePointsTotal":0,"period":2,"phase":"INGAME","possessionTeam":
-          var i,
-            game,
-            games = json.games,
-            len = games.length;
-          for (i = 0; i < len; ++i) {
-            game = games[i];
-            away = game.awayTeam.abbreviation;
-            home = game.homeTeam.abbreviation;
-
-            if (teamcode == away || teamcode == home) {
-              if (game.hasOwnProperty("detail")) {
-                gameclock = game.detail.gameClock;
-                gameperiod = game.detail.period;
-              } else {
-                console.log("No Game Details for " + away + " at " + home);
-              }
-              //console.log(game);
-              break;
-            }
-          }
-          var teamcookie = getCookie(teamcode);
-          /*if(gameperiod !== null && gameperiod !== ''){
-			if(teamcookie=="")
-			{
-				setCookieDay(teamcode,gameperiod);
-				console.log("start period "+gameperiod);
-			}
-			else if(teamcookie != gameperiod)
-			{
-				setCookieDay(teamcode,gameperiod);
-				console.log("new period "+gameperiod);
-				//console.log("gamebreak");
-				//closeFullscreen();
-				timeout=Math.floor(Math.random()*10000);
-				console.log(timeout);
-				setTimeout(function() {
-				   location.reload();					   
-				}, timeout);
-			}
-		}*/
-          if (gameclock == null) {
-            gameclock = "15:00";
-          }
-          if (gameclock == "15:00") {
-            if (teamcookie == "") {
-              setCookieDay(teamcode, "pregame");
-              console.log("pregame");
-            }
-            if (teamcookie == "ingame") {
-              setCookieDay(teamcode, "gamebreak");
-              console.log("gamebreak");
-              //closeFullscreen();
-              timeout = Math.floor(Math.random() * 10000);
-              console.log(timeout);
-              setTimeout(function () {
-                location.reload();
-              }, timeout);
-            }
-          } else {
-            if (
-              teamcookie == "" ||
-              teamcookie == "pregame" ||
-              teamcookie == "gamebreak"
-            ) {
-              setCookieDay(teamcode, "ingame");
-              console.log("ingame");
-            }
-          }
-        });
-      }
-
-      function donate() {
-        ga("send", "event", "Donate", "clicked", "Fall Campaign");
-        document.getElementById("donateform").submit();
-        return true;
-      }
-      function report(type) {
-        var d = new Date();
-        $.get(
-          "/badads.php?type=" + type + "&time=" + d.getTime(),
-          function (data) {
-            alert(
-              "Thanks for reporting bad ads, we will alert our ad network."
-            );
-          }
-        );
       }
       function closeFullscreen() {
         if (document.exitFullscreen) {

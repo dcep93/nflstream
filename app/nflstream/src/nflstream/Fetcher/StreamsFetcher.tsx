@@ -84,14 +84,14 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
                         })
                       )
                         .then((resp) => resp.text())
-                        .then(parseTinyUrl)
+                        .then((text) => parseTinyUrl(text, url))
                         .then((url) =>
                           !url
                             ? undefined
                             : fetchP(url!, 24 * 60 * 60 * 1000).then(
                                 (message) => ({
                                   name,
-                                  url: getStreamUrl(url, message, hasExtension),
+                                  url: getStreamUrl(message),
                                 })
                               )
                         )
@@ -143,7 +143,7 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
   }
 }
 
-function parseTinyUrl(message: string) {
+function parseTinyUrl(message: string, url: string) {
   function dF(s: string) {
     var s1 = unescape(s.substr(0, s.length - 1));
     var t = "";
@@ -159,27 +159,32 @@ function parseTinyUrl(message: string) {
     .then((message) => message.match(/dF\('(.+?)'\)/)![1])
     .then(dF)
     .then(parse)
-    .then(
-      (html) =>
-        html.body.innerHTML.match(/href="(.*?)".*Click Here to Watch/)![1]
+    .then((html) =>
+      html.body.innerHTML.match(/href="(.*?)".*Click Here to Watch/)
     )
+    .then((matched) => (!matched ? url : matched[1]))
     .catch((err) => {
       console.error(err);
       return null;
     });
 }
 
-function getStreamUrl(url: string, message: string, hasExtension: boolean) {
-  return url;
-  // if (hasExtension) {
-  //   const vidgstream = encodeURIComponent(
-  //     message.match(/var vidgstream = "(.+?)";/)![1]
-  //   );
-  //   const token = message.match(/token: '(.+?)',/)![1];
-  //   return `http://weakstreams.com/favicon.ico?token=${token}&vidgstream=${vidgstream}`;
-  // } else {
-  //   return message.match(/http:\/\/weakstreams.com\/streams\/\d+/)![0];
-  // }
+function getStreamUrl(message: string) {
+  return `/topstream.html?${Object.entries({
+    key: /var key= '(.*)';/,
+    globalurl: /var globalurl= '(.*)';/,
+    masterkey: /var masterkey= '(.*)'/,
+    globalurl2: /var globalurl2='(.*)'/,
+    masterinf: /window.masterinf = (.*);/,
+    testurl: /window.testurl= '(.*)';/,
+  })
+    .map(([k, re]) => ({ k, matched: message.match(re)![1] }))
+    .map(({ k, matched }) => ({
+      k,
+      matched: matched.startsWith("{") ? btoa(matched) : matched,
+    }))
+    .map(({ k, matched }) => `${k}=${matched}`)
+    .join("&")}`;
 }
 
 function fetchP(

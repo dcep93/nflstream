@@ -27,16 +27,17 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
       .then((html) => html.getElementsByClassName("competition"))
       .then((arr) => Array.from(arr))
       .then((competitions) =>
-        competitions.find((competition) =>
+        competitions.filter((competition) =>
           Array.from(competition.getElementsByClassName("name")).find((name) =>
             name.innerHTML.startsWith("NFL")
           )
         )
       )
-      .then(
-        (competition) => competition?.getElementsByClassName("col-md-6") || []
+      .then((competitions) =>
+        competitions.flatMap((competition) =>
+          Array.from(competition.getElementsByClassName("col-md-6"))
+        )
       )
-      .then((arr) => Array.from(arr))
       .then((matches) =>
         matches.map((match) => match.getElementsByTagName("a")[0].href)
       )
@@ -160,7 +161,8 @@ function parseTinyUrl(message: string, url: string) {
     .then(dF)
     .then(parse)
     .then((html) =>
-      html.body.innerHTML.match(/href="(.*?)".*Click Here to Watch/)
+      // html.body.innerHTML.match(/href="(.*?)".*Click Here to Watch/)
+      html.head.innerHTML.match(/window.location.href = "(.*?)";/)
     )
     .then((matched) => (!matched ? url : matched[1]))
     .catch((err) => {

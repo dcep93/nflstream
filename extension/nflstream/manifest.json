@@ -1,18 +1,42 @@
 {
   "name": "NFL Stream",
-  "description": "Assistant for nflstream.web.app: allows fetching of logs.",
-  "version": "5.0.0",
+  "description": "Assistant for nflstream.web.app: mutes non-active screens and allows fetching of logs.",
+  "version": "3.1.1",
   "icons": {
     "16": "favicon.png",
     "48": "favicon.png",
     "128": "favicon.png"
   },
+  "content_scripts": [
+    {
+      "matches": ["http://weakstreams.com/favicon.ico?*"],
+      "js": ["content_script.js"],
+      "all_frames": true
+    }
+  ],
+  "permissions": ["declarativeNetRequest"],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset_1",
+        "enabled": true,
+        "path": "weakstreams_ruleset_1.json"
+      }
+    ]
+  },
   "background": {
     "service_worker": "background.js"
   },
+  "host_permissions": ["*://weakstreams.com/favicon.ico?*"],
   "externally_connectable": {
     "matches": ["http://localhost/*", "https://nflstream.web.app/"],
     "accept_tls_channel_id": true
   },
+  "web_accessible_resources": [
+    {
+      "resources": ["assets/*"],
+      "matches": ["http://weakstreams.com/*"]
+    }
+  ],
   "manifest_version": 3
 }

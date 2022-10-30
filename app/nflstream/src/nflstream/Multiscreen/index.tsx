@@ -184,7 +184,7 @@ function IframeWrapper(props: { screen: ScreenType; key: number }) {
             sandbox={"allow-scripts allow-same-origin"}
             style={{
               height: "100%",
-              width: "98%",
+              width: "100%",
             }}
             title={props.screen.iFrameTitle}
             src={props.screen.url}

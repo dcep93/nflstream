@@ -1,17 +1,30 @@
 import Fetcher, { cacheF, parse, StreamType } from ".";
 
+const username: string = "topstreamer"; // "Weak_Spell"
+
 class StreamsFetcher extends Fetcher<StreamType[], boolean> {
   intervalMs = 10 * 60 * 1000;
+  static firstTime = true;
   getResponse() {
     //   return Promise.resolve([
     //     { url: "http://weakstreams.com/streams/10309005", name: "test2" },
     //     { url: "http://example.org", name: "example", espnId: "401437761" },
+    //     { url: "http://localhost:3000/topstream.html", name: "test1" },
     //   ]);
     // }
 
     // real() {
     const hasExtension = this.props.payload;
-    return fetchP("https://reddit.nflbite.com/", 10 * 60 * 1000)
+    return fetchP(
+      "https://reddit.nflbite.com/",
+      (() => {
+        if (StreamsFetcher.firstTime) {
+          StreamsFetcher.firstTime = false;
+          return 0;
+        }
+        return 10 * 60 * 1000;
+      })()
+    )
       .then(parse)
       .then((html) => html.getElementsByClassName("competition"))
       .then((arr) => Array.from(arr))
@@ -33,54 +46,59 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
       .then((hrefs) =>
         hrefs.map((href) =>
           fetchP(href, 10 * 60 * 1000)
-            .then((text) => {
-              const matchId = text.match(/var streamsMatchId = (\d+);/)![1];
-              const sport = text.match(/var streamsSport = "(\S+)"/)![1];
-              const origin = href.split("//")[1].split("/")[0];
-              return `https://sportscentral.io/streams-table/${matchId}/${sport}?new-ui=1&origin=${origin}`;
-            })
-            .then((url) => fetchP(url, 10 * 60 * 1000))
-            .then(parse)
-            .then((html) => html.getElementsByTagName("tr"))
-            .then((arr) => Array.from(arr))
-            .then((trs) =>
-              trs.find(
-                (tr) =>
-                  (
-                    tr.getElementsByClassName("username")[0] as HTMLElement
-                  )?.innerText.trim() === "Weak_Spell"
-              )
-            )
-            .then((tr) => tr?.getAttribute("data-stream-link"))
-            .then((url) =>
-              !url
-                ? undefined
-                : cacheF(url, 10 * 60 * 1000, () =>
-                    fetch("https://proxy420.appspot.com/proxy", {
-                      method: "POST",
-                      body: JSON.stringify({ url, maxAgeMs: 10 * 60 * 1000 }),
-                      headers: {
-                        "Content-Type": "application/json",
-                      },
-                    })
+            .then((text) => ({
+              text,
+              name: parse(text).title.split("Live Stream")[0],
+            }))
+            .then(({ text, name }) =>
+              Promise.resolve()
+                .then(() => {
+                  const matchId = text.match(/var streamsMatchId = (\d+);/)![1];
+                  const sport = text.match(/var streamsSport = "(\S+)"/)![1];
+                  const origin = href.split("//")[1].split("/")[0];
+                  return `https://sportscentral.io/streams-table/${matchId}/${sport}?new-ui=1&origin=${origin}`;
+                })
+                .then((url) => fetchP(url, 10 * 60 * 1000))
+                .then(parse)
+                .then((html) => html.getElementsByTagName("tr"))
+                .then((arr) => Array.from(arr))
+                .then((trs) =>
+                  trs.find(
+                    (tr) =>
+                      (
+                        tr.getElementsByClassName("username")[0] as HTMLElement
+                      )?.innerText.trim() === username
                   )
-                    .then((resp) => resp.text())
-                    .then(parseTinyUrl)
-                    .then((href) =>
-                      !href
-                        ? undefined
-                        : fetchP(href!, 24 * 60 * 60 * 1000).then(
-                            (message) => ({
-                              name: parse(message).title.split(
-                                " - WeakStreams.com - "
-                              )[0],
-                              url: getStreamUrlFromWeakStreamsHTML(
-                                message,
-                                hasExtension
-                              ),
-                            })
-                          )
-                    )
+                )
+                .then((tr) => tr?.getAttribute("data-stream-link"))
+                .then((url) =>
+                  !url
+                    ? undefined
+                    : cacheF(url, 10 * 60 * 1000, () =>
+                        fetch("https://proxy420.appspot.com/proxy", {
+                          method: "POST",
+                          body: JSON.stringify({
+                            url,
+                            maxAgeMs: 10 * 60 * 1000,
+                          }),
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                        })
+                      )
+                        .then((resp) => resp.text())
+                        .then((text) => parseTinyUrl(text, url))
+                        .then((url) =>
+                          !url
+                            ? undefined
+                            : fetchP(url!, 24 * 60 * 60 * 1000).then(
+                                (message) => ({
+                                  name,
+                                  url: getStreamUrl(message),
+                                })
+                              )
+                        )
+                )
             )
         )
       )
@@ -128,7 +146,7 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
   }
 }
 
-function parseTinyUrl(message: string) {
+function parseTinyUrl(message: string, url: string) {
   function dF(s: string) {
     var s1 = unescape(s.substr(0, s.length - 1));
     var t = "";
@@ -144,30 +162,35 @@ function parseTinyUrl(message: string) {
     .then((message) => message.match(/dF\('(.+?)'\)/)![1])
     .then(dF)
     .then(parse)
-    .then(
-      (html) =>
-        // html.body.innerHTML.match(/href="(.*?)".*Click Here to Watch/)![1]
-        html.head.innerHTML.match(/window.location.href = "(.*?)";/)![1]
+    .then((html) =>
+      // html.body.innerHTML.match(/href="(.*?)".*Click Here to Watch/)
+      html.head.innerHTML.match(/window.location.href = "(.*?)";/)
     )
+    .then((matched) => (!matched ? url : matched[1]))
     .catch((err) => {
       console.error(err);
       return null;
     });
 }
 
-function getStreamUrlFromWeakStreamsHTML(
-  message: string,
-  hasExtension: boolean
-) {
-  if (hasExtension) {
-    const vidgstream = encodeURIComponent(
-      message.match(/var vidgstream = "(.+?)";/)![1]
-    );
-    const token = message.match(/token: '(.+?)',/)![1];
-    return `http://weakstreams.com/favicon.ico?token=${token}&vidgstream=${vidgstream}`;
-  } else {
-    return message.match(/http:\/\/weakstreams.com\/streams\/\d+/)![0];
-  }
+function getStreamUrl(message: string) {
+  return username === "Weak_Spell"
+    ? message.match(/http:\/\/weakstreams.com\/streams\/\d+/)![0]
+    : `/topstream.html?${Object.entries({
+        key: /var key= '(.*)';/,
+        globalurl: /var globalurl= '(.*)';/,
+        masterkey: /var masterkey= '(.*)'/,
+        globalurl2: /var globalurl2='(.*)'/,
+        masterinf: /window.masterinf = (.*);/,
+        testurl: /window.testurl= '(.*)';/,
+      })
+        .map(([k, re]) => ({ k, matched: message.match(re)![1] }))
+        .map(({ k, matched }) => ({
+          k,
+          matched: matched.startsWith("{") ? btoa(matched) : matched,
+        }))
+        .map(({ k, matched }) => `${k}=${matched}`)
+        .join("&")}`;
 }
 
 function fetchP(

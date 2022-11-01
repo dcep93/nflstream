@@ -178,7 +178,6 @@ function getStreamUrl(message: string) {
     ? message.match(/http:\/\/weakstreams.com\/streams\/\d+/)![0]
     : `/topstream.html?${Object.entries({
         key: /var key= '(.*)';/,
-        // globalurl: /var globalurl= '(.*)';/,
         masterkey: /var masterkey= '(.*)'/,
         masterinf: /window.masterinf = (.*);/,
       })

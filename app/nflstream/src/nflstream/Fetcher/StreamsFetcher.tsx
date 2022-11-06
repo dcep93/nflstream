@@ -48,7 +48,10 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
           fetchP(href, 10 * 60 * 1000)
             .then((text) => ({
               text,
-              name: parse(text).title.split("Live Stream")[0],
+              name: parse(text)
+                .title.split("Live Stream")[0]
+                .split(" Vs ")
+                .join(" vs "),
             }))
             .then(({ text, name }) =>
               Promise.resolve()

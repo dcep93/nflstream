@@ -39,7 +39,7 @@ class Menu extends React.Component<
                     className={[style.bubble, style.hover].join(" ")}
                     onClick={(e) =>
                       e.metaKey
-                        ? window.open(obj.stream.url)
+                        ? window.open(obj.stream.raw_url)
                         : this.props.addScreen({
                             iFrameTitle: (Math.random() + 1)
                               .toString(36)
@@ -50,7 +50,7 @@ class Menu extends React.Component<
                           })
                     }
                   >
-                    <div title={obj.stream.url}>{obj.stream.name}</div>
+                    <div title={obj.stream.raw_url}>{obj.stream.name}</div>
                   </div>
                 </div>
               ))}

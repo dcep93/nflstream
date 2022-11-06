@@ -74,6 +74,8 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
                 .then((url) =>
                   !url
                     ? undefined
+                    : !url.startsWith("https://cutin.it")
+                    ? url
                     : cacheF(url, 10 * 60 * 1000, () =>
                         fetch("https://proxy420.appspot.com/proxy", {
                           method: "POST",
@@ -84,26 +86,26 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
                           headers: {
                             "Content-Type": "application/json",
                           },
-                        })
-                      )
-                        .then((resp) => resp.text())
-                        .then((text) => parseTinyUrl(text, url))
-                        .then((url) =>
-                          !url
-                            ? undefined
-                            : fetchP(url!, 24 * 60 * 60 * 1000).then(
-                                (message) => ({
-                                  name,
-                                  url: getStreamUrl(message),
-                                })
-                              )
-                        )
+                        }).then((resp) => resp.text())
+                      ).then((text) => parseTinyUrl(text))
+                )
+                .then((raw_url) =>
+                  !raw_url
+                    ? undefined
+                    : fetchP(raw_url!, 24 * 60 * 60 * 1000).then((message) => ({
+                        name,
+                        raw_url,
+                        url: getStreamUrl(message),
+                      }))
                 )
             )
         )
       )
       .then((promises) => Promise.all(promises))
-      .then((streams) => streams.filter(Boolean) as StreamType[])
+      .then(
+        (streams) =>
+          streams.filter((stream) => stream !== undefined) as StreamType[]
+      )
       .then((streams) =>
         !hasExtension
           ? streams
@@ -141,12 +143,11 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
                   ...stream,
                 }))
               )
-      )
-      .then((streams) => streams as StreamType[]);
+      );
   }
 }
 
-function parseTinyUrl(message: string, url: string) {
+function parseTinyUrl(message: string) {
   function dF(s: string) {
     var s1 = unescape(s.substr(0, s.length - 1));
     var t = "";
@@ -162,11 +163,11 @@ function parseTinyUrl(message: string, url: string) {
     .then((message) => message.match(/dF\('(.+?)'\)/)![1])
     .then(dF)
     .then(parse)
-    .then((html) =>
-      // html.body.innerHTML.match(/href="(.*?)".*Click Here to Watch/)
-      html.head.innerHTML.match(/window.location.href = "(.*?)";/)
+    .then(
+      (html) =>
+        // html.body.innerHTML.match(/href="(.*?)".*Click Here to Watch/)
+        html.head.innerHTML.match(/window.location.href = "(.*?)";/)![1]
     )
-    .then((matched) => (!matched ? url : matched[1]))
     .catch((err) => {
       console.error(err);
       return null;

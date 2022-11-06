@@ -2,6 +2,7 @@ import React from "react";
 
 export type StreamType = {
   url: string;
+  raw_url: string;
   name: string;
   espnId?: string;
 };

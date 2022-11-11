@@ -77,7 +77,7 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
                 .then((url) =>
                   !url
                     ? undefined
-                    : !url.startsWith("https://cutin.it")
+                    : !url.startsWith("https://tinyurl")
                     ? url
                     : cacheF(url, 10 * 60 * 1000, () =>
                         fetch("https://proxy420.appspot.com/proxy", {
@@ -151,6 +151,7 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
 }
 
 function parseTinyUrl(message: string) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function dF(s: string) {
     var s1 = unescape(s.substr(0, s.length - 1));
     var t = "";
@@ -162,19 +163,22 @@ function parseTinyUrl(message: string) {
     const rval = unescape(t);
     return rval;
   }
-  return Promise.resolve(message)
-    .then((message) => message.match(/dF\('(.+?)'\)/)![1])
-    .then(dF)
-    .then(parse)
-    .then(
-      (html) =>
-        // html.body.innerHTML.match(/href="(.*?)".*Click Here to Watch/)
-        html.head.innerHTML.match(/window.location.href = "(.*?)";/)![1]
-    )
-    .catch((err) => {
-      console.error(err);
-      return null;
-    });
+  console.log(message);
+  return (
+    Promise.resolve(message)
+      // .then((message) => message.match(/dF\('(.+?)'\)/)![1])
+      // .then(dF)
+      .then(parse)
+      .then(
+        (html) =>
+          // html.body.innerHTML.match(/href="(.*?)".*Click Here to Watch/)![1]
+          html.head.innerHTML.match(/window.location.href = "(.*?)";/)![1]
+      )
+      .catch((err) => {
+        console.error(err);
+        return null;
+      })
+  );
 }
 
 function getStreamUrl(message: string) {

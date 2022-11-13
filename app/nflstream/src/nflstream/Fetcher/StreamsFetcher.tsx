@@ -51,7 +51,7 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
             .then((text) => ({
               text,
               name: parse(text)
-                .title.split("Live Stream")[0]
+                .title.split(" Live Stream")[0]
                 .split(" Vs ")
                 .join(" vs "),
             }))

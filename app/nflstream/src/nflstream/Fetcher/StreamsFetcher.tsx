@@ -37,11 +37,13 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
       )
       .then((competitions) =>
         competitions.flatMap((competition) =>
-          Array.from(competition.getElementsByClassName("col-md-6"))
+          Array.from(competition.getElementsByClassName("matches")[0].children)
         )
       )
       .then((matches) =>
-        matches.map((match) => match.getElementsByTagName("a")[0].href)
+        matches
+          .filter((match) => !match.innerHTML.includes("Redzone"))
+          .map((match) => match.getElementsByTagName("a")[0].href)
       )
       .then((hrefs) =>
         hrefs.map((href) =>
@@ -163,7 +165,6 @@ function parseTinyUrl(message: string) {
     const rval = unescape(t);
     return rval;
   }
-  console.log(message);
   return (
     Promise.resolve(message)
       // .then((message) => message.match(/dF\('(.+?)'\)/)![1])

@@ -37,8 +37,7 @@ type PropsType = {
 };
 class DelayedLog extends React.Component<PropsType, { log: LogType }> {
   componentDidUpdate(prevProps: PropsType) {
-    if (this.props.log?.timestamp !== prevProps?.log?.timestamp)
-      setTimeout(() => this.updateNow(this.props.log), delayMs);
+    setTimeout(() => this.updateNow(this.props.log), delayMs);
   }
 
   updateNow(log: LogType) {

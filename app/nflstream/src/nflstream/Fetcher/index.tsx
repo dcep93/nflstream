@@ -4,6 +4,7 @@ export type StreamType = {
   url: string;
   raw_url: string;
   name: string;
+  stream_id: string;
   espnId?: string;
 };
 

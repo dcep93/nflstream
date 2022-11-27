@@ -26,6 +26,7 @@ class NFLStream extends React.Component<
     streams?: StreamType[];
     screens: ScreenType[];
     hasExtension?: boolean;
+    initialized?: boolean;
   }
 > {
   componentDidMount() {
@@ -49,6 +50,28 @@ class NFLStream extends React.Component<
         this.setState({ hasExtension: false });
       });
     }
+  }
+
+  componentDidUpdate() {
+    if (!this.state?.initialized) {
+      if (this.state?.streams !== undefined) {
+        this.setState({
+          initialized: true,
+          screens: window.location.hash
+            .split(",")
+            .map((stream_id) =>
+              this.state.streams!.find((s) => s.stream_id === stream_id)
+            )
+            .filter(Boolean)
+            .map((stream) => streamToScreen(stream!, false)),
+        });
+      } else {
+        return;
+      }
+    }
+    window.location.hash = `#${(this.state?.screens || [])
+      .map((s) => s.stream_id)
+      .join(",")}`;
   }
 
   render() {
@@ -94,6 +117,18 @@ class NFLStream extends React.Component<
       </div>
     );
   }
+}
+
+export function streamToScreen(
+  stream: StreamType,
+  skipLog: boolean
+): ScreenType {
+  return {
+    iFrameTitle: (Math.random() + 1).toString(36).substring(2),
+    skipLog,
+    ref: React.createRef() as React.RefObject<HTMLIFrameElement>,
+    ...stream,
+  };
 }
 
 function Password() {

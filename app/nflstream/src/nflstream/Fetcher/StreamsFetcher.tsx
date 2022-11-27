@@ -94,6 +94,10 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
                     : fetchP(raw_url!, 24 * 60 * 60 * 1000).then((message) => ({
                         name,
                         raw_url,
+                        stream_id: raw_url
+                          .split("?")[0]
+                          .split("/")
+                          .reverse()[0],
                         url: getStreamUrl(message),
                       }))
                 )

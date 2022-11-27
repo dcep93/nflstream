@@ -1,4 +1,5 @@
 import React from "react";
+import { streamToScreen } from ".";
 import { StreamType } from "./Fetcher";
 import style from "./index.module.css";
 import { ScreenType } from "./Multiscreen";
@@ -40,14 +41,9 @@ class Menu extends React.Component<
                     onClick={(e) =>
                       e.metaKey
                         ? window.open(obj.stream.raw_url)
-                        : this.props.addScreen({
-                            iFrameTitle: (Math.random() + 1)
-                              .toString(36)
-                              .substring(2),
-                            skipLog: e.shiftKey,
-                            ref: React.createRef() as React.RefObject<HTMLIFrameElement>,
-                            ...obj.stream,
-                          })
+                        : this.props.addScreen(
+                            streamToScreen(obj.stream, e.shiftKey)
+                          )
                     }
                   >
                     <div title={obj.stream.raw_url}>{obj.stream.name}</div>

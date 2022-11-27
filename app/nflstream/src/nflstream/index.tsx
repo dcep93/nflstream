@@ -66,13 +66,12 @@ class NFLStream extends React.Component<
             .filter(Boolean)
             .map((stream) => streamToScreen(stream!, false)),
         });
-      } else {
-        return;
       }
+    } else {
+      window.location.hash = `#${(this.state?.screens || [])
+        .map((s) => s.stream_id)
+        .join(",")}`;
     }
-    window.location.hash = `#${(this.state?.screens || [])
-      .map((s) => s.stream_id)
-      .join(",")}`;
   }
 
   render() {

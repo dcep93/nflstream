@@ -17,13 +17,7 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
     const hasExtension = this.props.payload;
     return fetchP(
       "https://reddit.nflbite.com/",
-      (() => {
-        if (StreamsFetcher.firstTime) {
-          StreamsFetcher.firstTime = false;
-          return 0;
-        }
-        return 10 * 60 * 1000;
-      })()
+      StreamsFetcher.firstTime ? 0 : 10 * 60 * 1000
     )
       .then(parse)
       .then((html) => html.getElementsByClassName("competition"))
@@ -97,7 +91,10 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
                 .then((raw_url) =>
                   !raw_url
                     ? undefined
-                    : fetchP(raw_url!, 24 * 60 * 60 * 1000).then((message) => ({
+                    : fetchP(
+                        raw_url!,
+                        StreamsFetcher.firstTime ? 0 : 24 * 60 * 60 * 1000
+                      ).then((message) => ({
                         name,
                         raw_url,
                         url: getStreamUrl(message),
@@ -148,7 +145,10 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
                   ...stream,
                 }))
               )
-      );
+      )
+      .finally(() => {
+        StreamsFetcher.firstTime = false;
+      });
   }
 }
 

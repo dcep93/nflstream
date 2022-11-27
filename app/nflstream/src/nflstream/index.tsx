@@ -58,6 +58,7 @@ class NFLStream extends React.Component<
         this.setState({
           initialized: true,
           screens: window.location.hash
+            .substring(1)
             .split(",")
             .map((stream_id) =>
               this.state.streams!.find((s) => s.stream_id === stream_id)

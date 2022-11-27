@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { StreamType } from "../Fetcher";
+import { fetchP } from "../Fetcher/StreamsFetcher";
 import style from "../index.module.css";
 import Log from "../Log";
 import msStyle from "./index.module.css";
@@ -95,7 +96,13 @@ function Singlescreen(props: {
         <span className={style.hover} onClick={() => props.removeScreen()}>
           {screenTitle}
         </span>{" "}
-        <span className={style.hover} onClick={() => updateKey(Date.now())}>
+        <span
+          className={style.hover}
+          onClick={() => {
+            fetchP(props.screen.raw_url, 0);
+            updateKey(Date.now());
+          }}
+        >
           🔄
         </span>
       </div>

@@ -91,10 +91,7 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
                 .then((raw_url) =>
                   !raw_url
                     ? undefined
-                    : fetchP(
-                        raw_url!,
-                        StreamsFetcher.firstTime ? 0 : 24 * 60 * 60 * 1000
-                      ).then((message) => ({
+                    : fetchP(raw_url!, 24 * 60 * 60 * 1000).then((message) => ({
                         name,
                         raw_url,
                         url: getStreamUrl(message),
@@ -199,7 +196,7 @@ function getStreamUrl(message: string) {
         .join("&")}`;
 }
 
-function fetchP(
+export function fetchP(
   url: string,
   maxAgeMs: number,
   options: any = undefined

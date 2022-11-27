@@ -17,15 +17,15 @@
       const params = Object.fromEntries(
         new URLSearchParams(window.location.search).entries()
       );
-      var muted = false;
+      var topstream_muted = false;
       setInterval(() => {
         const video = document.getElementsByTagName("video")[0];
-        if (video) video.muted = muted;
+        if (video) video.muted = topstream_muted;
       }, 1000);
       window.addEventListener("message", (event) => {
         if (event.data.source !== "nflstream") return;
         console.log(event.data, "receiveMessage");
-        muted = event.data.mute;
+        topstream_muted = event.data.mute;
       });
     </script>
     <!-- skin -->

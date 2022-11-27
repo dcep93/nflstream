@@ -20,7 +20,7 @@
       var muted = false;
       setInterval(() => {
         const video = document.getElementsByTagName("video")[0];
-        if (video) video.muted = event.data.mute;
+        if (video) video.muted = muted;
       }, 1000);
       window.addEventListener("message", (event) => {
         if (event.data.source !== "nflstream") return;

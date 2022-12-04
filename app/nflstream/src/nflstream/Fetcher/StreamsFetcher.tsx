@@ -102,10 +102,6 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
                       }))
                 )
             )
-            .catch((err) => {
-              console.error(err);
-              return undefined;
-            })
         )
       )
       .then((promises) => Promise.all(promises))
@@ -195,10 +191,10 @@ function getStreamUrl(message: string) {
         masterkey: /var masterkey= '(.*)'/,
         masterinf: /window.masterinf = (.*);/,
       })
-        .map(([k, re]) => ({ k, matched: message.match(re)![1] }))
+        .map(([k, re]) => ({ k, matched: (message.match(re) || [])[1] }))
         .map(({ k, matched }) => ({
           k,
-          matched: matched.startsWith("{") ? btoa(matched) : matched,
+          matched: matched?.startsWith("{") ? btoa(matched) : matched,
         }))
         .map(({ k, matched }) => `${k}=${matched}`)
         .join("&")}`;

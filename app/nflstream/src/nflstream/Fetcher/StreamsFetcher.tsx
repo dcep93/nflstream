@@ -102,6 +102,10 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
                       }))
                 )
             )
+            .catch((err) => {
+              console.error(err);
+              return undefined;
+            })
         )
       )
       .then((promises) => Promise.all(promises))

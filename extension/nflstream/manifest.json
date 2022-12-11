@@ -14,5 +14,6 @@
     "matches": ["http://localhost/*", "https://nflstream.web.app/"],
     "accept_tls_channel_id": true
   },
+  "host_permissions": ["https://www.espn.com/"],
   "manifest_version": 3
 }

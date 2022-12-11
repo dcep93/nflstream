@@ -38,12 +38,7 @@ function Multiscreen(props: {
             Promise.resolve(e)
               .then((e) => e.key)
               .then((key) => parseInt(key))
-              .then(
-                (index) =>
-                  props.screens.filter((s) => s.iFrameTitle !== selected)[
-                    index - 1
-                  ]
-              )
+              .then((index) => props.screens[index - 1])
               .then((screen) => screen && updateSelected(screen))
           }
           tabIndex={0}
@@ -51,6 +46,7 @@ function Multiscreen(props: {
           {props.screens.map((screen, i) => (
             <Singlescreen
               key={screen.iFrameTitle}
+              index={i + 1}
               screen={screen}
               isSelected={screen === selectedScreen}
               removeScreen={() => props.removeScreen(screen.iFrameTitle)}
@@ -65,6 +61,7 @@ function Multiscreen(props: {
 }
 
 function Singlescreen(props: {
+  index: number;
   screen: ScreenType;
   isSelected: boolean;
   removeScreen: () => void;
@@ -94,7 +91,7 @@ function Singlescreen(props: {
     >
       <div className={msStyle.title}>
         <span className={style.hover} onClick={() => props.removeScreen()}>
-          {screenTitle}
+          ({props.index}) {screenTitle}
         </span>{" "}
         <span
           className={style.hover}

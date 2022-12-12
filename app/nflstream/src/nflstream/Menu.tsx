@@ -7,6 +7,7 @@ import recorded_sha from "./recorded_sha";
 
 class Menu extends React.Component<
   {
+    refreshStreams: () => void;
     streams?: StreamType[];
     addScreen: (screen: ScreenType) => void;
   },
@@ -15,7 +16,11 @@ class Menu extends React.Component<
   render() {
     return (
       <div className={style.menu}>
-        <h1 className={style.header} title={recorded_sha}>
+        <h1
+          className={style.header}
+          title={recorded_sha}
+          onClick={this.props.refreshStreams}
+        >
           NFL Stream
         </h1>
 

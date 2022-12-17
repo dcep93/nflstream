@@ -21,8 +21,12 @@ function Multiscreen(props: {
     props.screens.find((s) => s.iFrameTitle === selected) || props.screens[0];
   if (selectedScreen) muteUnmute(selectedScreen.ref, false);
   function updateSelected(screen: ScreenType) {
-    muteUnmute(screen.ref, false);
-    muteUnmute(selectedScreen.ref, true);
+    if (screen.iFrameTitle === selectedScreen.iFrameTitle) {
+      muteUnmute(screen.ref, null);
+    } else {
+      muteUnmute(screen.ref, false);
+      muteUnmute(selectedScreen.ref, true);
+    }
     updateSelectedStr(screen.iFrameTitle);
   }
 
@@ -201,7 +205,7 @@ function IframeWrapper(props: { screen: ScreenType; key: number }) {
 
 function muteUnmute(
   iframeRef: React.RefObject<HTMLIFrameElement>,
-  mute: boolean
+  mute: boolean | null
 ) {
   iframeRef.current?.contentWindow!.postMessage(
     { mute, source: "nflstream" },

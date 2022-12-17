@@ -186,7 +186,7 @@ function parseTinyUrl(message: string) {
 function getStreamUrl(message: string) {
   return username === "Weak_Spell"
     ? message.match(/http:\/\/weakstreams.com\/streams\/\d+/)![0]
-    : `/topstream_1.1.html?${Object.entries({
+    : `/topstream_1.2.html?${Object.entries({
         key: /var key= '(.*)';/,
         masterkey: /var masterkey= '(.*)'/,
         masterinf: /window.masterinf = (.*);/,

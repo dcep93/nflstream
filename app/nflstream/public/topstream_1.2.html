@@ -26,7 +26,8 @@
       window.addEventListener("message", (event) => {
         if (event.data.source !== "nflstream") return;
         console.log(event.data, "receiveMessage");
-        topstream_muted = event.data.mute;
+        topstream_muted =
+          event.data.mute !== null ? event.data.mute : !topstream_muted;
         update_muted();
       });
     </script>

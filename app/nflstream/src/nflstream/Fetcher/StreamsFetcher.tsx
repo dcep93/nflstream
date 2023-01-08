@@ -42,34 +42,32 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
       .then((hrefs) =>
         hrefs.map((href) =>
           fetchP(href, 10 * 60 * 1000)
-            .then((text) => ({
-              text,
-              name: parse(text)
-                .title.split(" Live Stream")[0]
+            .then((text) => ({ href, text, p: parse(text) }))
+            .then((obj) => ({
+              ...obj,
+              matchId: (obj.text.match(/var streamsMatchId = (\d+);/) || [])[1],
+              name: obj.p.title
+                .split(" Live Stream")[0]
                 .split(" Vs ")
                 .join(" vs "),
             }))
-            .then(({ text, name }) =>
+            .then(({ matchId, name }) =>
               Promise.resolve()
                 .then(() => {
-                  const matchId = text.match(/var streamsMatchId = (\d+);/)![1];
-                  const sport = text.match(/var streamsSport = "(\S+)"/)![1];
-                  const origin = href.split("//")[1].split("/")[0];
-                  return `https://sportscentral.io/streams-table/${matchId}/${sport}?new-ui=1&origin=${origin}`;
+                  return `https://scdn.dev/main-assets/${matchId}/american-football?origin=rnflbite.net&`;
                 })
                 .then((url) => fetchP(url, 10 * 60 * 1000))
                 .then(parse)
                 .then((html) => html.getElementsByTagName("tr"))
                 .then((arr) => Array.from(arr))
                 .then((trs) =>
-                  trs.find(
-                    (tr) =>
-                      (
-                        tr.getElementsByClassName("username")[0] as HTMLElement
-                      )?.innerText.trim() === username
+                  trs.map((tr) => tr.getAttribute("data-stream-link")!)
+                )
+                .then((links) =>
+                  links.find((l) =>
+                    l?.startsWith("http://topstreams.info/nfl/")
                   )
                 )
-                .then((tr) => tr?.getAttribute("data-stream-link"))
                 .then((url) =>
                   !url
                     ? undefined

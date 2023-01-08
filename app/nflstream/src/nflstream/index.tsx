@@ -14,6 +14,11 @@ declare global {
   }
 }
 
+export function clog<T>(t: T): T {
+  console.log(t);
+  return t;
+}
+
 // export const extension_id = "idejabpndfcphdflfdbionahnlnphlnf"; // local
 export const extension_id = "jjlokcmkcepehbfepbffkmkkbnggkmje";
 

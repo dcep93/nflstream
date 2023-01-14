@@ -65,7 +65,7 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
                 )
                 .then((links) =>
                   links.find((l) =>
-                    l?.startsWith("http://topstreams.info/nfl/")
+                    l?.startsWith("https://topstreams.info/nfl/")
                   )
                 )
                 .then((url) =>

@@ -5,7 +5,7 @@ export type StreamType = {
   raw_url: string;
   name: string;
   stream_id: string;
-  espnId?: string;
+  espnId?: number;
 };
 
 export type LogType = {

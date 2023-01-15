@@ -7,7 +7,7 @@ const delayMs = 2 * 60 * 1000;
 
 class Log extends React.Component<
   {
-    espnId: string;
+    espnId: number;
     updateDrivingTeam: (drivingTeam: string) => void;
     isSelected: boolean;
   },

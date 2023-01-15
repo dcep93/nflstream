@@ -1,7 +1,7 @@
 import Fetcher, { cacheF, LogType } from ".";
 import { extension_id } from "..";
 
-class LogFetcher extends Fetcher<LogType | null, string> {
+class LogFetcher extends Fetcher<LogType | null, number> {
   intervalMs = 10 * 1000;
   getResponse() {
     const gameId = this.props.payload;

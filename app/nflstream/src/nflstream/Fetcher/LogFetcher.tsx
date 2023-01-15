@@ -56,6 +56,7 @@ class LogFetcher extends Fetcher<LogType | null, string> {
             .sort((a, b) => b.rank - a.rank),
         }));
         const log = {
+          gameId,
           timestamp,
           playByPlay,
           boxScore,

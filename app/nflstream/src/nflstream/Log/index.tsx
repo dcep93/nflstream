@@ -53,7 +53,13 @@ class DelayedLog extends React.Component<PropsType, { log: LogType }> {
     return !this.props.isSelected ? null : (
       <div
         className={logStyle.logWrapper}
-        onClick={() => this.updateNow(this.props.log)}
+        onClick={(e) => {
+          e.metaKey
+            ? window.open(
+                `https://www.espn.com/nfl/game?gameId=${this.props.log.gameId}`
+              )
+            : this.updateNow(this.props.log);
+        }}
       >
         <SubLog log={this.state?.log} />
       </div>

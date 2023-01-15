@@ -9,6 +9,7 @@ export type StreamType = {
 };
 
 export type LogType = {
+  gameId: number;
   timestamp: number;
   playByPlay: DriveType[];
   boxScore: BoxScoreType[];

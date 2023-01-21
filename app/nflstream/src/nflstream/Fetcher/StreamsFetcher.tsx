@@ -39,69 +39,7 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
           .filter((match) => !match.innerHTML.includes("Redzone"))
           .map((match) => match.getElementsByTagName("a")[0].href)
       )
-      .then((hrefs) =>
-        hrefs.map((href) =>
-          fetchP(href, 10 * 60 * 1000)
-            .then((text) => ({ href, text, p: parse(text) }))
-            .then((obj) => ({
-              ...obj,
-              matchId: (obj.text.match(/var streamsMatchId = (\d+);/) || [])[1],
-              name: obj.p.title
-                .split(" Live Stream")[0]
-                .split(" Vs ")
-                .join(" vs "),
-            }))
-            .then(({ matchId, name }) =>
-              Promise.resolve()
-                .then(() => {
-                  return `https://scdn.dev/main-assets/${matchId}/american-football?origin=rnflbite.net&`;
-                })
-                .then((url) => fetchP(url, 10 * 60 * 1000))
-                .then(parse)
-                .then((html) => html.getElementsByTagName("tr"))
-                .then((arr) => Array.from(arr))
-                .then((trs) =>
-                  trs.map((tr) => tr.getAttribute("data-stream-link")!)
-                )
-                .then((links) =>
-                  links.find((l) =>
-                    l?.startsWith("https://topstreams.info/nfl/")
-                  )
-                )
-                .then((url) =>
-                  !url
-                    ? undefined
-                    : !url.startsWith("https://tinyurl")
-                    ? url
-                    : cacheF(url, 10 * 60 * 1000, () =>
-                        fetch("https://proxy420.appspot.com/proxy", {
-                          method: "POST",
-                          body: JSON.stringify({
-                            url,
-                            maxAgeMs: 10 * 60 * 1000,
-                          }),
-                          headers: {
-                            "Content-Type": "application/json",
-                          },
-                        }).then((resp) => resp.text())
-                      ).then((text) => parseTinyUrl(text))
-                )
-                .then((raw_url) =>
-                  !raw_url
-                    ? undefined
-                    : fetchP(raw_url!, 24 * 60 * 60 * 1000).then((message) => ({
-                        name,
-                        raw_url,
-                        stream_id: raw_url
-                          .split("?")[0]
-                          .split("/")
-                          .reverse()[0],
-                        url: getStreamUrl(message),
-                      }))
-                )
-            )
-        )
-      )
+      .then((hrefs) => hrefs.map(getStream))
       .then((promises) => Promise.all(promises))
       .then(
         (streams) =>
@@ -149,6 +87,72 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
         StreamsFetcher.firstTime = false;
       });
   }
+}
+
+function getStream(href: string): Promise<StreamType | undefined> {
+  return fetchP(href, 10 * 60 * 1000)
+    .then((text) => ({ href, text, p: parse(text) }))
+    .then((obj) => ({
+      ...obj,
+      matchId: (obj.text.match(/var streamsMatchId = (\d+);/) || [])[1],
+      name: obj.p.title.split(" Live Stream")[0].split(" Vs ").join(" vs "),
+    }))
+    .then(({ matchId, name }) =>
+      Promise.resolve()
+        .then(() => {
+          return `https://scdn.dev/main-assets/${matchId}/american-football?origin=rnflbite.net&`;
+        })
+        .then((url) => fetchP(url, 10 * 60 * 1000))
+        .then((fetchedPage) => getTopstreamsUrl(fetchedPage, name))
+        .then((url) =>
+          !url
+            ? undefined
+            : !url.startsWith("https://tinyurl")
+            ? url
+            : cacheF(url, 10 * 60 * 1000, () =>
+                fetch("https://proxy420.appspot.com/proxy", {
+                  method: "POST",
+                  body: JSON.stringify({
+                    url,
+                    maxAgeMs: 10 * 60 * 1000,
+                  }),
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                }).then((resp) => resp.text())
+              ).then((text) => parseTinyUrl(text))
+        )
+        .then((raw_url) =>
+          !raw_url
+            ? undefined
+            : fetchP(raw_url!, 24 * 60 * 60 * 1000).then((message) => ({
+                name,
+                raw_url,
+                stream_id: raw_url.split("?")[0].split("/").reverse()[0],
+                url: getStreamUrl(message),
+              }))
+        )
+    );
+}
+
+function getTopstreamsUrl(
+  fetchedPage: string,
+  name: string
+): Promise<string | undefined> {
+  return Promise.resolve(fetchedPage)
+    .then(parse)
+    .then((html) => html.getElementsByTagName("tr"))
+    .then((arr) => Array.from(arr))
+    .then((trs) => trs.map((tr) => tr.getAttribute("data-stream-link")!))
+    .then((links) =>
+      links.length === 0
+        ? undefined
+        : `https://topstreams.info/nfl/${name
+            .split(" vs ")[0]
+            .split(" ")
+            .reverse()[0]
+            .toLowerCase()}`
+    );
 }
 
 function parseTinyUrl(message: string) {

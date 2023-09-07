@@ -62,7 +62,7 @@ export default abstract class Fetcher<T, U> extends React.Component<
   }
 
   componentWillUnmount() {
-    clearTimeout(this.state.timeout);
+    clearTimeout(this.state?.timeout);
   }
 
   render() {

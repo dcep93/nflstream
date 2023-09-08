@@ -16,7 +16,7 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
     // real() {
     const hasExtension = this.props.payload;
     return fetchP(
-      "https://reddit.nflbite.com/",
+      "https://nflbite.com/",
       StreamsFetcher.firstTime ? 0 : 10 * 60 * 1000
     )
       .then(parse)
@@ -139,20 +139,22 @@ function getTopstreamsUrl(
   fetchedPage: string,
   name: string
 ): Promise<string | undefined> {
-  return Promise.resolve(fetchedPage)
-    .then(parse)
-    .then((html) => html.getElementsByTagName("tr"))
-    .then((arr) => Array.from(arr))
-    .then((trs) => trs.map((tr) => tr.getAttribute("data-stream-link")!))
-    .then((links) =>
-      links.length === 0
-        ? undefined
-        : `https://topstreams.info/nfl/${name
-            .split(" vs ")[0]
-            .split(" ")
-            .reverse()[0]
-            .toLowerCase()}`
-    );
+  return (
+    Promise.resolve(fetchedPage)
+      // .then(parse)
+      // .then((html) => html.getElementsByTagName("tr"))
+      // .then((arr) => Array.from(arr))
+      // .then((trs) => trs.map((tr) => tr.getAttribute("data-stream-link")!))
+      .then((links) =>
+        links.length === 0
+          ? undefined
+          : `https://topstreams.info/nfl/${name
+              .split(" vs ")[0]
+              .split(" ")
+              .reverse()[0]
+              .toLowerCase()}`
+      )
+  );
 }
 
 function parseTinyUrl(message: string) {

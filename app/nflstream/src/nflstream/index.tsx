@@ -1,9 +1,9 @@
 import React from "react";
 import { StreamType } from "./Fetcher";
 import StreamsFetcher from "./Fetcher/StreamsFetcher";
-import style from "./index.module.css";
 import Menu from "./Menu";
 import Multiscreen, { ScreenType } from "./Multiscreen";
+import style from "./index.module.css";
 import recorded_sha from "./recorded_sha";
 
 const PASSWORD = "mustbeusedlegally";

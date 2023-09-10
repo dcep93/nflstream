@@ -91,26 +91,30 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
 
 function getStream(href: string): Promise<StreamType | undefined> {
   return fetchP(href, 1 * 60 * 1000)
-    .then((text) => ({ text, p: parse(text) }))
-    .then((o) => ({
-      name: href,
-      raw_url: href,
-    }))
-    .then((o) =>
-      getTopstreamsUrl(o.name).then((url) =>
-        !url ? undefined : { ...o, url, stream_id: "" }
-      )
+    .then((text) => parse(text))
+    .then((p) =>
+      p === undefined
+        ? undefined
+        : Promise.resolve({
+            name: p.title.split(" Live Stream")[0],
+            raw_url: href,
+          })
+
+            .then((o) => ({
+              ...o,
+              stream_id: o.name.split(" vs ")[0].split(" ").reverse()[0],
+            }))
+            .then((o) =>
+              getTopstreamsUrl(o.stream_id).then((url) =>
+                !url ? undefined : { ...o, url }
+              )
+            )
     );
 }
 
-function getTopstreamsUrl(name: string): Promise<string | undefined> {
+function getTopstreamsUrl(stream_id: string): Promise<string | undefined> {
   return Promise.resolve().then(
-    () =>
-      `https://topstreams.info/nfl/${name
-        .split(" vs ")[0]
-        .split(" ")
-        .reverse()[0]
-        .toLowerCase()}`
+    () => `https://topstreams.info/nfl/${stream_id}`
   );
 }
 

@@ -88,7 +88,7 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
 }
 
 function getStream(href: string): Promise<StreamType | undefined> {
-  return fetchP(href, 1 * 60 * 1000)
+  return fetchP(href, 10 * 60 * 1000)
     .then((text) => parse(text))
     .then((p) =>
       Array.from(

@@ -34,7 +34,7 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
       )
       .then((matches) =>
         matches
-          .filter((match) => !match.innerHTML.includes("Redzone"))
+          // .filter((match) => !match.innerHTML.includes("Redzone"))
           .map((match) => match.getElementsByTagName("a")[0].href)
       )
       .then((hrefs) => hrefs.map(getStream))

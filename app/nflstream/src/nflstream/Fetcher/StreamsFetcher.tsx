@@ -34,7 +34,7 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
       )
       .then((matches) =>
         matches
-          // .filter((match) => !match.innerHTML.includes("Redzone"))
+          .filter((match) => !match.innerHTML.includes("Redzone"))
           .map((match) => match.getElementsByTagName("a")[0].href)
       )
       .then((hrefs) => hrefs.map(getStream))
@@ -97,26 +97,48 @@ function getStream(href: string): Promise<StreamType | undefined> {
       undefined
         ? undefined
         : Promise.resolve({
-            name: p.title.split(" Live Stream")[0],
-            raw_url: href,
+            name: p.title.includes("Redzone")
+              ? "REDZONE"
+              : p.title.split(" Live Stream")[0],
           })
-
             .then((o) => ({
               ...o,
               stream_id: o.name.split(" vs ")[0].split(" ").reverse()[0],
             }))
             .then((o) =>
-              getTopstreamsUrl(o.stream_id).then((url) =>
-                !url ? undefined : { ...o, url }
-              )
+              getTopstreamsUrl(o.stream_id).then((raw_url) => ({
+                ...o,
+                raw_url,
+              }))
+            )
+            .then((o) =>
+              fetchP(o.raw_url, 24 * 60 * 60 * 1000).then((text) => ({
+                ...o,
+                url: getStreamUrl(text),
+              }))
             )
     );
 }
 
-function getTopstreamsUrl(stream_id: string): Promise<string | undefined> {
+function getTopstreamsUrl(stream_id: string): Promise<string> {
   return Promise.resolve().then(
     () => `https://topstreams.info/nfl/${stream_id}`
   );
+}
+
+function getStreamUrl(message: string) {
+  return `/topstream_1.2.html?${Object.entries({
+    key: /var key= '(.*)';/,
+    masterkey: /var masterkey= '(.*)'/,
+    masterinf: /window.masterinf = (.*);/,
+  })
+    .map(([k, re]) => ({ k, matched: (message.match(re) || [])[1] }))
+    .map(({ k, matched }) => ({
+      k,
+      matched: matched?.startsWith("{") ? btoa(matched) : matched,
+    }))
+    .map(({ k, matched }) => `${k}=${matched}`)
+    .join("&")}`;
 }
 
 export function parseTinyUrl(message: string) {

@@ -1,6 +1,5 @@
 import Fetcher, { cacheF, parse, StreamType } from ".";
-
-const username: string = "topstreamer"; // "Weak_Spell"
+import { clog } from "..";
 
 class StreamsFetcher extends Fetcher<StreamType[], boolean> {
   intervalMs = 10 * 60 * 1000;
@@ -93,7 +92,7 @@ function getStream(href: string): Promise<StreamType | undefined> {
   return fetchP(href, 1 * 60 * 1000)
     .then((text) => parse(text))
     .then((p) =>
-      p === undefined
+      !clog([href, p.getElementById("streams")?.innerHTML?.trim()]) // todo
         ? undefined
         : Promise.resolve({
             name: p.title.split(" Live Stream")[0],

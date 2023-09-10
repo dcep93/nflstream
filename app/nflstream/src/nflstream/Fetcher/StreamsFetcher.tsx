@@ -99,7 +99,11 @@ function getStream(href: string): Promise<StreamType | undefined> {
         : Promise.resolve({
             name: p.title.includes("Redzone")
               ? "REDZONE"
-              : p.title.split(" Live Stream")[0],
+              : p.title
+                  .split(" Live Stream")[0]
+                  .split(" Vs ")
+                  .reverse()
+                  .join(" vs "),
           })
             .then((o) => ({
               ...o,
@@ -112,7 +116,10 @@ function getStream(href: string): Promise<StreamType | undefined> {
               }))
             )
             .then((o) =>
-              fetchP(o.raw_url, 24 * 60 * 60 * 1000).then((text) => ({
+              fetchP(
+                o.raw_url,
+                StreamsFetcher.firstTime ? 0 : 10 * 60 * 1000
+              ).then((text) => ({
                 ...o,
                 url: getStreamUrl(text),
               }))

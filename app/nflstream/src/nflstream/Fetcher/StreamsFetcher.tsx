@@ -117,7 +117,7 @@ function getTopstreamsUrl(stream_id: string): Promise<string | undefined> {
   );
 }
 
-function parseTinyUrl(message: string) {
+export function parseTinyUrl(message: string) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function dF(s: string) {
     var s1 = unescape(s.substr(0, s.length - 1));

@@ -6,7 +6,7 @@ import Multiscreen, { ScreenType } from "./Multiscreen";
 import style from "./index.module.css";
 import recorded_sha from "./recorded_sha";
 
-const PASSWORD = "mustbeusedlegally";
+const mustbeusedlegally = "mustbeusedlegally";
 
 declare global {
   interface Window {
@@ -91,8 +91,8 @@ class NFLStream extends React.Component<
       }
       this.setState({ streams });
     };
-    return localStorage.getItem("password") !== PASSWORD ? (
-      <Password />
+    return localStorage.getItem("mustbeusedlegally") !== mustbeusedlegally ? (
+      <Mustbeusedlegally />
     ) : this.state?.hasExtension === undefined ? null : (
       <div className={style.main}>
         <StreamsFetcher
@@ -137,10 +137,10 @@ export function streamToScreen(
   };
 }
 
-function Password() {
-  const password = window.prompt("enter the password:");
-  if (password) {
-    localStorage.setItem("password", password);
+function Mustbeusedlegally() {
+  const mustbeusedlegally = window.prompt("enter the password:");
+  if (mustbeusedlegally) {
+    localStorage.setItem("mustbeusedlegally", mustbeusedlegally);
     window.location.reload();
   }
   return null;

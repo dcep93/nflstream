@@ -1,6 +1,7 @@
 import React from "react";
 import { LogType } from "../Fetcher";
 import LogFetcher from "../Fetcher/LogFetcher";
+import AutoScroller from "./Autoscroller";
 import logStyle from "./index.module.css";
 
 const delayMs = 2 * 60 * 1000;
@@ -61,13 +62,17 @@ class DelayedLog extends React.Component<PropsType, { log: LogType }> {
             : this.updateNow(this.props.log);
         }}
       >
-        <SubLog log={this.state?.log} />
+        <AutoScroller speed={1} id={Math.random()}>
+          <>
+            <SubLog log={this.state?.log} />
+          </>
+        </AutoScroller>
       </div>
     );
   }
 }
 
-export function SubLog(props: { log: LogType }) {
+function SubLog(props: { log: LogType }) {
   if (!props.log) return null;
   const playByPlay = props.log.playByPlay || [];
   if (

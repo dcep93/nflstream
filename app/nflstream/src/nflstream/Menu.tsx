@@ -1,8 +1,8 @@
 import React from "react";
 import { streamToScreen } from ".";
 import { StreamType } from "./Fetcher";
-import style from "./index.module.css";
 import { ScreenType } from "./Multiscreen";
+import style from "./index.module.css";
 import recorded_sha from "./recorded_sha";
 
 class Menu extends React.Component<
@@ -44,7 +44,7 @@ class Menu extends React.Component<
                   <div
                     className={[style.bubble, style.hover].join(" ")}
                     onClick={(e) =>
-                      e.metaKey || window.screen.width < 1000
+                      e.metaKey || window.screen.width < 0 // 1000
                         ? window.open(obj.stream.raw_url)
                         : this.props.addScreen(
                             streamToScreen(obj.stream, e.shiftKey)

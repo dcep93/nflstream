@@ -62,11 +62,7 @@ class DelayedLog extends React.Component<PropsType, { log: LogType }> {
             : this.updateNow(this.props.log);
         }}
       >
-        <AutoScroller speed={1} id={Math.random()}>
-          <>
-            <SubLog log={this.state?.log} />
-          </>
-        </AutoScroller>
+        <SubLog log={this.state?.log} />
       </div>
     );
   }
@@ -107,39 +103,43 @@ function SubLog(props: { log: LogType }) {
         ))}
       </div>
       <div className={logStyle.logContent}>
-        {(props.log.boxScore || []).map((boxScore, i) => (
-          <div key={i} className={logStyle.boxScore}>
-            <div className={logStyle.logHeader}>{boxScore.key}</div>
-            <table>
-              <thead>
-                <tr>
-                  <th></th>
-                  {boxScore.labels.map((label, j) => (
-                    <th key={j}>{label}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {(boxScore.players || []).map((player, j) => (
-                  <tr key={j}>
-                    <td
-                      style={{
-                        width: "8em",
-                        overflow: "hidden",
-                        display: "inline-block",
-                      }}
-                    >
-                      {player.name}
-                    </td>
-                    {player.stats.map((stat, j) => (
-                      <td key={j}>{stat}</td>
+        <AutoScroller speed={2}>
+          <>
+            {(props.log.boxScore || []).map((boxScore, i) => (
+              <div key={i} className={logStyle.boxScore}>
+                <div className={logStyle.logHeader}>{boxScore.key}</div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th></th>
+                      {boxScore.labels.map((label, j) => (
+                        <th key={j}>{label}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(boxScore.players || []).map((player, j) => (
+                      <tr key={j}>
+                        <td
+                          style={{
+                            width: "8em",
+                            overflow: "hidden",
+                            display: "inline-block",
+                          }}
+                        >
+                          {player.name}
+                        </td>
+                        {player.stats.map((stat, j) => (
+                          <td key={j}>{stat}</td>
+                        ))}
+                      </tr>
                     ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ))}
+                  </tbody>
+                </table>
+              </div>
+            ))}
+          </>
+        </AutoScroller>
       </div>
     </div>
   );

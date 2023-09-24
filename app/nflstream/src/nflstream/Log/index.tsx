@@ -51,7 +51,7 @@ class DelayedLog extends React.Component<PropsType, { log: LogType }> {
       playByPlay[0]?.result === undefined ? playByPlay[0] : playByPlay[1];
     const drivingTeam = drive?.team;
     this.props.updateDrivingTeam(drivingTeam);
-    const redZone = drive?.position >= 80;
+    const redZone = drive?.yardsToEndzone <= 20;
     this.props.updateRedzone(redZone);
   }
 

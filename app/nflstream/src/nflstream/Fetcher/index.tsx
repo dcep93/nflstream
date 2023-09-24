@@ -28,7 +28,7 @@ export type DriveType = {
   score: string;
   result?: string;
   plays?: { down: string; text: string; clock: string }[];
-  position: number;
+  yardsToEndzone: number;
 };
 
 export type BoxScoreType = {

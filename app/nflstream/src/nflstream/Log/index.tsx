@@ -65,7 +65,7 @@ class DelayedLog extends React.Component<PropsType, { log: LogType }> {
     ) {
       return true;
     }
-    if (play.distance <= -10 || play.distance > 20) {
+    if (play.distance <= -10 || play.distance >= 20) {
       return true;
     }
     return (

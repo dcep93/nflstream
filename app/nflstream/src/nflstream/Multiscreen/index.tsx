@@ -98,7 +98,11 @@ function Singlescreen(props: {
       <div
         className={msStyle.title}
         style={{
-          backgroundColor: redZone ? "maroon" : bigPlay ? "green" : undefined,
+          backgroundColor: redZone
+            ? "maroon"
+            : bigPlay
+            ? "steelblue"
+            : undefined,
         }}
       >
         <span className={style.hover} onClick={() => props.removeScreen()}>

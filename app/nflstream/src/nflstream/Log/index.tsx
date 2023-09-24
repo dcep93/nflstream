@@ -48,10 +48,14 @@ class DelayedLog extends React.Component<PropsType, { log: LogType }> {
     this.setState({ log });
     const playByPlay = log?.playByPlay || [];
     const drive =
-      playByPlay[0]?.result === undefined ? playByPlay[0] : playByPlay[1];
+      playByPlay[0].result === "End of Half"
+        ? undefined
+        : playByPlay[0]?.result === undefined
+        ? playByPlay[0]
+        : playByPlay[1];
     const drivingTeam = drive?.team;
-    this.props.updateDrivingTeam(drivingTeam);
-    const redZone = drive?.yardsToEndzone <= 20;
+    this.props.updateDrivingTeam(drivingTeam || "");
+    const redZone = drive === undefined ? false : drive.yardsToEndzone <= 20;
     this.props.updateRedzone(redZone);
   }
 

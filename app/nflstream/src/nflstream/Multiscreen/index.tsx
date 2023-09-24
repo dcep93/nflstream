@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { StreamType } from "../Fetcher";
 import { fetchP } from "../Fetcher/StreamsFetcher";
-import style from "../index.module.css";
 import Log from "../Log";
+import style from "../index.module.css";
 import msStyle from "./index.module.css";
 
 export type ScreenType = StreamType & {

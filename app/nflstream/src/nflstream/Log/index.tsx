@@ -44,9 +44,14 @@ type PropsType = {
   updateDrivingTeam: (drivingTeam: string) => void;
   updateRedzone: (redZone: boolean) => void;
 };
-class DelayedLog extends React.Component<PropsType, { log: LogType }> {
+class DelayedLog extends React.Component<
+  PropsType,
+  { log: LogType; lastBigPlay: number }
+> {
   componentDidUpdate(prevProps: PropsType) {
-    if (this.isBigPlay()) {
+    const bigPlayTimestamp = this.props.log?.timestamp;
+    if (bigPlayTimestamp !== this.state?.lastBigPlay && this.isBigPlay()) {
+      this.setState({ lastBigPlay: bigPlayTimestamp });
       setTimeout(() => {
         this.props.updateBigPlay(true);
         setTimeout(() => this.props.updateBigPlay(false), bigPlayDurationMs);

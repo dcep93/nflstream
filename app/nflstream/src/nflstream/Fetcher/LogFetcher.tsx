@@ -32,6 +32,7 @@ class LogFetcher extends Fetcher<LogType | null, number> {
           })),
           description: drive.description,
           score: `${drive.plays[0].awayScore} - ${drive.plays[0].homeScore}`,
+          position: drive.start.yardLine + drive.yards,
         }));
         const timestamp = obj.drives.current.plays[0].modified;
         const boxScore = ["passing", "rushing", "receiving"].map((key) => ({
@@ -60,7 +61,7 @@ class LogFetcher extends Fetcher<LogType | null, number> {
           timestamp,
           playByPlay,
           boxScore,
-          fantasy: [],
+          fantasy: [], // TODO maybe
         };
         return log;
       });

@@ -20,14 +20,14 @@ export default function AutoScroller(props: {
     ) {
       sleeping = true;
       setTimeout(() => {
-        ref.current!.scrollTo({ top: 0 });
+        ref.current?.scrollTo({ top: 0 });
         setTimeout(() => {
           sleeping = false;
         }, EDGE_SLEEP_MS);
       }, EDGE_SLEEP_MS);
     }
     offset += props.speed;
-    ref.current!.scrollTo({ top: offset });
+    ref.current?.scrollTo({ top: offset });
   }, PERIOD_MS);
   return (
     <div

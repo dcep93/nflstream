@@ -10,6 +10,7 @@ class Log extends React.Component<
   {
     espnId: number;
     updateDrivingTeam: (drivingTeam: string) => void;
+    updateRedzone: (redZone: boolean) => void;
     isSelected: boolean;
   },
   { log: LogType }
@@ -24,6 +25,7 @@ class Log extends React.Component<
         <DelayedLog
           log={this.state?.log}
           updateDrivingTeam={this.props.updateDrivingTeam}
+          updateRedzone={this.props.updateRedzone}
           isSelected={this.props.isSelected}
         />
       </>
@@ -35,6 +37,7 @@ type PropsType = {
   isSelected: boolean;
   log: LogType;
   updateDrivingTeam: (drivingTeam: string) => void;
+  updateRedzone: (redZone: boolean) => void;
 };
 class DelayedLog extends React.Component<PropsType, { log: LogType }> {
   componentDidUpdate(prevProps: PropsType) {
@@ -48,6 +51,8 @@ class DelayedLog extends React.Component<PropsType, { log: LogType }> {
       playByPlay[0]?.result === undefined ? playByPlay[0] : playByPlay[1];
     const drivingTeam = drive?.team;
     this.props.updateDrivingTeam(drivingTeam);
+    const redZone = drive?.position >= 80;
+    this.props.updateRedzone(redZone);
   }
 
   render() {
@@ -103,7 +108,7 @@ function SubLog(props: { log: LogType }) {
         ))}
       </div>
       <div className={logStyle.logContent}>
-        <AutoScroller speed={2}>
+        <AutoScroller speed={5}>
           <>
             {(props.log.boxScore || []).map((boxScore, i) => (
               <div key={i} className={logStyle.boxScore}>

@@ -72,6 +72,7 @@ function Singlescreen(props: {
   updateSelected: () => void;
   numScreens: number;
 }) {
+  const [redZone, updateRedzone] = useState(false);
   const [drivingTeam, updateDrivingTeam] = useState<string | undefined>(
     undefined
   );
@@ -93,7 +94,10 @@ function Singlescreen(props: {
         msStyle.screen_wrapper,
       ].join(" ")}
     >
-      <div className={msStyle.title}>
+      <div
+        className={msStyle.title}
+        style={{ backgroundColor: redZone ? "maroon" : undefined }}
+      >
         <span className={style.hover} onClick={() => props.removeScreen()}>
           ({props.index}) {screenTitle}
         </span>{" "}
@@ -120,6 +124,7 @@ function Singlescreen(props: {
             xkey={xkey}
             screen={props.screen}
             updateDrivingTeam={updateDrivingTeam}
+            updateRedzone={updateRedzone}
             isSelected={props.isSelected}
           />
         </div>
@@ -132,6 +137,7 @@ function ObjectFitIframe(props: {
   screen: ScreenType;
   xkey: number;
   updateDrivingTeam: (drivingTeam: string) => void;
+  updateRedzone: (redZone: boolean) => void;
   isSelected: boolean;
 }) {
   return (
@@ -147,6 +153,7 @@ function ObjectFitIframe(props: {
         <Log
           espnId={props.screen.espnId!}
           updateDrivingTeam={props.updateDrivingTeam}
+          updateRedzone={props.updateRedzone}
           isSelected={props.isSelected}
         />
       )}

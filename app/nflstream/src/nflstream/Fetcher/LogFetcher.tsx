@@ -29,6 +29,7 @@ class LogFetcher extends Fetcher<LogType | null, number> {
             down: p.start.downDistanceText,
             text: p.text,
             clock: `Q${p.period.number} ${p.clock.displayValue}`,
+            distance: p.statYardage,
           })),
           description: drive.description,
           score: `${drive.plays[0].awayScore} - ${drive.plays[0].homeScore}`,

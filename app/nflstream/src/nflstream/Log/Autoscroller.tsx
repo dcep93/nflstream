@@ -14,10 +14,9 @@ export default function AutoScroller(props: {
   interval = setInterval(() => {
     if (sleeping) return;
     offset = ref.current?.scrollTop || 0;
-    if (
-      offset >=
-      (ref.current?.scrollHeight || 0) - (ref.current?.clientHeight || 0)
-    ) {
+    const scrollAmount =
+      (ref.current?.scrollHeight || 0) - (ref.current?.clientHeight || 0);
+    if (offset >= scrollAmount) {
       sleeping = true;
       setTimeout(() => {
         ref.current?.scrollTo({ top: 0 });
@@ -26,7 +25,7 @@ export default function AutoScroller(props: {
         }, EDGE_SLEEP_MS);
       }, EDGE_SLEEP_MS);
     }
-    offset += props.speed;
+    offset += (props.speed * scrollAmount) / 1000;
     ref.current?.scrollTo({ top: offset });
   }, PERIOD_MS);
   return (

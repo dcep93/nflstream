@@ -73,6 +73,7 @@ function Singlescreen(props: {
   numScreens: number;
 }) {
   const [redZone, updateRedzone] = useState(false);
+  const [bigPlay, updateBigPlay] = useState(false);
   const [drivingTeam, updateDrivingTeam] = useState<string | undefined>(
     undefined
   );
@@ -96,7 +97,9 @@ function Singlescreen(props: {
     >
       <div
         className={msStyle.title}
-        style={{ backgroundColor: redZone ? "maroon" : undefined }}
+        style={{
+          backgroundColor: redZone ? "maroon" : bigPlay ? "green" : undefined,
+        }}
       >
         <span className={style.hover} onClick={() => props.removeScreen()}>
           ({props.index}) {screenTitle}
@@ -123,6 +126,7 @@ function Singlescreen(props: {
           <ObjectFitIframe
             xkey={xkey}
             screen={props.screen}
+            updateBigPlay={updateBigPlay}
             updateDrivingTeam={updateDrivingTeam}
             updateRedzone={updateRedzone}
             isSelected={props.isSelected}
@@ -138,6 +142,7 @@ function ObjectFitIframe(props: {
   xkey: number;
   updateDrivingTeam: (drivingTeam: string) => void;
   updateRedzone: (redZone: boolean) => void;
+  updateBigPlay: (isBigPlay: boolean) => void;
   isSelected: boolean;
 }) {
   return (
@@ -152,6 +157,7 @@ function ObjectFitIframe(props: {
       {!props.screen.espnId || props.screen.skipLog ? null : (
         <Log
           espnId={props.screen.espnId!}
+          updateBigPlay={props.updateBigPlay}
           updateDrivingTeam={props.updateDrivingTeam}
           updateRedzone={props.updateRedzone}
           isSelected={props.isSelected}

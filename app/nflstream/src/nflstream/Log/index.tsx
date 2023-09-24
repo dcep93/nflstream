@@ -5,12 +5,15 @@ import AutoScroller from "./Autoscroller";
 import logStyle from "./index.module.css";
 
 const delayMs = 2 * 60 * 1000;
+const bigPlayWarningMs = 30 * 1000;
+const bigPlayDurationMs = 5 * 1000;
 
 class Log extends React.Component<
   {
     espnId: number;
     updateDrivingTeam: (drivingTeam: string) => void;
     updateRedzone: (redZone: boolean) => void;
+    updateBigPlay: (isBigPlay: boolean) => void;
     isSelected: boolean;
   },
   { log: LogType }
@@ -24,6 +27,7 @@ class Log extends React.Component<
         />
         <DelayedLog
           log={this.state?.log}
+          updateBigPlay={this.props.updateBigPlay}
           updateDrivingTeam={this.props.updateDrivingTeam}
           updateRedzone={this.props.updateRedzone}
           isSelected={this.props.isSelected}
@@ -36,12 +40,39 @@ class Log extends React.Component<
 type PropsType = {
   isSelected: boolean;
   log: LogType;
+  updateBigPlay: (isBigPlay: boolean) => void;
   updateDrivingTeam: (drivingTeam: string) => void;
   updateRedzone: (redZone: boolean) => void;
 };
 class DelayedLog extends React.Component<PropsType, { log: LogType }> {
   componentDidUpdate(prevProps: PropsType) {
+    if (this.isBigPlay()) {
+      setTimeout(() => {
+        this.props.updateBigPlay(true);
+        setTimeout(() => this.props.updateBigPlay(false), bigPlayDurationMs);
+      }, delayMs - bigPlayWarningMs);
+    }
     setTimeout(() => this.updateNow(this.props.log), delayMs);
+  }
+
+  isBigPlay(): boolean {
+    const play = ((this.props.log?.playByPlay || [])[0]?.plays || [])[0];
+    if (!play) return false;
+    if (
+      play.down.startsWith("4th") &&
+      !play.text.includes("field goal") &&
+      !play.text.includes("punts")
+    ) {
+      return true;
+    }
+    if (play.distance <= -10 || play.distance > 20) {
+      return true;
+    }
+    return (
+      ["TOUCHDOWN", "FUMBLE", "INTERCEPT", "injure"].find((text) =>
+        play.text.includes(text)
+      ) !== undefined
+    );
   }
 
   updateNow(log: LogType) {
@@ -113,7 +144,7 @@ function SubLog(props: { log: LogType }) {
         ))}
       </div>
       <div className={logStyle.logContent}>
-        <AutoScroller speed={5}>
+        <AutoScroller speed={10}>
           <>
             {(props.log.boxScore || []).map((boxScore, i) => (
               <div key={i} className={logStyle.boxScore}>

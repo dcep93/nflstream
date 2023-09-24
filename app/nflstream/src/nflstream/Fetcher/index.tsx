@@ -27,7 +27,7 @@ export type DriveType = {
   description: string;
   score: string;
   result?: string;
-  plays?: { down: string; text: string; clock: string }[];
+  plays?: { down: string; text: string; clock: string; distance: number }[];
   yardsToEndzone: number;
 };
 

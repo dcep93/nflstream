@@ -59,7 +59,7 @@ class DelayedLog extends React.Component<PropsType, { log: LogType }> {
     const play = ((this.props.log?.playByPlay || [])[0]?.plays || [])[0];
     if (!play) return false;
     if (
-      play.down.startsWith("4th") &&
+      play.down?.startsWith("4th") &&
       !play.text.includes("field goal") &&
       !play.text.includes("punts")
     ) {

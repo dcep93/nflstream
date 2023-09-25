@@ -55,7 +55,6 @@ class DelayedLog extends React.Component<
     if (play && this.isBigPlay(play)) {
       const bigPlay = play.clock;
       if (this.state?.bigPlay !== bigPlay) {
-        console.log({ bigPlay });
         this.setState({ bigPlay });
         setTimeout(() => {
           this.props.updateBigPlay(true);
@@ -122,13 +121,13 @@ class DelayedLog extends React.Component<
             : this.updateNow(this.props.log);
         }}
       >
-        <SubLog log={this.state?.log} />
+        <SubLog log={this.state?.log} bigPlay={this.state?.bigPlay} />
       </div>
     );
   }
 }
 
-function SubLog(props: { log: LogType }) {
+function SubLog(props: { log: LogType; bigPlay: string }) {
   if (!props.log) return null;
   const playByPlay = props.log.playByPlay || [];
   if (
@@ -140,6 +139,7 @@ function SubLog(props: { log: LogType }) {
   return (
     <div className={logStyle.log}>
       <div className={logStyle.logContent}>
+        <div>bigplay {props.bigPlay}</div>
         <div>{new Date(props.log.timestamp).toLocaleTimeString()}</div>
         {(playByPlay || []).map((drive, i) => (
           <div key={i}>

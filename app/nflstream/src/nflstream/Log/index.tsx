@@ -77,7 +77,8 @@ class DelayedLog extends React.Component<
     if (
       play.down?.startsWith("4th") &&
       !play.text.includes("field goal") &&
-      !play.text.includes("punts")
+      !play.text.includes("punts") &&
+      !play.text.includes("No Play")
     ) {
       return true;
     }

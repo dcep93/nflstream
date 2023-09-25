@@ -52,6 +52,7 @@ class DelayedLog extends React.Component<
     if (this.isBigPlay()) {
       const bigPlay = this.props.log!.playByPlay[0]!.plays![0].clock;
       if (this.state?.bigPlay !== bigPlay) {
+        console.log({ bigPlay });
         this.setState({ bigPlay });
         setTimeout(() => {
           this.props.updateBigPlay(true);

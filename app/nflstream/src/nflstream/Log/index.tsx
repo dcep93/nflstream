@@ -5,7 +5,7 @@ import AutoScroller from "./Autoscroller";
 import logStyle from "./index.module.css";
 
 const delayMs = 2 * 60 * 1000;
-const bigPlayWarningMs = 30 * 1000;
+const bigPlayWarningMs = 10 * 1000;
 const bigPlayDurationMs = 5 * 1000;
 
 class Log extends React.Component<
@@ -46,16 +46,18 @@ type PropsType = {
 };
 class DelayedLog extends React.Component<
   PropsType,
-  { log: LogType; lastBigPlay: number }
+  { log: LogType; bigPlay: string }
 > {
   componentDidUpdate(prevProps: PropsType) {
-    const bigPlayTimestamp = this.props.log?.timestamp;
-    if (bigPlayTimestamp !== this.state?.lastBigPlay && this.isBigPlay()) {
-      this.setState({ lastBigPlay: bigPlayTimestamp });
-      setTimeout(() => {
-        this.props.updateBigPlay(true);
-        setTimeout(() => this.props.updateBigPlay(false), bigPlayDurationMs);
-      }, delayMs - bigPlayWarningMs);
+    if (this.isBigPlay()) {
+      const bigPlay = this.props.log!.playByPlay[0]!.plays![0].clock;
+      if (this.state.bigPlay !== bigPlay) {
+        this.setState({ bigPlay });
+        setTimeout(() => {
+          this.props.updateBigPlay(true);
+          setTimeout(() => this.props.updateBigPlay(false), bigPlayDurationMs);
+        }, delayMs - bigPlayWarningMs);
+      }
     }
     setTimeout(() => this.updateNow(this.props.log), delayMs);
   }

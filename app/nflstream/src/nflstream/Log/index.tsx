@@ -86,8 +86,8 @@ class DelayedLog extends React.Component<
       return true;
     }
     return (
-      ["TOUCHDOWN", "FUMBLE", "INTERCEPT", "injure"].find((text) =>
-        play.text.includes(text)
+      ["TOUCHDOWN", "FUMBLE", "INTERCEPT", "MUFF", "recover", "injure"].find(
+        (text) => play.text.includes(text)
       ) !== undefined
     );
   }

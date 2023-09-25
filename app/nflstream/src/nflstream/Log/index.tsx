@@ -1,5 +1,5 @@
 import React from "react";
-import { LogType } from "../Fetcher";
+import { LogType, PlayType } from "../Fetcher";
 import LogFetcher from "../Fetcher/LogFetcher";
 import AutoScroller from "./Autoscroller";
 import logStyle from "./index.module.css";
@@ -49,8 +49,11 @@ class DelayedLog extends React.Component<
   { log: LogType; bigPlay: string }
 > {
   componentDidUpdate(prevProps: PropsType) {
-    if (this.isBigPlay()) {
-      const bigPlay = this.props.log!.playByPlay[0]!.plays![0].clock;
+    const play = (this.props.log?.playByPlay || [])[0]?.plays?.find(
+      (p) => !p.text.startsWith("Timeout")
+    );
+    if (play && this.isBigPlay(play)) {
+      const bigPlay = play.clock;
       if (this.state?.bigPlay !== bigPlay) {
         console.log({ bigPlay });
         this.setState({ bigPlay });
@@ -63,9 +66,7 @@ class DelayedLog extends React.Component<
     setTimeout(() => this.updateNow(this.props.log), delayMs);
   }
 
-  isBigPlay(): boolean {
-    const play = ((this.props.log?.playByPlay || [])[0]?.plays || [])[0];
-    if (!play) return false;
+  isBigPlay(play: PlayType): boolean {
     if (play.text.includes("block")) return true;
     if (play.text.includes("field goal")) {
       return play.distance >= 60;

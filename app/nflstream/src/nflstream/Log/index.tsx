@@ -51,7 +51,7 @@ class DelayedLog extends React.Component<
   componentDidUpdate(prevProps: PropsType) {
     if (this.isBigPlay()) {
       const bigPlay = this.props.log!.playByPlay[0]!.plays![0].clock;
-      if (this.state.bigPlay !== bigPlay) {
+      if (this.state?.bigPlay !== bigPlay) {
         this.setState({ bigPlay });
         setTimeout(() => {
           this.props.updateBigPlay(true);
@@ -65,6 +65,13 @@ class DelayedLog extends React.Component<
   isBigPlay(): boolean {
     const play = ((this.props.log?.playByPlay || [])[0]?.plays || [])[0];
     if (!play) return false;
+    if (play.text.includes("block")) return true;
+    if (play.text.includes("field goal")) {
+      return play.distance >= 60;
+    }
+    if (play.text.includes("punt")) {
+      return play.distance >= 40;
+    }
     if (
       play.down?.startsWith("4th") &&
       !play.text.includes("field goal") &&

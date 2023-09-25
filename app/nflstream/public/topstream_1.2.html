@@ -14,8 +14,8 @@
       }
     </style>
     <script>
-      console._log = console.log;
-      console.log = () => null;
+      const _console = Object.assign({}, console);
+      console.log = console.time = console.timeEnd = () => null;
       const params = Object.fromEntries(
         new URLSearchParams(window.location.search).entries()
       );

@@ -5,7 +5,7 @@ import AutoScroller from "./Autoscroller";
 import logStyle from "./index.module.css";
 
 const delayMs = 2 * 60 * 1000;
-const bigPlayWarningMs = 10 * 1000;
+const bigPlayWarningMs = 45 * 1000;
 const bigPlayDurationMs = 5 * 1000;
 
 class Log extends React.Component<
@@ -55,7 +55,6 @@ class DelayedLog extends React.Component<
     if (play && this.isBigPlay(play)) {
       const bigPlay = play.clock;
       if (this.state?.bigPlay !== bigPlay) {
-        console.log({ bigPlay });
         this.setState({ bigPlay });
         setTimeout(() => {
           this.props.updateBigPlay(true);
@@ -67,6 +66,7 @@ class DelayedLog extends React.Component<
   }
 
   isBigPlay(play: PlayType): boolean {
+    return play.down?.startsWith("1st");
     if (play.text.includes("block")) return true;
     if (play.text.includes("field goal")) {
       return play.distance >= 60;
@@ -86,9 +86,15 @@ class DelayedLog extends React.Component<
       return true;
     }
     return (
-      ["TOUCHDOWN", "FUMBLE", "INTERCEPT", "MUFF", "recover", "injure"].find(
-        (text) => play.text.includes(text)
-      ) !== undefined
+      [
+        "TOUCHDOWN",
+        "FUMBLE",
+        "INTERCEPT",
+        "MUFF",
+        "SAFETY",
+        "recover",
+        "injure",
+      ].find((text) => play.text.includes(text)) !== undefined
     );
   }
 
@@ -141,8 +147,10 @@ function SubLog(props: { log: LogType; bigPlay: string }) {
   return (
     <div className={logStyle.log}>
       <div className={logStyle.logContent}>
-        <div>bigplay {props.bigPlay}</div>
-        <div>{new Date(props.log.timestamp).toLocaleTimeString()}</div>
+        <div>
+          <span>{new Date(props.log.timestamp).toLocaleTimeString()}</span>
+          {props.bigPlay && <span> bigplay {props.bigPlay}</span>}
+        </div>
         {(playByPlay || []).map((drive, i) => (
           <div key={i}>
             <div className={logStyle.logHeader}>

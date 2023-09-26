@@ -21,7 +21,7 @@ class LogFetcher extends Fetcher<LogType | null, number> {
                 (drive: { id: string }) => drive.id !== obj.drives.current?.id
               )
           )
-          .filter((drive) => drive.team);
+          .filter((drive) => drive?.team);
         const playByPlay = drives.map((drive) => ({
           team: drive.team.shortDisplayName,
           result: drive.displayResult,

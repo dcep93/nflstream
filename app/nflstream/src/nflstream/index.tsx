@@ -82,13 +82,13 @@ class NFLStream extends React.Component<
   render() {
     const ref = React.createRef<StreamsFetcher>();
     const handleResponse = (streams: StreamType[]) => {
-      if (
-        streams.map((s) => s.url).join(" ") !==
-        (this.state.streams || []).map((s) => s.url).join(" ")
-      ) {
-        this.setState({ backgroundColor: "darkgrey" });
-        setTimeout(() => this.setState({ backgroundColor: undefined }), 2000);
-      }
+      // if (
+      //   streams.map((s) => s.url).join(" ") !==
+      //   (this.state.streams || []).map((s) => s.url).join(" ")
+      // ) {
+      //   this.setState({ backgroundColor: "darkgrey" });
+      //   setTimeout(() => this.setState({ backgroundColor: undefined }), 2000);
+      // }
       this.setState({ streams });
     };
     return localStorage.getItem("mustbeusedlegally") !== mustbeusedlegally ? (

@@ -66,7 +66,6 @@ class DelayedLog extends React.Component<
   }
 
   isBigPlay(play: PlayType): boolean {
-    return play.down?.startsWith("1st");
     if (play.text.includes("block")) return true;
     if (play.text.includes("field goal")) {
       return play.distance >= 60;

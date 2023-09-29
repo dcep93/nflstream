@@ -49,20 +49,21 @@ class DelayedLog extends React.Component<
   { log: LogType; bigPlay: string }
 > {
   componentDidUpdate(prevProps: PropsType) {
+    if (JSON.stringify(prevProps) === JSON.stringify(this.props)) return;
     const play = (this.props.log?.playByPlay || [])[0]?.plays?.find(
       (p) => !p.text.startsWith("Timeout")
     );
     if (play && this.isBigPlay(play)) {
       const bigPlay = play.clock;
-      if (this.state?.bigPlay !== bigPlay) {
-        this.setState({ bigPlay });
-        setTimeout(() => {
-          this.props.updateBigPlay(true);
-          setTimeout(() => this.props.updateBigPlay(false), bigPlayDurationMs);
-        }, delayMs - bigPlayWarningMs);
-      }
+      this.setState({ bigPlay });
+      setTimeout(() => {
+        this.props.updateBigPlay(true);
+        setTimeout(() => this.props.updateBigPlay(false), bigPlayDurationMs);
+      }, delayMs - bigPlayWarningMs);
     }
-    setTimeout(() => this.updateNow(this.props.log), delayMs);
+    setTimeout(() => {
+      this.updateNow(this.props.log);
+    }, delayMs);
   }
 
   isBigPlay(play: PlayType): boolean {

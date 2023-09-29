@@ -26,7 +26,7 @@ export default function AutoScroller(props: {
       }, EDGE_SLEEP_MS);
     }
     offset += (props.speed * scrollAmount) / 1000 / PERIOD_MS;
-    ref.current?.scrollTo({ top: offset });
+    ref.current?.scrollTo({ top: Math.ceil(offset) });
   }, PERIOD_MS);
   return (
     <div

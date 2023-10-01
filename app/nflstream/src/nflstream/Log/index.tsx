@@ -49,6 +49,7 @@ class DelayedLog extends React.Component<
   { log: LogType; bigPlay: string }
 > {
   componentDidUpdate(prevProps: PropsType) {
+    if (JSON.stringify(this.props) === JSON.stringify(prevProps)) return;
     const play = (this.props.log?.playByPlay || [])[0]?.plays?.find(
       (p) => !p.text.startsWith("Timeout")
     );

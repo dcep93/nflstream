@@ -4,7 +4,7 @@ import LogFetcher from "../Fetcher/LogFetcher";
 import AutoScroller from "./Autoscroller";
 import logStyle from "./index.module.css";
 
-const delayMs = 2 * 60 * 1000;
+const delayMs = 0 * 2 * 60 * 1000;
 const bigPlayWarningMs = 45 * 1000;
 const bigPlayDurationMs = 5 * 1000;
 
@@ -59,7 +59,7 @@ class DelayedLog extends React.Component<
         setTimeout(() => {
           this.props.updateBigPlay(true);
           setTimeout(() => this.props.updateBigPlay(false), bigPlayDurationMs);
-        }, delayMs - bigPlayWarningMs);
+        }, Math.max(0, delayMs - bigPlayWarningMs));
       }
     }
     const props = this.props;

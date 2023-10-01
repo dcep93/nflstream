@@ -4,7 +4,7 @@ import LogFetcher from "../Fetcher/LogFetcher";
 import AutoScroller from "./Autoscroller";
 import logStyle from "./index.module.css";
 
-const delayMs = 0 * 60 * 1000;
+const delayMs = 0.3 * 60 * 1000;
 const bigPlayWarningMs = 20 * 1000;
 const bigPlayDurationMs = 5 * 1000;
 

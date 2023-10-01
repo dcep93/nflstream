@@ -2,7 +2,7 @@ import Fetcher, { cacheF, LogType } from ".";
 import { extension_id } from "..";
 
 class LogFetcher extends Fetcher<LogType | null, number> {
-  intervalMs = 10 * 1000;
+  intervalMs = 3 * 1000;
   getResponse() {
     const gameId = this.props.payload;
     return fetchE(

@@ -101,7 +101,7 @@ class DelayedLog extends React.Component<
   }
 
   updateNow(log: LogType) {
-    if (log.timestamp < this.state?.log?.timestamp) return;
+    if (log?.timestamp < this.state?.log?.timestamp) return;
     this.setState({ log });
     const playByPlay = log?.playByPlay || [];
     const drive = ["Q2 0:00", "Q4 0:00"].includes(

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { StreamType } from "../Fetcher";
 import { fetchP } from "../Fetcher/StreamsFetcher";
-import Log from "../Log";
+import Log, { DelayedLog } from "../Log";
 import style from "../index.module.css";
 import msStyle from "./index.module.css";
 
@@ -42,8 +42,13 @@ function Multiscreen(props: {
             Promise.resolve(e)
               .then((e) => e.key)
               .then((key) => parseInt(key))
-              .then((index) => props.screens[index - 1])
-              .then((screen) => screen && updateSelected(screen))
+              .then((index) =>
+                index === 0
+                  ? Promise.resolve().then(() => DelayedLog.active?.updateNow())
+                  : Promise.resolve()
+                      .then(() => props.screens[index - 1])
+                      .then((screen) => screen && updateSelected(screen))
+              )
           }
           tabIndex={0}
         >

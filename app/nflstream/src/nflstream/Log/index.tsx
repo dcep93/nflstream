@@ -44,10 +44,11 @@ type PropsType = {
   updateDrivingTeam: (drivingTeam: string) => void;
   updateRedzone: (redZone: boolean) => void;
 };
-class DelayedLog extends React.Component<
+export class DelayedLog extends React.Component<
   PropsType,
   { log: LogType; bigPlay: string }
 > {
+  static active: DelayedLog | undefined;
   componentDidUpdate(prevProps: PropsType) {
     if (JSON.stringify(this.props) === JSON.stringify(prevProps)) return;
     const play = (this.props.log?.playByPlay || [])[0]?.plays?.find(
@@ -101,7 +102,8 @@ class DelayedLog extends React.Component<
     );
   }
 
-  updateNow(log: LogType) {
+  updateNow(log: LogType | undefined = undefined) {
+    if (!log) log = this.props.log;
     if (log?.timestamp < this.state?.log?.timestamp) return;
     this.setState({ log });
     const playByPlay = log?.playByPlay || [];
@@ -122,7 +124,9 @@ class DelayedLog extends React.Component<
   }
 
   render() {
-    return !this.props.isSelected ? null : (
+    if (!this.props.isSelected) return null;
+    DelayedLog.active = this;
+    return (
       <div
         className={logStyle.logWrapper}
         onClick={(e) => {

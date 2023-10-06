@@ -108,6 +108,7 @@ function getStream(href: string): Promise<StreamType | undefined> {
             .then((o) => ({
               ...o,
               stream_id: o.name
+                .toLowerCase()
                 .split(" vs ")
                 .reverse()[0]
                 .split(" ")

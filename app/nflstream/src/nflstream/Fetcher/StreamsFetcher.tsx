@@ -107,7 +107,11 @@ function getStream(href: string): Promise<StreamType | undefined> {
           })
             .then((o) => ({
               ...o,
-              stream_id: o.name.split(" vs ")[0].split(" ").reverse()[0],
+              stream_id: o.name
+                .split(" vs ")[0]
+                .split(" ")
+                .reverse()
+                .reverse()[0],
             }))
             .then((o) =>
               getTopstreamsUrl(o.stream_id).then((raw_url) => ({

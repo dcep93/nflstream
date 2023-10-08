@@ -2,6 +2,7 @@ import React from "react";
 import { streamToScreen } from ".";
 import { StreamType } from "./Fetcher";
 import { ScreenType } from "./Multiscreen";
+import Options from "./Options";
 import style from "./index.module.css";
 import recorded_sha from "./recorded_sha";
 
@@ -58,6 +59,7 @@ class Menu extends React.Component<
           </div>
         )}
         <Guide />
+        <Options />
       </div>
     );
   }

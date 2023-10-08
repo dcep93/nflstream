@@ -1,12 +1,13 @@
 import React from "react";
 import { LogType, PlayType } from "../Fetcher";
 import LogFetcher from "../Fetcher/LogFetcher";
+import { bigPlayWarningRef, logDelayRef } from "../Options";
 import AutoScroller from "./Autoscroller";
 import logStyle from "./index.module.css";
 
-const bigPlayWarningMs = 20 * 1000;
-const bigPlayDurationMs = 5 * 1000;
-const delayMs = bigPlayWarningMs; // 0 * 60 * 1000;
+export const bigPlayDurationMs = 5 * 1000;
+export const defaultBigPlayWarningMs = 20 * 1000;
+const defaultLogDelayMs = defaultBigPlayWarningMs; // 0 * 60 * 1000;
 
 class Log extends React.Component<
   {
@@ -54,11 +55,16 @@ export class DelayedLog extends React.Component<
     const play = (this.props.log?.playByPlay || [])[0]?.plays?.find(
       (p) => !p.text.startsWith("Timeout")
     );
+    const delayMs =
+      parseInt(logDelayRef.current?.value || "") || defaultLogDelayMs;
     if (play && this.isBigPlay(play)) {
       const bigPlay = play.clock;
       if (this.state?.bigPlay !== bigPlay) {
         this.setState({ bigPlay });
-        if (!this.props.isSelected)
+        if (!this.props.isSelected) {
+          const bigPlayWarningMs =
+            parseInt(bigPlayWarningRef.current?.value || "") ||
+            defaultBigPlayWarningMs;
           setTimeout(() => {
             this.props.updateBigPlay(true);
             setTimeout(
@@ -66,6 +72,7 @@ export class DelayedLog extends React.Component<
               bigPlayDurationMs
             );
           }, Math.max(0, delayMs - bigPlayWarningMs));
+        }
       }
     }
     const props = this.props;

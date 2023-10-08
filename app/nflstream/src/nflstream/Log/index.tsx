@@ -97,7 +97,7 @@ export class DelayedLog extends React.Component<
     ) {
       return true;
     }
-    if (play.distance <= -10 || play.distance >= 20) {
+    if (play.distance <= -11 || play.distance >= 25) {
       return true;
     }
     return (
@@ -108,7 +108,7 @@ export class DelayedLog extends React.Component<
         "MUFF",
         "SAFETY",
         "recover",
-        "injure",
+        // "injure",
       ].find((text) => play.text.includes(text)) !== undefined
     );
   }

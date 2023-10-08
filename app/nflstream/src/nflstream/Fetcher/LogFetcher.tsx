@@ -36,7 +36,7 @@ class LogFetcher extends Fetcher<LogType | null, number> {
           yardsToEndzone: drive.plays[0].end.yardsToEndzone,
         }));
         const timestamp = obj.drives.current.plays[0].modified;
-        const boxScore = ["passing", "rushing", "receiving"].map((key) => ({
+        const boxScore = ["passing", "receiving", "rushing"].map((key) => ({
           key,
           labels:
             obj.boxscore.players[0].statistics.find((s: any) => s.name === key)

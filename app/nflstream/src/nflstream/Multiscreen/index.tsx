@@ -105,7 +105,7 @@ function Singlescreen(props: {
         style={{
           backgroundColor: redZone
             ? "maroon"
-            : bigPlay
+            : bigPlay && !props.isSelected
             ? "steelblue"
             : undefined,
         }}

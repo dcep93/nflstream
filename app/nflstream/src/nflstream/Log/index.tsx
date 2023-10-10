@@ -50,6 +50,7 @@ export class DelayedLog extends React.Component<
   { log: LogType; bigPlay: string }
 > {
   static active: DelayedLog | undefined;
+  static updateTimeout: ReturnType<typeof setTimeout> | undefined;
   componentDidUpdate(prevProps: PropsType) {
     if (JSON.stringify(this.props) === JSON.stringify(prevProps)) return;
     const play = (this.props.log?.playByPlay || [])[0]?.plays?.find(
@@ -71,7 +72,7 @@ export class DelayedLog extends React.Component<
       }
     }
     const props = this.props;
-    setTimeout(() => {
+    DelayedLog.updateTimeout = setTimeout(() => {
       this.updateNow(props.log);
     }, delayMs);
   }
@@ -129,6 +130,11 @@ export class DelayedLog extends React.Component<
     this.props.updateRedzone(redZone);
   }
 
+  onClick() {
+    clearTimeout(DelayedLog.updateTimeout);
+    this.updateNow(this.props.log);
+  }
+
   render() {
     if (!this.props.isSelected) return null;
     DelayedLog.active = this;
@@ -140,7 +146,7 @@ export class DelayedLog extends React.Component<
             ? window.open(
                 `https://www.espn.com/nfl/game?gameId=${this.props.log.gameId}`
               )
-            : this.updateNow(this.props.log);
+            : this.onClick();
         }}
       >
         <SubLog log={this.state?.log} bigPlay={this.state?.bigPlay} />

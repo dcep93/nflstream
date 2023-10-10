@@ -53,7 +53,7 @@ class LogFetcher extends Fetcher<LogType | null, number> {
             .map((a: any) => ({
               name: a.athlete.displayName,
               stats: a.stats,
-              rank: parseInt(a.stats[0].split("/")[0]),
+              rank: parseInt(a.stats[1].split("/")[0]),
             }))
             .sort((a, b) => b.rank - a.rank),
         }));

@@ -37,6 +37,9 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
           // .filter((match) => !match.innerHTML.includes("Redzone"))
           .map((match) => match.getElementsByTagName("a")[0].href)
       )
+      .then(() => [
+        "https://www.nflbite.com/nfl/live/denver-broncos-at-kansas-city-chiefs-3-live-stream",
+      ])
       .then((hrefs) => hrefs.map(getStream))
       .then((promises) => Promise.all(promises))
       .then(

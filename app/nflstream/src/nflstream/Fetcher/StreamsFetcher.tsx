@@ -18,28 +18,14 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
       StreamsFetcher.firstTime ? 0 : 10 * 60 * 1000
     )
       .then(parse)
-      .then((html) => html.getElementsByClassName("competition"))
-      .then((arr) => Array.from(arr))
-      .then((competitions) =>
-        competitions.filter((competition) =>
-          Array.from(competition.getElementsByClassName("name")).find((name) =>
-            name.innerHTML.startsWith("NFL")
-          )
-        )
+      .then((html) => html.getElementsByClassName("page-content"))
+      .then((elements) => Array.from(elements))
+      .then((elements) =>
+        elements.flatMap((e) => Array.from(e.getElementsByTagName("a")))
       )
-      .then((competitions) =>
-        competitions.flatMap((competition) =>
-          Array.from(competition.getElementsByClassName("matches")[0].children)
-        )
-      )
-      .then((matches) =>
-        matches
-          // .filter((match) => !match.innerHTML.includes("Redzone"))
-          .map((match) => match.getElementsByTagName("a")[0].href)
-      )
-      .then(() => [
-        "https://www.nflbite.com/nfl/live/denver-broncos-at-kansas-city-chiefs-3-live-stream",
-      ])
+      .then((elements) => elements.map((e) => e.getAttribute("href")!))
+      .then((hrefs) => hrefs.filter((href) => href.startsWith("/nfl/")))
+      .then((hrefs) => hrefs.map((href) => `https://nflbite.com/${href}`))
       .then((hrefs) => hrefs.map(getStream))
       .then((promises) => Promise.all(promises))
       .then(

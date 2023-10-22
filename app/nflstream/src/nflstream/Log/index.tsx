@@ -193,7 +193,7 @@ function SubLog(props: { log: LogType; bigPlay: string }) {
         ))}
       </div>
       <div className={logStyle.logContent}>
-        <AutoScroller speed={10}>
+        <AutoScroller speed={8}>
           <>
             {(props.log.boxScore || []).map((boxScore, i) => (
               <div key={i} className={logStyle.boxScore}>

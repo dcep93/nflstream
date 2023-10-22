@@ -178,7 +178,7 @@ function ObjectFitIframe(props: {
 }
 
 function IframeWrapper(props: { screen: ScreenType; key: number }) {
-  console.log(props.screen.url);
+  // console.log(props.screen.url);
   return (
     <div
       style={{

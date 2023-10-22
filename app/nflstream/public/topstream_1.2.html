@@ -129,6 +129,9 @@
             sources: [{ type: "application/x-mpegurl", src: hlsurl }],
           },
         });
+        Array.from(document.getElementsByTagName("a")).find((a) =>
+          a.href.endsWith("/hello/?from=player")
+        ).style.opacity = 0;
       }
     </script>
   </head>

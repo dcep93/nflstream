@@ -5,11 +5,36 @@ class LogFetcher extends Fetcher<LogType | null, number> {
   intervalMs = 3 * 1000;
   getResponse() {
     const gameId = this.props.payload;
-    return fetchE(
-      `https://site.web.api.espn.com/apis/site/v2/sports/football/nfl/summary?region=us&lang=en&contentorigin=espn&event=${gameId}`,
-      5 * 1000
-    )
-      .then((resp) => JSON.parse(resp))
+    return Promise.resolve()
+      .then(() => [
+        fetchE(
+          `https://site.web.api.espn.com/apis/site/v2/sports/football/nfl/summary?region=us&lang=en&contentorigin=espn&event=${gameId}`,
+          10 * 1000
+        ),
+        fetchE(
+          `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/401249063/competitions/${gameId}/plays?limit=1000`,
+          10 * 1000
+        ),
+      ])
+      .then((ps) => Promise.all(ps))
+      .then((resps) => resps.map((resp) => JSON.parse(resp)))
+      .then(([obj, coreObj]) => {
+        if (obj.drives && coreObj?.items) {
+          const drive = coreObj.items.slice().reverse()[0];
+          if (obj.drives.current.id === drive.id) {
+            return Promise.resolve()
+              .then(() => drive.drive["$ref"])
+              .then((driveUrl) => fetchE(driveUrl, 2 * 1000))
+              .then((driveResp) => JSON.parse(driveResp))
+              .then((driveObj) => {
+                // console.log(obj.drives.current, driveObj);
+                // obj.drives.current.plays = driveObj.items;
+                return obj;
+              });
+          }
+        }
+        return obj;
+      })
       .then((obj) => {
         // console.log(gameId, obj);
         if (!obj.drives) return null;

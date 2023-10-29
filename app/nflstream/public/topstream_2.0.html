@@ -21,6 +21,7 @@
       );
       var topstream_muted = true;
       function update_muted() {
+        _console.log("update_muted", topstream_muted);
         const video = document.getElementsByTagName("video")[0];
         if (video) video.muted = topstream_muted;
       }

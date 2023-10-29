@@ -24,7 +24,7 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
         elements.flatMap((e) => Array.from(e.getElementsByTagName("a")))
       )
       .then((elements) => elements.map((e) => e.getAttribute("href")!))
-      .then((hrefs) => hrefs.filter((href) => href.startsWith("/nfl/")))
+      .then((hrefs) => hrefs.filter((href) => href.startsWith("/nfl")))
       .then((hrefs) => hrefs.map((href) => `https://nflbite.com/${href}`))
       .then((hrefs) => hrefs.map(getStream))
       .then((promises) => Promise.all(promises))
@@ -80,10 +80,9 @@ function getStream(href: string): Promise<StreamType | undefined> {
   return fetchP(href, StreamsFetcher.firstTime ? 0 : 10 * 60 * 1000)
     .then((text) => parse(text))
     .then((p) =>
-      Array.from(
-        p.getElementById("streams")?.getElementsByClassName("username") || []
-      ).find((e) => (e as HTMLElement).innerText.trim() === "topstreamer") ===
-      undefined
+      Array.from(p.getElementsByClassName("username") || []).find(
+        (e) => (e as HTMLElement).innerText.trim() === "topstreamer"
+      ) === undefined
         ? undefined
         : Promise.resolve({
             name: p.title.includes("Redzone")

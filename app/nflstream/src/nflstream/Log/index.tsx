@@ -6,7 +6,7 @@ import AutoScroller from "./Autoscroller";
 import logStyle from "./index.module.css";
 
 export const bigPlayDurationMs = 5 * 1000;
-export const defaultBigPlayWarningMs = 20 * 1000;
+export const defaultBigPlayWarningMs = 10 * 1000;
 const defaultLogDelayMs = defaultBigPlayWarningMs; // 0 * 60 * 1000;
 
 class Log extends React.Component<

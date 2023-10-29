@@ -19,7 +19,7 @@
       const params = Object.fromEntries(
         new URLSearchParams(window.location.search).entries()
       );
-      var topstream_muted = false;
+      var topstream_muted = true;
       function update_muted() {
         const video = document.getElementsByTagName("video")[0];
         if (video) video.muted = topstream_muted;
@@ -132,6 +132,14 @@
         Array.from(document.getElementsByTagName("a")).find((a) =>
           a.href.endsWith("/hello/?from=player")
         ).style.opacity = 0;
+        document.getElementsByClassName("fp-ui")[0].click();
+        const liveInterval = setInterval(() => {
+          if (flowapi.video.buffer > 50) {
+            clearInterval(liveInterval);
+            document.getElementsByTagName("video")[0].currentTime =
+              flowapi.video.buffer - 1;
+          }
+        }, 100);
       }
     </script>
   </head>

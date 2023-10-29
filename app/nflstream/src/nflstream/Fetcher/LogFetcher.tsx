@@ -4,7 +4,6 @@ import { extension_id } from "..";
 class LogFetcher extends Fetcher<LogType | null, number> {
   intervalMs = 3 * 1000;
   getResponse() {
-    return Promise.resolve(null);
     const gameId = this.props.payload;
     return Promise.resolve()
       .then(() => [

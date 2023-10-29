@@ -230,7 +230,6 @@ function muteUnmute(
   iframeRef: React.RefObject<HTMLIFrameElement>,
   mute: boolean | null
 ) {
-  console.log(mute);
   iframeRef.current?.contentWindow!.postMessage(
     { mute, source: "nflstream" },
     "*"

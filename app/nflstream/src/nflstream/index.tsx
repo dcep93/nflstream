@@ -60,17 +60,16 @@ class NFLStream extends React.Component<
   componentDidUpdate() {
     if (!this.state?.initialized) {
       if (this.state?.streams !== undefined) {
-        const screens = window.location.hash
-          .substring(1)
-          .split(",")
-          .map((stream_id) =>
-            this.state.streams!.find((s) => s.stream_id === stream_id)
-          )
-          .filter(Boolean)
-          .map((stream) => streamToScreen(stream!, false));
         this.setState({
           initialized: true,
-          screens,
+          screens: window.location.hash
+            .substring(1)
+            .split(",")
+            .map((stream_id) =>
+              this.state.streams!.find((s) => s.stream_id === stream_id)
+            )
+            .filter(Boolean)
+            .map((stream) => streamToScreen(stream!, false)),
         });
       }
     } else {

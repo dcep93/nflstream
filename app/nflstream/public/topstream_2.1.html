@@ -21,13 +21,14 @@
       );
       var topstream_muted = true;
       function update_muted() {
-        _console.log("topstream_muted", topstream_muted);
+        _console.log("update_muted", topstream_muted);
         const video = document.getElementsByTagName("video")[0];
         if (video) video.muted = topstream_muted;
       }
-      _console.log("ready");
+      setInterval(update_muted, 1000);
       window.addEventListener("message", (event) => {
         if (event.data.source !== "nflstream") return;
+        // console.log(event.data, "receiveMessage");
         topstream_muted =
           event.data.mute !== null ? event.data.mute : !topstream_muted;
         update_muted();
@@ -136,7 +137,6 @@
         const liveInterval = setInterval(() => {
           if (flowapi.video.buffer > 50) {
             clearInterval(liveInterval);
-            update_muted();
             document.getElementsByTagName("video")[0].currentTime =
               flowapi.video.buffer - 1;
           }

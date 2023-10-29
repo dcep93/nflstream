@@ -2,7 +2,7 @@ import Fetcher, { cacheF, parse, StreamType } from ".";
 
 class StreamsFetcher extends Fetcher<StreamType[], boolean> {
   intervalMs = 10 * 60 * 1000;
-  static firstTime = process.env.NODE_ENV !== "development";
+  static firstTime = true;
   getResponse() {
     //   return Promise.resolve([
     //     { url: "http://weakstreams.com/streams/10309005", name: "test2" },

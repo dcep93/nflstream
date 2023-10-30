@@ -19,20 +19,6 @@
       const params = Object.fromEntries(
         new URLSearchParams(window.location.search).entries()
       );
-      var topstream_muted = true;
-      function update_muted() {
-        _console.log("update_muted", topstream_muted);
-        const video = document.getElementsByTagName("video")[0];
-        if (video) video.muted = topstream_muted;
-      }
-      setInterval(update_muted, 1000);
-      window.addEventListener("message", (event) => {
-        if (event.data.source !== "nflstream") return;
-        // console.log(event.data, "receiveMessage");
-        topstream_muted =
-          event.data.mute !== null ? event.data.mute : !topstream_muted;
-        update_muted();
-      });
     </script>
     <!-- skin -->
     <link
@@ -130,15 +116,34 @@
             sources: [{ type: "application/x-mpegurl", src: hlsurl }],
           },
         });
+        customInit();
+      }
+
+      function customInit() {
+        var topstream_muted = true;
+        function update_muted() {
+          const video = document.getElementsByTagName("video")[0];
+          if (video) video.muted = topstream_muted;
+        }
         Array.from(document.getElementsByTagName("a")).find((a) =>
           a.href.endsWith("/hello/?from=player")
         ).style.opacity = 0;
         document.getElementsByClassName("fp-ui")[0].click();
+        update_muted();
+        const video = document.getElementsByTagName("video")[0];
         const liveInterval = setInterval(() => {
+          video.pause();
           if (flowapi.video.buffer > 50) {
             clearInterval(liveInterval);
-            document.getElementsByTagName("video")[0].currentTime =
-              flowapi.video.buffer - 1;
+            window.addEventListener("message", (event) => {
+              if (event.data.source !== "nflstream") return;
+              topstream_muted =
+                event.data.mute !== null ? event.data.mute : !topstream_muted;
+              update_muted();
+            });
+            window.parent.postMessage("nflstream", "*");
+            video.currentTime = flowapi.video.buffer - 1;
+            video.play();
           }
         }, 100);
       }

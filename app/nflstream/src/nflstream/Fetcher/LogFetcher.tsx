@@ -35,7 +35,6 @@ class LogFetcher extends Fetcher<LogType | null, number> {
           )
       )
       .then((obj) => {
-        // console.log(gameId, obj);
         if (!obj.drives) return null;
         const drives = [obj.drives.current]
           .concat(

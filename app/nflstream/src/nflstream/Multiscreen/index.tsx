@@ -11,62 +11,84 @@ export type ScreenType = StreamType & {
   skipLog: boolean;
 };
 
-function Multiscreen(props: {
+type PropsType = {
   backgroundColor?: string;
   screens: ScreenType[];
   removeScreen: (iFrameTitle: string) => void;
-}) {
-  const [selected, updateSelectedStr] = useState("");
-  const selectedScreen =
-    props.screens.find((s) => s.iFrameTitle === selected) || props.screens[0];
-  if (selectedScreen) muteUnmute(selectedScreen.ref, false);
-  function updateSelected(screen: ScreenType) {
+};
+
+class Multiscreen extends React.Component<PropsType, { selected: string }> {
+  componentDidMount(): void {
+    window.addEventListener("message", (event) => {
+      if (event.data === "nflstream") {
+        muteUnmute(this.getSelectedScreen().ref, false);
+      }
+    });
+  }
+
+  componentDidUpdate(): void {
+    const selectedScreen = this.getSelectedScreen();
+    if (selectedScreen) muteUnmute(selectedScreen.ref, false);
+  }
+
+  getSelectedScreen() {
+    return (
+      this.props.screens.find((s) => s.iFrameTitle === this.state?.selected) ||
+      this.props.screens[0]
+    );
+  }
+
+  updateSelected(screen: ScreenType) {
+    const selectedScreen = this.getSelectedScreen();
     if (screen.iFrameTitle === selectedScreen.iFrameTitle) {
       muteUnmute(screen.ref, null);
     } else {
-      muteUnmute(screen.ref, false);
       muteUnmute(selectedScreen.ref, true);
+      this.setState({ selected: screen.iFrameTitle });
     }
-    updateSelectedStr(screen.iFrameTitle);
   }
 
-  return (
-    <div
-      className={msStyle.screens_wrapper}
-      style={{ backgroundColor: props.backgroundColor || "black" }}
-    >
-      {props.screens.length === 0 ? null : (
-        <div
-          className={msStyle.screens}
-          onKeyDown={(e) =>
-            Promise.resolve(e)
-              .then((e) => e.key)
-              .then((key) => parseInt(key))
-              .then((index) =>
-                index === 0
-                  ? Promise.resolve().then(() => DelayedLog.active?.updateNow())
-                  : Promise.resolve()
-                      .then(() => props.screens[index - 1])
-                      .then((screen) => screen && updateSelected(screen))
-              )
-          }
-          tabIndex={0}
-        >
-          {props.screens.map((screen, i) => (
-            <Singlescreen
-              key={screen.iFrameTitle}
-              index={i + 1}
-              screen={screen}
-              isSelected={screen === selectedScreen}
-              removeScreen={() => props.removeScreen(screen.iFrameTitle)}
-              updateSelected={() => updateSelected(screen)}
-              numScreens={props.screens.length}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
+  render() {
+    return (
+      <div
+        className={msStyle.screens_wrapper}
+        style={{ backgroundColor: this.props.backgroundColor || "black" }}
+      >
+        {this.props.screens.length === 0 ? null : (
+          <div
+            className={msStyle.screens}
+            onKeyDown={(e) =>
+              Promise.resolve(e)
+                .then((e) => e.key)
+                .then((key) => parseInt(key))
+                .then((index) =>
+                  index === 0
+                    ? Promise.resolve().then(() =>
+                        DelayedLog.active?.updateNow()
+                      )
+                    : Promise.resolve()
+                        .then(() => this.props.screens[index - 1])
+                        .then((screen) => screen && this.updateSelected(screen))
+                )
+            }
+            tabIndex={0}
+          >
+            {this.props.screens.map((screen, i) => (
+              <Singlescreen
+                key={screen.iFrameTitle}
+                index={i + 1}
+                screen={screen}
+                isSelected={screen === this.getSelectedScreen()}
+                removeScreen={() => this.props.removeScreen(screen.iFrameTitle)}
+                updateSelected={() => this.updateSelected(screen)}
+                numScreens={this.props.screens.length}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
 }
 
 function Singlescreen(props: {
@@ -178,7 +200,6 @@ function ObjectFitIframe(props: {
 }
 
 function IframeWrapper(props: { screen: ScreenType; key: number }) {
-  // console.log(props.screen.url);
   return (
     <div
       style={{

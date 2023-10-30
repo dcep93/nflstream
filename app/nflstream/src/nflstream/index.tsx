@@ -142,6 +142,7 @@ function ForceInteract(props: { interact: () => void }) {
       document.removeEventListener("keydown", handleKeyDown);
     }
     document.addEventListener("keydown", handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <div

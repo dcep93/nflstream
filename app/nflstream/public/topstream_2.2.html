@@ -132,7 +132,6 @@
         update_muted();
         const video = document.getElementsByTagName("video")[0];
         const liveInterval = setInterval(() => {
-          video.pause();
           if (flowapi.video.buffer > 50) {
             clearInterval(liveInterval);
             window.addEventListener("message", (event) => {
@@ -143,7 +142,6 @@
             });
             window.parent.postMessage("nflstream", "*");
             video.currentTime = flowapi.video.buffer - 5;
-            video.play();
           }
         }, 10);
       }

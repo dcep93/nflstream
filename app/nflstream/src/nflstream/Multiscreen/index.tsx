@@ -13,7 +13,6 @@ export type ScreenType = StreamType & {
 
 class Multiscreen extends React.Component<
   {
-    backgroundColor?: string;
     screens: ScreenType[];
     removeScreen: (iFrameTitle: string) => void;
   },
@@ -22,7 +21,8 @@ class Multiscreen extends React.Component<
   componentDidMount(): void {
     window.addEventListener("message", (event) => {
       if (event.data === "nflstream") {
-        muteUnmute(this.getSelectedScreen().ref, false);
+        const ref = this.getSelectedScreen()?.ref;
+        if (ref) muteUnmute(ref, false);
       }
     });
   }
@@ -53,7 +53,7 @@ class Multiscreen extends React.Component<
     return (
       <div
         className={msStyle.screens_wrapper}
-        style={{ backgroundColor: this.props.backgroundColor || "black" }}
+        style={{ backgroundColor: "black" }}
       >
         {this.props.screens.length === 0 ? null : (
           <div

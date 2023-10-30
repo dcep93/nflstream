@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { StreamType } from "./Fetcher";
 import StreamsFetcher from "./Fetcher/StreamsFetcher";
 import Menu from "./Menu";
@@ -57,23 +57,28 @@ class NFLStream extends React.Component<
     }
   }
 
+  getHashedScreens() {
+    return window.location.hash
+      .substring(1)
+      .split(",")
+      .map((stream_id) =>
+        this.state.streams!.find((s) => s.stream_id === stream_id)
+      )
+      .filter(Boolean)
+      .map((stream) => streamToScreen(stream!, false));
+  }
+
   componentDidUpdate() {
-    if (!this.state?.initialized) {
+    if (this.state?.initialized === undefined) {
       if (this.state?.streams !== undefined) {
-        const screens = window.location.hash
-          .substring(1)
-          .split(",")
-          .map((stream_id) =>
-            this.state.streams!.find((s) => s.stream_id === stream_id)
-          )
-          .filter(Boolean)
-          .map((stream) => streamToScreen(stream!, false));
-        this.setState({
-          initialized: true,
-          screens,
-        });
+        const screens = this.getHashedScreens();
+        if (screens.length === 0) {
+          this.setState({ initialized: true, screens });
+        } else {
+          this.setState({ initialized: false });
+        }
       }
-    } else {
+    } else if (this.state.initialized) {
       window.location.hash = `#${(this.state?.screens || [])
         .map((s) => s.stream_id)
         .join(",")}`;
@@ -83,19 +88,12 @@ class NFLStream extends React.Component<
   render() {
     const ref = React.createRef<StreamsFetcher>();
     const handleResponse = (streams: StreamType[]) => {
-      // if (
-      //   streams.map((s) => s.url).join(" ") !==
-      //   (this.state.streams || []).map((s) => s.url).join(" ")
-      // ) {
-      //   this.setState({ backgroundColor: "darkgrey" });
-      //   setTimeout(() => this.setState({ backgroundColor: undefined }), 2000);
-      // }
       this.setState({ streams });
     };
     return localStorage.getItem("mustbeusedlegally") !== mustbeusedlegally ? (
       <Mustbeusedlegally />
     ) : this.state?.hasExtension === undefined ? null : (
-      <div className={style.main}>
+      <div className={style.main} style={{ backgroundColor: "black" }}>
         <StreamsFetcher
           ref={ref}
           handleResponse={handleResponse}
@@ -110,20 +108,49 @@ class NFLStream extends React.Component<
           }
           streams={this.state?.streams}
         />
-        <Multiscreen
-          backgroundColor={this.state?.backgroundColor}
-          screens={this.state?.screens || []}
-          removeScreen={(iFrameTitle) =>
-            this.setState({
-              screens: this.state.screens.filter(
-                (o) => o.iFrameTitle !== iFrameTitle
-              ),
-            })
-          }
-        />
+        {this.state.initialized === false ? (
+          <ForceInteract
+            interact={() =>
+              this.state?.initialized ||
+              this.setState({
+                initialized: true,
+                screens: this.getHashedScreens(),
+              })
+            }
+          />
+        ) : (
+          <Multiscreen
+            screens={this.state?.screens || []}
+            removeScreen={(iFrameTitle) =>
+              this.setState({
+                screens: this.state.screens.filter(
+                  (o) => o.iFrameTitle !== iFrameTitle
+                ),
+              })
+            }
+          />
+        )}
       </div>
     );
   }
+}
+
+function ForceInteract(props: { interact: () => void }) {
+  useEffect(() => {
+    function handleKeyDown() {
+      props.interact();
+      document.removeEventListener("keydown", handleKeyDown);
+    }
+    document.addEventListener("keydown", handleKeyDown);
+  }, []);
+  return (
+    <div
+      style={{ color: "white" }}
+      // onClick={() => props.interact()}
+    >
+      press enter to resume
+    </div>
+  );
 }
 
 export function streamToScreen(

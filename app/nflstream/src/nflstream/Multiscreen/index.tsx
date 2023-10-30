@@ -19,6 +19,18 @@ class Multiscreen extends React.Component<
   { selected: string }
 > {
   componentDidMount(): void {
+    window.addEventListener("keydown", (e) =>
+      Promise.resolve(e)
+        .then((e) => e.key)
+        .then((key) => parseInt(key))
+        .then((index) =>
+          index === 0
+            ? Promise.resolve().then(() => DelayedLog.active?.updateNow())
+            : Promise.resolve()
+                .then(() => this.props.screens[index - 1])
+                .then((screen) => screen && this.updateSelected(screen))
+        )
+    );
     window.addEventListener("message", (event) => {
       if (event.data === "nflstream") {
         const ref = this.getSelectedScreen()?.ref;
@@ -29,18 +41,24 @@ class Multiscreen extends React.Component<
 
   componentDidUpdate(): void {
     const selectedScreen = this.getSelectedScreen();
-    if (selectedScreen) muteUnmute(selectedScreen.ref, false);
+    if (!selectedScreen) {
+      const screen = this.props.screens[0];
+      if (screen) {
+        this.setState({ selected: screen.iFrameTitle });
+        if (screen) muteUnmute(screen.ref, false);
+      }
+    }
   }
 
   getSelectedScreen() {
-    return (
-      this.props.screens.find((s) => s.iFrameTitle === this.state?.selected) ||
-      this.props.screens[0]
+    return this.props.screens.find(
+      (s) => s.iFrameTitle === this.state?.selected
     );
   }
 
   updateSelected(screen: ScreenType) {
     const selectedScreen = this.getSelectedScreen();
+    if (!selectedScreen) return;
     if (screen.iFrameTitle === selectedScreen.iFrameTitle) {
       muteUnmute(screen.ref, null);
     } else {
@@ -56,24 +74,7 @@ class Multiscreen extends React.Component<
         style={{ backgroundColor: "black" }}
       >
         {this.props.screens.length === 0 ? null : (
-          <div
-            className={msStyle.screens}
-            onKeyDown={(e) =>
-              Promise.resolve(e)
-                .then((e) => e.key)
-                .then((key) => parseInt(key))
-                .then((index) =>
-                  index === 0
-                    ? Promise.resolve().then(() =>
-                        DelayedLog.active?.updateNow()
-                      )
-                    : Promise.resolve()
-                        .then(() => this.props.screens[index - 1])
-                        .then((screen) => screen && this.updateSelected(screen))
-                )
-            }
-            tabIndex={0}
-          >
+          <div className={msStyle.screens}>
             {this.props.screens.map((screen, i) => (
               <Singlescreen
                 key={screen.iFrameTitle}

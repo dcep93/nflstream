@@ -142,10 +142,10 @@
               update_muted();
             });
             window.parent.postMessage("nflstream", "*");
-            video.currentTime = flowapi.video.buffer - 1;
+            video.currentTime = flowapi.video.buffer - 5;
             video.play();
           }
-        }, 100);
+        }, 10);
       }
     </script>
   </head>

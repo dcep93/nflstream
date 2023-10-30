@@ -127,7 +127,7 @@ function getTopstreamsUrl(stream_id: string): Promise<string> {
 }
 
 function getStreamUrl(message: string) {
-  return `/topstream_2.1.html?${Object.entries({
+  return `/topstream_2.2.html?${Object.entries({
     key: /var key= '(.*)';/,
     masterkey: /var masterkey= '(.*)'/,
     masterinf: /window.masterinf = (.*);/,

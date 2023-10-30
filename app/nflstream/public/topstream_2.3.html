@@ -129,19 +129,19 @@
           a.href.endsWith("/hello/?from=player")
         ).style.opacity = 0;
         document.getElementsByClassName("fp-ui")[0].click();
-        update_muted();
-        const video = document.getElementsByTagName("video")[0];
+        window.addEventListener("message", (event) => {
+          if (event.data.source !== "nflstream") return;
+          topstream_muted =
+            event.data.mute !== null ? event.data.mute : !topstream_muted;
+          update_muted();
+        });
         const liveInterval = setInterval(() => {
+          update_muted();
           if (flowapi.video.buffer > 50) {
             clearInterval(liveInterval);
-            window.addEventListener("message", (event) => {
-              if (event.data.source !== "nflstream") return;
-              topstream_muted =
-                event.data.mute !== null ? event.data.mute : !topstream_muted;
-              update_muted();
-            });
             window.parent.postMessage("nflstream", "*");
-            video.currentTime = flowapi.video.buffer - 5;
+            document.getElementsByTagName("video")[0].currentTime =
+              flowapi.video.buffer - 5;
           }
         }, 10);
       }

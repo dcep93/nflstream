@@ -11,13 +11,14 @@ export type ScreenType = StreamType & {
   skipLog: boolean;
 };
 
-type PropsType = {
-  backgroundColor?: string;
-  screens: ScreenType[];
-  removeScreen: (iFrameTitle: string) => void;
-};
-
-class Multiscreen extends React.Component<PropsType, { selected: string }> {
+class Multiscreen extends React.Component<
+  {
+    backgroundColor?: string;
+    screens: ScreenType[];
+    removeScreen: (iFrameTitle: string) => void;
+  },
+  { selected: string }
+> {
   componentDidMount(): void {
     window.addEventListener("message", (event) => {
       if (event.data === "nflstream") {

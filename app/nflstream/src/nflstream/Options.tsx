@@ -4,7 +4,6 @@ import style from "./index.module.css";
 
 export const logDelayRef = createRef<HTMLInputElement>();
 export const bigPlayWarningRef = createRef<HTMLInputElement>();
-const bonusScreenURLRef = createRef<HTMLInputElement>();
 
 export default function Options() {
   return (

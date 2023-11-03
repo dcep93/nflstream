@@ -13,10 +13,7 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
 
     // real() {
     const hasExtension = this.props.payload;
-    return fetchP(
-      "https://nflbite.com/",
-      StreamsFetcher.firstTime ? 0 : 10 * 60 * 1000
-    )
+    return fetchP("https://nflbite.com/", 10 * 60 * 1000)
       .then(parse)
       .then((html) => html.getElementsByClassName("page-content"))
       .then((elements) => Array.from(elements))
@@ -77,7 +74,7 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
 }
 
 function getStream(href: string): Promise<StreamType | undefined> {
-  return fetchP(href, StreamsFetcher.firstTime ? 0 : 10 * 60 * 1000)
+  return fetchP(href, 10 * 60 * 1000)
     .then((text) => parse(text))
     .then((p) =>
       Array.from(p.getElementsByClassName("username") || []).find(

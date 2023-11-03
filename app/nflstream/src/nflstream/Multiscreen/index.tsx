@@ -37,6 +37,7 @@ class Multiscreen extends React.Component<
         if (ref) muteUnmute(ref, false);
       }
     });
+    this.setState({ selected: "" });
   }
 
   componentDidUpdate(): void {

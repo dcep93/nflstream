@@ -119,16 +119,18 @@ class NFLStream extends React.Component<
             }
           />
         ) : (
-          <Multiscreen
-            screens={this.state?.screens || []}
-            removeScreen={(iFrameTitle) =>
-              this.setState({
-                screens: this.state.screens.filter(
-                  (o) => o.iFrameTitle !== iFrameTitle
-                ),
-              })
-            }
-          />
+          this.state.initialized && (
+            <Multiscreen
+              screens={this.state?.screens || []}
+              removeScreen={(iFrameTitle) =>
+                this.setState({
+                  screens: this.state.screens.filter(
+                    (o) => o.iFrameTitle !== iFrameTitle
+                  ),
+                })
+              }
+            />
+          )
         )}
       </div>
     );

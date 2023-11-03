@@ -83,12 +83,21 @@ export function cacheF<T>(
   maxAgeMs: number,
   f: () => Promise<T>
 ): Promise<T> {
-  const cached = cache[key];
   const timestamp = new Date().getTime();
+  var cached = cache[key];
+  if (!cached) {
+    const localCached = window.localStorage.getItem(key);
+    if (localCached !== null) {
+      cached = JSON.parse(localCached);
+    }
+  }
   if (cached && timestamp - cached!.timestamp < maxAgeMs)
     return Promise.resolve(cached.data as T);
   return f().then((data) => {
-    cache[key] = { timestamp, data };
+    cached = { timestamp, data };
+    cache[key] = cached;
+    const localCached = JSON.stringify(cached);
+    window.localStorage.setItem(key, localCached);
     return data;
   });
 }

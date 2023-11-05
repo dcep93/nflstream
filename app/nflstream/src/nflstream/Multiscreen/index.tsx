@@ -18,7 +18,10 @@ class Multiscreen extends React.Component<
   },
   { selected: string }
 > {
+  mounted = false;
   componentDidMount(): void {
+    if (this.mounted) return;
+    this.mounted = true;
     window.addEventListener("keydown", (e) =>
       Promise.resolve(e)
         .then((e) => e.key)

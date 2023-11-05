@@ -76,7 +76,10 @@ export default abstract class Fetcher<T, U> extends React.Component<
   }
 }
 
-const cache: { [key: string]: { timestamp: number; data: any } } = {};
+const cacheVersion = "1.0.0";
+const cache: {
+  [key: string]: { timestamp: number; data: any; version: string };
+} = {};
 export function cacheF<T>(
   key: string,
   maxAgeMs: number,
@@ -90,10 +93,14 @@ export function cacheF<T>(
       cached = JSON.parse(localCached);
     }
   }
-  if (cached && timestamp - cached!.timestamp < maxAgeMs)
+  if (
+    cached &&
+    timestamp - cached!.timestamp < maxAgeMs &&
+    cached!.version === cacheVersion
+  )
     return Promise.resolve(cached.data as T);
   return f().then((data) => {
-    cached = { timestamp, data };
+    cached = { timestamp, data, version: cacheVersion };
     cache[key] = cached;
     const localCached = JSON.stringify(cached);
     try {

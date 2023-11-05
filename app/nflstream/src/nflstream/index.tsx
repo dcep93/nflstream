@@ -138,19 +138,16 @@ class NFLStream extends React.Component<
 }
 
 function ForceInteract(props: { interact: () => void }) {
+  function handleKeyDown() {
+    props.interact();
+    document.removeEventListener("keydown", handleKeyDown);
+  }
   useEffect(() => {
-    function handleKeyDown() {
-      props.interact();
-      document.removeEventListener("keydown", handleKeyDown);
-    }
     document.addEventListener("keydown", handleKeyDown);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
-    <div
-      style={{ color: "white" }}
-      // onClick={() => props.interact()}
-    >
+    <div style={{ color: "white" }} onClick={() => handleKeyDown()}>
       press enter to resume
     </div>
   );

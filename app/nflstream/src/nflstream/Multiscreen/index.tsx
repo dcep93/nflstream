@@ -145,8 +145,9 @@ function Singlescreen(props: {
         <span
           className={style.hover}
           onClick={() => {
-            wrapTopStreams(props.screen.raw_url, false);
-            updateKey(Date.now());
+            wrapTopStreams(props.screen.raw_url, true).then(() =>
+              updateKey(Date.now())
+            );
           }}
         >
           🔄
@@ -207,6 +208,11 @@ function ObjectFitIframe(props: {
 }
 
 function IframeWrapper(props: { screen: ScreenType; key: number }) {
+  const [url, updateUrl] = useState("");
+  if (url === "") {
+    wrapTopStreams(props.screen.raw_url, false).then(updateUrl);
+    return null;
+  }
   return (
     <div
       style={{
@@ -246,7 +252,7 @@ function IframeWrapper(props: { screen: ScreenType; key: number }) {
               width: "98%",
             }}
             title={props.screen.iFrameTitle}
-            src={props.screen.url}
+            src={url}
           ></iframe>
         </div>
       </div>

@@ -13,7 +13,7 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
 
     // real() {
     const hasExtension = this.props.payload;
-    return fetchP("https://nflbite.com/", 10 * 60 * 1000, undefined, (text) =>
+    return fetchP("https://nflbite.com/", 10 * 60 * 1000, (text) =>
       Promise.resolve(text)
         .then(parse)
         .then((html) => html.getElementsByClassName("page-content"))
@@ -37,7 +37,6 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
           : fetchP(
               "https://www.espn.com/nfl/schedule",
               60 * 60 * 1000,
-              undefined,
               (text) =>
                 Promise.resolve(text)
                   .then(parse)
@@ -81,7 +80,7 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
 }
 
 function getStream(href: string): Promise<StreamType | undefined> {
-  return fetchP(href, 10 * 60 * 1000, undefined, (text) =>
+  return fetchP(href, 10 * 60 * 1000, (text) =>
     Promise.resolve(text)
       .then((text) => parse(text))
       .then((p) =>
@@ -113,24 +112,18 @@ function getStream(href: string): Promise<StreamType | undefined> {
                   raw_url,
                 }))
               )
-              .then((o) =>
-                Promise.resolve()
-                  .then(() =>
-                    wrapTopStreams(o.raw_url, StreamsFetcher.firstTime)
-                  )
-                  .then((url) => ({ ...o, url }))
-              )
+              .then((o) => wrapTopStreams(o.raw_url, false).then(() => o))
       )
   );
 }
 
 export function wrapTopStreams(
   url: string,
-  firstTime: boolean
+  hardRefresh: boolean
 ): Promise<string> {
-  return fetchP(url, firstTime ? 0 : 10 * 60 * 1000, undefined, (text) =>
-    Promise.resolve(text)
-  ).then((text) => getStreamUrl(text));
+  return fetchP(url, hardRefresh ? 0 : 10 * 60 * 1000, (text) =>
+    Promise.resolve(text).then((text) => getStreamUrl(text))
+  );
 }
 
 function getTopstreamsUrl(stream_id: string): Promise<string> {
@@ -187,8 +180,8 @@ export function parseTinyUrl(message: string) {
 function fetchP<T>(
   url: string,
   maxAgeMs: number,
-  options: any,
-  textToCache: (text: string) => Promise<T>
+  textToCache: (text: string) => Promise<T>,
+  options: any = undefined
 ): Promise<T> {
   return cacheF(url, maxAgeMs, () =>
     fetch("https://proxy420.appspot.com", {

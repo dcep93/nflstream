@@ -13,16 +13,18 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
 
     // real() {
     const hasExtension = this.props.payload;
-    return fetchP("https://nflbite.com/", 10 * 60 * 1000)
-      .then(parse)
-      .then((html) => html.getElementsByClassName("page-content"))
-      .then((elements) => Array.from(elements))
-      .then((elements) =>
-        elements.flatMap((e) => Array.from(e.getElementsByTagName("a")))
-      )
-      .then((elements) => elements.map((e) => e.getAttribute("href")!))
-      .then((hrefs) => hrefs.filter((href) => href.startsWith("/nfl")))
-      .then((hrefs) => hrefs.map((href) => `https://nflbite.com/${href}`))
+    return fetchP("https://nflbite.com/", 10 * 60 * 1000, undefined, (text) =>
+      Promise.resolve(text)
+        .then(parse)
+        .then((html) => html.getElementsByClassName("page-content"))
+        .then((elements) => Array.from(elements))
+        .then((elements) =>
+          elements.flatMap((e) => Array.from(e.getElementsByTagName("a")))
+        )
+        .then((elements) => elements.map((e) => e.getAttribute("href")!))
+        .then((hrefs) => hrefs.filter((href) => href.startsWith("/nfl")))
+        .then((hrefs) => hrefs.map((href) => `https://nflbite.com/${href}`))
+    )
       .then((hrefs) => hrefs.map(getStream))
       .then((promises) => Promise.all(promises))
       .then(
@@ -32,40 +34,45 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
       .then((streams) =>
         !hasExtension
           ? streams
-          : fetchP("https://www.espn.com/nfl/schedule", 60 * 60 * 1000)
-              .then(parse)
-              .then((html) => html.getElementsByTagName("tr"))
-              .then((arr) => Array.from(arr))
-              .then((trs) =>
-                trs.map((tr) => tr.children as unknown as HTMLElement[])
-              )
-              .then((trs) =>
-                trs.map((tds) => ({
-                  espnId: parseInt(
-                    tds[2]?.getElementsByTagName("a")[0]?.href.split("=")[1]
-                  ),
-                  awayTeam: (
-                    tds[0]?.getElementsByClassName(
-                      "Table__Team"
-                    )[0] as HTMLElement
-                  )?.innerText,
-                  homeTeam: (
-                    tds[1]?.getElementsByClassName(
-                      "Table__Team"
-                    )[0] as HTMLElement
-                  )?.innerText,
-                }))
-              )
-              .then((objs) =>
-                streams.map((stream) => ({
-                  espnId: objs.find(
-                    (obj) =>
-                      stream!.name.includes(obj.awayTeam) &&
-                      stream!.name.includes(obj.homeTeam)
-                  )?.espnId,
-                  ...stream,
-                }))
-              )
+          : fetchP(
+              "https://www.espn.com/nfl/schedule",
+              60 * 60 * 1000,
+              undefined,
+              (text) =>
+                Promise.resolve(text)
+                  .then(parse)
+                  .then((html) => html.getElementsByTagName("tr"))
+                  .then((arr) => Array.from(arr))
+                  .then((trs) =>
+                    trs.map((tr) => tr.children as unknown as HTMLElement[])
+                  )
+                  .then((trs) =>
+                    trs.map((tds) => ({
+                      espnId: parseInt(
+                        tds[2]?.getElementsByTagName("a")[0]?.href.split("=")[1]
+                      ),
+                      awayTeam: (
+                        tds[0]?.getElementsByClassName(
+                          "Table__Team"
+                        )[0] as HTMLElement
+                      )?.innerText,
+                      homeTeam: (
+                        tds[1]?.getElementsByClassName(
+                          "Table__Team"
+                        )[0] as HTMLElement
+                      )?.innerText,
+                    }))
+                  )
+            ).then((objs) =>
+              streams.map((stream) => ({
+                espnId: objs.find(
+                  (obj) =>
+                    stream!.name.includes(obj.awayTeam) &&
+                    stream!.name.includes(obj.homeTeam)
+                )?.espnId,
+                ...stream,
+              }))
+            )
       )
       .finally(() => {
         StreamsFetcher.firstTime = false;
@@ -74,47 +81,56 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
 }
 
 function getStream(href: string): Promise<StreamType | undefined> {
-  return fetchP(href, 10 * 60 * 1000)
-    .then((text) => parse(text))
-    .then((p) =>
-      Array.from(p.getElementsByClassName("username") || []).find(
-        (e) => (e as HTMLElement).innerText.trim() === "topstreamer"
-      ) === undefined
-        ? undefined
-        : Promise.resolve({
-            name: p.title.includes("Redzone")
-              ? "REDZONE"
-              : p.title
-                  .split(" Live Stream")[0]
-                  .split(" Vs ")
-                  .reverse()
-                  .join(" vs "),
-          })
-            .then((o) => ({
-              ...o,
-              stream_id: o.name
-                .toLowerCase()
-                .split(" vs ")
-                .reverse()[0]
-                .split(" ")
-                .reverse()[0],
-            }))
-            .then((o) =>
-              getTopstreamsUrl(o.stream_id).then((raw_url) => ({
+  return fetchP(href, 10 * 60 * 1000, undefined, (text) =>
+    Promise.resolve(text)
+      .then((text) => parse(text))
+      .then((p) =>
+        Array.from(p.getElementsByClassName("username") || []).find(
+          (e) => (e as HTMLElement).innerText.trim() === "topstreamer"
+        ) === undefined
+          ? undefined
+          : Promise.resolve({
+              name: p.title.includes("Redzone")
+                ? "REDZONE"
+                : p.title
+                    .split(" Live Stream")[0]
+                    .split(" Vs ")
+                    .reverse()
+                    .join(" vs "),
+            })
+              .then((o) => ({
                 ...o,
-                raw_url,
+                stream_id: o.name
+                  .toLowerCase()
+                  .split(" vs ")
+                  .reverse()[0]
+                  .split(" ")
+                  .reverse()[0],
               }))
-            )
-            .then((o) =>
-              fetchP(
-                o.raw_url,
-                StreamsFetcher.firstTime ? 0 : 10 * 60 * 1000
-              ).then((text) => ({
-                ...o,
-                url: getStreamUrl(text),
-              }))
-            )
-    );
+              .then((o) =>
+                getTopstreamsUrl(o.stream_id).then((raw_url) => ({
+                  ...o,
+                  raw_url,
+                }))
+              )
+              .then((o) =>
+                Promise.resolve()
+                  .then(() =>
+                    wrapTopStreams(o.raw_url, StreamsFetcher.firstTime)
+                  )
+                  .then((url) => ({ ...o, url }))
+              )
+      )
+  );
+}
+
+export function wrapTopStreams(
+  url: string,
+  firstTime: boolean
+): Promise<string> {
+  return fetchP(url, firstTime ? 0 : 10 * 60 * 1000, undefined, (text) =>
+    Promise.resolve(text)
+  ).then((text) => getStreamUrl(text));
 }
 
 function getTopstreamsUrl(stream_id: string): Promise<string> {
@@ -168,11 +184,12 @@ export function parseTinyUrl(message: string) {
   );
 }
 
-export function fetchP(
+function fetchP<T>(
   url: string,
   maxAgeMs: number,
-  options: any = undefined
-): Promise<string> {
+  options: any,
+  textToCache: (text: string) => Promise<T>
+): Promise<T> {
   return cacheF(url, maxAgeMs, () =>
     fetch("https://proxy420.appspot.com", {
       method: "POST",
@@ -180,7 +197,9 @@ export function fetchP(
       headers: {
         "Content-Type": "application/json",
       },
-    }).then((resp) => resp.text())
+    })
+      .then((resp) => resp.text())
+      .then((text) => textToCache(text))
   );
 }
 

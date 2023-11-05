@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { StreamType } from "../Fetcher";
-import { fetchP } from "../Fetcher/StreamsFetcher";
+import { wrapTopStreams } from "../Fetcher/StreamsFetcher";
 import Log, { DelayedLog } from "../Log";
 import style from "../index.module.css";
 import msStyle from "./index.module.css";
@@ -145,7 +145,7 @@ function Singlescreen(props: {
         <span
           className={style.hover}
           onClick={() => {
-            fetchP(props.screen.raw_url, 0);
+            wrapTopStreams(props.screen.raw_url, false);
             updateKey(Date.now());
           }}
         >

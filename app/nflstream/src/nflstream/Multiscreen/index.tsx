@@ -63,7 +63,6 @@ class Multiscreen extends React.Component<
     if (screen.iFrameTitle === selectedScreen.iFrameTitle) {
       muteUnmute(screen.ref, null);
     } else {
-      muteUnmute(selectedScreen.ref, true);
       this.setState({ selected: screen.iFrameTitle });
     }
   }

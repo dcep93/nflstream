@@ -97,7 +97,9 @@ export function cacheF<T>(
     cached = { timestamp, data };
     cache[key] = cached;
     const localCached = JSON.stringify(cached);
-    // window.localStorage.setItem(key, localCached);
+    try {
+      window.localStorage.setItem(key, localCached);
+    } catch {}
     return data;
   });
 }

@@ -1,3 +1,4 @@
+<!-- ln -s topstream.html topstream_3.0.html -->
 <!DOCTYPE html>
 <html
   xmlns="https://www.w3.org/1999/xhtml"
@@ -139,9 +140,27 @@
           update_muted();
           if (flowapi.video.buffer > 50) {
             clearInterval(liveInterval);
-            window.parent.postMessage("nflstream", "*");
-            document.getElementsByTagName("video")[0].currentTime =
-              flowapi.video.buffer - 5;
+            window.parent.postMessage(
+              JSON.stringify({ action: "loaded" }),
+              "*"
+            );
+            flowapi.video.currentTime = flowapi.video.buffer - 5;
+            var recentBuffer = 0;
+            var stalledBufferTime = 0;
+            setInterval(() => {
+              const now = Date.now();
+              if (recentBuffer === flowapi.video.buffer) {
+                if (now - stalledBufferTime >= 5) {
+                  window.parent.postMessage(
+                    JSON.stringify({ action: "refresh" }),
+                    "*"
+                  );
+                }
+              } else {
+                recentBuffer = flowapi.video.buffer;
+                stalledBufferTime = now;
+              }
+            }, 100);
           }
         }, 10);
       }

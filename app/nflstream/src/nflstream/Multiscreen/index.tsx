@@ -16,7 +16,7 @@ class Multiscreen extends React.Component<
     screens: ScreenType[];
     removeScreen: (iFrameTitle: string) => void;
   },
-  { selected: string }
+  { selected: string; refreshes: { [iFrameTitle: string]: number } }
 > {
   mounted = false;
   componentDidMount(): void {
@@ -35,9 +35,19 @@ class Multiscreen extends React.Component<
         )
     );
     window.addEventListener("message", (event) => {
-      if (event.data === "nflstream") {
-        const ref = this.getSelectedScreen()?.ref;
-        if (ref) muteUnmute(ref, false);
+      console.log(event);
+      const data = JSON.parse(event.data);
+      if (data.action === "loaded") {
+        if (data.iFrameTitle === this.state?.selected) {
+          const ref = this.getSelectedScreen()?.ref;
+          if (ref) muteUnmute(ref, false);
+        }
+      } else if (data.action === "refresh") {
+        this.setState({
+          refreshes: Object.assign({}, this.state?.refreshes, {
+            [data.iFrameTitle]: Date.now(),
+          }),
+        });
       }
     });
     this.setState({ selected: "" });
@@ -82,7 +92,9 @@ class Multiscreen extends React.Component<
           <div className={msStyle.screens}>
             {this.props.screens.map((screen, i) => (
               <Singlescreen
-                key={screen.iFrameTitle}
+                key={`${screen.iFrameTitle}_${
+                  this.state?.refreshes[screen.iFrameTitle]
+                }`}
                 index={i + 1}
                 screen={screen}
                 isSelected={screen === this.getSelectedScreen()}

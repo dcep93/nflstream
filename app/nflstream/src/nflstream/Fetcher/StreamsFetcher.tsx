@@ -2,7 +2,6 @@ import Fetcher, { cacheF, parse, StreamType } from ".";
 
 class StreamsFetcher extends Fetcher<StreamType[], boolean> {
   intervalMs = 10 * 60 * 1000;
-  static firstTime = process.env.NODE_ENV !== "development";
   getResponse() {
     //   return Promise.resolve([
     //     { url: "http://weakstreams.com/streams/10309005", name: "test2" },
@@ -72,10 +71,7 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
                 ...stream,
               }))
             )
-      )
-      .finally(() => {
-        StreamsFetcher.firstTime = false;
-      });
+      );
   }
 }
 
@@ -106,12 +102,10 @@ function getStream(href: string): Promise<StreamType | undefined> {
                   .split(" ")
                   .reverse()[0],
               }))
-              .then((o) =>
-                getTopstreamsUrl(o.stream_id).then((raw_url) => ({
-                  ...o,
-                  raw_url,
-                }))
-              )
+              .then((o) => ({
+                ...o,
+                raw_url: `https://topstreams.info/nfl/${o.stream_id}`,
+              }))
               .then((o) => wrapTopStreams(o.raw_url, false).then(() => o))
       )
   );
@@ -126,14 +120,8 @@ export function wrapTopStreams(
   );
 }
 
-function getTopstreamsUrl(stream_id: string): Promise<string> {
-  return Promise.resolve().then(
-    () => `https://topstreams.info/nfl/${stream_id}`
-  );
-}
-
 function getStreamUrl(message: string) {
-  return `/topstream_2.3.html?${Object.entries({
+  return `/topstream_3.0.html?${Object.entries({
     key: /var key= '(.*)';/,
     masterkey: /var masterkey= '(.*)'/,
     masterinf: /window.masterinf = (.*);/,

@@ -153,11 +153,13 @@
               "*"
             );
 
+            video.currentTime = flowapi.video.buffer - 5;
+
             const accelerateInterval = setInterval(() => {
               const behind = flowapi.video.buffer - video.currentTime;
               if (!video.paused && behind > 5) {
                 video.playbackRate = behind > 15 ? 3 : 2;
-              } else if (video.paused || flowapi.video.buffer > 50) {
+              } else if (video.paused || flowapi.video.buffer > 60) {
                 clearInterval(accelerateInterval);
                 video.playbackRate = 1;
 

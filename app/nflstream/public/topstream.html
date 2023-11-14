@@ -121,25 +121,29 @@
       }
 
       function customInit() {
-        var topstream_muted = true;
-        function update_muted() {
-          const video = document.getElementsByTagName("video")[0];
-          if (video) video.muted = topstream_muted;
-        }
         Array.from(document.getElementsByTagName("a")).find((a) =>
           a.href.endsWith("/hello/?from=player")
         ).style.opacity = 0;
+
         document.getElementsByClassName("fp-ui")[0].click();
+
+        const video = document.getElementsByTagName("video")[0];
+        var topstream_muted = true;
+        function update_muted() {
+          video.muted = topstream_muted;
+        }
+        update_muted();
+
         window.addEventListener("message", (event) => {
           if (event.data.source !== "nflstream") return;
           topstream_muted =
             event.data.mute !== null ? event.data.mute : !topstream_muted;
           update_muted();
         });
-        const liveInterval = setInterval(() => {
-          update_muted();
-          if (flowapi.video.buffer > 50) {
-            clearInterval(liveInterval);
+
+        const loadedInterval = setInterval(() => {
+          if (flowapi.video.buffer > 0) {
+            clearInterval(loadedInterval);
             window.parent.postMessage(
               {
                 source: "topstream.html",
@@ -148,28 +152,36 @@
               },
               "*"
             );
-            document.getElementsByTagName("video")[0].currentTime =
-              flowapi.video.buffer - 5;
-            var recentBuffer = 0;
-            var stalledBufferTime = 0;
-            const refreshInterval = setInterval(() => {
-              const now = Date.now();
-              if (recentBuffer === flowapi.video.buffer) {
-                if (now - stalledBufferTime >= 5) {
-                  window.parent.postMessage(
-                    {
-                      source: "topstream.html",
-                      action: "refresh",
-                      iFrameTitle: params.iFrameTitle,
-                      recentBuffer,
-                    },
-                    "*"
-                  );
-                  clearInterval(refreshInterval);
-                }
-              } else {
-                recentBuffer = flowapi.video.buffer;
-                stalledBufferTime = now;
+
+            const accelerateInterval = setInterval(() => {
+              const behind = flowapi.video.buffer - video.currentTime;
+              if (!video.paused && behind > 5) {
+                video.playbackRate = behind > 15 ? 3 : 2;
+              } else if (video.paused || flowapi.video.buffer > 50) {
+                clearInterval(accelerateInterval);
+                video.playbackRate = 1;
+
+                var recentBuffer = 0;
+                var stalledBufferTime = 0;
+                const refreshInterval = setInterval(() => {
+                  const now = Date.now();
+                  if (recentBuffer === flowapi.video.buffer) {
+                    if (now - stalledBufferTime >= 5) {
+                      window.parent.postMessage(
+                        {
+                          source: "topstream.html",
+                          action: "refresh",
+                          iFrameTitle: params.iFrameTitle,
+                        },
+                        "*"
+                      );
+                      clearInterval(refreshInterval);
+                    }
+                  } else {
+                    recentBuffer = flowapi.video.buffer;
+                    stalledBufferTime = now;
+                  }
+                }, 100);
               }
             }, 100);
           }

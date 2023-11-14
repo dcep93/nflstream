@@ -35,19 +35,20 @@ class Multiscreen extends React.Component<
         )
     );
     window.addEventListener("message", (event) => {
-      console.log(event);
-      const data = JSON.parse(event.data);
-      if (data.action === "loaded") {
-        if (data.iFrameTitle === this.state?.selected) {
+      if (event.data.source !== "topstream.html") return;
+      console.log(event.data);
+      if (event.data.action === "loaded") {
+        if (event.data.iFrameTitle === this.state?.selected) {
           const ref = this.getSelectedScreen()?.ref;
           if (ref) muteUnmute(ref, false);
         }
-      } else if (data.action === "refresh") {
-        this.setState({
-          refreshes: Object.assign({}, this.state?.refreshes, {
-            [data.iFrameTitle]: Date.now(),
-          }),
-        });
+      } else if (event.data.action === "refresh") {
+        console.log("refreshing");
+        // this.setState({
+        //   refreshes: Object.assign({}, this.state?.refreshes, {
+        //     [event.data.iFrameTitle]: Date.now(),
+        //   }),
+        // });
       }
     });
     this.setState({ selected: "" });
@@ -93,7 +94,7 @@ class Multiscreen extends React.Component<
             {this.props.screens.map((screen, i) => (
               <Singlescreen
                 key={`${screen.iFrameTitle}_${
-                  this.state?.refreshes[screen.iFrameTitle]
+                  (this.state?.refreshes || {})[screen.iFrameTitle]
                 }`}
                 index={i + 1}
                 screen={screen}
@@ -157,7 +158,7 @@ function Singlescreen(props: {
         <span
           className={style.hover}
           onClick={() => {
-            wrapTopStreams(props.screen.raw_url, true).then(() =>
+            wrapTopStreams(props.screen.raw_url, true, "").then(() =>
               updateKey(Date.now())
             );
           }}
@@ -222,7 +223,9 @@ function ObjectFitIframe(props: {
 function IframeWrapper(props: { screen: ScreenType; key: number }) {
   const [url, updateUrl] = useState("");
   if (url === "") {
-    wrapTopStreams(props.screen.raw_url, false).then(updateUrl);
+    wrapTopStreams(props.screen.raw_url, false, props.screen.iFrameTitle).then(
+      updateUrl
+    );
     return null;
   }
   return (

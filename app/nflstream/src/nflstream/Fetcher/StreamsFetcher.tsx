@@ -106,22 +106,23 @@ function getStream(href: string): Promise<StreamType | undefined> {
                 ...o,
                 raw_url: `https://topstreams.info/nfl/${o.stream_id}`,
               }))
-              .then((o) => wrapTopStreams(o.raw_url, false).then(() => o))
+              .then((o) => wrapTopStreams(o.raw_url, false, "").then(() => o))
       )
   );
 }
 
 export function wrapTopStreams(
   url: string,
-  hardRefresh: boolean
+  hardRefresh: boolean,
+  iFrameTitle: string
 ): Promise<string> {
   return fetchP(url, hardRefresh ? 0 : 10 * 60 * 1000, (text) =>
-    Promise.resolve(text).then((text) => getStreamUrl(text))
+    Promise.resolve(text).then((text) => getStreamUrl(text, iFrameTitle))
   );
 }
 
-function getStreamUrl(message: string) {
-  return `/topstream_3.0.html?${Object.entries({
+function getStreamUrl(message: string, iFrameTitle: string) {
+  return `/topstream_3.1.html?${Object.entries({
     key: /var key= '(.*)';/,
     masterkey: /var masterkey= '(.*)'/,
     masterinf: /window.masterinf = (.*);/,
@@ -131,6 +132,7 @@ function getStreamUrl(message: string) {
       k,
       matched: matched?.startsWith("{") ? btoa(matched) : matched,
     }))
+    .concat({ k: "iFrameTitle", matched: iFrameTitle })
     .map(({ k, matched }) => `${k}=${matched}`)
     .join("&")}`;
 }

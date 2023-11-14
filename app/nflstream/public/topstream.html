@@ -141,20 +141,31 @@
           if (flowapi.video.buffer > 50) {
             clearInterval(liveInterval);
             window.parent.postMessage(
-              JSON.stringify({ action: "loaded" }),
+              {
+                source: "topstream.html",
+                action: "loaded",
+                iFrameTitle: params.iFrameTitle,
+              },
               "*"
             );
-            flowapi.video.currentTime = flowapi.video.buffer - 5;
+            document.getElementsByTagName("video")[0].currentTime =
+              flowapi.video.buffer - 5;
             var recentBuffer = 0;
             var stalledBufferTime = 0;
-            setInterval(() => {
+            const refreshInterval = setInterval(() => {
               const now = Date.now();
               if (recentBuffer === flowapi.video.buffer) {
                 if (now - stalledBufferTime >= 5) {
                   window.parent.postMessage(
-                    JSON.stringify({ action: "refresh" }),
+                    {
+                      source: "topstream.html",
+                      action: "refresh",
+                      iFrameTitle: params.iFrameTitle,
+                      recentBuffer,
+                    },
                     "*"
                   );
+                  clearInterval(refreshInterval);
                 }
               } else {
                 recentBuffer = flowapi.video.buffer;

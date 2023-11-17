@@ -1,9 +1,9 @@
 import { createRef } from "react";
-import { bigPlayDurationMs, defaultBigPlayWarningMs } from "./Log";
+import { defaultLogDelayMs } from "./Log";
 import style from "./index.module.css";
 
 export const logDelayRef = createRef<HTMLInputElement>();
-export const bigPlayWarningRef = createRef<HTMLInputElement>();
+export const autoRefreshRef = createRef<HTMLInputElement>();
 
 export default function Options() {
   return (
@@ -11,11 +11,11 @@ export default function Options() {
       <h3>Options</h3>
       <div>
         <span>log delay ms </span>
-        <input ref={logDelayRef} defaultValue={defaultBigPlayWarningMs} />
+        <input ref={logDelayRef} defaultValue={defaultLogDelayMs} />
       </div>
       <div>
-        <span>big play warning ms </span>
-        <input ref={bigPlayWarningRef} defaultValue={bigPlayDurationMs} />
+        <span>autorefresh </span>
+        <input ref={autoRefreshRef} type={"checkbox"} defaultChecked />
       </div>
     </div>
   );

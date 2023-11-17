@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { StreamType } from "../Fetcher";
 import { wrapTopStreams } from "../Fetcher/StreamsFetcher";
 import Log, { DelayedLog } from "../Log";
+import { autoRefreshRef } from "../Options";
 import style from "../index.module.css";
 import msStyle from "./index.module.css";
 
@@ -43,11 +44,13 @@ class Multiscreen extends React.Component<
           if (ref) muteUnmute(ref, false);
         }
       } else if (event.data.action === "refresh") {
-        this.setState({
-          refreshes: Object.assign({}, this.state?.refreshes, {
-            [event.data.iFrameTitle]: Date.now(),
-          }),
-        });
+        if (autoRefreshRef.current!.checked) {
+          this.setState({
+            refreshes: Object.assign({}, this.state?.refreshes, {
+              [event.data.iFrameTitle]: Date.now(),
+            }),
+          });
+        }
       }
     });
     this.setState({ selected: "" });

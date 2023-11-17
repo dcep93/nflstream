@@ -117,11 +117,11 @@ export function wrapTopStreams(
   iFrameTitle: string
 ): Promise<string> {
   return fetchP(url, hardRefresh ? 0 : 10 * 60 * 1000, (text) =>
-    Promise.resolve(text).then((text) => getStreamUrl(text, iFrameTitle))
-  );
+    Promise.resolve(text).then((text) => getStreamUrl(text))
+  ).then((wrapped_url) => `${wrapped_url}&iFrameTitle=${iFrameTitle}`);
 }
 
-function getStreamUrl(message: string, iFrameTitle: string) {
+function getStreamUrl(message: string) {
   return `/topstream_3.4.html?${Object.entries({
     key: /var key= '(.*)';/,
     masterkey: /var masterkey= '(.*)'/,
@@ -132,7 +132,6 @@ function getStreamUrl(message: string, iFrameTitle: string) {
       k,
       matched: matched?.startsWith("{") ? btoa(matched) : matched,
     }))
-    .concat({ k: "iFrameTitle", matched: iFrameTitle })
     .map(({ k, matched }) => `${k}=${matched}`)
     .join("&")}`;
 }

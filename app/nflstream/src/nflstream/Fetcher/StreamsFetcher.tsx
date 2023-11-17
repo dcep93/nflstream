@@ -122,7 +122,7 @@ export function wrapTopStreams(
 }
 
 function getStreamUrl(message: string, iFrameTitle: string) {
-  return `/topstream_3.3.html?${Object.entries({
+  return `/topstream_3.4.html?${Object.entries({
     key: /var key= '(.*)';/,
     masterkey: /var masterkey= '(.*)'/,
     masterinf: /window.masterinf = (.*);/,

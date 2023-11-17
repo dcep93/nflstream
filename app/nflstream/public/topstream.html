@@ -163,12 +163,13 @@
                 clearInterval(accelerateInterval);
                 video.playbackRate = 1;
 
-                var recentBuffer = 0;
-                var stalledBufferTime = 0;
+                var recentTimestamp = 0;
+                var stalledTime = 0;
                 const refreshInterval = setInterval(() => {
+                  if (video.paused) return;
                   const now = Date.now();
-                  if (recentBuffer === flowapi.video.buffer) {
-                    if (now - stalledBufferTime >= 5) {
+                  if (recentTimestamp === video.currentTime) {
+                    if (now - stalledTime >= 5) {
                       window.parent.postMessage(
                         {
                           source: "topstream.html",
@@ -180,8 +181,8 @@
                       clearInterval(refreshInterval);
                     }
                   } else {
-                    recentBuffer = flowapi.video.buffer;
-                    stalledBufferTime = now;
+                    recentTimestamp = video.currentTime;
+                    stalledTime = now;
                   }
                 }, 100);
               }

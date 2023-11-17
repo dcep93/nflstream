@@ -43,12 +43,11 @@ class Multiscreen extends React.Component<
           if (ref) muteUnmute(ref, false);
         }
       } else if (event.data.action === "refresh") {
-        console.log("refreshing");
-        // this.setState({
-        //   refreshes: Object.assign({}, this.state?.refreshes, {
-        //     [event.data.iFrameTitle]: Date.now(),
-        //   }),
-        // });
+        this.setState({
+          refreshes: Object.assign({}, this.state?.refreshes, {
+            [event.data.iFrameTitle]: Date.now(),
+          }),
+        });
       }
     });
     this.setState({ selected: "" });

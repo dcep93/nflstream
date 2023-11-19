@@ -15,7 +15,7 @@ export default function Options() {
       </div>
       <div>
         <span>autorefresh </span>
-        <input ref={autoRefreshRef} type={"checkbox"} defaultChecked />
+        <input ref={autoRefreshRef} type={"checkbox"} defaultChecked={false} />
       </div>
     </div>
   );

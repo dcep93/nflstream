@@ -144,6 +144,7 @@
         const loadedInterval = setInterval(() => {
           if (flowapi.video.buffer > 0) {
             clearInterval(loadedInterval);
+            update_muted();
             window.parent.postMessage(
               {
                 source: "topstream.html",

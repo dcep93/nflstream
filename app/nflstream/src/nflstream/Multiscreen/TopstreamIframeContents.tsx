@@ -1,5 +1,6 @@
-<!-- ln -s topstream.html topstream_3.0.html -->
-<!DOCTYPE html>
+export default function TopstreamIframeContents(paramsStr: string) {
+  return `
+  <!DOCTYPE html>
 <html
   xmlns="https://www.w3.org/1999/xhtml"
   lang="en"
@@ -17,9 +18,10 @@
     <script>
       const _console = Object.assign({}, console);
       console.log = console.time = console.timeEnd = () => null;
-      const params = Object.fromEntries(
-        new URLSearchParams(window.location.search).entries()
-      );
+      const params = ${paramsStr}
+    //   const params = Object.fromEntries(
+    //     new URLSearchParams(window.location.search).entries()
+    //   );
     </script>
     <!-- skin -->
     <link
@@ -202,3 +204,5 @@
     ></div>
   </body>
 </html>
+`;
+}

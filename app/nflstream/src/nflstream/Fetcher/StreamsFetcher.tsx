@@ -106,34 +106,36 @@ function getStream(href: string): Promise<StreamType | undefined> {
                 ...o,
                 raw_url: `https://topstreams.info/nfl/${o.stream_id}`,
               }))
-              .then((o) => wrapTopStreams(o.raw_url, false, "").then(() => o))
+              .then((o) =>
+                getTopstreamsParamsAsString(o.raw_url, false, "").then(() => o)
+              )
       )
   );
 }
 
-export function wrapTopStreams(
+export function getTopstreamsParamsAsString(
   url: string,
   hardRefresh: boolean,
   iFrameTitle: string
 ): Promise<string> {
   return fetchP(url, hardRefresh ? 0 : 10 * 60 * 1000, (text) =>
-    Promise.resolve(text).then((text) => getStreamUrl(text))
-  ).then((wrapped_url) => `${wrapped_url}&iFrameTitle=${iFrameTitle}`);
-}
-
-function getStreamUrl(message: string) {
-  return `/topstream_3.9.html?${Object.entries({
-    key: /var key= '(.*)';/,
-    masterkey: /var masterkey= '(.*)'/,
-    masterinf: /window.masterinf = (.*);/,
-  })
-    .map(([k, re]) => ({ k, matched: (message.match(re) || [])[1] }))
-    .map(({ k, matched }) => ({
-      k,
-      matched: matched?.startsWith("{") ? btoa(matched) : matched,
-    }))
-    .map(({ k, matched }) => `${k}=${matched}`)
-    .join("&")}`;
+    Promise.resolve().then(() =>
+      Object.fromEntries(
+        Object.entries({
+          key: /var key= '(.*)';/,
+          masterkey: /var masterkey= '(.*)'/,
+          masterinf: /window.masterinf = (.*);/,
+        })
+          .map(([k, re]) => ({ k, matched: (text.match(re) || [])[1] }))
+          .map(({ k, matched }) => [
+            k,
+            matched?.startsWith("{") ? btoa(matched) : matched,
+          ])
+      )
+    )
+  )
+    .then((params) => ({ ...params, iFrameTitle }))
+    .then((params) => JSON.stringify(params));
 }
 
 export function parseTinyUrl(message: string) {

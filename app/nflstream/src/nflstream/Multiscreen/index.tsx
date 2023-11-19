@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { StreamType } from "../Fetcher";
-import { wrapTopStreams } from "../Fetcher/StreamsFetcher";
+import { getTopstreamsParamsAsString } from "../Fetcher/StreamsFetcher";
 import Log, { DelayedLog } from "../Log";
 import { autoRefreshRef } from "../Options";
 import style from "../index.module.css";
+import TopstreamIframeContents from "./TopstreamIframeContents";
 import msStyle from "./index.module.css";
 
 export type ScreenType = StreamType & {
@@ -160,8 +161,8 @@ function Singlescreen(props: {
         <span
           className={style.hover}
           onClick={() => {
-            wrapTopStreams(props.screen.raw_url, true, "").then(() =>
-              updateKey(Date.now())
+            getTopstreamsParamsAsString(props.screen.raw_url, true, "").then(
+              () => updateKey(Date.now())
             );
           }}
         >
@@ -223,11 +224,13 @@ function ObjectFitIframe(props: {
 }
 
 function IframeWrapper(props: { screen: ScreenType; key: number }) {
-  const [url, updateUrl] = useState("");
-  if (url === "") {
-    wrapTopStreams(props.screen.raw_url, false, props.screen.iFrameTitle).then(
-      updateUrl
-    );
+  const [paramsStr, updateParams] = useState("");
+  if (paramsStr === "") {
+    getTopstreamsParamsAsString(
+      props.screen.raw_url,
+      false,
+      props.screen.iFrameTitle
+    ).then(updateParams);
     return null;
   }
   return (
@@ -269,7 +272,7 @@ function IframeWrapper(props: { screen: ScreenType; key: number }) {
               width: "98%",
             }}
             title={props.screen.iFrameTitle}
-            src={url}
+            srcDoc={TopstreamIframeContents(paramsStr)}
           ></iframe>
         </div>
       </div>

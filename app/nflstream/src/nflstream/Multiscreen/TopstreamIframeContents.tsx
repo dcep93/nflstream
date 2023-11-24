@@ -172,7 +172,7 @@ export default function TopstreamIframeContents(paramsStr: string) {
                   if (video.paused) return;
                   const now = Date.now();
                   if (recentTimestamp === video.currentTime) {
-                    if (now - stalledTime >= 10000) {
+                    if (now - stalledTime >= 5000) {
                       window.parent.postMessage(
                         {
                           source: "topstream.html",

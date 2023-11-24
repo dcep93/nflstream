@@ -41,16 +41,22 @@ class Multiscreen extends React.Component<
       console.log(event.data);
       if (event.data.action === "loaded") {
         if (event.data.iFrameTitle === this.state?.selected) {
-          const ref = this.getSelectedScreen()?.ref;
+          const ref = this.getScreen()?.ref;
           if (ref) muteUnmute(ref, false);
         }
       } else if (event.data.action === "refresh") {
         if (autoRefreshRef.current!.checked) {
-          this.setState({
-            refreshes: Object.assign({}, this.state?.refreshes, {
-              [event.data.iFrameTitle]: Date.now(),
-            }),
-          });
+          Promise.resolve(this.getScreen()).then(
+            (screen) =>
+              screen &&
+              getTopstreamsParamsAsString(screen.raw_url, true, "").then(() =>
+                this.setState({
+                  refreshes: Object.assign({}, this.state?.refreshes, {
+                    [event.data.iFrameTitle]: Date.now(),
+                  }),
+                })
+              )
+          );
         }
       }
     });
@@ -58,7 +64,7 @@ class Multiscreen extends React.Component<
   }
 
   componentDidUpdate(): void {
-    const selectedScreen = this.getSelectedScreen();
+    const selectedScreen = this.getScreen();
     if (!selectedScreen) {
       const screen = this.props.screens[0];
       if (screen) {
@@ -68,14 +74,14 @@ class Multiscreen extends React.Component<
     }
   }
 
-  getSelectedScreen() {
+  getScreen(iFrameTitle: string | null = null) {
     return this.props.screens.find(
-      (s) => s.iFrameTitle === this.state?.selected
+      (s) => s.iFrameTitle === (iFrameTitle || this.state?.selected)
     );
   }
 
   updateSelected(screen: ScreenType) {
-    const selectedScreen = this.getSelectedScreen();
+    const selectedScreen = this.getScreen();
     if (!selectedScreen) return;
     if (screen.iFrameTitle === selectedScreen.iFrameTitle) {
       muteUnmute(screen.ref, null);
@@ -101,7 +107,7 @@ class Multiscreen extends React.Component<
                 }`}
                 index={i + 1}
                 screen={screen}
-                isSelected={screen === this.getSelectedScreen()}
+                isSelected={screen === this.getScreen()}
                 removeScreen={() => this.props.removeScreen(screen.iFrameTitle)}
                 updateSelected={() => this.updateSelected(screen)}
                 numScreens={this.props.screens.length}

@@ -166,8 +166,8 @@ function SubLog(props: { log: LogType; bigPlay: string }) {
       <div className={logStyle.logContent}>
         <div>
           <span>{new Date(props.log.timestamp).toLocaleTimeString()}</span>
-          {props.bigPlay}
         </div>
+        <div>{props.bigPlay}</div>
         {(playByPlay || []).map((drive, i) => (
           <div key={i}>
             <div className={logStyle.logHeader}>

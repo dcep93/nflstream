@@ -161,7 +161,7 @@ export default function TopstreamIframeContents(paramsStr: string) {
             const accelerateInterval = setInterval(() => {
               const behind = flowapi.video.buffer - video.currentTime;
               if (!video.paused && behind > 5) {
-                video.playbackRate = behind > 15 ? 5 : 2;
+                video.playbackRate = behind > 15 ? 5 : behind > 10 ? 3 : 2;
               } else if (video.paused || flowapi.video.buffer > 60) {
                 clearInterval(accelerateInterval);
                 video.playbackRate = 1;

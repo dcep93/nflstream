@@ -1,10 +1,8 @@
-import { clog } from "..";
-
 function CustomScript(): string {
   var params: { [key: string]: string };
+  var flowapi: any;
+  var flowplayer: any;
   function f() {
-    var flowapi: any;
-    var flowplayer: any;
     // var key = params.key;
 
     const resources: { [key: string]: any } = {};
@@ -157,7 +155,7 @@ function CustomScript(): string {
     .toString()
     .split("\n")
     .map((i) => i.split("// ")[0].trim())
-    .join(" ")};
+    .join("\n")};
   ${f.name}();
 `;
 }
@@ -214,7 +212,7 @@ export default function TopstreamIframeContents(params: {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.5/ScrollMagic.min.js"></script>
     <script>
       var params = ${JSON.stringify(params)};
-      ${clog(CustomScript())}
+      ${CustomScript()}
     </script>
   </head>
 

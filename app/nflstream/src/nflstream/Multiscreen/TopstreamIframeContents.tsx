@@ -159,11 +159,7 @@ function CustomScript(params: { [key: string]: string }): string {
     }
   }
   return `
-  ${f
-    .toString()
-    .split("\n")
-    .map((i) => i.split("// ")[0].trim())
-    .join("\n")};
+  ${f.toString()};
   ${f.name}(${JSON.stringify(params)});
 `;
 }

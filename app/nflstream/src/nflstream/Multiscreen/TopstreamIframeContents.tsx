@@ -117,7 +117,7 @@ function CustomScript(): string {
           const accelerateInterval = setInterval(() => {
             const behind = flowapi.video.buffer - video.currentTime;
             if (!video.paused && behind > 5) {
-              video.playbackRate = Math.ceil(behind / 5);
+              video.playbackRate = behind > 5 ? 3 : 1;
             } else if (video.paused || flowapi.video.buffer > 60) {
               clearInterval(accelerateInterval);
               video.playbackRate = 1;

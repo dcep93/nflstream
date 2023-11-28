@@ -274,7 +274,6 @@ function IframeWrapper(props: { screen: ScreenType; key: number }) {
         >
           <iframe
             ref={props.screen.ref}
-            sandbox={"allow-scripts allow-same-origin allow-presentation"}
             style={{
               height: "100%",
               width: "98%",

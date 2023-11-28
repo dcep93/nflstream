@@ -1,8 +1,6 @@
 import ReactDomServer from "react-dom/server";
 
-export default function TopstreamIframeContents(params: {
-  [key: string]: string;
-}) {
+export default function TopstreamSrcDoc(params: { [key: string]: string }) {
   function FunctionToScript<T>(props: { t: T; f: (t: T) => void }) {
     return (
       <script

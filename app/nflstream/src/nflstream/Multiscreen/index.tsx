@@ -4,7 +4,7 @@ import { getTopstreamsParams } from "../Fetcher/StreamsFetcher";
 import Log, { DelayedLog } from "../Log";
 import { autoRefreshRef } from "../Options";
 import style from "../index.module.css";
-import TopstreamIframeContents from "./TopstreamIframeContents";
+import TopstreamSrcDoc from "./TopstreamSrcDoc";
 import msStyle from "./index.module.css";
 
 export type ScreenType = StreamType & {
@@ -279,7 +279,7 @@ function IframeWrapper(props: { screen: ScreenType; key: number }) {
               width: "98%",
             }}
             title={props.screen.iFrameTitle}
-            srcDoc={TopstreamIframeContents(params)}
+            srcDoc={TopstreamSrcDoc(params)}
           ></iframe>
         </div>
       </div>

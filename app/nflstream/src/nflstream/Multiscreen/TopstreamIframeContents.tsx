@@ -4,7 +4,7 @@ import { clog } from "..";
 export default function TopstreamIframeContents(params: {
   [key: string]: string;
 }) {
-  function CustomScript(params: { [key: string]: string }): string {
+  function CustomScript(params: { [key: string]: string }) {
     var key = params.key;
     if (!key) {
       alert("invalid params");

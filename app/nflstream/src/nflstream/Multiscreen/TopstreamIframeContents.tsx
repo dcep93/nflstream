@@ -1,8 +1,7 @@
-function CustomScript(): string {
-  var params: { [key: string]: string };
+function CustomScript(params: { [key: string]: string }): string {
   var flowapi: any;
   var flowplayer: any;
-  function f() {
+  function f(params: { [key: string]: string }) {
     // var key = params.key;
 
     const resources: { [key: string]: any } = {};
@@ -156,7 +155,7 @@ function CustomScript(): string {
     .split("\n")
     .map((i) => i.split("// ")[0].trim())
     .join("\n")};
-  ${f.name}();
+  ${f.name}(params);
 `;
 }
 
@@ -212,7 +211,7 @@ export default function TopstreamIframeContents(params: {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.5/ScrollMagic.min.js"></script>
     <script>
       var params = ${JSON.stringify(params)};
-      ${CustomScript()}
+      ${CustomScript(params)}
     </script>
   </head>
 

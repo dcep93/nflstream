@@ -107,17 +107,17 @@ function getStream(href: string): Promise<StreamType | undefined> {
                 raw_url: `https://topstreams.info/nfl/${o.stream_id}`,
               }))
               .then((o) =>
-                getTopstreamsParamsAsString(o.raw_url, false, "").then(() => o)
+                getTopstreamsParams(o.raw_url, false, "").then(() => o)
               )
       )
   );
 }
 
-export function getTopstreamsParamsAsString(
+export function getTopstreamsParams(
   url: string,
   hardRefresh: boolean,
   iFrameTitle: string
-): Promise<string> {
+): Promise<{ [key: string]: string }> {
   return fetchP(url, hardRefresh ? 0 : 10 * 60 * 1000, (text) =>
     Promise.resolve().then(() =>
       Object.fromEntries(
@@ -133,9 +133,7 @@ export function getTopstreamsParamsAsString(
           ])
       )
     )
-  )
-    .then((params) => ({ ...params, iFrameTitle }))
-    .then((params) => JSON.stringify(params));
+  ).then((params) => ({ ...params, iFrameTitle }));
 }
 
 export function parseTinyUrl(message: string) {

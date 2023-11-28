@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { StreamType } from "../Fetcher";
-import { getTopstreamsParamsAsString } from "../Fetcher/StreamsFetcher";
+import { getTopstreamsParams } from "../Fetcher/StreamsFetcher";
 import Log, { DelayedLog } from "../Log";
 import { autoRefreshRef } from "../Options";
 import style from "../index.module.css";
@@ -49,7 +49,7 @@ class Multiscreen extends React.Component<
           Promise.resolve(this.getScreen()).then(
             (screen) =>
               screen &&
-              getTopstreamsParamsAsString(screen.raw_url, true, "").then(() =>
+              getTopstreamsParams(screen.raw_url, true, "").then(() =>
                 this.setState({
                   refreshes: Object.assign({}, this.state?.refreshes, {
                     [event.data.iFrameTitle]: Date.now(),
@@ -167,8 +167,8 @@ function Singlescreen(props: {
         <span
           className={style.hover}
           onClick={() => {
-            getTopstreamsParamsAsString(props.screen.raw_url, true, "").then(
-              () => updateKey(Date.now())
+            getTopstreamsParams(props.screen.raw_url, true, "").then(() =>
+              updateKey(Date.now())
             );
           }}
         >
@@ -230,9 +230,11 @@ function ObjectFitIframe(props: {
 }
 
 function IframeWrapper(props: { screen: ScreenType; key: number }) {
-  const [paramsStr, updateParams] = useState("");
-  if (paramsStr === "") {
-    getTopstreamsParamsAsString(
+  const [params, updateParams] = useState<{ [key: string]: string } | null>(
+    null
+  );
+  if (params === null) {
+    getTopstreamsParams(
       props.screen.raw_url,
       false,
       props.screen.iFrameTitle
@@ -278,7 +280,7 @@ function IframeWrapper(props: { screen: ScreenType; key: number }) {
               width: "98%",
             }}
             title={props.screen.iFrameTitle}
-            srcDoc={TopstreamIframeContents(paramsStr)}
+            srcDoc={TopstreamIframeContents(params)}
           ></iframe>
         </div>
       </div>

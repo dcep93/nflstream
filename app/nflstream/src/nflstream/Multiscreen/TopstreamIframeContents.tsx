@@ -1,8 +1,10 @@
 function CustomScript(params: { [key: string]: string }): string {
-  var flowapi: any;
-  var flowplayer: any;
   function f(params: { [key: string]: string }) {
-    // var key = params.key;
+    var key = params.key;
+    if (!key) {
+      alert("invalid params");
+      return;
+    }
 
     const resources: { [key: string]: any } = {};
 
@@ -23,6 +25,10 @@ function CustomScript(params: { [key: string]: string }): string {
       window.performance.clearResourceTimings();
     }, 200);
 
+    // @ts-ignore
+    const _flowplayer = window.flowplayer;
+    var _flowapi: any;
+
     window.onload = function () {
       // var reloadCount = 0;
       // var reloadStart = true;
@@ -37,7 +43,7 @@ function CustomScript(params: { [key: string]: string }): string {
       var hlsurl = "https://tstreams.info/" + masterkey + ".m3u8";
 
       // var timer;
-      flowplayer.conf = {
+      _flowplayer.conf = {
         fullscreen: true,
         // iOS allows only native fullscreen from within iframes
         native_fullscreen: true,
@@ -51,7 +57,7 @@ function CustomScript(params: { [key: string]: string }): string {
     };
 
     function initPlayer(hlsurl: string) {
-      flowapi = flowplayer("#hlsjslive", {
+      _flowapi = _flowplayer("#hlsjslive", {
         splash: true,
         preload: "auto",
         autoplay: false,
@@ -73,6 +79,9 @@ function CustomScript(params: { [key: string]: string }): string {
           dvr: true,
           sources: [{ type: "application/x-mpegurl", src: hlsurl }],
         },
+      });
+      Object.assign(window, {
+        flowapi: _flowapi,
       });
       customInit();
     }
@@ -99,7 +108,7 @@ function CustomScript(params: { [key: string]: string }): string {
       });
 
       const loadedInterval = setInterval(() => {
-        if (flowapi.video.buffer > 0) {
+        if (_flowapi.video.buffer > 0) {
           clearInterval(loadedInterval);
           update_muted();
           window.parent.postMessage(
@@ -111,13 +120,13 @@ function CustomScript(params: { [key: string]: string }): string {
             "*"
           );
 
-          video.currentTime = flowapi.video.buffer - 5;
+          video.currentTime = _flowapi.video.buffer - 5;
 
           const accelerateInterval = setInterval(() => {
-            const behind = flowapi.video.buffer - video.currentTime;
+            const behind = _flowapi.video.buffer - video.currentTime;
             if (!video.paused && behind > 5) {
               video.playbackRate = behind > 5 ? 3 : 1;
-            } else if (video.paused || flowapi.video.buffer > 60) {
+            } else if (video.paused || _flowapi.video.buffer > 60) {
               clearInterval(accelerateInterval);
               video.playbackRate = 1;
 
@@ -155,7 +164,7 @@ function CustomScript(params: { [key: string]: string }): string {
     .split("\n")
     .map((i) => i.split("// ")[0].trim())
     .join("\n")};
-  ${f.name}(params);
+  ${f.name}(${JSON.stringify(params)});
 `;
 }
 

@@ -50,11 +50,7 @@ class Multiscreen extends React.Component<
             (screen) =>
               screen &&
               getTopstreamsParams(screen.raw_url, true, "").then(() =>
-                this.setState({
-                  refreshes: Object.assign({}, this.state?.refreshes, {
-                    [event.data.iFrameTitle]: Date.now(),
-                  }),
-                })
+                this.refreshScreen(event.data.iFrameTitle)
               )
           );
         }
@@ -72,6 +68,14 @@ class Multiscreen extends React.Component<
         if (screen) muteUnmute(screen.ref, false);
       }
     }
+  }
+
+  refreshScreen(iFrameTitle: string) {
+    this.setState({
+      refreshes: Object.assign({}, this.state?.refreshes, {
+        [iFrameTitle]: Date.now(),
+      }),
+    });
   }
 
   getScreen(iFrameTitle: string | null = null) {
@@ -102,10 +106,12 @@ class Multiscreen extends React.Component<
           <div className={msStyle.screens}>
             {this.props.screens.map((screen, i) => (
               <Singlescreen
-                key={`${screen.iFrameTitle}_${
-                  (this.state?.refreshes || {})[screen.iFrameTitle]
-                }`}
+                key={screen.iFrameTitle}
                 index={i + 1}
+                refreshKeyValue={
+                  (this.state?.refreshes || {})[screen.iFrameTitle]
+                }
+                refreshKeyF={() => this.refreshScreen(screen.iFrameTitle)}
                 screen={screen}
                 isSelected={screen === this.getScreen()}
                 removeScreen={() => this.props.removeScreen(screen.iFrameTitle)}
@@ -127,13 +133,14 @@ function Singlescreen(props: {
   removeScreen: () => void;
   updateSelected: () => void;
   numScreens: number;
+  refreshKeyValue: number | undefined;
+  refreshKeyF: () => void;
 }) {
   const [redZone, updateRedzone] = useState(false);
   const [bigPlay, updateBigPlay] = useState(false);
   const [drivingTeam, updateDrivingTeam] = useState<string | undefined>(
     undefined
   );
-  const [xkey, updateKey] = useState(Date.now());
   const screenTitleParts = [props.screen.name];
   if (drivingTeam) {
     screenTitleParts[
@@ -168,7 +175,7 @@ function Singlescreen(props: {
           className={style.hover}
           onClick={() => {
             getTopstreamsParams(props.screen.raw_url, true, "").then(() =>
-              updateKey(Date.now())
+              props.refreshKeyF()
             );
           }}
         >
@@ -185,7 +192,7 @@ function Singlescreen(props: {
             }}
           ></div>
           <ObjectFitIframe
-            xkey={xkey}
+            xkey={props.refreshKeyValue}
             screen={props.screen}
             updateBigPlay={updateBigPlay}
             updateDrivingTeam={updateDrivingTeam}
@@ -200,7 +207,7 @@ function Singlescreen(props: {
 
 function ObjectFitIframe(props: {
   screen: ScreenType;
-  xkey: number;
+  xkey: number | undefined;
   updateDrivingTeam: (drivingTeam: string) => void;
   updateRedzone: (redZone: boolean) => void;
   updateBigPlay: (isBigPlay: boolean) => void;
@@ -224,12 +231,15 @@ function ObjectFitIframe(props: {
           isSelected={props.isSelected}
         />
       )}
-      <IframeWrapper screen={props.screen} key={props.xkey} />
+      <IframeWrapper
+        screen={props.screen}
+        key={props.xkey?.toString() || props.screen.iFrameTitle}
+      />
     </div>
   );
 }
 
-function IframeWrapper(props: { screen: ScreenType; key: number }) {
+function IframeWrapper(props: { screen: ScreenType; key: string }) {
   const [params, updateParams] = useState<{ [key: string]: string } | null>(
     null
   );

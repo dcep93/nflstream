@@ -116,7 +116,8 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
               _flowapi = _flowplayer("#hlsjslive", {
                 splash: true,
                 preload: "auto",
-                autoplay: false,
+                // autoplay: false,
+                muted: true,
                 ratio: 9 / 16,
 
                 // stream only available via https:

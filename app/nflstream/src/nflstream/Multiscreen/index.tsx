@@ -249,7 +249,6 @@ function IframeWrapper(props: { screen: ScreenType; key: string }) {
       false,
       props.screen.iFrameTitle
     ).then(updateParams);
-    return null;
   }
   return (
     <div
@@ -282,15 +281,17 @@ function IframeWrapper(props: { screen: ScreenType; key: string }) {
             // border: "1px solid lightgray",
           }}
         >
-          <iframe
-            ref={props.screen.ref}
-            style={{
-              height: "100%",
-              width: "98%",
-            }}
-            title={props.screen.iFrameTitle}
-            srcDoc={TopstreamSrcDoc(params)}
-          ></iframe>
+          {params !== null && (
+            <iframe
+              ref={props.screen.ref}
+              style={{
+                height: "100%",
+                width: "98%",
+              }}
+              title={props.screen.iFrameTitle}
+              srcDoc={TopstreamSrcDoc(params)}
+            ></iframe>
+          )}
         </div>
       </div>
     </div>

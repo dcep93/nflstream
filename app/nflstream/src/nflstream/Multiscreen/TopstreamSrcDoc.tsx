@@ -182,7 +182,7 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                       } else if (behind < 5) {
                         triggered = false;
                       }
-                      video.playbackRate = triggered && behind > 5 ? 3 : 1;
+                      video.playbackRate = triggered ? 3 : 1;
                       if (!firstTime || _flowapi.video.buffer < 60) {
                         return;
                       }

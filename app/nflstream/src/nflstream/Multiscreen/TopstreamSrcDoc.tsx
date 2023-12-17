@@ -153,11 +153,9 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                 a.href.endsWith("/hello/?from=player")
               )!.style.opacity = "0";
 
-              const screen = document.getElementsByClassName(
-                "fp-ui"
-              )[0] as HTMLElement;
-
-              screen.click();
+              (
+                document.getElementsByClassName("fp-ui")[0] as HTMLElement
+              ).click();
 
               const video = document.getElementsByTagName("video")[0];
               var topstream_muted = true;
@@ -174,19 +172,26 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
               });
 
               function catchUp(firstTime: boolean) {
+                var currentTime = 0;
                 var triggered = false;
                 return new Promise<void>((resolve) => {
                   const accelerateInterval = setInterval(() => {
                     if (!video.paused) {
                       const behind = _flowapi.video.buffer - video.currentTime;
-                      screen.title = (Math.floor(behind / 3) * 3).toString();
                       if (behind > (firstTime ? 5 : 20)) {
                         triggered = true;
                       } else if (behind < 5) {
                         triggered = false;
                       }
                       video.playbackRate = triggered ? 3 : 1;
-                      if (!firstTime || _flowapi.video.buffer < 60) {
+                    }
+                    if (firstTime) {
+                      if (_flowapi.video.buffer < 60) {
+                        return;
+                      }
+                    } else {
+                      if (currentTime <= video.currentTime) {
+                        currentTime = video.currentTime;
                         return;
                       }
                     }

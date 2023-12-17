@@ -171,6 +171,23 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                 update_muted();
               });
 
+              function catchUp(firstTime: boolean) {
+                return new Promise<void>((resolve) => {
+                  const accelerateInterval = setInterval(() => {
+                    if (!video.paused) {
+                      const behind = _flowapi.video.buffer - video.currentTime;
+                      video.playbackRate = behind > 5 ? 3 : 1;
+                      if (!firstTime || _flowapi.video.buffer < 60) {
+                        return;
+                      }
+                    }
+                    video.playbackRate = 1;
+                    clearInterval(accelerateInterval);
+                    resolve();
+                  }, 100);
+                });
+              }
+
               const loadedInterval = setInterval(() => {
                 if (_flowapi.video.buffer > 0) {
                   clearInterval(loadedInterval);
@@ -185,39 +202,31 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                   );
 
                   video.currentTime = _flowapi.video.buffer - 5;
-
-                  const accelerateInterval = setInterval(() => {
-                    const behind = _flowapi.video.buffer - video.currentTime;
-                    if (!video.paused && behind > 5) {
-                      video.playbackRate = behind > 5 ? 3 : 1;
-                    } else if (video.paused || _flowapi.video.buffer > 60) {
-                      clearInterval(accelerateInterval);
-                      video.playbackRate = 1;
-
-                      var recentTimestamp = 0;
-                      var stalledTime = 0;
-                      const refreshInterval = setInterval(() => {
-                        if (video.paused) return;
-                        const now = Date.now();
-                        if (recentTimestamp === video.currentTime) {
-                          if (now - stalledTime >= 5000) {
-                            window.parent.postMessage(
-                              {
-                                source: "topstream.html",
-                                action: "refresh",
-                                iFrameTitle: params.iFrameTitle,
-                              },
-                              "*"
-                            );
-                            clearInterval(refreshInterval);
-                          }
-                        } else {
-                          recentTimestamp = video.currentTime;
-                          stalledTime = now;
+                  catchUp(true).then(() => {
+                    catchUp(false);
+                    var recentTimestamp = 0;
+                    var stalledTime = 0;
+                    const refreshInterval = setInterval(() => {
+                      if (video.paused) return;
+                      const now = Date.now();
+                      if (recentTimestamp === video.currentTime) {
+                        if (now - stalledTime >= 5000) {
+                          window.parent.postMessage(
+                            {
+                              source: "topstream.html",
+                              action: "refresh",
+                              iFrameTitle: params.iFrameTitle,
+                            },
+                            "*"
+                          );
+                          clearInterval(refreshInterval);
                         }
-                      }, 100);
-                    }
-                  }, 100);
+                      } else {
+                        recentTimestamp = video.currentTime;
+                        stalledTime = now;
+                      }
+                    }, 100);
+                  });
                 }
               }, 10);
             }

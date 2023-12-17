@@ -153,9 +153,11 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                 a.href.endsWith("/hello/?from=player")
               )!.style.opacity = "0";
 
-              (
-                document.getElementsByClassName("fp-ui")[0] as HTMLElement
-              ).click();
+              const screen = document.getElementsByClassName(
+                "fp-ui"
+              )[0] as HTMLElement;
+
+              screen.click();
 
               const video = document.getElementsByTagName("video")[0];
               var topstream_muted = true;
@@ -177,6 +179,7 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                   const accelerateInterval = setInterval(() => {
                     if (!video.paused) {
                       const behind = _flowapi.video.buffer - video.currentTime;
+                      screen.title = (Math.floor(behind / 5) * 5).toString();
                       if (behind > (firstTime ? 5 : 20)) {
                         triggered = true;
                       } else if (behind < 5) {

@@ -203,7 +203,7 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
 
                   video.currentTime = _flowapi.video.buffer - 5;
                   catchUp(true).then(() => {
-                    catchUp(false);
+                    // catchUp(false);
                     var recentTimestamp = 0;
                     var stalledTime = 0;
                     const refreshInterval = setInterval(() => {

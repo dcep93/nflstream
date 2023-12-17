@@ -177,7 +177,7 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                   const accelerateInterval = setInterval(() => {
                     if (!video.paused) {
                       const behind = _flowapi.video.buffer - video.currentTime;
-                      if (behind > (firstTime ? 5 : 15)) {
+                      if (behind > (firstTime ? 5 : 20)) {
                         triggered = true;
                       } else if (behind < 5) {
                         triggered = false;

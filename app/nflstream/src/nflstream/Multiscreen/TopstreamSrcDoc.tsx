@@ -172,11 +172,17 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
               });
 
               function catchUp(firstTime: boolean) {
+                var triggered = false;
                 return new Promise<void>((resolve) => {
                   const accelerateInterval = setInterval(() => {
                     if (!video.paused) {
                       const behind = _flowapi.video.buffer - video.currentTime;
-                      video.playbackRate = behind > 5 ? 3 : 1;
+                      if (behind > (firstTime ? 5 : 15)) {
+                        triggered = true;
+                      } else if (behind < 5) {
+                        triggered = false;
+                      }
+                      video.playbackRate = triggered && behind > 5 ? 3 : 1;
                       if (!firstTime || _flowapi.video.buffer < 60) {
                         return;
                       }
@@ -203,7 +209,7 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
 
                   video.currentTime = _flowapi.video.buffer - 5;
                   catchUp(true).then(() => {
-                    // catchUp(false);
+                    catchUp(false);
                     var recentTimestamp = 0;
                     var stalledTime = 0;
                     const refreshInterval = setInterval(() => {

@@ -90,6 +90,9 @@ export class DelayedLog extends React.Component<
     ) {
       return true;
     }
+    if (play.text.includes("Intentional Grounding")) {
+      return false;
+    }
     if (play.distance <= -11 || play.distance >= 25) {
       return true;
     }

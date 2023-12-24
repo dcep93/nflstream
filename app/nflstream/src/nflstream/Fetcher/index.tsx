@@ -76,7 +76,7 @@ export default abstract class Fetcher<T, U> extends React.Component<
   }
 }
 
-const cacheVersion = "1.0.1";
+const cacheVersion = "1.0.2";
 const cache: {
   [key: string]: { timestamp: number; data: any; version: string };
 } = {};

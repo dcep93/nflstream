@@ -12,7 +12,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background-color: lightgray;
+  color: #f3f3f8;
+  background-color: #282a3a;
 }
 
 .logContent {

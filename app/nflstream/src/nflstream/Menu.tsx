@@ -22,7 +22,7 @@ class Menu extends React.Component<
           title={recorded_sha}
           onClick={this.props.refreshStreams}
         >
-          NFL Stream
+          NFL MultiStream
         </h1>
 
         {this.props.streams === undefined ? (
@@ -35,27 +35,36 @@ class Menu extends React.Component<
           </div>
         ) : (
           <div>
-            {this.props.streams
-              .map((stream, i) => ({
-                stream,
-                i,
-              }))
-              .map((obj) => (
-                <div key={obj.i}>
-                  <div
-                    className={[style.bubble, style.hover].join(" ")}
-                    onClick={(e) =>
-                      e.metaKey || window.screen.width < 0 // 1000
-                        ? window.open(obj.stream.raw_url)
-                        : this.props.addScreen(
-                            streamToScreen(obj.stream, e.shiftKey)
-                          )
-                    }
-                  >
-                    <div title={obj.stream.raw_url}>{obj.stream.name}</div>
+            <div>
+              {this.props.streams
+                .concat(this.props.streams)
+                .concat(this.props.streams)
+                .concat(this.props.streams)
+                .concat(this.props.streams)
+                .map((stream, i) => ({
+                  stream,
+                  i,
+                }))
+                .map((obj) => (
+                  <div key={obj.i}>
+                    <div
+                      className={[style.bubble, style.hover].join(" ")}
+                      onClick={(e) =>
+                        e.metaKey || window.screen.width < 0 // 1000
+                          ? window.open(obj.stream.raw_url)
+                          : this.props.addScreen(
+                              streamToScreen(obj.stream, e.shiftKey)
+                            )
+                      }
+                    >
+                      <div title={obj.stream.raw_url}>
+                        <span style={{ paddingRight: "10px" }}>➕</span>
+                        <span>{obj.stream.name}</span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+            </div>
           </div>
         )}
         <Guide />
@@ -72,11 +81,11 @@ function Guide() {
       <ol>
         <li>This app is used to watch multiple NFL streams.</li>
         <li>
-          Clicking a game will open a stream and place it on the multiscreen.
-          Streams are borrowed from other sources, so I can't do anything about
-          broken links.
+          Click a game to open a stream and place it on the multiscreen.
+          (Streams are borrowed from other sources, so I can't do anything about
+          broken links.)
         </li>
-        <li>Clicking a minimized stream will move it to the spotlight.</li>
+        <li>Click a minimized stream to move it to the spotlight.</li>
         <li>
           If you have the{" "}
           <a href="https://chrome.google.com/webstore/detail/nfl-stream/jjlokcmkcepehbfepbffkmkkbnggkmje?hl=en&u_producttype=chrome-extension-667709&u_country=au&funnel=convert-pdf&gclid=Cj0KCQjwwNWKBhDAARIsAJ8HkhfEFO3SAM6aK42aSfntfnUY6yIRKS6A7DiyPG00l1mf8743CELeGaQaAksoEALw_wcB">
@@ -85,6 +94,12 @@ function Guide() {
           , streams will include a delayed play-by-play log. You can disable
           this by holding shift when opening a stream.
         </li>
+        <li>
+          Click a stream's title in the multiscreen to remove it, or the 🔄
+          symbol to refresh it. (Streams by default automatically refresh.
+          Thanks Daniel!)
+        </li>
+        <li>Click the log to refresh it.</li>
         <li>
           You can only use this tool if you legally have access to the stream
           and the game.

@@ -173,6 +173,7 @@ function Singlescreen(props: {
         </span>{" "}
         <span
           className={style.hover}
+          style={{ filter: "grayscale(100%)" }}
           onClick={() => {
             getTopstreamsParams(props.screen.raw_url, true, "").then(() =>
               props.refreshKeyF()

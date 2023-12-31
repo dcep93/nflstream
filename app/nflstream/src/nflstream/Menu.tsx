@@ -37,10 +37,6 @@ class Menu extends React.Component<
           <div>
             <div>
               {this.props.streams
-                .concat(this.props.streams)
-                .concat(this.props.streams)
-                .concat(this.props.streams)
-                .concat(this.props.streams)
                 .map((stream, i) => ({
                   stream,
                   i,

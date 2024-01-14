@@ -4,7 +4,7 @@ var ref = React.createRef<HTMLDivElement>();
 var offset = 0;
 var interval: NodeJS.Timeout;
 const PERIOD_MS = 10;
-const EDGE_SLEEP_MS = 1000;
+const EDGE_SLEEP_MS = 3000;
 export default function AutoScroller(props: {
   children: JSX.Element;
   speed: number;

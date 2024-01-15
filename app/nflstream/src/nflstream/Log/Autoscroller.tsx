@@ -4,7 +4,7 @@ var ref = React.createRef<HTMLDivElement>();
 var offset = 0;
 var interval: NodeJS.Timeout;
 const PERIOD_MS = 10;
-const EDGE_SLEEP_MS = 3000;
+const EDGE_SLEEP_MS = 2000;
 export default function AutoScroller(props: {
   children: JSX.Element;
   speed: number;
@@ -22,7 +22,7 @@ export default function AutoScroller(props: {
         ref.current?.scrollTo({ top: 0 });
         setTimeout(() => {
           sleeping = false;
-        }, EDGE_SLEEP_MS);
+        }, EDGE_SLEEP_MS + 1000);
       }, EDGE_SLEEP_MS);
     }
     offset += (props.speed * scrollAmount) / 1000 / PERIOD_MS;

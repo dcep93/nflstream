@@ -47,7 +47,10 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
                   .then((trs) =>
                     trs.map((tds) => ({
                       espnId: parseInt(
-                        tds[2]?.getElementsByTagName("a")[0]?.href.split("=")[1]
+                        tds[2]
+                          ?.getElementsByTagName("a")[0]
+                          ?.href.split("gameId/")[1]
+                          ?.split("/")[0]
                       ),
                       awayTeam: (
                         tds[0]?.getElementsByClassName(

@@ -94,11 +94,13 @@ export function cacheF<T>(
     }
   }
   if (
+    key !== "https://www.espn.com/nfl/schedule" &&
     cached &&
     timestamp - cached!.timestamp < maxAgeMs &&
     cached!.version === cacheVersion
-  )
+  ) {
     return Promise.resolve(cached.data as T);
+  }
   return f().then((data) => {
     cached = { timestamp, data, version: cacheVersion };
     cache[key] = cached;

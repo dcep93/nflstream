@@ -94,7 +94,6 @@ export function cacheF<T>(
     }
   }
   if (
-    key !== "https://www.espn.com/nfl/schedule" &&
     cached &&
     timestamp - cached!.timestamp < maxAgeMs &&
     cached!.version === cacheVersion

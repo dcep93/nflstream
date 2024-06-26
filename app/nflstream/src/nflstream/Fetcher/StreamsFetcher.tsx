@@ -172,13 +172,12 @@ export function parseTinyUrl(message: string) {
 function fetchP<T>(
   url: string,
   maxAgeMs: number,
-  textToCache: (text: string) => Promise<T>,
-  options: any = undefined
+  textToCache: (text: string) => Promise<T>
 ): Promise<T> {
   return cacheF(url, maxAgeMs, () =>
     fetch("https://proxy420.appspot.com", {
       method: "POST",
-      body: JSON.stringify({ maxAgeMs, url, options }),
+      body: JSON.stringify({ maxAgeMs, url }),
       headers: {
         "Content-Type": "application/json",
       },

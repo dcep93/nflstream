@@ -3,6 +3,7 @@ import { StreamType } from "./Fetcher";
 import StreamsFetcher from "./Fetcher/StreamsFetcher";
 import Menu from "./Menu";
 import Multiscreen, { ScreenType } from "./Multiscreen";
+import firebase from "./firebase";
 import style from "./index.module.css";
 import recorded_sha from "./recorded_sha";
 
@@ -35,6 +36,7 @@ class NFLStream extends React.Component<
   }
 > {
   componentDidMount() {
+    firebase();
     console.log(recorded_sha);
     if (!window.chrome?.runtime) {
       console.log("componentDidMount", "no chrome runtime");

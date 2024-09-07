@@ -38,39 +38,37 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
               60 * 60 * 1000,
               (text) =>
                 Promise.resolve(text)
-                  .then(parse)
-                  .then((html) => html.getElementsByTagName("tr"))
-                  .then((arr) => Array.from(arr))
-                  .then((trs) =>
-                    trs.map((tr) => tr.children as unknown as HTMLElement[])
+                  .then(
+                    (text) =>
+                      text.match(
+                        /(?<=window\['__espnfitt__'\]=).*(?=;<\/script>)/
+                      )![0]
                   )
-                  .then((trs) =>
-                    trs.map((tds) => ({
-                      espnId: parseInt(
-                        tds[2]
-                          ?.getElementsByTagName("a")[0]
-                          ?.href.split("gameId/")[1]
-                          ?.split("/")[0]
-                      ),
-                      awayTeam: (
-                        tds[0]?.getElementsByClassName(
-                          "Table__Team"
-                        )[0] as HTMLElement
-                      )?.innerText,
-                      homeTeam: (
-                        tds[1]?.getElementsByClassName(
-                          "Table__Team"
-                        )[0] as HTMLElement
-                      )?.innerText,
-                    }))
+                  .then(JSON.parse)
+                  .then(
+                    (o: {
+                      page: {
+                        content: {
+                          events: {
+                            [date: string]: {
+                              id: string;
+                              teams: { shortName: string }[];
+                            }[];
+                          };
+                        };
+                      };
+                    }) =>
+                      Object.values(o.page.content.events).flatMap((es) =>
+                        es.map((e) => ({
+                          espnId: parseInt(e.id),
+                          teams: e.teams.map((t) => t.shortName.toLowerCase()),
+                        }))
+                      )
                   )
             ).then((objs) =>
               streams.map((stream) => ({
-                espnId: objs.find(
-                  (obj) =>
-                    stream!.name.includes(obj.awayTeam) &&
-                    stream!.name.includes(obj.homeTeam)
-                )?.espnId,
+                espnId: objs.find((obj) => obj.teams.includes(stream.stream_id))
+                  ?.espnId,
                 ...stream,
               }))
             )
@@ -90,20 +88,11 @@ function getStream(href: string): Promise<StreamType | undefined> {
           : Promise.resolve({
               name: p.title.includes("Redzone")
                 ? "REDZONE"
-                : p.title
-                    .split(" Live Stream")[0]
-                    .split(" Vs ")
-                    .reverse()
-                    .join(" vs "),
+                : p.title.split(" Live Stream")[0].split(" at ").join(" @ "),
             })
               .then((o) => ({
                 ...o,
-                stream_id: o.name
-                  .toLowerCase()
-                  .split(" vs ")
-                  .reverse()[0]
-                  .split(" ")
-                  .reverse()[0],
+                stream_id: o.name.toLowerCase().split(" @ ").reverse()[0],
               }))
               .then((o) => ({
                 ...o,

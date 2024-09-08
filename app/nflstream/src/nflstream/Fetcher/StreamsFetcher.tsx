@@ -81,7 +81,7 @@ function getStream(href: string): Promise<StreamType | undefined> {
     Promise.resolve(text)
       .then((text) => parse(text))
       .then((p) =>
-        Array.from(p.getElementsByClassName("username") || []).find(
+        Array.from(p.getElementsByClassName("streamer-name") || []).find(
           (e) => (e as HTMLElement).innerText.trim() === "topstreamer"
         ) === undefined
           ? undefined

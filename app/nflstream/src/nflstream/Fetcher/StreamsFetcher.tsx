@@ -1,16 +1,10 @@
 import Fetcher, { cacheF, parse, StreamType } from ".";
+import { REDZONE_STREAM_ID } from "../Multiscreen/Singlescreen";
 
 class StreamsFetcher extends Fetcher<StreamType[], boolean> {
   intervalMs = 10 * 60 * 1000;
-  getResponse() {
-    //   return Promise.resolve([
-    //     { url: "http://weakstreams.com/streams/10309005", name: "test2" },
-    //     { url: "http://example.org", name: "example", espnId: "401437761" },
-    //     { url: "http://localhost:3000/topstream.html", name: "test1" },
-    //   ]);
-    // }
 
-    // real() {
+  getResponse() {
     const hasExtension = this.props.payload;
     return fetchP("https://nflbite.com/", 10 * 60 * 1000, (text) =>
       Promise.resolve(text)
@@ -67,12 +61,16 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
                   )
             ).then((objs) =>
               streams.map((stream) => ({
-                espnId: objs.find((obj) => obj.teams.includes(stream.stream_id))
-                  ?.espnId,
+                espnId:
+                  stream.stream_id === REDZONE_STREAM_ID
+                    ? undefined
+                    : objs.find((obj) => obj.teams.includes(stream.stream_id))
+                        ?.espnId,
                 ...stream,
               }))
             )
-      );
+      )
+      .then((streams) => streams.concat(...getStreamsFromUrlQuery()));
   }
 }
 
@@ -85,11 +83,15 @@ function getStream(href: string): Promise<StreamType | undefined> {
           (e) => (e as HTMLElement).innerText.trim() === "topstreamer"
         ) === undefined
           ? undefined
-          : Promise.resolve({
-              name: p.title.includes("Redzone")
-                ? "REDZONE"
-                : p.title.split(" Live Stream")[0].split(" at ").join(" @ "),
-            })
+          : p.title.includes("Redzone")
+          ? { name: "REDZONE", stream_id: REDZONE_STREAM_ID, raw_url: "" }
+          : Promise.resolve()
+              .then(() => ({
+                name: p.title
+                  .split(" Live Stream")[0]
+                  .split(" at ")
+                  .join(" @ "),
+              }))
               .then((o) => ({
                 ...o,
                 stream_id: o.name.toLowerCase().split(" @ ").reverse()[0],
@@ -156,6 +158,10 @@ export function parseTinyUrl(message: string) {
         return null;
       })
   );
+}
+
+function getStreamsFromUrlQuery(): StreamType[] {
+  return []; // TODO
 }
 
 function fetchP<T>(

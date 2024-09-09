@@ -162,7 +162,11 @@ function IframeWrapper(props: { screen: ScreenType; key: string }) {
           {props.screen.src === TOPSTREAMS ? (
             <TopStreamsIFrame {...props} />
           ) : (
-            <iframe ref={props.screen.ref} src={props.screen.raw_url} />
+            <iframe
+              ref={props.screen.ref}
+              src={props.screen.raw_url}
+              title={props.screen.iFrameTitle}
+            />
           )}
         </div>
       </div>

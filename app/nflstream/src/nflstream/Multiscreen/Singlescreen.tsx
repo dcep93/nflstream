@@ -182,16 +182,18 @@ function TopStreamsIFrame(props: { screen: ScreenType; key: string }) {
     ).then(updateParams);
   }
   return (
-    params !== null && (
-      <iframe
-        ref={props.screen.ref}
-        style={{
-          height: "100%",
-          width: "98%",
-        }}
-        title={props.screen.iFrameTitle}
-        srcDoc={TopstreamSrcDoc(params)}
-      ></iframe>
-    )
+    <>
+      {params !== null && (
+        <iframe
+          ref={props.screen.ref}
+          style={{
+            height: "100%",
+            width: "98%",
+          }}
+          title={props.screen.iFrameTitle}
+          srcDoc={TopstreamSrcDoc(params)}
+        ></iframe>
+      )}
+    </>
   );
 }

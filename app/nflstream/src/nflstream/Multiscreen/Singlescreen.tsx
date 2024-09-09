@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { ScreenType } from ".";
-
-import { getTopstreamsParams } from "../Fetcher/StreamsFetcher";
-import style from "../index.module.css";
+import { getTopstreamsParams, TOPSTREAMS } from "../Fetcher/StreamsFetcher";
 import Log from "../Log";
-import msStyle from "./index.module.css";
 import TopstreamSrcDoc from "./TopstreamSrcDoc";
+
+import style from "../index.module.css";
+import msStyle from "./index.module.css";
 
 export const REDZONE_STREAM_ID = "redzone";
 
@@ -58,9 +58,13 @@ export function Singlescreen(props: {
           className={style.hover}
           style={{ filter: "grayscale(100%)" }}
           onClick={() => {
-            getTopstreamsParams(props.screen.raw_url, true, "").then(() =>
-              props.refreshKeyF()
-            );
+            Promise.resolve()
+              .then(() =>
+                props.screen.src === TOPSTREAMS
+                  ? getTopstreamsParams(props.screen.raw_url, true, "")
+                  : Promise.resolve({})
+              )
+              .then(() => props.refreshKeyF());
           }}
         >
           🔄
@@ -124,16 +128,6 @@ function ObjectFitIframe(props: {
 }
 
 function IframeWrapper(props: { screen: ScreenType; key: string }) {
-  const [params, updateParams] = useState<{ [key: string]: string } | null>(
-    null
-  );
-  if (params === null) {
-    getTopstreamsParams(
-      props.screen.raw_url,
-      false,
-      props.screen.iFrameTitle
-    ).then(updateParams);
-  }
   return (
     <div
       style={{
@@ -165,19 +159,39 @@ function IframeWrapper(props: { screen: ScreenType; key: string }) {
             // border: "1px solid lightgray",
           }}
         >
-          {params !== null && (
-            <iframe
-              ref={props.screen.ref}
-              style={{
-                height: "100%",
-                width: "98%",
-              }}
-              title={props.screen.iFrameTitle}
-              srcDoc={TopstreamSrcDoc(params)}
-            ></iframe>
+          {props.screen.src === TOPSTREAMS ? (
+            <TopStreamsIFrame {...props} />
+          ) : (
+            <iframe ref={props.screen.ref} src={props.screen.raw_url} />
           )}
         </div>
       </div>
     </div>
+  );
+}
+
+function TopStreamsIFrame(props: { screen: ScreenType; key: string }) {
+  const [params, updateParams] = useState<{ [key: string]: string } | null>(
+    null
+  );
+  if (params === null) {
+    getTopstreamsParams(
+      props.screen.raw_url,
+      false,
+      props.screen.iFrameTitle
+    ).then(updateParams);
+  }
+  return (
+    params !== null && (
+      <iframe
+        ref={props.screen.ref}
+        style={{
+          height: "100%",
+          width: "98%",
+        }}
+        title={props.screen.iFrameTitle}
+        srcDoc={TopstreamSrcDoc(params)}
+      ></iframe>
+    )
   );
 }

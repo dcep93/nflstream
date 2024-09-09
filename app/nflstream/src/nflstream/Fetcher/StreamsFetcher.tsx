@@ -1,5 +1,6 @@
 import Fetcher, { cacheF, parse, StreamType } from ".";
-import { REDZONE_STREAM_ID } from "../Multiscreen/Singlescreen";
+
+export const TOPSTREAMS = "topstreams";
 
 class StreamsFetcher extends Fetcher<StreamType[], boolean> {
   intervalMs = 10 * 60 * 1000;
@@ -62,7 +63,7 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
             ).then((objs) =>
               streams.map((stream) => ({
                 espnId:
-                  stream.stream_id === REDZONE_STREAM_ID
+                  stream.src === TOPSTREAMS
                     ? undefined
                     : objs.find((obj) => obj.teams.includes(stream.stream_id))
                         ?.espnId,
@@ -84,9 +85,15 @@ function getStream(href: string): Promise<StreamType | undefined> {
         ) === undefined
           ? undefined
           : p.title.includes("Redzone")
-          ? { name: "REDZONE", stream_id: REDZONE_STREAM_ID, raw_url: "" }
+          ? {
+              name: "REDZONE",
+              stream_id: "redzone",
+              raw_url: "https://topstreams.info/nfl/",
+              src: TOPSTREAMS,
+            }
           : Promise.resolve()
               .then(() => ({
+                src: TOPSTREAMS,
                 name: p.title
                   .split(" Live Stream")[0]
                   .split(" at ")
@@ -161,7 +168,14 @@ export function parseTinyUrl(message: string) {
 }
 
 function getStreamsFromUrlQuery(): StreamType[] {
-  return []; // TODO
+  return (
+    new URLSearchParams(window.location.search).get("extra")?.split(",") || []
+  ).map((raw_url, i) => ({
+    raw_url,
+    name: `extra_${i + 1}`,
+    src: "extra",
+    stream_id: `extra_${i + 1}`,
+  }));
 }
 
 function fetchP<T>(

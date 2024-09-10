@@ -19,6 +19,7 @@ export function Singlescreen(props: {
   refreshKeyValue: number | undefined;
   refreshKeyF: () => void;
 }) {
+  console.log(screen);
   const [redZone, updateRedzone] = useState(false);
   const [bigPlay, updateBigPlay] = useState(false);
   const [drivingTeam, updateDrivingTeam] = useState<string | undefined>(

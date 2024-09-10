@@ -64,9 +64,9 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
               streams.map((stream) => ({
                 espnId:
                   stream.src === TOPSTREAMS
-                    ? undefined
-                    : objs.find((obj) => obj.teams.includes(stream.stream_id))
-                        ?.espnId,
+                    ? objs.find((obj) => obj.teams.includes(stream.stream_id))
+                        ?.espnId
+                    : undefined,
                 ...stream,
               }))
             )

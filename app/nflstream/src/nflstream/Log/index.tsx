@@ -79,13 +79,13 @@ export class DelayedLog extends React.Component<
     if (play.text.includes("field goal")) {
       return play.distance >= 60;
     }
-    if (play.text.includes("punt")) {
+    if (play.text.includes("kicks")) {
       return play.distance >= 40;
     }
     if (
       play.down?.startsWith("4th") &&
       !play.text.includes("field goal") &&
-      !play.text.includes("punts") &&
+      !play.text.includes("kicks") &&
       !play.text.includes("No Play")
     ) {
       return true;

@@ -88,7 +88,7 @@ function getStream(href: string): Promise<StreamType | undefined> {
           ? {
               name: "REDZONE",
               stream_id: "redzone",
-              raw_url: "https://topstreams.info/nfl/",
+              raw_url: "https://topstreams.info/nfl/redzone",
               src: TOPSTREAMS,
             }
           : Promise.resolve()

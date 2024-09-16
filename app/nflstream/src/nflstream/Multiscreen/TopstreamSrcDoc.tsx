@@ -202,7 +202,58 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                 });
               }
 
+              function muteCommercials() {
+                function get_is_commercial(data: Uint8ClampedArray) {
+                  var last = 0;
+                  var count = 0;
+                  var total = 0;
+                  var num = 0;
+                  for (var i = 0; i < data.length; i++) {
+                    if (data[i] !== last) {
+                      total += count * last;
+                      num += count;
+                      last = data[i];
+                      count = 0;
+                    }
+                    count++;
+                  }
+
+                  const avg = total / count;
+                  const is_commercial = avg > 4.9051 && avg < 4.9166;
+                  return is_commercial;
+                }
+                const video = document.getElementsByTagName("video")[0];
+                if (!video) {
+                  return;
+                }
+                if (video.videoWidth === 0) {
+                  return;
+                }
+                const canvas = document.getElementById(
+                  "canvas"
+                ) as HTMLCanvasElement;
+                if (!canvas) {
+                  return;
+                }
+                var ctx = canvas.getContext("2d")!;
+                ctx.clearRect(0, 0, video.videoWidth, video.videoHeight);
+                ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+
+                var data = ctx.getImageData(
+                  0,
+                  0,
+                  video.videoWidth,
+                  video.videoHeight
+                ).data;
+                const is_commercial = get_is_commercial(data);
+                const should_be_muted = is_commercial || topstream_muted;
+                if (should_be_muted !== video.muted) {
+                  video.muted = should_be_muted;
+                }
+              }
+
               const loadedInterval = setInterval(() => {
+                muteCommercials();
                 if (_flowapi.video.buffer > 0) {
                   clearInterval(loadedInterval);
                   update_muted();
@@ -254,6 +305,7 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
           className="fp-slim"
           style={{ display: "block", outline: "none" }}
         ></div>
+        <canvas id="canvas" />
       </body>
     </html>
   );

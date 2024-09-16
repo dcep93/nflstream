@@ -7,7 +7,7 @@ import firebase from "./firebase";
 import style from "./index.module.css";
 import recorded_sha from "./recorded_sha";
 
-const mustbeusedlegally = "mustbeusedlegally";
+const passwordStr = "mustbeusedlegally";
 
 declare global {
   interface Window {
@@ -92,8 +92,8 @@ class NFLStream extends React.Component<
     const handleResponse = (streams: StreamType[]) => {
       this.setState({ streams });
     };
-    return localStorage.getItem("mustbeusedlegally") !== mustbeusedlegally ? (
-      <Mustbeusedlegally />
+    return localStorage.getItem("password") !== passwordStr ? (
+      <Password />
     ) : this.state?.hasExtension === undefined ? null : (
       <div className={style.main} style={{ backgroundColor: "black" }}>
         <StreamsFetcher
@@ -167,10 +167,10 @@ export function streamToScreen(
   };
 }
 
-function Mustbeusedlegally() {
-  const mustbeusedlegally = window.prompt("enter the password:");
-  if (mustbeusedlegally) {
-    localStorage.setItem("mustbeusedlegally", mustbeusedlegally);
+function Password() {
+  const pw = window.prompt("enter the password:");
+  if (pw) {
+    localStorage.setItem("password", pw);
     window.location.reload();
   }
   return null;

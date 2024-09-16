@@ -204,27 +204,11 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
 
               function muteCommercials() {
                 function get_is_commercial(data: Uint8ClampedArray) {
-                  var last = 0;
-                  var count = 0;
-                  var total = 0;
-                  var num = 0;
-                  for (var i = 0; i < data.length; i++) {
-                    if (data[i] !== last) {
-                      total += count * last;
-                      num += count;
-                      last = data[i];
-                      count = 0;
-                    }
-                    count++;
-                  }
-
-                  const avg = total / num;
+                  const avg = data.reduce((a, b) => a + b, 0) / data.length;
                   const is_commercial = avg > 4.9051 && avg < 4.9166;
+                  // @ts-ignore
+                  _console.log({ is_commercial, avg });
                   return is_commercial;
-                }
-                const video = document.getElementsByTagName("video")[0];
-                if (!video) {
-                  return;
                 }
                 if (video.videoWidth === 0) {
                   return;
@@ -235,11 +219,11 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                 if (!canvas) {
                   return;
                 }
-                var ctx = canvas.getContext("2d")!;
+                const ctx = canvas.getContext("2d")!;
                 ctx.clearRect(0, 0, video.videoWidth, video.videoHeight);
                 ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
 
-                var data = ctx.getImageData(
+                const data = ctx.getImageData(
                   0,
                   0,
                   video.videoWidth,
@@ -249,6 +233,9 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                 const should_be_muted = is_commercial || topstream_muted;
                 if (should_be_muted !== video.muted) {
                   video.muted = should_be_muted;
+                  video.style.opacity = (
+                    should_be_muted ? 0.1 : 0.3
+                  ).toString();
                 }
               }
 

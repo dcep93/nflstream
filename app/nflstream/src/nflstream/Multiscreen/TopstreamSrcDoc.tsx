@@ -218,7 +218,7 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                     count++;
                   }
 
-                  const avg = total / count;
+                  const avg = total / num;
                   const is_commercial = avg > 4.9051 && avg < 4.9166;
                   return is_commercial;
                 }

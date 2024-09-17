@@ -208,7 +208,8 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                     const avg =
                       data.filter((d) => d !== 0).reduce((a, b) => a + b, 0) /
                       data.length;
-                    const is_commercial = avg > 3.937 && avg < 3.942;
+                    const is_commercial =
+                      avg === 0 && avg > 3.937 && avg < 3.942;
                     return is_commercial;
                   }
                   if (video.videoWidth === 0) {

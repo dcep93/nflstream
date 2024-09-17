@@ -204,12 +204,22 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
 
               function muteLoop() {
                 setInterval(() => {
-                  function get_is_commercial(data: Uint8ClampedArray) {
-                    const avg =
-                      data.filter((d) => d !== 0).reduce((a, b) => a + b, 0) /
-                      data.length;
-                    const is_commercial =
-                      avg === 0 && avg > 3.937 && avg < 3.942;
+                  function get_is_commercial(raw_data: Uint8ClampedArray) {
+                    const num_channels = 4;
+                    const data = Array.from(new Array(raw_data.length)).map(
+                      (_, i) =>
+                        raw_data
+                          .slice(i * num_channels, (i + 1) * num_channels)
+                          .reduce((a, b) => a + b, 0) / num_channels
+                    );
+                    const avg = data.reduce((a, b) => a + b, 0) / data.length;
+                    const is_commercial = avg > 0.984 && avg < 0.987;
+                    // @ts-ignore
+                    _console.log({
+                      is_commercial,
+                      avg,
+                      // data: Array.from(data),
+                    });
                     return is_commercial;
                   }
                   if (video.videoWidth === 0) {

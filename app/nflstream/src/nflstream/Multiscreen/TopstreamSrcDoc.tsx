@@ -208,18 +208,16 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                     const num_channels = 4;
                     const data = Array.from(new Array(raw_data.length)).map(
                       (_, i) =>
-                        raw_data
-                          .slice(i * num_channels, (i + 1) * num_channels)
-                          .reduce((a, b) => a + b, 0) / num_channels
+                        Math.floor(
+                          raw_data
+                            .slice(i * num_channels, (i + 1) * num_channels)
+                            .reduce((a, b) => a + b, 0) / num_channels
+                        )
                     );
-                    const avg = data.reduce((a, b) => a + b, 0) / data.length;
-                    const is_commercial = avg > 0.984 && avg < 0.987;
-                    // @ts-ignore
-                    _console.log({
-                      is_commercial,
-                      avg,
-                      // data: Array.from(data),
-                    });
+                    const relevants = data.filter(
+                      (d) => d >= 76 && d <= 84
+                    ).length;
+                    const is_commercial = relevants >= 40_000;
                     return is_commercial;
                   }
                   if (video.videoWidth === 0) {

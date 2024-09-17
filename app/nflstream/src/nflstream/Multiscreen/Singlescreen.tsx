@@ -45,7 +45,6 @@ export function Singlescreen(props: {
       <div
         className={msStyle.title}
         style={{
-          fontSize: "2vh",
           backgroundColor: redZone
             ? "maroon"
             : bigPlay && !props.isSelected

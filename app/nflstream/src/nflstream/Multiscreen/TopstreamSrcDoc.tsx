@@ -202,45 +202,49 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                 });
               }
 
-              function muteCommercials() {
-                function get_is_commercial(data: Uint8ClampedArray) {
-                  const avg = data.reduce((a, b) => a + b, 0) / data.length;
-                  const is_commercial = avg > 4.9051 && avg < 4.9166;
-                  // @ts-ignore
-                  _console.log({ is_commercial, avg });
-                  return is_commercial;
-                }
-                if (video.videoWidth === 0) {
-                  return;
-                }
-                const canvas = document.getElementById(
-                  "canvas"
-                ) as HTMLCanvasElement;
-                if (!canvas) {
-                  return;
-                }
-                const ctx = canvas.getContext("2d")!;
-                ctx.clearRect(0, 0, video.videoWidth, video.videoHeight);
-                ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+              function muteLoop() {
+                setInterval(() => {
+                  function get_is_commercial(data: Uint8ClampedArray) {
+                    const avg =
+                      data.filter((d) => d !== 0).reduce((a, b) => a + b, 0) /
+                      data.length;
+                    const is_commercial = avg > 3.937 && avg < 3.942;
+                    return is_commercial;
+                  }
+                  if (video.videoWidth === 0) {
+                    return;
+                  }
+                  const canvas = document.getElementById(
+                    "canvas"
+                  ) as HTMLCanvasElement;
+                  if (!canvas) {
+                    return;
+                  }
+                  const ctx = canvas.getContext("2d")!;
+                  ctx.clearRect(0, 0, video.videoWidth, video.videoHeight);
+                  ctx.drawImage(
+                    video,
+                    0,
+                    0,
+                    video.videoWidth,
+                    video.videoHeight
+                  );
 
-                const data = ctx.getImageData(
-                  0,
-                  0,
-                  video.videoWidth,
-                  video.videoHeight
-                ).data;
-                const is_commercial = get_is_commercial(data);
-                const should_be_muted = is_commercial || topstream_muted;
-                if (should_be_muted !== video.muted) {
-                  video.muted = should_be_muted;
-                  video.style.opacity = (
-                    should_be_muted ? 0.1 : 0.3
-                  ).toString();
-                }
+                  const data = ctx.getImageData(
+                    0,
+                    0,
+                    video.videoWidth,
+                    video.videoHeight
+                  ).data;
+                  const is_commercial = get_is_commercial(data);
+                  const should_be_muted = is_commercial || topstream_muted;
+                  if (should_be_muted !== video.muted) {
+                    video.muted = should_be_muted;
+                  }
+                }, 1000);
               }
 
               const loadedInterval = setInterval(() => {
-                muteCommercials();
                 if (_flowapi.video.buffer > 0) {
                   clearInterval(loadedInterval);
                   update_muted();
@@ -258,6 +262,7 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                     catchUp(false);
                     var recentTimestamp = 0;
                     var stalledTime = 0;
+                    muteLoop();
                     const refreshInterval = setInterval(() => {
                       if (video.paused) return;
                       const now = Date.now();
@@ -292,7 +297,7 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
           className="fp-slim"
           style={{ display: "block", outline: "none" }}
         ></div>
-        <canvas id="canvas" />
+        <canvas id="canvas" hidden />
       </body>
     </html>
   );

@@ -271,7 +271,7 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                     catchUp(false);
                     var recentTimestamp = 0;
                     var stalledTime = 0;
-                    muteLoop();
+                    // muteLoop();
                     const refreshInterval = setInterval(() => {
                       if (video.paused) return;
                       const now = Date.now();

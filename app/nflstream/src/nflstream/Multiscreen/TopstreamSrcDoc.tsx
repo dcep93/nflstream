@@ -171,54 +171,56 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                 update_muted();
               });
 
-              function catchUp(firstTime: boolean) {
-                var currentTime = 0;
-                var triggered = false;
-                return new Promise<void>((resolve) => {
-                  const accelerateInterval = setInterval(() => {
-                    if (!video.paused) {
-                      const behind = _flowapi.video.buffer - video.currentTime;
-                      if (behind > (firstTime ? 5 : 20)) {
-                        triggered = true;
-                      } else if (behind < 5) {
-                        triggered = false;
-                      }
-                      video.playbackRate = triggered ? 3 : 1;
-                    }
-                    if (firstTime) {
-                      if (_flowapi.video.buffer < 60) {
-                        return;
-                      }
-                    } else {
-                      if (currentTime <= video.currentTime) {
-                        currentTime = video.currentTime;
-                        return;
-                      }
-                    }
-                    video.playbackRate = 1;
-                    clearInterval(accelerateInterval);
-                    resolve();
-                  }, 100);
-                });
-              }
-
               function muteLoop() {
                 setInterval(() => {
                   if (subscreen_muted) return;
                   function get_is_commercial(raw_data: Uint8ClampedArray) {
                     const num_channels = 4;
-                    const data = Array.from(new Array(raw_data.length)).map(
-                      (_, i) =>
-                        Math.floor(
-                          raw_data
-                            .slice(i * num_channels, (i + 1) * num_channels)
-                            .reduce((a, b) => a + b, 0) / num_channels
+                    const data = Array.from(
+                      new Array(raw_data.length / num_channels)
+                    )
+                      .map((_, i) =>
+                        Array.from(
+                          raw_data.slice(
+                            i * num_channels,
+                            (i + 1) * num_channels
+                          )
                         )
-                    );
-                    const relevants = data.filter(
-                      (d) => d >= 76 && d <= 84
-                    ).length;
-                    const is_commercial = relevants >= 40_000;
+                      )
+                      .map((channels) => ({
+                        channels: channels.slice(0, 3),
+                        alpha: channels[3],
+                      }))
+                      .map((o) => ({
+                        ...o,
+                        avg:
+                          o.channels.reduce((a, b) => a + b, 0) /
+                          o.channels.length,
+                      }))
+                      .map((o) => ({
+                        ...o,
+                        diff: o.channels
+                          .map((c) => Math.abs(c - o.avg))
+                          .reduce((a, b) => a + b, 0),
+                      }));
+                    const filtered = {
+                      greys: data.filter((d) => d.alpha === 0 && d.diff <= 5)
+                        .length,
+                      whites: data.filter((d) => d.alpha === 255 && d.diff <= 5)
+                        .length,
+                      blues: data.filter(
+                        (d) =>
+                          d.channels[2] - d.channels[0] - d.channels[1] > 20
+                      ).length,
+                    };
+                    const is_commercial =
+                      filtered.greys >= 876600 * 0.99 &&
+                      filtered.whites + filtered.blues >= 44840 &&
+                      filtered.blues >= 25;
+                    if (is_commercial) {
+                      // @ts-ignore
+                      _console.log(filtered);
+                    }
                     return is_commercial;
                   }
                   if (video.videoWidth === 0) {
@@ -254,6 +256,37 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                 }, 1000);
               }
 
+              function catchUp(firstTime: boolean) {
+                var currentTime = 0;
+                var triggered = false;
+                return new Promise<void>((resolve) => {
+                  const accelerateInterval = setInterval(() => {
+                    if (!video.paused) {
+                      const behind = _flowapi.video.buffer - video.currentTime;
+                      if (behind > (firstTime ? 5 : 20)) {
+                        triggered = true;
+                      } else if (behind < 5) {
+                        triggered = false;
+                      }
+                      video.playbackRate = triggered ? 3 : 1;
+                    }
+                    if (firstTime) {
+                      if (_flowapi.video.buffer < 60) {
+                        return;
+                      }
+                    } else {
+                      if (currentTime <= video.currentTime) {
+                        currentTime = video.currentTime;
+                        return;
+                      }
+                    }
+                    video.playbackRate = 1;
+                    clearInterval(accelerateInterval);
+                    resolve();
+                  }, 100);
+                });
+              }
+
               const loadedInterval = setInterval(() => {
                 if (_flowapi.video.buffer > 0) {
                   clearInterval(loadedInterval);
@@ -267,12 +300,13 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                     "*"
                   );
 
+                  muteLoop();
+
                   video.currentTime = _flowapi.video.buffer - 5;
                   catchUp(true).then(() => {
                     catchUp(false);
                     var recentTimestamp = 0;
                     var stalledTime = 0;
-                    muteLoop();
                     const refreshInterval = setInterval(() => {
                       if (video.paused) return;
                       const now = Date.now();

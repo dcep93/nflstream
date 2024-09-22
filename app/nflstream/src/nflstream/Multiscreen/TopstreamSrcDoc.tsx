@@ -217,10 +217,6 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                       filtered.greys >= 876600 * 0.99 &&
                       filtered.whites + filtered.blues >= 44840 &&
                       filtered.blues >= 25;
-                    if (is_commercial) {
-                      // @ts-ignore
-                      _console.log(filtered);
-                    }
                     return is_commercial;
                   }
                   if (video.videoWidth === 0) {

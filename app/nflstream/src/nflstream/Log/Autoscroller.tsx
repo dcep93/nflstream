@@ -1,6 +1,6 @@
 import React from "react";
 
-const PERIOD_MS = 30;
+const PERIOD_MS = 10;
 const EDGE_SLEEP_MS = 2500;
 
 type Props = {

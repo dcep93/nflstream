@@ -174,18 +174,20 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                 const muteCommercialLoopPeriodMs = 1000;
                 setInterval(() => {
                   if (subscreen_muted) return;
+                  type Data = {
+                    channels: number[];
+                    alpha: number;
+                    diff: number;
+                  };
                   function slice_data(
                     raw_data: Uint8ClampedArray
-                  ): Promise<number[][]> {
-                    return Promise.resolve([]);
+                  ): Promise<Data[]> {
                     const num_channels = 4;
                     const num_segments = 40;
                     const segment_size =
                       raw_data.length / num_channels / num_segments;
-                    const segments: number[][][] = [];
-                    function helper(
-                      segment_index: number
-                    ): Promise<number[][]> {
+                    const segments: Data[][] = [];
+                    function helper(segment_index: number): Promise<Data[]> {
                       if (segment_index === num_segments)
                         return Promise.resolve(segments.flatMap((s) => s));
                       segments.push(
@@ -199,6 +201,25 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                               )
                             )
                           )
+                          .map((channels) => ({
+                            channels: channels.slice(0, 3),
+                            alpha: channels[3],
+                          }))
+                          .map((o) => ({
+                            channels: o.channels,
+                            alpha: o.alpha,
+                            avg:
+                              o.channels.reduce((a, b) => a + b, 0) /
+                              o.channels.length,
+                          }))
+                          .map((o) => ({
+                            channels: o.channels,
+                            alpha: o.alpha,
+                            avg: o.avg,
+                            diff: o.channels
+                              .map((c) => Math.abs(c - o.avg))
+                              .reduce((a, b) => a + b, 0),
+                          }))
                       );
                       return new Promise((resolve) =>
                         setTimeout(
@@ -209,27 +230,7 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                     }
                     return helper(0);
                   }
-                  function get_is_commercial(sliced_data: number[][]) {
-                    const data = sliced_data
-                      .map((channels) => ({
-                        channels: channels.slice(0, 3),
-                        alpha: channels[3],
-                      }))
-                      .map((o) => ({
-                        channels: o.channels,
-                        alpha: o.alpha,
-                        avg:
-                          o.channels.reduce((a, b) => a + b, 0) /
-                          o.channels.length,
-                      }))
-                      .map((o) => ({
-                        channels: o.channels,
-                        alpha: o.alpha,
-                        avg: o.avg,
-                        diff: o.channels
-                          .map((c) => Math.abs(c - o.avg))
-                          .reduce((a, b) => a + b, 0),
-                      }));
+                  function get_is_commercial(data: Data[]) {
                     const filtered = {
                       greys: data.filter((d) => d.alpha === 0 && d.diff <= 5)
                         .length,

@@ -53,7 +53,6 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
         <script src="https://topstreams.info/js/jquery-input-file-text.js"></script>
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/ScrollMagic/2.0.5/ScrollMagic.min.js"></script>
         <FunctionToScript
           t={params}
           f={(params: { [key: string]: string }) => {
@@ -171,23 +170,28 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                 update_muted();
               });
 
-              function muteLoop() {
+              function muteCommercialLoop() {
                 setInterval(() => {
                   if (subscreen_muted) return;
-                  function get_is_commercial(raw_data: Uint8ClampedArray) {
-                    if (raw_data.length > 0) return false;
+                  function slice_data(
+                    raw_data: Uint8ClampedArray
+                  ): Promise<number[][]> {
                     const num_channels = 4;
-                    const data = Array.from(
-                      new Array(raw_data.length / num_channels)
-                    )
-                      .map((_, i) =>
-                        Array.from(
-                          raw_data.slice(
-                            i * num_channels,
-                            (i + 1) * num_channels
+                    if (raw_data.length > 0) return Promise.resolve([]);
+                    return Promise.resolve(
+                      Array.from(new Array(raw_data.length / num_channels)).map(
+                        (_, i) =>
+                          Array.from(
+                            raw_data.slice(
+                              i * num_channels,
+                              (i + 1) * num_channels
+                            )
                           )
-                        )
                       )
+                    );
+                  }
+                  function get_is_commercial(sliced_data: number[][]) {
+                    const data = sliced_data
                       .map((channels) => ({
                         channels: channels.slice(0, 3),
                         alpha: channels[3],
@@ -202,6 +206,7 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                       .map((o) => ({
                         channels: o.channels,
                         alpha: o.alpha,
+                        avg: o.avg,
                         diff: o.channels
                           .map((c) => Math.abs(c - o.avg))
                           .reduce((a, b) => a + b, 0),
@@ -241,17 +246,20 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                     video.videoHeight
                   );
 
-                  const data = ctx.getImageData(
+                  const raw_data = ctx.getImageData(
                     0,
                     0,
                     video.videoWidth,
                     video.videoHeight
                   ).data;
-                  const is_commercial = get_is_commercial(data);
-                  const should_be_muted = is_commercial;
-                  if (should_be_muted !== video.muted) {
-                    video.muted = should_be_muted;
-                  }
+                  Promise.resolve()
+                    .then(() => slice_data(raw_data))
+                    .then((sliced_data) => {
+                      const is_commercial = get_is_commercial(sliced_data);
+                      if (is_commercial !== video.muted) {
+                        video.muted = is_commercial;
+                      }
+                    });
                 }, 1000);
               }
 
@@ -299,7 +307,7 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                     "*"
                   );
 
-                  muteLoop();
+                  muteCommercialLoop();
 
                   video.currentTime = _flowapi.video.buffer - 5;
                   catchUp(true).then(() => {

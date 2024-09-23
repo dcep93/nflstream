@@ -214,9 +214,11 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                       ).length,
                     };
                     const is_commercial =
-                      filtered.greys >= 876600 * 0.99 &&
-                      filtered.whites + filtered.blues >= 44840 &&
+                      filtered.greys >= 876600 &&
+                      filtered.whites + filtered.blues >= 44000 &&
                       filtered.blues >= 25;
+                    // @ts-ignore
+                    _console.log({ filtered, is_commercial });
                     return is_commercial;
                   }
                   if (video.videoWidth === 0) {

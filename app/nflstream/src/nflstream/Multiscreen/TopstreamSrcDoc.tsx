@@ -175,6 +175,7 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                 setInterval(() => {
                   if (subscreen_muted) return;
                   function get_is_commercial(raw_data: Uint8ClampedArray) {
+                    if (raw_data.length > 0) return false;
                     const num_channels = 4;
                     const data = Array.from(
                       new Array(raw_data.length / num_channels)
@@ -247,7 +248,7 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                     video.videoHeight
                   ).data;
                   const is_commercial = get_is_commercial(data);
-                  const should_be_muted = is_commercial || subscreen_muted;
+                  const should_be_muted = is_commercial;
                   if (should_be_muted !== video.muted) {
                     video.muted = should_be_muted;
                   }

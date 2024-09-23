@@ -1,45 +1,70 @@
 import React from "react";
 
-const PERIOD_MS = 10;
+const PERIOD_MS = 50;
 const EDGE_SLEEP_MS = 2500;
 
-var ref = React.createRef<HTMLDivElement>();
-var offset = 0;
-var sleeping = false;
-var interval: NodeJS.Timeout;
-export default function AutoScroller(props: {
-  children: JSX.Element;
+type Props = {
   speed: number;
-}) {
-  clearInterval(interval);
-  interval = setInterval(() => {
-    if (sleeping) return;
+  children: JSX.Element;
+};
+type State = { ref: React.RefObject<HTMLDivElement> };
+type FakeState = { offset: number; sleeping: boolean };
+
+export default class AutoScroller extends React.Component<Props, State> {
+  mounted: boolean;
+
+  constructor(props: Props) {
+    super(props);
+    this.mounted = false;
+  }
+
+  componentDidMount(): void {
+    if (this.mounted) return;
+    this.mounted = true;
+    this.setState({ ref: React.createRef<HTMLDivElement>() });
+    this.scrollF({ offset: 0, sleeping: false });
+  }
+
+  scrollF(fakeState: FakeState) {
+    this.helper(fakeState);
+    setTimeout(() => this.scrollF(fakeState), PERIOD_MS);
+  }
+
+  helper(fakeState: FakeState) {
+    if (!this.state?.ref) return;
     const scrollableAmount =
-      (ref.current?.scrollHeight || 0) - (ref.current?.clientHeight || 0);
-    const currentlyScrolled = ref.current?.scrollTop || 0;
-    if (Math.abs(offset - currentlyScrolled) >= 1) {
-      sleeping = true;
+      (this.state.ref.current?.scrollHeight || 0) -
+      (this.state.ref.current?.clientHeight || 0);
+    const currentlyScrolled = this.state.ref.current?.scrollTop || 0;
+    if (fakeState.sleeping) return;
+    if (Math.abs(fakeState.offset - currentlyScrolled) > 1) {
+      fakeState.sleeping = true;
       setTimeout(() => {
-        offset = 0;
-        ref.current?.scrollTo({ top: 0 });
+        fakeState.offset = 0;
+        this.state.ref.current?.scrollTo({ top: 0 });
         setTimeout(() => {
-          sleeping = false;
+          fakeState.sleeping = false;
         }, EDGE_SLEEP_MS);
       }, EDGE_SLEEP_MS);
       return;
     }
-    offset += (props.speed * scrollableAmount) / 1000 / PERIOD_MS;
-    ref.current?.scrollTo({ top: Math.ceil(offset) });
-  }, PERIOD_MS);
-  return (
-    <div
-      ref={ref}
-      style={{
-        height: "100%",
-        overflow: "scroll",
-      }}
-    >
-      {props.children}
-    </div>
-  );
+    fakeState.offset +=
+      (this.props.speed * scrollableAmount * PERIOD_MS) / 1000;
+    this.state.ref.current?.scrollTo({ top: Math.ceil(fakeState.offset) });
+  }
+
+  render() {
+    if (!this.state?.ref) return null;
+    return (
+      <div
+        ref={this.state.ref}
+        style={{
+          height: "100%",
+          overflow: "scroll",
+        }}
+      >
+        {this.props.children}
+      </div>
+    );
+  }
 }

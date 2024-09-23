@@ -171,86 +171,86 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                 update_muted();
               });
 
-              function muteLoop() {
-                setInterval(() => {
-                  if (subscreen_muted) return;
-                  function get_is_commercial(raw_data: Uint8ClampedArray) {
-                    const num_channels = 4;
-                    const data = Array.from(
-                      new Array(raw_data.length / num_channels)
-                    )
-                      .map((_, i) =>
-                        Array.from(
-                          raw_data.slice(
-                            i * num_channels,
-                            (i + 1) * num_channels
-                          )
-                        )
-                      )
-                      .map((channels) => ({
-                        channels: channels.slice(0, 3),
-                        alpha: channels[3],
-                      }))
-                      .map((o) => ({
-                        ...o,
-                        avg:
-                          o.channels.reduce((a, b) => a + b, 0) /
-                          o.channels.length,
-                      }))
-                      .map((o) => ({
-                        ...o,
-                        diff: o.channels
-                          .map((c) => Math.abs(c - o.avg))
-                          .reduce((a, b) => a + b, 0),
-                      }));
-                    const filtered = {
-                      greys: data.filter((d) => d.alpha === 0 && d.diff <= 5)
-                        .length,
-                      whites: data.filter((d) => d.alpha === 255 && d.diff <= 5)
-                        .length,
-                      blues: data.filter(
-                        (d) =>
-                          d.channels[2] - d.channels[0] - d.channels[1] > 20
-                      ).length,
-                    };
-                    const is_commercial =
-                      filtered.greys >= 876600 &&
-                      filtered.whites + filtered.blues >= 44000 &&
-                      filtered.blues >= 20;
-                    return is_commercial;
-                  }
-                  if (video.videoWidth === 0) {
-                    return;
-                  }
-                  const canvas = document.getElementById(
-                    "canvas"
-                  ) as HTMLCanvasElement;
-                  if (!canvas) {
-                    return;
-                  }
-                  const ctx = canvas.getContext("2d")!;
-                  ctx.clearRect(0, 0, video.videoWidth, video.videoHeight);
-                  ctx.drawImage(
-                    video,
-                    0,
-                    0,
-                    video.videoWidth,
-                    video.videoHeight
-                  );
+              // function muteLoop() {
+              //   setInterval(() => {
+              //     if (subscreen_muted) return;
+              //     function get_is_commercial(raw_data: Uint8ClampedArray) {
+              //       const num_channels = 4;
+              //       const data = Array.from(
+              //         new Array(raw_data.length / num_channels)
+              //       )
+              //         .map((_, i) =>
+              //           Array.from(
+              //             raw_data.slice(
+              //               i * num_channels,
+              //               (i + 1) * num_channels
+              //             )
+              //           )
+              //         )
+              //         .map((channels) => ({
+              //           channels: channels.slice(0, 3),
+              //           alpha: channels[3],
+              //         }))
+              //         .map((o) => ({
+              //           ...o,
+              //           avg:
+              //             o.channels.reduce((a, b) => a + b, 0) /
+              //             o.channels.length,
+              //         }))
+              //         .map((o) => ({
+              //           ...o,
+              //           diff: o.channels
+              //             .map((c) => Math.abs(c - o.avg))
+              //             .reduce((a, b) => a + b, 0),
+              //         }));
+              //       const filtered = {
+              //         greys: data.filter((d) => d.alpha === 0 && d.diff <= 5)
+              //           .length,
+              //         whites: data.filter((d) => d.alpha === 255 && d.diff <= 5)
+              //           .length,
+              //         blues: data.filter(
+              //           (d) =>
+              //             d.channels[2] - d.channels[0] - d.channels[1] > 20
+              //         ).length,
+              //       };
+              //       const is_commercial =
+              //         filtered.greys >= 876600 &&
+              //         filtered.whites + filtered.blues >= 44000 &&
+              //         filtered.blues >= 20;
+              //       return is_commercial;
+              //     }
+              //     if (video.videoWidth === 0) {
+              //       return;
+              //     }
+              //     const canvas = document.getElementById(
+              //       "canvas"
+              //     ) as HTMLCanvasElement;
+              //     if (!canvas) {
+              //       return;
+              //     }
+              //     const ctx = canvas.getContext("2d")!;
+              //     ctx.clearRect(0, 0, video.videoWidth, video.videoHeight);
+              //     ctx.drawImage(
+              //       video,
+              //       0,
+              //       0,
+              //       video.videoWidth,
+              //       video.videoHeight
+              //     );
 
-                  const data = ctx.getImageData(
-                    0,
-                    0,
-                    video.videoWidth,
-                    video.videoHeight
-                  ).data;
-                  const is_commercial = get_is_commercial(data);
-                  const should_be_muted = is_commercial || subscreen_muted;
-                  if (should_be_muted !== video.muted) {
-                    video.muted = should_be_muted;
-                  }
-                }, 1000);
-              }
+              //     const data = ctx.getImageData(
+              //       0,
+              //       0,
+              //       video.videoWidth,
+              //       video.videoHeight
+              //     ).data;
+              //     const is_commercial = get_is_commercial(data);
+              //     const should_be_muted = is_commercial || subscreen_muted;
+              //     if (should_be_muted !== video.muted) {
+              //       video.muted = should_be_muted;
+              //     }
+              //   }, 1000);
+              // }
 
               function catchUp(firstTime: boolean) {
                 var currentTime = 0;
@@ -296,7 +296,7 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                     "*"
                   );
 
-                  muteLoop();
+                  // muteLoop();
 
                   video.currentTime = _flowapi.video.buffer - 5;
                   catchUp(true).then(() => {

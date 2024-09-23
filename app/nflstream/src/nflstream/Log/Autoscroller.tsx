@@ -27,7 +27,7 @@ export default class AutoScroller extends React.Component<Props, State> {
 
   scrollF(fakeState: FakeState) {
     this.helper(fakeState);
-    setInterval(() => this.scrollF(fakeState), PERIOD_MS);
+    setTimeout(() => this.scrollF(fakeState), PERIOD_MS);
   }
 
   helper(fakeState: FakeState) {

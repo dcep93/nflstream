@@ -177,6 +177,7 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                   function slice_data(
                     raw_data: Uint8ClampedArray
                   ): Promise<number[][]> {
+                    return Promise.resolve([]);
                     const num_channels = 4;
                     const num_segments = 40;
                     const segment_size =

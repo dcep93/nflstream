@@ -192,13 +192,15 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                         alpha: channels[3],
                       }))
                       .map((o) => ({
-                        ...o,
+                        channels: o.channels,
+                        alpha: o.alpha,
                         avg:
                           o.channels.reduce((a, b) => a + b, 0) /
                           o.channels.length,
                       }))
                       .map((o) => ({
-                        ...o,
+                        channels: o.channels,
+                        alpha: o.alpha,
                         diff: o.channels
                           .map((c) => Math.abs(c - o.avg))
                           .reduce((a, b) => a + b, 0),

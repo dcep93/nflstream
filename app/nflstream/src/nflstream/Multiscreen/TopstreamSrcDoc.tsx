@@ -296,6 +296,8 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                     "*"
                   );
 
+                  // @ts-ignore
+                  _console.log("muteLoop");
                   // muteLoop();
 
                   video.currentTime = _flowapi.video.buffer - 5;

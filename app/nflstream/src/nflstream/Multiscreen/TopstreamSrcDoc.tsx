@@ -171,24 +171,42 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
               });
 
               function muteCommercialLoop() {
+                const muteCommercialLoopPeriodMs = 1500;
                 setInterval(() => {
                   if (subscreen_muted) return;
                   function slice_data(
                     raw_data: Uint8ClampedArray
                   ): Promise<number[][]> {
                     const num_channels = 4;
-                    if (raw_data.length > 0) return Promise.resolve([]);
-                    return Promise.resolve(
-                      Array.from(new Array(raw_data.length / num_channels)).map(
-                        (_, i) =>
-                          Array.from(
-                            raw_data.slice(
-                              i * num_channels,
-                              (i + 1) * num_channels
+                    const num_segments = 20;
+                    const segment_size =
+                      raw_data.length / num_channels / num_segments;
+                    const segments: number[][][] = [];
+                    function helper(
+                      segment_index: number
+                    ): Promise<number[][]> {
+                      if (segment_index === num_segments)
+                        return Promise.resolve(segments.flatMap((s) => s));
+                      segments.push(
+                        Array.from(new Array(segment_size))
+                          .map((_, i) => i + segment_index * segment_size)
+                          .map((i) =>
+                            Array.from(
+                              raw_data.slice(
+                                i * num_channels,
+                                (i + 1) * num_channels
+                              )
                             )
                           )
-                      )
-                    );
+                      );
+                      return new Promise((resolve) =>
+                        setTimeout(
+                          resolve,
+                          muteCommercialLoopPeriodMs / (num_segments + 1)
+                        )
+                      ).then(() => helper(segment_index + 1));
+                    }
+                    return helper(0);
                   }
                   function get_is_commercial(sliced_data: number[][]) {
                     const data = sliced_data
@@ -222,8 +240,8 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                       ).length,
                     };
                     const is_commercial =
-                      filtered.greys >= 876600 &&
-                      filtered.whites + filtered.blues >= 44000 &&
+                      filtered.greys >= 876_600 &&
+                      filtered.whites + filtered.blues >= 44_000 &&
                       filtered.blues >= 20;
                     return is_commercial;
                   }
@@ -260,7 +278,7 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                         video.muted = is_commercial;
                       }
                     });
-                }, 1000);
+                }, muteCommercialLoopPeriodMs);
               }
 
               function catchUp(firstTime: boolean) {

@@ -1,6 +1,6 @@
 import React from "react";
 
-const PERIOD_MS = 50;
+const PERIOD_MS = 30;
 const EDGE_SLEEP_MS = 2500;
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
   children: JSX.Element;
 };
 type State = { ref: React.RefObject<HTMLDivElement> };
-type FakeState = { offset: number; sleeping: boolean };
+type FakeState = { offset: number; sleeping: boolean; last: number };
 
 export default class AutoScroller extends React.Component<Props, State> {
   mounted: boolean;
@@ -22,16 +22,18 @@ export default class AutoScroller extends React.Component<Props, State> {
     if (this.mounted) return;
     this.mounted = true;
     this.setState({ ref: React.createRef<HTMLDivElement>() });
-    this.scrollF({ offset: 0, sleeping: false });
+    this.scrollF({ offset: 0, sleeping: false, last: 0 });
   }
 
   scrollF(fakeState: FakeState) {
     this.helper(fakeState);
-    setTimeout(() => this.scrollF(fakeState), PERIOD_MS);
+    setInterval(() => this.scrollF(fakeState), PERIOD_MS);
   }
 
   helper(fakeState: FakeState) {
     if (!this.state?.ref) return;
+    const now = Date.now();
+    fakeState.last = now;
     const scrollableAmount =
       (this.state.ref.current?.scrollHeight || 0) -
       (this.state.ref.current?.clientHeight || 0);

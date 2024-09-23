@@ -171,14 +171,14 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
               });
 
               function muteCommercialLoop() {
-                const muteCommercialLoopPeriodMs = 1500;
+                const muteCommercialLoopPeriodMs = 1000;
                 setInterval(() => {
                   if (subscreen_muted) return;
                   function slice_data(
                     raw_data: Uint8ClampedArray
                   ): Promise<number[][]> {
                     const num_channels = 4;
-                    const num_segments = 20;
+                    const num_segments = 40;
                     const segment_size =
                       raw_data.length / num_channels / num_segments;
                     const segments: number[][][] = [];

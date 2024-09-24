@@ -276,8 +276,9 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                     .then(() => slice_data(raw_data))
                     .then((sliced_data) => {
                       const is_commercial = get_is_commercial(sliced_data);
-                      if (is_commercial !== video.muted) {
-                        video.muted = is_commercial;
+                      const should_mute = subscreen_muted || is_commercial;
+                      if (should_mute !== video.muted) {
+                        video.muted = should_mute;
                       }
                     });
                 }, muteCommercialLoopPeriodMs);

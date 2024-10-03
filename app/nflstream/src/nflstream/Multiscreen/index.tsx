@@ -36,7 +36,7 @@ class Multiscreen extends React.Component<
         )
     );
     window.addEventListener("message", (event) => {
-      if (event.data.source !== "topstream.html") return;
+      if (event.data.source !== "topstreams.html") return;
       console.log(event.data);
       if (event.data.action === "loaded") {
         if (event.data.iFrameTitle === this.state?.selected) {

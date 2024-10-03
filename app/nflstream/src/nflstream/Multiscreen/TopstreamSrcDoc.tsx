@@ -321,7 +321,7 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                   update_muted();
                   window.parent.postMessage(
                     {
-                      source: "topstream.html",
+                      source: "topstreams.html",
                       action: "loaded",
                       iFrameTitle: params.iFrameTitle,
                     },
@@ -342,7 +342,7 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                         if (now - stalledTime >= 5000) {
                           window.parent.postMessage(
                             {
-                              source: "topstream.html",
+                              source: "topstreams.html",
                               action: "refresh",
                               iFrameTitle: params.iFrameTitle,
                             },

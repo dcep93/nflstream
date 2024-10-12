@@ -92,8 +92,7 @@ function Guide() {
         </li>
         <li>
           Click a stream's title in the multiscreen to remove it, or the 🔄
-          symbol to refresh it. (Streams by default automatically refresh.
-          Thanks Daniel!)
+          symbol to refresh it. (Streams by default automatically refresh)
         </li>
         <li>Click the log to refresh it.</li>
         <li>

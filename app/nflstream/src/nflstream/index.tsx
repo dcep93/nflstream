@@ -1,13 +1,12 @@
+import md5 from "md5";
 import React, { useEffect } from "react";
 import { StreamType } from "./Fetcher";
-import StreamsFetcher from "./Fetcher/StreamsFetcher";
+import StreamsFetcher, { HOST } from "./Fetcher/StreamsFetcher";
 import Menu from "./Menu";
 import Multiscreen, { ScreenType } from "./Multiscreen";
 import firebase from "./firebase";
 import style from "./index.module.css";
 import recorded_sha from "./recorded_sha";
-
-const passwordStr = "mustbeusedlegally";
 
 declare global {
   interface Window {
@@ -92,8 +91,8 @@ class NFLStream extends React.Component<
     const handleResponse = (streams: StreamType[]) => {
       this.setState({ streams });
     };
-    return localStorage.getItem("password") !== passwordStr ? (
-      <Password />
+    return md5(HOST || "") !== "c1d94a185f9959737bd1be30537c710d" ? (
+      <HostPrompt />
     ) : this.state?.hasExtension === undefined ? null : (
       <div className={style.main} style={{ backgroundColor: "black" }}>
         <StreamsFetcher
@@ -167,10 +166,10 @@ export function streamToScreen(
   };
 }
 
-function Password() {
-  const pw = window.prompt("enter the password:");
+function HostPrompt() {
+  const pw = window.prompt("choose a host:");
   if (pw) {
-    localStorage.setItem("password", pw);
+    localStorage.setItem("host", pw);
     window.location.reload();
   }
   return null;

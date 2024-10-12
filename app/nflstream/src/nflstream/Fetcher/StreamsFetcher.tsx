@@ -1,6 +1,6 @@
 import Fetcher, { cacheF, parse, StreamType } from ".";
 
-export const HOST = "topstreams.info";
+export const HOST = localStorage.getItem("host")!;
 
 class StreamsFetcher extends Fetcher<StreamType[], boolean> {
   intervalMs = 10 * 60 * 1000;

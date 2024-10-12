@@ -1,6 +1,6 @@
 import React from "react";
 import { StreamType } from "../Fetcher";
-import { getTopstreamsParams } from "../Fetcher/StreamsFetcher";
+import { getHostParams } from "../Fetcher/StreamsFetcher";
 import { DelayedLog } from "../Log";
 import { autoRefreshRef } from "../Options";
 import msStyle from "./index.module.css";
@@ -36,7 +36,7 @@ class Multiscreen extends React.Component<
         )
     );
     window.addEventListener("message", (event) => {
-      if (event.data.source !== "topstreams.html") return;
+      if (event.data.source !== "nflstream.html") return;
       console.log(event.data);
       if (event.data.action === "loaded") {
         if (event.data.iFrameTitle === this.state?.selected) {
@@ -48,7 +48,7 @@ class Multiscreen extends React.Component<
           Promise.resolve(this.getScreen()).then(
             (screen) =>
               screen &&
-              getTopstreamsParams(screen.raw_url, true, "").then(() =>
+              getHostParams(screen.raw_url, true, "").then(() =>
                 this.refreshScreen(event.data.iFrameTitle)
               )
           );

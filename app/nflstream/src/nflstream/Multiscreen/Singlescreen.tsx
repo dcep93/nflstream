@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { ScreenType } from ".";
-import { getTopstreamsParams, TOPSTREAMS } from "../Fetcher/StreamsFetcher";
+import { getHostParams, HOST } from "../Fetcher/StreamsFetcher";
 import Log from "../Log";
-import TopstreamSrcDoc from "./TopstreamSrcDoc";
+import HostSrcDoc from "./HostSrcDoc";
 
 import style from "../index.module.css";
 import msStyle from "./index.module.css";
@@ -61,8 +61,8 @@ export function Singlescreen(props: {
           onClick={() => {
             Promise.resolve()
               .then(() =>
-                props.screen.src === TOPSTREAMS
-                  ? getTopstreamsParams(props.screen.raw_url, true, "")
+                props.screen.src === HOST
+                  ? getHostParams(props.screen.raw_url, true, "")
                   : Promise.resolve({})
               )
               .then(() => props.refreshKeyF());
@@ -160,8 +160,8 @@ function IframeWrapper(props: { screen: ScreenType; key: string }) {
             // border: "1px solid lightgray",
           }}
         >
-          {props.screen.src === TOPSTREAMS ? (
-            <TopStreamsIFrame {...props} />
+          {props.screen.src === HOST ? (
+            <HostStreamIFrame {...props} />
           ) : (
             <iframe
               ref={props.screen.ref}
@@ -175,16 +175,14 @@ function IframeWrapper(props: { screen: ScreenType; key: string }) {
   );
 }
 
-function TopStreamsIFrame(props: { screen: ScreenType; key: string }) {
+function HostStreamIFrame(props: { screen: ScreenType; key: string }) {
   const [params, updateParams] = useState<{ [key: string]: string } | null>(
     null
   );
   if (params === null) {
-    getTopstreamsParams(
-      props.screen.raw_url,
-      false,
-      props.screen.iFrameTitle
-    ).then(updateParams);
+    getHostParams(props.screen.raw_url, false, props.screen.iFrameTitle).then(
+      updateParams
+    );
   }
   return (
     <>
@@ -196,7 +194,7 @@ function TopStreamsIFrame(props: { screen: ScreenType; key: string }) {
             width: "98%",
           }}
           title={props.screen.iFrameTitle}
-          srcDoc={TopstreamSrcDoc(params)}
+          srcDoc={HostSrcDoc(params)}
         ></iframe>
       )}
     </>

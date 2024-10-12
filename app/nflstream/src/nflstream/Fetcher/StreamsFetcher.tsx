@@ -1,6 +1,6 @@
 import Fetcher, { cacheF, parse, StreamType } from ".";
 
-export const TOPSTREAMS = "topstreams";
+export const HOST = "topstreams.info";
 
 class StreamsFetcher extends Fetcher<StreamType[], boolean> {
   intervalMs = 10 * 60 * 1000;
@@ -63,7 +63,7 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
             ).then((objs) =>
               streams.map((stream) => ({
                 espnId:
-                  stream.src === TOPSTREAMS
+                  stream.src === HOST
                     ? objs.find((obj) => obj.teams.includes(stream.stream_id))
                         ?.espnId
                     : undefined,
@@ -88,12 +88,12 @@ function getStream(href: string): Promise<StreamType | undefined> {
           ? {
               name: "REDZONE",
               stream_id: "redzone",
-              raw_url: "https://topstreams.info/nfl/redzone",
-              src: TOPSTREAMS,
+              raw_url: `https://${HOST}/nfl/redzone`,
+              src: HOST,
             }
           : Promise.resolve()
               .then(() => ({
-                src: TOPSTREAMS,
+                src: HOST,
                 name: p.title
                   .split(" Live Stream")[0]
                   .split(" at ")
@@ -105,16 +105,14 @@ function getStream(href: string): Promise<StreamType | undefined> {
               }))
               .then((o) => ({
                 ...o,
-                raw_url: `https://topstreams.info/nfl/${o.stream_id}`,
+                raw_url: `https://${HOST}/nfl/${o.stream_id}`,
               }))
-              .then((o) =>
-                getTopstreamsParams(o.raw_url, false, "").then(() => o)
-              )
+              .then((o) => getHostParams(o.raw_url, false, "").then(() => o))
       )
   );
 }
 
-export function getTopstreamsParams(
+export function getHostParams(
   url: string,
   hardRefresh: boolean,
   iFrameTitle: string

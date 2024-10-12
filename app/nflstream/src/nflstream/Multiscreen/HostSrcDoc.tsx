@@ -1,6 +1,6 @@
 import ReactDomServer from "react-dom/server";
 
-export default function TopstreamSrcDoc(params: { [key: string]: string }) {
+export default function HostSrcDoc(params: { [key: string]: string }) {
   function FunctionToScript<T>(props: { t: T; f: (t: T) => void }) {
     return (
       <script
@@ -321,7 +321,7 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                   update_muted();
                   window.parent.postMessage(
                     {
-                      source: "topstreams.html",
+                      source: "nflstream.html",
                       action: "loaded",
                       iFrameTitle: params.iFrameTitle,
                     },
@@ -342,7 +342,7 @@ export default function TopstreamSrcDoc(params: { [key: string]: string }) {
                         if (now - stalledTime >= 5000) {
                           window.parent.postMessage(
                             {
-                              source: "topstreams.html",
+                              source: "nflstream.html",
                               action: "refresh",
                               iFrameTitle: params.iFrameTitle,
                             },

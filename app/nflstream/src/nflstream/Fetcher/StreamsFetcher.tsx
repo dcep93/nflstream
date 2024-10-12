@@ -80,9 +80,7 @@ function getStream(href: string): Promise<StreamType | undefined> {
     Promise.resolve(text)
       .then((text) => parse(text))
       .then((p) =>
-        Array.from(p.getElementsByClassName("streamer-name") || []).find(
-          (e) => (e as HTMLElement).innerText.trim() === "topstreamer"
-        ) === undefined
+        Array.from(p.getElementsByClassName("streamer-name") || []).length === 0
           ? undefined
           : p.title.includes("Redzone")
           ? {

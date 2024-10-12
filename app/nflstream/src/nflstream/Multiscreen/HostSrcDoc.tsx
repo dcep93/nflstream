@@ -1,4 +1,5 @@
 import ReactDomServer from "react-dom/server";
+import { HOST } from "../Fetcher/StreamsFetcher";
 
 export default function HostSrcDoc(params: { [key: string]: string }) {
   function FunctionToScript<T>(props: { t: T; f: (t: T) => void }) {
@@ -39,19 +40,19 @@ export default function HostSrcDoc(params: { [key: string]: string }) {
           type="text/javascript"
           src="https://code.jquery.com/jquery-2.1.1.min.js"
         ></script>
-        <script src="https://topstreams.info/js/hls.forcaster2.js?ver=1.4.5"></script>
-        <script src="https://topstreams.info/js/flowplayer.min.js"></script>
-        <script src="https://topstreams.info/js/p1.js"></script>
+        <script src={`https://${HOST}/js/hls.forcaster2.js?ver=1.4.5`}></script>
+        <script src={`https://${HOST}/js/flowplayer.min.js`}></script>
+        <script src={`https://${HOST}/js/p1.js`}></script>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/js/materialize.min.js"></script>
-        <script src="https://topstreams.info/js/moment.js"></script>
+        <script src={`https://${HOST}/js/moment.js`}></script>
 
         <link
           rel="stylesheet"
           href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"
         />
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-        <script src="https://topstreams.info/js/jquery-input-file-text.js"></script>
+        <script src={`https://${HOST}/js/jquery-input-file-text.js`}></script>
 
         <FunctionToScript
           t={params}
@@ -103,7 +104,7 @@ export default function HostSrcDoc(params: { [key: string]: string }) {
                 // iOS allows only native fullscreen from within iframes
                 native_fullscreen: true,
               };
-              fetch("https://topstreams.info/tv/testurl-" + masterkey + ".txt")
+              fetch(`https://${HOST}/tv/testurl-` + masterkey + ".txt")
                 .then((resp) => resp.text())
                 .then((text) => {
                   Object.assign(window, { testurl: text });

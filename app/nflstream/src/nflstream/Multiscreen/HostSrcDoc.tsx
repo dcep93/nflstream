@@ -55,8 +55,14 @@ export default function HostSrcDoc(params: { [key: string]: string }) {
         <script src={`https://${HOST}/js/jquery-input-file-text.js`}></script>
 
         <FunctionToScript
-          t={params}
-          f={(params: { [key: string]: string }) => {
+          t={{ params, HOST }}
+          f={({
+            params,
+            HOST,
+          }: {
+            HOST: string;
+            params: { [key: string]: string };
+          }) => {
             var key = params.key;
             if (!key) {
               alert("invalid params");

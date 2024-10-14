@@ -2,6 +2,7 @@ import { useState } from "react";
 import Fetcher from "../Fetcher";
 import { fetchE } from "../Fetcher/LogFetcher";
 import { getLogDelayMs } from "../Log";
+import AutoScroller from "../Log/Autoscroller";
 
 export const SCOREBOARD = "scoreboard";
 
@@ -18,25 +19,32 @@ export default function Scoreboard() {
       {scores === null ? (
         "loading..."
       ) : (
-        <div
-          style={{
-            height: "100%",
-            width: "98%",
-            color: "red",
-            backgroundColor: "white",
-          }}
-          onClick={() => {
-            ScoreFetcher.maxAgeMs = 0;
-          }}
-        >
-          {scores.map((teams, i) => (
-            <div key={i} style={{ border: "2px solid grey" }}>
-              {teams.map((t, j) => (
-                <pre key={j}>{JSON.stringify(t)}</pre>
-              ))}
-            </div>
-          ))}
-        </div>
+        <AutoScroller speed={0.1}>
+          <div
+            onClick={() => {
+              ScoreFetcher.maxAgeMs = 0;
+            }}
+          >
+            {scores.map((teams, i) => (
+              <div
+                key={i}
+                style={{
+                  border: "2px solid grey",
+                  borderRadius: "10px",
+                  margin: "1em",
+                  padding: "0.5em",
+                  backgroundColor: "lightgrey",
+                }}
+              >
+                {teams.map((t, j) => (
+                  <div key={j}>
+                    {t.score} ({t.projected.toFixed(2)}) {t.teamName}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </AutoScroller>
       )}
     </>
   );
@@ -49,7 +57,7 @@ type matchupTeam = {
 };
 class ScoreFetcher extends Fetcher<scoresType, null> {
   intervalMs = 1000;
-  static maxAgeMs = 0;
+  static maxAgeMs = 1000000;
   static leagueId = 203836968;
   static year = 2024;
   getResponse() {

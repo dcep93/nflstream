@@ -19,11 +19,12 @@ export default function Scoreboard() {
       {scores === null ? (
         "loading..."
       ) : (
-        <AutoScroller speed={0.1}>
+        <AutoScroller speed={0.2}>
           <div
             onClick={() => {
               ScoreFetcher.maxAgeMs = 0;
             }}
+            style={{ display: "flex", flexWrap: "wrap", alignItems: "center" }}
           >
             {scores.map((teams, i) => (
               <div
@@ -36,11 +37,13 @@ export default function Scoreboard() {
                   backgroundColor: "lightgrey",
                 }}
               >
-                {teams.map((t, j) => (
-                  <div key={j}>
-                    {t.score} ({t.projected.toFixed(2)}) {t.teamName}
-                  </div>
-                ))}
+                {teams
+                  .sort((a, b) => b.projected - a.projected)
+                  .map((t, j) => (
+                    <div key={j} style={{ maxWidth: "15em" }}>
+                      {t.score} ({t.projected.toFixed(2)}) {t.teamName}
+                    </div>
+                  ))}
               </div>
             ))}
           </div>

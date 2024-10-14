@@ -17,7 +17,7 @@ class LogFetcher extends Fetcher<LogType | null, number> {
         ),
       ])
       .then((ps) => Promise.all(ps))
-      .then((resps) => resps.map((resp) => JSON.parse(resp)))
+      .then((resps) => (resps as string[]).map((resp) => JSON.parse(resp)))
       .then(([obj, coreObj]) =>
         Promise.resolve()
           .then(() => coreObj.items.slice().reverse()[0]["$ref"])
@@ -92,22 +92,21 @@ class LogFetcher extends Fetcher<LogType | null, number> {
   }
 }
 
-function fetchE(
+export function fetchE(
   url: string,
   maxAgeMs: number,
-  options: any = undefined
+  options: any = undefined,
+  f: (response: string) => string = (response) => response
 ): Promise<string> {
-  return cacheF(
-    url,
-    maxAgeMs,
-    () =>
-      new Promise((resolve) =>
-        window.chrome.runtime.sendMessage(
-          extension_id,
-          { url, options },
-          (response: any) => resolve(response)
-        )
+  return cacheF(url, maxAgeMs, () =>
+    new Promise<string>((resolve) =>
+      window.chrome.runtime.sendMessage(
+        extension_id,
+        { url, options },
+        (response: any) => resolve(response)
       )
+    ).then((response) => f(response))
   );
 }
+
 export default LogFetcher;

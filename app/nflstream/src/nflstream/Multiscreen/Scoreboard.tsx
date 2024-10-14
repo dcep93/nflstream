@@ -15,18 +15,29 @@ export default function Scoreboard() {
         payload={null}
         handleResponse={(_scores) => updateScores(_scores)}
       />
-      <div
-        style={{
-          height: "100%",
-          width: "98%",
-          color: "white",
-        }}
-        onClick={() => {
-          ScoreFetcher.maxAgeMs = 0;
-        }}
-      >
-        {scores === null ? "loading..." : JSON.stringify(scores)}
-      </div>
+      {scores === null ? (
+        "loading..."
+      ) : (
+        <div
+          style={{
+            height: "100%",
+            width: "98%",
+            color: "red",
+            backgroundColor: "white",
+          }}
+          onClick={() => {
+            ScoreFetcher.maxAgeMs = 0;
+          }}
+        >
+          {scores.map((teams, i) => (
+            <div key={i} style={{ border: "2px solid grey" }}>
+              {teams.map((t, j) => (
+                <pre key={j}>{JSON.stringify(t)}</pre>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
     </>
   );
 }

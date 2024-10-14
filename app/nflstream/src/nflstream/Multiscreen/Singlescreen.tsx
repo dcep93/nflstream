@@ -138,42 +138,42 @@ function IframeWrapper(props: { screen: ScreenType; key: string }) {
         alignItems: "center",
       }}
     >
-      <div
-        style={{
-          width: "100%",
-          maxHeight: "100%",
-          position: "relative",
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
+      {props.screen.src === HOST ? (
         <div
           style={{
-            marginTop: "56.25%",
-          }}
-        ></div>
-        <div
-          style={{
-            maxWidth: "100%",
-            height: "100%",
-            position: "absolute",
-            aspectRatio: "160 / 90",
-            // border: "1px solid lightgray",
+            width: "100%",
+            maxHeight: "100%",
+            position: "relative",
+            display: "flex",
+            justifyContent: "center",
           }}
         >
-          {props.screen.src === HOST ? (
+          <div
+            style={{
+              marginTop: "56.25%",
+            }}
+          ></div>
+          <div
+            style={{
+              maxWidth: "100%",
+              height: "100%",
+              position: "absolute",
+              aspectRatio: "160 / 90",
+              // border: "1px solid lightgray",
+            }}
+          >
             <HostStreamIFrame {...props} />
-          ) : props.screen.src === SCOREBOARD ? (
-            <Scoreboard />
-          ) : (
-            <iframe
-              ref={props.screen.ref}
-              src={props.screen.raw_url}
-              title={props.screen.iFrameTitle}
-            />
-          )}
+          </div>
         </div>
-      </div>
+      ) : props.screen.src === SCOREBOARD ? (
+        <Scoreboard />
+      ) : (
+        <iframe
+          ref={props.screen.ref}
+          src={props.screen.raw_url}
+          title={props.screen.iFrameTitle}
+        />
+      )}
     </div>
   );
 }

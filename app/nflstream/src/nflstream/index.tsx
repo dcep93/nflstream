@@ -147,6 +147,10 @@ function ForceInteract(props: { interact: () => void }) {
     document.addEventListener("keydown", handleKeyDown);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  if (process.env.NODE_ENV === "development") {
+    handleKeyDown();
+    return null;
+  }
   return (
     <div style={{ color: "white" }} onClick={() => handleKeyDown()}>
       press enter to resume

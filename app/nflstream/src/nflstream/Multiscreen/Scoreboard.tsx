@@ -31,6 +31,11 @@ export default function Scoreboard() {
   );
 }
 
+type matchupTeam = {
+  teamId: number;
+  totalPointsLive: number;
+  totalProjectedPointsLive: number;
+};
 class ScoreFetcher extends Fetcher<scoresType, null> {
   intervalMs = 1000;
   static maxAgeMs = 0;
@@ -43,7 +48,34 @@ class ScoreFetcher extends Fetcher<scoresType, null> {
           `https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/${ScoreFetcher.year}/segments/0/leagues/${ScoreFetcher.leagueId}?view=mMatchup&view=mMatchupScore&view=mRoster&view=mScoreboard&view=mSettings&view=mStatus&view=mTeam&view=modular&view=mNav`,
           ScoreFetcher.maxAgeMs,
           undefined,
-          (response) => response
+          (response) =>
+            Promise.resolve(response)
+              .then(JSON.parse)
+              .then(
+                (response: {
+                  teams: { id: number; name: string }[];
+                  scoringPeriodId: number;
+                  schedule: {
+                    matchupPeriodId: number;
+                    away: matchupTeam;
+                    home: matchupTeam;
+                  }[];
+                }) =>
+                  response.schedule
+                    .filter(
+                      (m) => m.matchupPeriodId === response.scoringPeriodId
+                    )
+                    .map((m) =>
+                      [m.away, m.home].map((t) => ({
+                        teamName: response.teams.find(
+                          (rt) => rt.id === t.teamId
+                        )!.name,
+                        score: t.totalPointsLive,
+                        projected: t.totalProjectedPointsLive,
+                      }))
+                    )
+              )
+              .then(JSON.stringify)
         )
       )
       .then((response) => JSON.parse(response))

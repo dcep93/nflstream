@@ -96,7 +96,8 @@ export function fetchE(
   url: string,
   maxAgeMs: number,
   options: any = undefined,
-  f: (response: string) => string = (response) => response
+  f: (response: string) => Promise<string> = (response) =>
+    Promise.resolve(response)
 ): Promise<string> {
   return cacheF(url, maxAgeMs, () =>
     new Promise<string>((resolve) =>

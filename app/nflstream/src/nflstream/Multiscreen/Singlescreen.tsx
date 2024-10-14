@@ -6,6 +6,7 @@ import HostSrcDoc from "./HostSrcDoc";
 
 import style from "../index.module.css";
 import msStyle from "./index.module.css";
+import Scoreboard, { SCOREBOARD } from "./Scoreboard";
 
 export const REDZONE_STREAM_ID = "redzone";
 
@@ -162,6 +163,8 @@ function IframeWrapper(props: { screen: ScreenType; key: string }) {
         >
           {props.screen.src === HOST ? (
             <HostStreamIFrame {...props} />
+          ) : props.screen.src === SCOREBOARD ? (
+            <Scoreboard />
           ) : (
             <iframe
               ref={props.screen.ref}

@@ -1,4 +1,5 @@
 import Fetcher, { cacheF, parse, StreamType } from ".";
+import { SCOREBOARD } from "../Multiscreen/Scoreboard";
 
 export const HOST = localStorage.getItem("host")!;
 
@@ -71,7 +72,20 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
               }))
             )
       )
-      .then((streams) => streams.concat(...getStreamsFromUrlQuery()));
+      .then((streams) =>
+        streams.concat(...getStreamsFromUrlQuery()).concat(
+          ...(hasExtension
+            ? [
+                {
+                  raw_url: "",
+                  name: SCOREBOARD,
+                  stream_id: SCOREBOARD,
+                  src: SCOREBOARD,
+                },
+              ]
+            : [])
+        )
+      );
   }
 }
 

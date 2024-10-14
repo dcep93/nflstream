@@ -56,8 +56,7 @@ export class DelayedLog extends React.Component<
     const play = (this.props.log?.playByPlay || [])[0]?.plays?.find(
       (p) => !p.text.startsWith("Timeout")
     );
-    const delayMs =
-      parseInt(logDelayRef.current?.value || "") || defaultLogDelayMs;
+    const delayMs = getLogDelayMs();
     if (play && this.isBigPlay(play)) {
       const bigPlay = play.clock;
       if (this.state?.bigPlay !== bigPlay) {
@@ -236,6 +235,10 @@ function SubLog(props: { log: LogType; bigPlay: string }) {
       </div>
     </div>
   );
+}
+
+export function getLogDelayMs() {
+  return parseInt(logDelayRef.current?.value || "") || defaultLogDelayMs;
 }
 
 export default Log;

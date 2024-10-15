@@ -40,7 +40,7 @@ export default function Scoreboard() {
                 {teams
                   .sort((a, b) => b.projected - a.projected)
                   .map((t, j) => (
-                    <div key={j} style={{ maxWidth: "15em" }}>
+                    <div key={j} style={{ maxWidth: "12em" }}>
                       {t.score} ({t.projected.toFixed(2)}) {t.teamName}
                     </div>
                   ))}

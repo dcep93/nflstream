@@ -73,22 +73,18 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
             )
       )
       .then((streams) =>
-        streams
-          .concat(...getStreamsFromUrlQuery())
-          .concat({ raw_url: "", name: "bills", stream_id: "bills", src: HOST })
-          .concat({ raw_url: "", name: "jets", stream_id: "jets", src: HOST })
-          .concat(
-            ...(hasExtension
-              ? [
-                  {
-                    raw_url: "",
-                    name: SCOREBOARD,
-                    stream_id: SCOREBOARD,
-                    src: SCOREBOARD,
-                  },
-                ]
-              : [])
-          )
+        streams.concat(...getStreamsFromUrlQuery()).concat(
+          ...(hasExtension
+            ? [
+                {
+                  raw_url: "",
+                  name: SCOREBOARD,
+                  stream_id: SCOREBOARD,
+                  src: SCOREBOARD,
+                },
+              ]
+            : [])
+        )
       );
   }
 }

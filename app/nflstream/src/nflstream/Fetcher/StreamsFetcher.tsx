@@ -1,5 +1,5 @@
 import Fetcher, { cacheF, parse, StreamType } from ".";
-import { SCOREBOARD } from "../Multiscreen/Scoreboard";
+import { SCOREBOARD_SRC } from "../Multiscreen/Scoreboard";
 
 export const HOST = localStorage.getItem("host")!;
 
@@ -78,9 +78,9 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
             ? [
                 {
                   raw_url: "",
-                  name: SCOREBOARD,
-                  stream_id: SCOREBOARD,
-                  src: SCOREBOARD,
+                  name: SCOREBOARD_SRC,
+                  stream_id: SCOREBOARD_SRC,
+                  src: SCOREBOARD_SRC,
                 },
               ]
             : [])

@@ -4,17 +4,20 @@ import { fetchE } from "../Fetcher/LogFetcher";
 import { getLogDelayMs } from "../Log";
 import AutoScroller from "../Log/Autoscroller";
 
-export const SCOREBOARD = "scoreboard";
+export const SCOREBOARD_SRC = "scoreboard";
 
 type scoresType = { teamName: string; score: number; projected: number }[][];
 
 export default function Scoreboard() {
   const [scores, updateScores] = useState<scoresType | null>(null);
+  var timeout: NodeJS.Timeout;
   return (
     <>
       <ScoreFetcher
         payload={null}
-        handleResponse={(_scores) => updateScores(_scores)}
+        handleResponse={(_scores) => {
+          timeout = setTimeout(() => updateScores(_scores), getLogDelayMs());
+        }}
       />
       {scores === null ? (
         "loading..."
@@ -22,7 +25,12 @@ export default function Scoreboard() {
         <AutoScroller speed={0.2}>
           <div
             onClick={() => {
-              ScoreFetcher.maxAgeMs = 0;
+              ScoreFetcher.staticGetResponse(0)
+                .then((_scores) => {
+                  clearTimeout(timeout);
+                  return _scores;
+                })
+                .then(updateScores);
             }}
             style={{ display: "flex", flexWrap: "wrap", alignItems: "center" }}
           >
@@ -59,16 +67,20 @@ type matchupTeam = {
   totalProjectedPointsLive: number;
 };
 class ScoreFetcher extends Fetcher<scoresType, null> {
-  intervalMs = 1000;
-  static maxAgeMs = 1000000;
+  intervalMs = 60_000;
   static leagueId = 203836968;
   static year = 2024;
-  getResponse() {
+
+  getResponse<T extends typeof ScoreFetcher>() {
+    return (this.constructor as T).staticGetResponse(this.intervalMs);
+  }
+
+  static staticGetResponse(intervalMs: number) {
     return Promise.resolve()
       .then(() =>
         fetchE(
           `https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/${ScoreFetcher.year}/segments/0/leagues/${ScoreFetcher.leagueId}?view=mMatchup&view=mMatchupScore&view=mRoster&view=mScoreboard&view=mSettings&view=mStatus&view=mTeam&view=modular&view=mNav`,
-          ScoreFetcher.maxAgeMs,
+          intervalMs,
           undefined,
           (response) =>
             Promise.resolve(response)
@@ -100,10 +112,6 @@ class ScoreFetcher extends Fetcher<scoresType, null> {
               .then(JSON.stringify)
         )
       )
-      .then((response) => JSON.parse(response))
-      .then((scores) => {
-        ScoreFetcher.maxAgeMs = getLogDelayMs();
-        return scores;
-      });
+      .then((response) => JSON.parse(response));
   }
 }

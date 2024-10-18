@@ -12,7 +12,17 @@ export default function Scoreboard() {
   const [scores, updateScores] = useState<scoresType | null>(null);
   var timeout: NodeJS.Timeout;
   return (
-    <>
+    <div
+      style={{ height: "100%", width: "100%" }}
+      onClick={() => {
+        ScoreFetcher.staticGetResponse(0)
+          .then((_scores) => {
+            clearTimeout(timeout);
+            return _scores;
+          })
+          .then(updateScores);
+      }}
+    >
       <ScoreFetcher
         payload={null}
         handleResponse={(_scores) => {
@@ -20,18 +30,10 @@ export default function Scoreboard() {
         }}
       />
       {scores === null ? (
-        "loading..."
+        <div>loading...</div>
       ) : (
         <AutoScroller speed={0.2}>
           <div
-            onClick={() => {
-              ScoreFetcher.staticGetResponse(0)
-                .then((_scores) => {
-                  clearTimeout(timeout);
-                  return _scores;
-                })
-                .then(updateScores);
-            }}
             style={{
               display: "flex",
               flexWrap: "wrap",
@@ -62,7 +64,7 @@ export default function Scoreboard() {
           </div>
         </AutoScroller>
       )}
-    </>
+    </div>
   );
 }
 

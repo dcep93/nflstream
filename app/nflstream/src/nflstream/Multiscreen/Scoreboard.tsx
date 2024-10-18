@@ -15,7 +15,7 @@ export default function Scoreboard() {
     <div
       style={{ height: "100%", width: "100%" }}
       onClick={() => {
-        ScoreFetcher.staticGetResponse(0)
+        ScoreFetcher.staticGetResponse(10_000)
           .then((_scores) => {
             clearTimeout(timeout);
             return _scores;
@@ -74,7 +74,7 @@ type matchupTeam = {
   totalProjectedPointsLive: number;
 };
 class ScoreFetcher extends Fetcher<scoresType, null> {
-  intervalMs = 60_000;
+  intervalMs = 120_000;
   static leagueId = 203836968;
   static year = 2024;
 

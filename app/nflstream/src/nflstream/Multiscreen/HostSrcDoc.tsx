@@ -29,7 +29,7 @@ export default function HostSrcDoc(params: { [key: string]: string }) {
           f={() => {
             const _console = Object.assign({}, console);
             Object.assign(window, { _console });
-            console.log = console.time = console.timeEnd = () => null;
+            // console.log = console.time = console.timeEnd = () => null;
           }}
         />
         <link

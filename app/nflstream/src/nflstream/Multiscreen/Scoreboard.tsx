@@ -32,7 +32,12 @@ export default function Scoreboard() {
                 })
                 .then(updateScores);
             }}
-            style={{ display: "flex", flexWrap: "wrap", alignItems: "center" }}
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
           >
             {scores.map((teams, i) => (
               <div

@@ -74,7 +74,7 @@ type matchupTeam = {
   totalProjectedPointsLive: number;
 };
 class ScoreFetcher extends Fetcher<scoresType, null> {
-  intervalMs = 120_000;
+  intervalMs = 20_000;
   static leagueId = 203836968;
   static year = 2024;
 
@@ -87,7 +87,7 @@ class ScoreFetcher extends Fetcher<scoresType, null> {
       .then(() =>
         fetchE(
           `https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/${ScoreFetcher.year}/segments/0/leagues/${ScoreFetcher.leagueId}?view=mMatchup&view=mMatchupScore&view=mRoster&view=mScoreboard&view=mSettings&view=mStatus&view=mTeam&view=modular&view=mNav`,
-          intervalMs,
+          30_000,
           undefined,
           (response) =>
             Promise.resolve(response)

@@ -279,9 +279,12 @@ export default function HostSrcDoc(params: { [key: string]: string }) {
                     video.videoWidth,
                     video.videoHeight
                   ).data;
+                  const start_time = Date.now();
                   Promise.resolve()
                     .then(() => slice_data(raw_data))
                     .then((sliced_data) => {
+                      const duration = Date.now() - start_time;
+                      console.log({ duration });
                       const is_commercial = get_is_commercial(sliced_data);
                       const should_mute = subscreen_muted || is_commercial;
                       if (should_mute !== video.muted) {

@@ -57,14 +57,19 @@ export class DelayedLog extends React.Component<
       (p) => !p.text.startsWith("Timeout")
     );
     const delayMs = getLogDelayMs();
-    if (play && this.isBigPlay(play)) {
-      const bigPlay = play.clock;
-      if (this.state?.bigPlay !== bigPlay) {
-        this.setState({ bigPlay });
-        setTimeout(() => {
-          this.props.updateBigPlay(true);
-          setTimeout(() => this.props.updateBigPlay(false), bigPlayDurationMs);
-        }, Math.max(0, delayMs - bigPlayWarningMs));
+    if (play) {
+      const bigPlay = this.getBigPlay(play);
+      if (bigPlay !== null) {
+        if (this.state?.bigPlay !== bigPlay) {
+          this.setState({ bigPlay });
+          setTimeout(() => {
+            this.props.updateBigPlay(true);
+            setTimeout(
+              () => this.props.updateBigPlay(false),
+              bigPlayDurationMs
+            );
+          }, Math.max(0, delayMs - bigPlayWarningMs));
+        }
       }
     }
     const props = this.props;
@@ -73,42 +78,42 @@ export class DelayedLog extends React.Component<
     }, delayMs);
   }
 
-  isBigPlay(play: PlayType): boolean {
-    if (play.text.includes("touchback")) return false;
-    if (play.text.includes("block")) return true;
+  getBigPlay(play: PlayType): string | null {
+    if (play.text.includes("touchback")) return null;
+    if (play.text.includes("block")) return "block";
     if (play.text.includes("field goal")) {
-      return play.distance >= 60;
+      return play.distance >= 60 ? "field_goal" : null;
     }
     if (play.text.includes("kicks")) {
-      return play.distance >= 40;
+      return play.distance >= 40 ? "kicks" : null;
     }
     if (play.text.includes("punts")) {
-      return play.distance >= 40;
+      return play.distance >= 40 ? "punts" : null;
     }
     if (
       play.down?.startsWith("4th") &&
       !play.text.includes("field goal") &&
       !play.text.includes("No Play")
     ) {
-      return true;
+      return "4th_down";
     }
     if (play.text.includes("Intentional Grounding")) {
-      return false;
+      return null;
     }
     if (play.distance <= -11 || play.distance >= 25) {
-      return true;
+      return "distance";
     }
-    return (
-      [
-        "TOUCHDOWN",
-        "FUMBLE",
-        "INTERCEPT",
-        "MUFF",
-        "SAFETY",
-        "recover",
-        // "injure",
-      ].find((text) => play.text.includes(text)) !== undefined
-    );
+    return [
+      "TOUCHDOWN",
+      "FUMBLE",
+      "INTERCEPT",
+      "MUFF",
+      "SAFETY",
+      "recover",
+      // "injure",
+    ].find((text) => play.text.includes(text)) !== undefined
+      ? "super_big_play"
+      : null;
   }
 
   updateNow(log: LogType | undefined = undefined) {

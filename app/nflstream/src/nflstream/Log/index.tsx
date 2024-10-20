@@ -61,7 +61,7 @@ export class DelayedLog extends React.Component<
       const bigPlay = this.getBigPlay(play);
       if (bigPlay !== null) {
         if (this.state?.bigPlay !== bigPlay) {
-          this.setState({ bigPlay });
+          this.setState({ bigPlay: `${play.clock} : ${bigPlay}` });
           setTimeout(() => {
             this.props.updateBigPlay(true);
             setTimeout(

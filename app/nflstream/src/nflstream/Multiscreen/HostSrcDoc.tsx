@@ -1,5 +1,6 @@
 import ReactDomServer from "react-dom/server";
 import { HOST } from "../Fetcher/StreamsFetcher";
+import { muteCommercialRef } from "../Options";
 
 export default function HostSrcDoc(params: { [key: string]: string }) {
   function FunctionToScript<T>(props: { t: T; f: (t: T) => void }) {
@@ -55,14 +56,12 @@ export default function HostSrcDoc(params: { [key: string]: string }) {
         <script src={`https://${HOST}/js/jquery-input-file-text.js`}></script>
 
         <FunctionToScript
-          t={{ params, HOST }}
-          f={({
+          t={{
             params,
             HOST,
-          }: {
-            HOST: string;
-            params: { [key: string]: string };
-          }) => {
+            muteCommercial: muteCommercialRef.current!.checked,
+          }}
+          f={({ params, HOST, muteCommercial }) => {
             var key = params.key;
             if (!key) {
               alert("invalid params");
@@ -178,6 +177,7 @@ export default function HostSrcDoc(params: { [key: string]: string }) {
               });
 
               function muteCommercialLoop() {
+                if (!muteCommercial) return;
                 const muteCommercialLoopPeriodMs = 1000;
                 setInterval(() => {
                   if (subscreen_muted) return;

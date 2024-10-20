@@ -4,6 +4,7 @@ import style from "./index.module.css";
 
 export const logDelayRef = createRef<HTMLInputElement>();
 export const autoRefreshRef = createRef<HTMLInputElement>();
+export const muteCommercialRef = createRef<HTMLInputElement>();
 
 export default function Options() {
   return (
@@ -16,6 +17,10 @@ export default function Options() {
       <div>
         <span>autorefresh </span>
         <input ref={autoRefreshRef} type={"checkbox"} defaultChecked />
+      </div>
+      <div>
+        <span>mute nfl+ commercials</span>
+        <input ref={muteCommercialRef} type={"checkbox"} defaultChecked />
       </div>
     </div>
   );

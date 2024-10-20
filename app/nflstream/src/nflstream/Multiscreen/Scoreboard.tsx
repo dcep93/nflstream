@@ -32,7 +32,7 @@ export default function Scoreboard() {
       {scores === null ? (
         <div>loading...</div>
       ) : (
-        <AutoScroller speed={0.08}>
+        <AutoScroller speed={0.03}>
           <div
             style={{
               display: "flex",

@@ -101,6 +101,7 @@ class NFLStream extends React.Component<
           payload={this.state.hasExtension!}
         />
         <Menu
+          // TODO no cache on click, maybe for logfetcher and fetcher base class???
           refreshStreams={() => ref.current!.getResponse().then(handleResponse)}
           addScreen={(screen) =>
             this.setState({

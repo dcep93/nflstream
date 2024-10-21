@@ -46,7 +46,7 @@ class Menu extends React.Component<
                     <div
                       className={[style.bubble, style.hover].join(" ")}
                       onClick={(e) =>
-                        e.metaKey || window.screen.width < 0 // 1000
+                        e.metaKey
                           ? window.open(obj.stream.raw_url)
                           : this.props.addScreen(
                               streamToScreen(obj.stream, e.shiftKey)

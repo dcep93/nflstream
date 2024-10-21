@@ -37,7 +37,7 @@ class NFLStream extends React.Component<
   }
 > {
   componentDidMount() {
-    firebase();
+    firebase.initialize();
     console.log(recorded_sha);
     if (!window.chrome?.runtime) {
       console.log("componentDidMount", "no chrome runtime");

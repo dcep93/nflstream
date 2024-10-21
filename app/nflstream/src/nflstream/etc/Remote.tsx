@@ -1,4 +1,6 @@
+import firebase from "../firebase";
 import { ScreenType } from "../Multiscreen";
+import style from "./index.module.css";
 import { titleMessageDiv } from "./Options";
 
 type RemoteType = {
@@ -8,15 +10,56 @@ type RemoteType = {
   selected: string;
 };
 
-export default function Remote() {
-  return (
-    <div>
-      <h1>{titleMessageDiv}</h1>
-      <div>remote</div>
-    </div>
-  );
+const firebasePath = "/remote";
+
+export default class Remote extends firebase.FirebaseWrapper<RemoteType> {
+  getFirebasePath(): string {
+    return firebasePath;
+  }
+
+  render() {
+    return (
+      <div>
+        <div>
+          <h1>{titleMessageDiv}</h1>
+        </div>
+        <div>{this.state.state.src}</div>
+        <div>{new Date(this.state.state.timestamp).toLocaleTimeString()}</div>
+        <div>
+          {this.state.state.screens.map((s) => (
+            <div key={s.iFrameTitle}>
+              <div
+                className={style.bubble}
+                style={{
+                  backgroundColor:
+                    this.state.state.selected === s.iFrameTitle
+                      ? "lightgrey"
+                      : undefined,
+                }}
+                onClick={() =>
+                  this.state.state.selected !== s.iFrameTitle &&
+                  updateRemote({
+                    timestamp: Date.now(),
+                    src: "remote",
+                    screens: this.state.state.screens,
+                    selected: s.iFrameTitle,
+                  })
+                }
+              >
+                {s.name}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 }
 
-export function onUpdateRemote(callback: (remote: RemoteType) => void) {}
+export function onUpdateRemote(callback: (remote: RemoteType) => void) {
+  firebase._connect(firebasePath, callback);
+}
 
-export function updateRemote(remote: RemoteType) {}
+export function updateRemote(remote: RemoteType) {
+  firebase._set(firebasePath, remote);
+}

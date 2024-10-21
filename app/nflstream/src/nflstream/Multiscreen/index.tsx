@@ -18,22 +18,26 @@ class Multiscreen extends React.Component<
     screens: ScreenType[];
     removeScreen: (iFrameTitle: string) => void;
   },
-  { selected: string; refreshes: { [iFrameTitle: string]: number } }
+  {
+    selected: string;
+    src: string;
+    refreshes: { [iFrameTitle: string]: number };
+  }
 > {
   mounted = false;
   componentDidMount(): void {
     if (this.mounted) return;
     this.mounted = true;
-    onUpdateRemote(({ selected }) =>
-      Promise.resolve()
-        .then(() => this.props.screens.find((s) => s.iFrameTitle === selected))
-        .then(
-          (screen) =>
-            screen &&
-            remoteRef.current!.checked &&
-            selected !== this.state?.selected &&
-            this.updateSelected(screen)
-        )
+    onUpdateRemote(
+      ({ src, selected }) =>
+        remoteRef.current!.checked &&
+        src === "remote" &&
+        selected !== this.state?.selected &&
+        Promise.resolve()
+          .then(() =>
+            this.props.screens.find((s) => s.iFrameTitle === selected)
+          )
+          .then((screen) => screen && this.updateSelected(screen, src))
     );
     window.addEventListener("keydown", (e) =>
       Promise.resolve(e)
@@ -44,7 +48,9 @@ class Multiscreen extends React.Component<
             ? Promise.resolve().then(() => DelayedLog.active?.updateNow())
             : Promise.resolve()
                 .then(() => this.props.screens[index - 1])
-                .then((screen) => screen && this.updateSelected(screen))
+                .then(
+                  (screen) => screen && this.updateSelected(screen, "keydown")
+                )
         )
     );
     window.addEventListener("message", (event) => {
@@ -74,18 +80,23 @@ class Multiscreen extends React.Component<
     const selectedScreen = this.getScreen();
     if (selectedScreen) {
       if (remoteRef.current!.checked) {
-        updateRemote({
-          src: "app",
-          timestamp: Date.now(),
-          screens: this.props.screens,
-          selected: this.state!.selected,
-        });
+        if (this.state?.src !== "remote") {
+          updateRemote({
+            src: "app",
+            timestamp: Date.now(),
+            screens: this.props.screens,
+            selected: this.state!.selected,
+          });
+        }
       }
     } else {
       const screen = this.props.screens[0];
       if (screen) {
-        this.setState({ selected: screen.iFrameTitle });
-        if (screen) muteUnmute(screen.ref, false);
+        this.setState({
+          selected: screen.iFrameTitle,
+          src: "componentDidUpdate",
+        });
+        muteUnmute(screen.ref, false);
       }
     }
   }
@@ -104,7 +115,7 @@ class Multiscreen extends React.Component<
     );
   }
 
-  updateSelected(screen: ScreenType) {
+  updateSelected(screen: ScreenType, src: string) {
     const selectedScreen = this.getScreen();
     if (!selectedScreen) return;
     if (screen.iFrameTitle === selectedScreen.iFrameTitle) {
@@ -112,7 +123,7 @@ class Multiscreen extends React.Component<
     } else {
       muteUnmute(selectedScreen.ref, true);
       muteUnmute(screen.ref, false);
-      this.setState({ selected: screen.iFrameTitle });
+      this.setState({ selected: screen.iFrameTitle, src });
     }
   }
 
@@ -135,7 +146,9 @@ class Multiscreen extends React.Component<
                 screen={screen}
                 isSelected={screen === this.getScreen()}
                 removeScreen={() => this.props.removeScreen(screen.iFrameTitle)}
-                updateSelected={() => this.updateSelected(screen)}
+                updateSelected={() =>
+                  this.updateSelected(screen, "singlescreen")
+                }
                 numScreens={this.props.screens.length}
               />
             ))}

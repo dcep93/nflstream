@@ -23,8 +23,12 @@ export default class Remote extends firebase.FirebaseWrapper<RemoteType> {
         <div>
           <h1>{titleMessageDiv}</h1>
         </div>
-        <div>{this.state.state.src}</div>
-        <div>{new Date(this.state.state.timestamp).toLocaleTimeString()}</div>
+        <div className={style.bubble}>
+          <h2>remote</h2>
+          <div>src:</div>
+          <div>{this.state.state.src}</div>
+          <div>{new Date(this.state.state.timestamp).toLocaleTimeString()}</div>
+        </div>
         <div>
           {this.state.state.screens.map((s) => (
             <div key={s.iFrameTitle}>

@@ -1,11 +1,11 @@
 import md5 from "md5";
 import React, { useEffect } from "react";
+import firebase from "./etc/Firebase";
 import Menu from "./etc/Menu";
 import { isMobile } from "./etc/Options";
 import Remote from "./etc/Remote";
 import { StreamType } from "./Fetcher";
 import StreamsFetcher, { HOST } from "./Fetcher/StreamsFetcher";
-import firebase from "./firebase";
 import style from "./index.module.css";
 import Multiscreen, { ScreenType } from "./Multiscreen";
 import recorded_sha from "./recorded_sha";

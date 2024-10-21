@@ -1,5 +1,5 @@
-import firebase from "../firebase";
 import { ScreenType } from "../Multiscreen";
+import firebase from "./Firebase";
 import style from "./index.module.css";
 import { titleMessageDiv } from "./Options";
 

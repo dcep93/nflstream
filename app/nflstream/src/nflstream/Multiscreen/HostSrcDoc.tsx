@@ -68,7 +68,7 @@ export default function HostSrcDoc(params: { [key: string]: string }) {
               return;
             }
             // @ts-ignore
-            const _console = window._console;
+            const console = window._console;
 
             const _flowplayer = Object.assign(window).flowplayer;
             var _flowapi: any;

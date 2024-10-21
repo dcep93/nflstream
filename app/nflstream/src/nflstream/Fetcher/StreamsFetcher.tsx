@@ -6,9 +6,10 @@ export const HOST = localStorage.getItem("host")!;
 class StreamsFetcher extends Fetcher<StreamType[], boolean> {
   intervalMs = 10 * 60 * 1000;
 
-  getResponse() {
+  getResponse(_maxAgeMs: number | null = null) {
+    const maxAgeMs = _maxAgeMs !== null ? _maxAgeMs : 10 * 60 * 1000;
     const hasExtension = this.props.payload;
-    return fetchP("https://nflbite.com/", 10 * 60 * 1000, (text) =>
+    return fetchP("https://nflbite.com/", maxAgeMs, (text) =>
       Promise.resolve(text)
         .then(parse)
         .then((html) => html.getElementsByClassName("page-content"))
@@ -20,7 +21,7 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
         .then((hrefs) => hrefs.filter((href) => href.startsWith("/nfl")))
         .then((hrefs) => hrefs.map((href) => `https://nflbite.com/${href}`))
     )
-      .then((hrefs) => hrefs.map(getStream))
+      .then((hrefs) => hrefs.map((href) => getStream(href, maxAgeMs)))
       .then((promises) => Promise.all(promises))
       .then(
         (streams) =>
@@ -89,8 +90,11 @@ class StreamsFetcher extends Fetcher<StreamType[], boolean> {
   }
 }
 
-function getStream(href: string): Promise<StreamType | undefined> {
-  return fetchP(href, 10 * 60 * 1000, (text) =>
+function getStream(
+  href: string,
+  maxAgeMs: number
+): Promise<StreamType | undefined> {
+  return fetchP(href, maxAgeMs, (text) =>
     Promise.resolve(text)
       .then((text) => parse(text))
       .then((p) =>

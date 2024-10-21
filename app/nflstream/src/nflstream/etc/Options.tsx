@@ -1,5 +1,5 @@
 import { createRef } from "react";
-import { defaultLogDelayMs } from "./Log";
+import { defaultLogDelayMs } from "../Log";
 import style from "./index.module.css";
 
 export const logDelayRef = createRef<HTMLInputElement>();

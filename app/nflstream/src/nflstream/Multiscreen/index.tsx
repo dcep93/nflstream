@@ -1,8 +1,9 @@
 import React from "react";
+import { autoRefreshRef, remoteRef } from "../etc/Options";
+import { onUpdateRemote, updateRemote } from "../etc/Remote";
 import { StreamType } from "../Fetcher";
 import { getHostParams } from "../Fetcher/StreamsFetcher";
 import { DelayedLog } from "../Log";
-import { autoRefreshRef } from "../Options";
 import msStyle from "./index.module.css";
 import { Singlescreen } from "./Singlescreen";
 
@@ -23,6 +24,17 @@ class Multiscreen extends React.Component<
   componentDidMount(): void {
     if (this.mounted) return;
     this.mounted = true;
+    onUpdateRemote(({ selected }) =>
+      Promise.resolve()
+        .then(() => this.props.screens.find((s) => s.iFrameTitle === selected))
+        .then(
+          (screen) =>
+            screen &&
+            remoteRef.current!.checked &&
+            selected !== this.state?.selected &&
+            this.updateSelected(screen)
+        )
+    );
     window.addEventListener("keydown", (e) =>
       Promise.resolve(e)
         .then((e) => e.key)
@@ -60,7 +72,16 @@ class Multiscreen extends React.Component<
 
   componentDidUpdate(): void {
     const selectedScreen = this.getScreen();
-    if (!selectedScreen) {
+    if (selectedScreen) {
+      if (remoteRef.current!.checked) {
+        updateRemote({
+          src: "app",
+          timestamp: Date.now(),
+          screens: this.props.screens,
+          selected: this.state!.selected,
+        });
+      }
+    } else {
       const screen = this.props.screens[0];
       if (screen) {
         this.setState({ selected: screen.iFrameTitle });

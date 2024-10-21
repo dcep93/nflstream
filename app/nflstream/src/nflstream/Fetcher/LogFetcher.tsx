@@ -85,7 +85,6 @@ class LogFetcher extends Fetcher<LogType | null, number> {
           timestamp,
           playByPlay,
           boxScore,
-          fantasy: [], // TODO maybe
         };
         return log;
       });

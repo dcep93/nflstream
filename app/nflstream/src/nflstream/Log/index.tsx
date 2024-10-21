@@ -1,7 +1,7 @@
 import React from "react";
 import { LogType, PlayType } from "../Fetcher";
 import LogFetcher from "../Fetcher/LogFetcher";
-import { logDelayRef } from "../Options";
+import { logDelayRef } from "../etc/Options";
 import AutoScroller from "./Autoscroller";
 import logStyle from "./index.module.css";
 

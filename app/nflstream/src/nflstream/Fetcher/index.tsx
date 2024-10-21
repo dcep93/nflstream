@@ -13,13 +13,6 @@ export type LogType = {
   timestamp: number;
   playByPlay: DriveType[];
   boxScore: BoxScoreType[];
-  fantasy: FantasyType[];
-};
-
-export type FantasyType = {
-  name: string;
-  jersey: number;
-  score: number;
 };
 
 export type DriveType = {

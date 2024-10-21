@@ -67,6 +67,8 @@ export default function HostSrcDoc(params: { [key: string]: string }) {
               alert("invalid params");
               return;
             }
+            // @ts-ignore
+            const _console = window._console;
 
             const _flowplayer = Object.assign(window).flowplayer;
             var _flowapi: any;

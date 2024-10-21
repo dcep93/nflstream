@@ -217,7 +217,7 @@ export default function HostSrcDoc(params: { [key: string]: string }) {
                   const num_segments = 40;
                   const segment_size =
                     raw_data.length / num_channels / num_segments;
-                  console.log({ segment_size });
+                  if (segment_size % 1 !== 0) return Promise.resolve([]);
                   const segments: Data[][] = [];
                   function helper(segment_index: number): Promise<Data[]> {
                     if (subscreen_muted) return Promise.resolve([]);
@@ -283,6 +283,7 @@ export default function HostSrcDoc(params: { [key: string]: string }) {
                   const start_time = Date.now();
                   Promise.resolve()
                     .then(() => get_data())
+                    .catch(() => [])
                     .then((sliced_data) => {
                       const is_commercial = get_is_commercial(sliced_data);
                       const should_mute = subscreen_muted || is_commercial;

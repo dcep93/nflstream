@@ -9,6 +9,10 @@ export const remoteRef = createRef<HTMLInputElement>();
 
 export const isMobile = window.screen.width * window.screen.height < 500_000;
 
+export const titleMessageDiv = (
+  <div>did you know that there's a coconut tree under the oval office</div>
+);
+
 export default function Options() {
   return (
     <div className={style.bubble}>

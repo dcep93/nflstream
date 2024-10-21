@@ -77,9 +77,9 @@ class Multiscreen extends React.Component<
     });
   }
 
-  getScreen(iFrameTitle: string | null = null) {
+  getScreen() {
     return this.props.screens.find(
-      (s) => s.iFrameTitle === (iFrameTitle || this.state?.selected)
+      (s) => s.iFrameTitle === this.state?.selected
     );
   }
 

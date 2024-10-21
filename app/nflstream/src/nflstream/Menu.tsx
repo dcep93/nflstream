@@ -2,7 +2,7 @@ import React from "react";
 import { streamToScreen } from ".";
 import { StreamType } from "./Fetcher";
 import { ScreenType } from "./Multiscreen";
-import Options from "./Options";
+import Options, { titleMessageDiv } from "./Options";
 import style from "./index.module.css";
 import recorded_sha from "./recorded_sha";
 
@@ -22,7 +22,7 @@ class Menu extends React.Component<
           title={recorded_sha}
           onClick={this.props.refreshStreams}
         >
-          NFL MultiStream
+          {titleMessageDiv}
         </h1>
 
         {this.props.streams === undefined ? (

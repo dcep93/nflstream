@@ -215,6 +215,7 @@ export default function HostSrcDoc(params: { [key: string]: string }) {
                   const num_segments = 40;
                   const segment_size =
                     raw_data.length / num_channels / num_segments;
+                  console.log({ segment_size });
                   const segments: Data[][] = [];
                   function helper(segment_index: number): Promise<Data[]> {
                     if (subscreen_muted) return Promise.resolve([]);

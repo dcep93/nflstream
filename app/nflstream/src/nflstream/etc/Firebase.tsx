@@ -83,6 +83,7 @@ abstract class FirebaseWrapper<T, U = {}> extends React.Component<
     if (oldComponent) {
       this.setState(oldComponent.state);
     } else {
+      initialize();
       _connect(this.getFirebasePath(), (state) =>
         FirebaseWrapper.firebaseWrapperComponent.setState.bind(
           FirebaseWrapper.firebaseWrapperComponent

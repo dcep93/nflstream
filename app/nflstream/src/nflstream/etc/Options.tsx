@@ -30,7 +30,7 @@ export default function Options() {
         <span> mute nfl+ commercials</span>
       </div>
       <div>
-        <input ref={remoteRef} type={"checkbox"} defaultChecked />
+        <input ref={remoteRef} type={"checkbox"} />
         <span> follow remote</span>
       </div>
     </div>

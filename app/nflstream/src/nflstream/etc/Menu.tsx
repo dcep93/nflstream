@@ -1,9 +1,9 @@
 import React from "react";
 import { streamToScreen } from "..";
 import { StreamType } from "../Fetcher";
+import style from "../index.module.css";
 import { ScreenType } from "../Multiscreen";
 import recorded_sha from "../recorded_sha";
-import style from "./index.module.css";
 import Options, { titleMessageDiv } from "./Options";
 
 class Menu extends React.Component<

@@ -75,7 +75,7 @@ export function Singlescreen(props: {
       <div className={msStyle.screen}>
         <div className={msStyle.subscreen}>
           <div
-            hidden={props.isSelected}
+            hidden={props.isSelected || props.screen.src === SCOREBOARD_SRC}
             className={msStyle.screen_mask}
             onClick={() => {
               props.updateSelected();

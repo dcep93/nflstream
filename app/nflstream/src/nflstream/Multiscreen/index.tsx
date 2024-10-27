@@ -84,9 +84,10 @@ class Multiscreen extends React.Component<
           updateRemote({
             src: "app",
             timestamp: Date.now(),
-            screens: Object.fromEntries(
-              this.props.screens.map((s) => [s.iFrameTitle, s.name])
-            ),
+            screens: this.props.screens.map((s) => ({
+              title: s.iFrameTitle,
+              name: s.name,
+            })),
             selected: this.state!.selected,
           });
         }

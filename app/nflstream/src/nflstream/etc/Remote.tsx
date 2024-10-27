@@ -5,7 +5,7 @@ import { titleMessageDiv } from "./Options";
 type RemoteType = {
   src: string;
   timestamp: number;
-  screens: { [title: string]: string };
+  screens: { title: string; name: string }[];
   selected: string;
 };
 
@@ -30,32 +30,30 @@ export default class Remote extends firebase.FirebaseWrapper<RemoteType> {
           <div>{new Date(this.state.state.timestamp).toLocaleTimeString()}</div>
         </div>
         <div>
-          {Object.entries(this.state.state.screens).map(
-            ([screenTitle, name]) => (
-              <div key={screenTitle}>
-                <div
-                  className={style.bubble}
-                  style={{
-                    backgroundColor:
-                      this.state.state.selected === screenTitle
-                        ? "lightgrey"
-                        : undefined,
-                  }}
-                  onClick={() =>
-                    this.state.state.selected !== screenTitle &&
-                    updateRemote({
-                      timestamp: Date.now(),
-                      src: "remote",
-                      screens: this.state.state.screens,
-                      selected: screenTitle,
-                    })
-                  }
-                >
-                  {name}
-                </div>
+          {this.state.state.screens.map(({ title, name }) => (
+            <div key={title}>
+              <div
+                className={style.bubble}
+                style={{
+                  backgroundColor:
+                    this.state.state.selected === title
+                      ? "lightgrey"
+                      : undefined,
+                }}
+                onClick={() =>
+                  this.state.state.selected !== title &&
+                  updateRemote({
+                    timestamp: Date.now(),
+                    src: "remote",
+                    screens: this.state.state.screens,
+                    selected: title,
+                  })
+                }
+              >
+                {name}
               </div>
-            )
-          )}
+            </div>
+          ))}
         </div>
       </div>
     );

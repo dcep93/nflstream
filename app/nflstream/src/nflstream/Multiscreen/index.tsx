@@ -30,7 +30,7 @@ class Multiscreen extends React.Component<
     this.mounted = true;
     onUpdateRemote(
       ({ src, selected }) =>
-        remoteRef.current!.checked &&
+        remoteRef.current?.checked &&
         src === "remote" &&
         selected !== this.state?.selected &&
         Promise.resolve()
@@ -62,7 +62,7 @@ class Multiscreen extends React.Component<
           if (ref) muteUnmute(ref, false);
         }
       } else if (event.data.action === "refresh") {
-        if (autoRefreshRef.current!.checked) {
+        if (autoRefreshRef.current?.checked) {
           Promise.resolve(this.getScreen()).then(
             (screen) =>
               screen &&
@@ -79,7 +79,7 @@ class Multiscreen extends React.Component<
   componentDidUpdate(): void {
     const selectedScreen = this.getScreen();
     if (selectedScreen) {
-      if (remoteRef.current!.checked) {
+      if (remoteRef.current?.checked) {
         if (this.state?.src !== "remote") {
           updateRemote({
             src: "app",

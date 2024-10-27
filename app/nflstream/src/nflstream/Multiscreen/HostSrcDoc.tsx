@@ -59,7 +59,7 @@ export default function HostSrcDoc(params: { [key: string]: string }) {
           t={{
             params,
             HOST,
-            muteCommercial: muteCommercialRef.current!.checked,
+            muteCommercial: muteCommercialRef.current?.checked,
           }}
           f={({ params, HOST, muteCommercial }) => {
             var key = params.key;

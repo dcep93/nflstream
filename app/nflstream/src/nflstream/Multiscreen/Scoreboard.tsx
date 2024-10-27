@@ -52,13 +52,15 @@ export default function Scoreboard() {
                   backgroundColor: "lightgrey",
                 }}
               >
-                {teams
-                  .sort((a, b) => b.projected - a.projected)
-                  .map((t, j) => (
-                    <div key={j} style={{ maxWidth: "13em" }}>
-                      {t.score} ({t.projected.toFixed(2)}) {t.teamName}
-                    </div>
-                  ))}
+                <div>
+                  {teams
+                    .sort((a, b) => b.projected - a.projected)
+                    .map((t, j) => (
+                      <div key={j} style={{ maxWidth: "13em" }}>
+                        {t.score} ({t.projected.toFixed(2)}) {t.teamName}
+                      </div>
+                    ))}
+                </div>
               </div>
             ))}
           </div>

@@ -155,7 +155,7 @@ function ForceInteract(props: { interact: () => void }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   if (process.env.NODE_ENV === "development") {
-    handleKeyDown();
+    setTimeout(handleKeyDown);
     return null;
   }
   return (

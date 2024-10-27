@@ -191,9 +191,15 @@ function SubLog(props: { log: LogType; bigPlay: string }) {
             <div>
               {(drive.plays || []).map((play, j) => (
                 <div key={j} className={logStyle.playByPlayContent}>
-                  <div>{play.down}</div>
-                  <div>{play.clock}</div>
-                  <div>{play.text}</div>
+                  {play.text.startsWith("Timeout") ? (
+                    <div>{play.text}</div>
+                  ) : (
+                    <div>
+                      <div>{play.down}</div>
+                      <div>{play.clock}</div>
+                      <div>{play.text}</div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

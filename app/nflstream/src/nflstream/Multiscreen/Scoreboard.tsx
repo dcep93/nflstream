@@ -14,14 +14,14 @@ export default function Scoreboard() {
   return (
     <div
       style={{ height: "100%", width: "100%" }}
-      onClick={() => {
+      onClick={() =>
         ScoreFetcher.staticGetResponse(10_000)
           .then((_scores) => {
             clearTimeout(timeout);
             return _scores;
           })
-          .then(updateScores);
-      }}
+          .then(updateScores)
+      }
     >
       <ScoreFetcher
         payload={null}
@@ -42,15 +42,32 @@ export default function Scoreboard() {
             }}
           >
             {scores
+              .map((teams) => teams.sort((a, b) => b.projected - a.projected))
               .map((teams) => ({
                 teams,
-                diff: Math.abs(teams[0].projected - teams[1].projected),
+                diff: teams[0].projected - teams[1].projected,
                 upcoming: teams
                   .map((t) => t.projected - t.score)
                   .reduce((a, b) => a + b, 0),
               }))
-              .map((o) => ({ ...o, probability: 1 }))
-              .map(({ teams, probability }, i) => (
+              .map((o) => ({
+                ...o,
+                stddev: o.upcoming / 10,
+              }))
+              .map((o) => ({
+                ...o,
+                zScore: o.diff / o.stddev,
+              }))
+              .map((o) => ({
+                ...o,
+                zScore: (Math.pow(2.5, o.zScore) - 1) / 5,
+              }))
+              .map((o) => ({
+                ...o,
+                probability: 0.5 + Math.atan(o.zScore) / Math.PI,
+              }))
+              .sort((a, b) => b.probability - a.probability)
+              .map((o, i) => (
                 <div
                   key={i}
                   style={{
@@ -61,15 +78,13 @@ export default function Scoreboard() {
                     backgroundColor: "lightgrey",
                   }}
                 >
-                  <div>probability: {(100 * probability).toFixed(2)}%</div>
+                  <div>probability: {(100 * o.probability).toFixed(2)}%</div>
                   <div>
-                    {teams
-                      .sort((a, b) => b.projected - a.projected)
-                      .map((t, j) => (
-                        <div key={j} style={{ maxWidth: "13em" }}>
-                          {t.score} ({t.projected.toFixed(2)}) {t.teamName}
-                        </div>
-                      ))}
+                    {o.teams.map((t, j) => (
+                      <div key={j} style={{ maxWidth: "13em" }}>
+                        {t.score} ({t.projected.toFixed(2)}) {t.teamName}
+                      </div>
+                    ))}
                   </div>
                 </div>
               ))}

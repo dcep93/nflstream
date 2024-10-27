@@ -41,28 +41,38 @@ export default function Scoreboard() {
               justifyContent: "space-between",
             }}
           >
-            {scores.map((teams, i) => (
-              <div
-                key={i}
-                style={{
-                  border: "2px solid grey",
-                  borderRadius: "10px",
-                  margin: "1em",
-                  padding: "0.5em",
-                  backgroundColor: "lightgrey",
-                }}
-              >
-                <div>
-                  {teams
-                    .sort((a, b) => b.projected - a.projected)
-                    .map((t, j) => (
-                      <div key={j} style={{ maxWidth: "13em" }}>
-                        {t.score} ({t.projected.toFixed(2)}) {t.teamName}
-                      </div>
-                    ))}
+            {scores
+              .map((teams) => ({
+                teams,
+                diff: Math.abs(teams[0].projected - teams[1].projected),
+                upcoming: teams
+                  .map((t) => t.projected - t.score)
+                  .reduce((a, b) => a + b, 0),
+              }))
+              .map((o) => ({ ...o, probability: 1 }))
+              .map(({ teams, probability }, i) => (
+                <div
+                  key={i}
+                  style={{
+                    border: "2px solid grey",
+                    borderRadius: "10px",
+                    margin: "1em",
+                    padding: "0.5em",
+                    backgroundColor: "lightgrey",
+                  }}
+                >
+                  <div>probability: {(100 * probability).toFixed(2)}%</div>
+                  <div>
+                    {teams
+                      .sort((a, b) => b.projected - a.projected)
+                      .map((t, j) => (
+                        <div key={j} style={{ maxWidth: "13em" }}>
+                          {t.score} ({t.projected.toFixed(2)}) {t.teamName}
+                        </div>
+                      ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
         </AutoScroller>
       )}

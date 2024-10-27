@@ -1,12 +1,11 @@
 import style from "../index.module.css";
-import { ScreenType } from "../Multiscreen";
 import firebase from "./Firebase";
 import { titleMessageDiv } from "./Options";
 
 type RemoteType = {
   src: string;
   timestamp: number;
-  screens: ScreenType[];
+  screens: { [title: string]: string };
   selected: string;
 };
 
@@ -31,30 +30,32 @@ export default class Remote extends firebase.FirebaseWrapper<RemoteType> {
           <div>{new Date(this.state.state.timestamp).toLocaleTimeString()}</div>
         </div>
         <div>
-          {this.state.state.screens.map((s) => (
-            <div key={s.iFrameTitle}>
-              <div
-                className={style.bubble}
-                style={{
-                  backgroundColor:
-                    this.state.state.selected === s.iFrameTitle
-                      ? "lightgrey"
-                      : undefined,
-                }}
-                onClick={() =>
-                  this.state.state.selected !== s.iFrameTitle &&
-                  updateRemote({
-                    timestamp: Date.now(),
-                    src: "remote",
-                    screens: this.state.state.screens,
-                    selected: s.iFrameTitle,
-                  })
-                }
-              >
-                {s.name}
+          {Object.entries(this.state.state.screens).map(
+            ([screenTitle, name]) => (
+              <div key={screenTitle}>
+                <div
+                  className={style.bubble}
+                  style={{
+                    backgroundColor:
+                      this.state.state.selected === screenTitle
+                        ? "lightgrey"
+                        : undefined,
+                  }}
+                  onClick={() =>
+                    this.state.state.selected !== screenTitle &&
+                    updateRemote({
+                      timestamp: Date.now(),
+                      src: "remote",
+                      screens: this.state.state.screens,
+                      selected: screenTitle,
+                    })
+                  }
+                >
+                  {name}
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          )}
         </div>
       </div>
     );

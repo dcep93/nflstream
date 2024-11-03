@@ -4,6 +4,7 @@ import { getHostParams, HOST } from "../Fetcher/StreamsFetcher";
 import Log from "../Log";
 import HostSrcDoc from "./HostSrcDoc";
 
+import React from "react";
 import style from "../index.module.css";
 import msStyle from "./index.module.css";
 import Scoreboard, { SCOREBOARD_SRC } from "./Scoreboard";
@@ -162,7 +163,7 @@ function IframeWrapper(props: { screen: ScreenType; key: string }) {
               // border: "1px solid lightgray",
             }}
           >
-            <HostStreamIFrame {...props} />
+            <MemoizedHostStreamIFrame {...props} />
           </div>
         </div>
       ) : props.screen.src === SCOREBOARD_SRC ? (
@@ -178,7 +179,13 @@ function IframeWrapper(props: { screen: ScreenType; key: string }) {
   );
 }
 
-function HostStreamIFrame(props: { screen: ScreenType; key: string }) {
+const MemoizedHostStreamIFrame = React.memo(
+  (props: { screen: ScreenType }) => <HostStreamIFrame screen={props.screen} />,
+  (prevProps, currProps) =>
+    prevProps.screen.iFrameTitle === currProps.screen.iFrameTitle
+);
+
+function HostStreamIFrame(props: { screen: ScreenType }) {
   const [params, updateParams] = useState<{ [key: string]: string } | null>(
     null
   );

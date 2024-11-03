@@ -290,11 +290,11 @@ export default function HostSrcDoc(params: { [key: string]: string }) {
                       if (should_mute !== video.muted) {
                         video.muted = should_mute;
                       }
-                      const duration = Date.now() - start_time;
-                      console.log({ duration });
+                      const mute_duration = Date.now() - start_time;
+                      // console.log({ mute_duration });
                       setTimeout(
                         () => mute_if_commercial(),
-                        Math.max(0, muteCommercialLoopPeriodMs - duration)
+                        Math.max(0, muteCommercialLoopPeriodMs - mute_duration)
                       );
                     });
                 }

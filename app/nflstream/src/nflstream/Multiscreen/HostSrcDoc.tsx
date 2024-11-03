@@ -67,7 +67,7 @@ export default function HostSrcDoc(params: { [key: string]: string }) {
               alert("invalid params");
               return;
             }
-            // @ts-ignore
+            // @ts-ignore eslint-disable-next-line @typescript-eslint/no-unused-expressions
             const console = window._console;
 
             const _flowplayer = Object.assign(window).flowplayer;

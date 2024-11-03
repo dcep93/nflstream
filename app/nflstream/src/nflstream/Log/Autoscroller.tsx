@@ -49,6 +49,7 @@ export default class AutoScroller extends React.Component<Props, State> {
             fakeState.sleeping = false;
           }, EDGE_SLEEP_MS);
         } else {
+          fakeState.offset = currentlyScrolled;
           fakeState.sleeping = false;
         }
       }, EDGE_SLEEP_MS);

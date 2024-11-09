@@ -48,11 +48,12 @@ export default function Scoreboard() {
                 diff: teams[0].projected - teams[1].projected,
                 upcoming: teams
                   .map((t) => t.projected - t.score)
+                  .map((tDiff) => tDiff + Math.min(tDiff, 5))
                   .reduce((a, b) => a + b, 0),
               }))
               .map((o) => ({
                 ...o,
-                stddev: o.upcoming / 10,
+                stddev: o.upcoming / 5,
               }))
               .map((o) => ({
                 ...o,
@@ -60,7 +61,7 @@ export default function Scoreboard() {
               }))
               .map((o) => ({
                 ...o,
-                zScore: (Math.pow(2.5, o.zScore) - 1) / 5,
+                zScore: o.zScore * Math.pow(2, Math.abs(o.zScore)),
               }))
               .map((o) => ({
                 ...o,

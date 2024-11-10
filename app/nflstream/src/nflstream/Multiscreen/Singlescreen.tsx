@@ -180,8 +180,15 @@ function IframeWrapper(props: { screen: ScreenType; key: string }) {
 
 const MemoizedHostStreamIFrame = React.memo(
   (props: { screen: ScreenType }) => <HostStreamIFrame screen={props.screen} />,
-  (prevProps, currProps) =>
-    prevProps.screen.iFrameTitle === currProps.screen.iFrameTitle
+  (prevProps, currProps) => {
+    console.log(
+      new Date(),
+      "comparing",
+      prevProps.screen.iFrameTitle,
+      currProps.screen.iFrameTitle
+    );
+    return prevProps.screen.iFrameTitle === currProps.screen.iFrameTitle;
+  }
 );
 
 function HostStreamIFrame(props: { screen: ScreenType }) {

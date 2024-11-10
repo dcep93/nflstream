@@ -53,7 +53,7 @@ export default function Scoreboard() {
               }))
               .map((o) => ({
                 ...o,
-                stddev: o.upcoming / 5,
+                stddev: o.upcoming / 3,
               }))
               .map((o) => ({
                 ...o,

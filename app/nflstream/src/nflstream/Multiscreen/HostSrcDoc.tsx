@@ -342,6 +342,7 @@ export default function HostSrcDoc(params: { [key: string]: string }) {
                       source: "nflstream.html",
                       action: "loaded",
                       iFrameTitle: params.iFrameTitle,
+                      now: new Date().toString(),
                     },
                     "*"
                   );

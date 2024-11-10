@@ -130,6 +130,7 @@ function ObjectFitIframe(props: {
 }
 
 function IframeWrapper(props: { screen: ScreenType; key: string }) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => console.log(new Date(), "debug callback", props.screen), []);
   return (
     <div

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ScreenType } from ".";
 import { getHostParams, HOST } from "../Fetcher/StreamsFetcher";
 import Log from "../Log";
@@ -130,6 +130,7 @@ function ObjectFitIframe(props: {
 }
 
 function IframeWrapper(props: { screen: ScreenType; key: string }) {
+  useEffect(() => console.log(new Date(), "debug callback", props.screen), []);
   return (
     <div
       style={{

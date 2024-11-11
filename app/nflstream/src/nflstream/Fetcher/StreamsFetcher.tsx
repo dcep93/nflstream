@@ -1,137 +1,75 @@
-import Fetcher, { cacheF, parse, StreamType } from ".";
-import { SCOREBOARD_SRC } from "../Multiscreen/Scoreboard";
+import Fetcher, { cacheF, StreamType } from ".";
 
 export const HOST = localStorage.getItem("host")!;
 
-class StreamsFetcher extends Fetcher<StreamType[], boolean> {
+export default class StreamsFetcher extends Fetcher<StreamType[], null> {
   intervalMs = 10 * 60 * 1000;
 
   getResponse(_maxAgeMs: number | null = null) {
     const maxAgeMs = _maxAgeMs !== null ? _maxAgeMs : 10 * 60 * 1000;
-    const hasExtension = this.props.payload;
-    return fetchP("https://nflbite.com/", maxAgeMs, (text) =>
+    return fetchP("https://www.espn.com/nfl/schedule", maxAgeMs, (text) =>
       Promise.resolve(text)
-        .then(parse)
-        .then((html) => html.getElementsByClassName("page-content"))
-        .then((elements) => Array.from(elements))
-        .then((elements) =>
-          elements.flatMap((e) => Array.from(e.getElementsByTagName("a")))
+        .then(
+          (text) =>
+            text.match(/(?<=window\['__espnfitt__'\]=).*(?=;<\/script>)/)![0]
         )
-        .then((elements) => elements.map((e) => e.getAttribute("href")!))
-        .then((hrefs) => hrefs.filter((href) => href.startsWith("/nfl")))
-        .then((hrefs) => hrefs.map((href) => `https://nflbite.com/${href}`))
-    )
-      .then((hrefs) => hrefs.map((href) => getStream(href, maxAgeMs)))
-      .then((promises) => Promise.all(promises))
-      .then(
-        (streams) =>
-          streams.filter((stream) => stream !== undefined) as StreamType[]
-      )
-      .then((streams) =>
-        !hasExtension
-          ? streams
-          : fetchP(
-              "https://www.espn.com/nfl/schedule",
-              60 * 60 * 1000,
-              (text) =>
-                Promise.resolve(text)
-                  .then(
-                    (text) =>
-                      text.match(
-                        /(?<=window\['__espnfitt__'\]=).*(?=;<\/script>)/
-                      )![0]
-                  )
-                  .then(JSON.parse)
-                  .then(
-                    (o: {
-                      page: {
-                        content: {
-                          events: {
-                            [date: string]: {
-                              id: string;
-                              teams: { shortName: string }[];
-                            }[];
-                          };
-                        };
-                      };
-                    }) =>
-                      Object.values(o.page.content.events).flatMap((es) =>
-                        es.map((e) => ({
-                          espnId: parseInt(e.id),
-                          teams: e.teams.map((t) => t.shortName.toLowerCase()),
-                        }))
-                      )
-                  )
-            ).then((objs) =>
-              streams.map((stream) => ({
-                espnId:
-                  stream.src === HOST
-                    ? objs.find((obj) => obj.teams.includes(stream.stream_id))
-                        ?.espnId
-                    : undefined,
-                ...stream,
+        .then(JSON.parse)
+        .then(
+          (o: {
+            page: {
+              content: {
+                events: {
+                  [date: string]: {
+                    id: string;
+                    teams: { shortName: string }[];
+                    date: string;
+                    status: { state: "in" | "pre" | "post" };
+                  }[];
+                };
+              };
+            };
+          }) =>
+            Object.values(o.page.content.events).flatMap((es) =>
+              es.map((e) => ({
+                startTime: new Date(e.date).getTime(),
+                state: e.status.state,
+                espnId: parseInt(e.id),
+                teams: e.teams.map((t) => t.shortName).reverse(),
               }))
             )
-      )
-      .then((streams) =>
-        streams.concat(...getStreamsFromUrlQuery()).concat(
-          ...(hasExtension
-            ? [
-                {
-                  raw_url: "",
-                  name: SCOREBOARD_SRC,
-                  stream_id: SCOREBOARD_SRC,
-                  src: SCOREBOARD_SRC,
-                },
-              ]
-            : [])
         )
-      );
-  }
-}
-
-function getStream(
-  href: string,
-  maxAgeMs: number
-): Promise<StreamType | undefined> {
-  return fetchP(href, maxAgeMs, (text) =>
-    Promise.resolve(text)
-      .then((text) => parse(text))
-      .then((p) =>
-        Array.from(p.getElementsByClassName("streamer-name") || []).length === 0
-          ? undefined
-          : p.title.includes("Redzone")
-          ? {
-              name: "REDZONE",
-              stream_id: "redzone",
-              raw_url: `https://${HOST}/nfl/redzone`,
-              src: HOST,
-            }
-          : Promise.resolve()
-              .then(() => ({
-                src: HOST,
-                name: p.title
-                  .split(" Live Stream")[0]
-                  .split(" at ")
-                  .join(" @ "),
-              }))
-              .then((o) => ({
-                ...o,
-                stream_id: o.name.toLowerCase().split(" @ ").reverse()[0],
-              }))
-              .then((o) => ({
-                ...o,
-                raw_url: `https://${HOST}/nfl/${o.stream_id}`,
-              }))
-              .then((o) => getHostParams(o.raw_url, false, "").then(() => o))
+    )
+      .then((games) =>
+        games
+          .filter(
+            (game) =>
+              game.state === "in" ||
+              (game.state === "pre" &&
+                game.startTime - Date.now() < 1000 * 60 * 60) ||
+              (game.state === "post" &&
+                game.startTime - Date.now() > 1000 * 60 * 60 * 3)
+          )
+          .map((game) => ({
+            name: game.teams.join(" @ "),
+            stream_id: game.teams[1].toLowerCase(),
+            src: HOST,
+            espnId: game.espnId,
+          }))
+          .map((stream) => ({
+            ...stream,
+            raw_url: `https://${HOST}/nfl/${stream.stream_id}`,
+          }))
+          .map((stream) =>
+            getHostParams(stream.raw_url, false).then(() => stream)
+          )
       )
-  );
+      .then((ps) => Promise.all(ps));
+  }
 }
 
 export function getHostParams(
   url: string,
-  hardRefresh: boolean,
-  iFrameTitle: string
+  hardRefresh: boolean
 ): Promise<{ [key: string]: string }> {
   return fetchP(url, hardRefresh ? 0 : 10 * 60 * 1000, (text) =>
     Promise.resolve().then(() =>
@@ -148,48 +86,7 @@ export function getHostParams(
           ])
       )
     )
-  ).then((params) => ({ ...params, iFrameTitle }));
-}
-
-export function parseTinyUrl(message: string) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  function dF(s: string) {
-    var s1 = unescape(s.substr(0, s.length - 1));
-    var t = "";
-    for (let i = 0; i < s1.length; i++) {
-      t += String.fromCharCode(
-        s1.charCodeAt(i) - parseInt(s.substr(s.length - 1, 1))
-      );
-    }
-    const rval = unescape(t);
-    return rval;
-  }
-  return (
-    Promise.resolve(message)
-      // .then((message) => message.match(/dF\('(.+?)'\)/)![1])
-      // .then(dF)
-      .then(parse)
-      .then(
-        (html) =>
-          // html.body.innerHTML.match(/href="(.*?)".*Click Here to Watch/)![1]
-          html.head.innerHTML.match(/window.location.href = "(.*?)";/)![1]
-      )
-      .catch((err) => {
-        console.error(err);
-        return null;
-      })
   );
-}
-
-function getStreamsFromUrlQuery(): StreamType[] {
-  return (
-    new URLSearchParams(window.location.search).get("extra")?.split(",") || []
-  ).map((raw_url, i) => ({
-    raw_url,
-    name: `extra_${i + 1}`,
-    src: "extra",
-    stream_id: `extra_${i + 1}`,
-  }));
 }
 
 function fetchP<T>(
@@ -209,5 +106,3 @@ function fetchP<T>(
       .then((text) => textToCache(text))
   );
 }
-
-export default StreamsFetcher;

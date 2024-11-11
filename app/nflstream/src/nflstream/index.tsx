@@ -8,6 +8,7 @@ import { StreamType } from "./Fetcher";
 import StreamsFetcher, { HOST } from "./Fetcher/StreamsFetcher";
 import style from "./index.module.css";
 import Multiscreen, { ScreenType } from "./Multiscreen";
+import { SCOREBOARD_SRC } from "./Multiscreen/Scoreboard";
 import recorded_sha from "./recorded_sha";
 
 declare global {
@@ -94,7 +95,22 @@ class NFLStream extends React.Component<
     }
     const ref = React.createRef<StreamsFetcher>();
     const handleResponse = (streams: StreamType[]) => {
-      this.setState({ streams });
+      this.setState({
+        streams: streams
+          .concat(
+            this.state.hasExtension
+              ? [
+                  {
+                    raw_url: "",
+                    name: SCOREBOARD_SRC,
+                    stream_id: SCOREBOARD_SRC,
+                    src: SCOREBOARD_SRC,
+                  },
+                ]
+              : []
+          )
+          .concat(...getStreamsFromUrlQuery()),
+      });
     };
     return md5(HOST || "") !== "c1d94a185f9959737bd1be30537c710d" ? (
       <HostPrompt />
@@ -103,7 +119,7 @@ class NFLStream extends React.Component<
         <StreamsFetcher
           ref={ref}
           handleResponse={handleResponse}
-          payload={this.state.hasExtension!}
+          payload={null}
         />
         <Menu
           refreshStreams={() =>
@@ -129,6 +145,7 @@ class NFLStream extends React.Component<
         ) : (
           this.state.initialized && (
             <Multiscreen
+              hasExtension={this.state.hasExtension}
               screens={this.state?.screens || []}
               removeScreen={(iFrameTitle) =>
                 this.setState({
@@ -175,6 +192,17 @@ export function streamToScreen(
     ref: React.createRef() as React.RefObject<HTMLIFrameElement>,
     ...stream,
   };
+}
+
+function getStreamsFromUrlQuery(): StreamType[] {
+  return (
+    new URLSearchParams(window.location.search).get("extra")?.split(",") || []
+  ).map((raw_url, i) => ({
+    raw_url,
+    name: `extra_${i + 1}`,
+    src: "extra",
+    stream_id: `extra_${i + 1}`,
+  }));
 }
 
 function HostPrompt() {

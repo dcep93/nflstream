@@ -9,12 +9,11 @@ import style from "../index.module.css";
 import msStyle from "./index.module.css";
 import Scoreboard, { SCOREBOARD_SRC } from "./Scoreboard";
 
-export const REDZONE_STREAM_ID = "redzone";
-
 export function Singlescreen(props: {
   index: number;
   screen: ScreenType;
   isSelected: boolean;
+  hasExtension: boolean;
   removeScreen: () => void;
   updateSelected: () => void;
   numScreens: number;
@@ -63,7 +62,7 @@ export function Singlescreen(props: {
             Promise.resolve()
               .then(() =>
                 props.screen.src === HOST
-                  ? getHostParams(props.screen.raw_url, true, "")
+                  ? getHostParams(props.screen.raw_url, true)
                   : Promise.resolve({})
               )
               .then(() => props.refreshKeyF());
@@ -83,11 +82,10 @@ export function Singlescreen(props: {
           ></div>
           <ObjectFitIframe
             xkey={props.refreshKeyValue}
-            screen={props.screen}
             updateBigPlay={updateBigPlay}
             updateDrivingTeam={updateDrivingTeam}
             updateRedzone={updateRedzone}
-            isSelected={props.isSelected}
+            {...props}
           />
         </div>
       </div>
@@ -102,6 +100,7 @@ function ObjectFitIframe(props: {
   updateRedzone: (redZone: boolean) => void;
   updateBigPlay: (isBigPlay: boolean) => void;
   isSelected: boolean;
+  hasExtension: boolean;
 }) {
   return (
     <div
@@ -112,7 +111,9 @@ function ObjectFitIframe(props: {
         justifyContent: "space-around",
       }}
     >
-      {!props.screen.espnId || props.screen.skipLog ? null : (
+      {!props.hasExtension ||
+      !props.screen.espnId ||
+      props.screen.skipLog ? null : (
         <Log
           espnId={props.screen.espnId!}
           updateBigPlay={props.updateBigPlay}
@@ -199,9 +200,9 @@ function HostStreamIFrame(props: { screen: ScreenType }) {
     null
   );
   if (params === null) {
-    getHostParams(props.screen.raw_url, false, props.screen.iFrameTitle).then(
-      updateParams
-    );
+    getHostParams(props.screen.raw_url, false)
+      .then((params) => ({ ...params, iFrameTitle: props.screen.iFrameTitle }))
+      .then(updateParams);
   }
   return (
     <>

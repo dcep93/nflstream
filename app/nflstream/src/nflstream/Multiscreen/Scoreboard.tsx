@@ -53,11 +53,15 @@ export default function Scoreboard() {
               }))
               .map((o) => ({
                 ...o,
-                stddev: o.upcoming / 3,
+                stddev: o.upcoming / 4,
               }))
               .map((o) => ({
                 ...o,
                 zScore: o.diff / o.stddev,
+              }))
+              .map((o) => ({
+                ...o,
+                zScore: Math.pow(o.zScore, 2),
               }))
               .map((o) => ({
                 ...o,

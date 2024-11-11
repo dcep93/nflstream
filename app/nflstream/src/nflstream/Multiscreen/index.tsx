@@ -17,6 +17,7 @@ class Multiscreen extends React.Component<
   {
     screens: ScreenType[];
     removeScreen: (iFrameTitle: string) => void;
+    hasExtension: boolean;
   },
   {
     selected: string;
@@ -66,7 +67,7 @@ class Multiscreen extends React.Component<
           Promise.resolve(this.getScreen()).then(
             (screen) =>
               screen &&
-              getHostParams(screen.raw_url, true, "").then(() =>
+              getHostParams(screen.raw_url, true).then(() =>
                 this.refreshScreen(event.data.iFrameTitle)
               )
           );
@@ -153,6 +154,7 @@ class Multiscreen extends React.Component<
                   this.updateSelected(screen, "singlescreen")
                 }
                 numScreens={this.props.screens.length}
+                hasExtension={this.props.hasExtension}
               />
             ))}
           </div>

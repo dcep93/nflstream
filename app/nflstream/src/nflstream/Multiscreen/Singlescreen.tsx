@@ -183,22 +183,22 @@ function IframeWrapper(props: { screen: ScreenType; refreshKeyValue: number }) {
 }
 
 const HostStreamIFrameElements: {
-  [stream_id: string]: { refreshKeyValue: number; e: ReactElement };
+  [iFrameTitle: string]: { refreshKeyValue: number; e: ReactElement };
 } = {};
 function MemoizedHostStreamIFrame(props: {
   screen: ScreenType;
   refreshKeyValue: number;
 }) {
   if (
-    HostStreamIFrameElements[props.screen.stream_id]?.refreshKeyValue !==
+    HostStreamIFrameElements[props.screen.iFrameTitle]?.refreshKeyValue !==
     props.refreshKeyValue
   ) {
-    HostStreamIFrameElements[props.screen.stream_id] = {
+    HostStreamIFrameElements[props.screen.iFrameTitle] = {
       refreshKeyValue: props.refreshKeyValue,
       e: <HostStreamIFrame screen={props.screen} />,
     };
   }
-  return HostStreamIFrameElements[props.screen.stream_id].e;
+  return HostStreamIFrameElements[props.screen.iFrameTitle].e;
 }
 
 function HostStreamIFrame(props: { screen: ScreenType }) {

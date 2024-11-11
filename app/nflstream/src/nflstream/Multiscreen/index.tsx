@@ -144,7 +144,7 @@ class Multiscreen extends React.Component<
                 key={screen.iFrameTitle}
                 index={i + 1}
                 refreshKeyValue={
-                  (this.state?.refreshes || {})[screen.iFrameTitle]
+                  (this.state?.refreshes || {})[screen.iFrameTitle] || 0
                 }
                 refreshKeyF={() => this.refreshScreen(screen.iFrameTitle)}
                 screen={screen}

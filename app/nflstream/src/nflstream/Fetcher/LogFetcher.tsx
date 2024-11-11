@@ -20,18 +20,24 @@ class LogFetcher extends Fetcher<LogType | null, number> {
       .then((resps) => (resps as string[]).map((resp) => JSON.parse(resp)))
       .then(([obj, coreObj]) =>
         Promise.resolve()
-          .then(() => coreObj.items.slice().reverse()[0]["$ref"])
-          .then((driveUrl) => fetchE(driveUrl, 2 * 1000))
-          .then((driveResp) => JSON.parse(driveResp))
-          .then((driveObj) =>
-            fetchE(driveObj.team["$ref"], 24 * 60 * 60 * 1000)
-              .then((teamResp) => JSON.parse(teamResp))
-              .then((teamObj) => {
-                driveObj.team = teamObj;
-                driveObj.plays = driveObj.plays.items;
-                obj.drives.current = driveObj;
-                return obj;
-              })
+          .then(() => coreObj.items.slice().reverse()[0])
+          .then((coreItem) =>
+            coreItem === undefined
+              ? obj
+              : Promise.resolve()
+                  .then(() => coreItem["$ref"])
+                  .then((driveUrl) => fetchE(driveUrl, 2 * 1000))
+                  .then((driveResp) => JSON.parse(driveResp))
+                  .then((driveObj) =>
+                    fetchE(driveObj.team["$ref"], 24 * 60 * 60 * 1000)
+                      .then((teamResp) => JSON.parse(teamResp))
+                      .then((teamObj) => {
+                        driveObj.team = teamObj;
+                        driveObj.plays = driveObj.plays.items;
+                        obj.drives.current = driveObj;
+                        return obj;
+                      })
+                  )
           )
       )
       .then((obj) => {

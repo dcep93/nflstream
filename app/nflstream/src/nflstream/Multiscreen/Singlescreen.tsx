@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import { ScreenType } from ".";
 import { getHostParams, HOST } from "../Fetcher/StreamsFetcher";
 import Log from "../Log";
 import HostSrcDoc from "./HostSrcDoc";
 
-import React from "react";
 import style from "../index.module.css";
 import msStyle from "./index.module.css";
 import Scoreboard, { SCOREBOARD_SRC } from "./Scoreboard";
@@ -17,7 +16,7 @@ export function Singlescreen(props: {
   removeScreen: () => void;
   updateSelected: () => void;
   numScreens: number;
-  refreshKeyValue: number | undefined;
+  refreshKeyValue: number;
   refreshKeyF: () => void;
 }) {
   const [redZone, updateRedzone] = useState(false);
@@ -81,7 +80,6 @@ export function Singlescreen(props: {
             }}
           ></div>
           <ObjectFitIframe
-            xkey={props.refreshKeyValue}
             updateBigPlay={updateBigPlay}
             updateDrivingTeam={updateDrivingTeam}
             updateRedzone={updateRedzone}
@@ -95,7 +93,7 @@ export function Singlescreen(props: {
 
 function ObjectFitIframe(props: {
   screen: ScreenType;
-  xkey: number | undefined;
+  refreshKeyValue: number;
   updateDrivingTeam: (drivingTeam: string) => void;
   updateRedzone: (redZone: boolean) => void;
   updateBigPlay: (isBigPlay: boolean) => void;
@@ -124,15 +122,18 @@ function ObjectFitIframe(props: {
       )}
       <IframeWrapper
         screen={props.screen}
-        key={props.xkey?.toString() || props.screen.iFrameTitle}
+        refreshKeyValue={props.refreshKeyValue}
       />
     </div>
   );
 }
 
-function IframeWrapper(props: { screen: ScreenType; key: string }) {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => console.log(new Date(), "debug callback", props.screen), []);
+function IframeWrapper(props: { screen: ScreenType; refreshKeyValue: number }) {
+  useEffect(
+    () => console.log(new Date(), "debug callback a", props.screen),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
   return (
     <div
       style={{
@@ -181,21 +182,27 @@ function IframeWrapper(props: { screen: ScreenType; key: string }) {
   );
 }
 
-const MemoizedHostStreamIFrame = React.memo(
-  (props: { screen: ScreenType }) => <HostStreamIFrame screen={props.screen} />,
-  (prevProps, currProps) => {
-    console.log(
-      new Date(),
-      "comparing",
-      prevProps.screen.iFrameTitle,
-      currProps.screen.iFrameTitle
-    );
-    return prevProps.screen.iFrameTitle === currProps.screen.iFrameTitle;
+const HostStreamIFrameElements: {
+  [stream_id: string]: { refreshKeyValue: number; e: ReactElement };
+} = {};
+function MemoizedHostStreamIFrame(props: {
+  screen: ScreenType;
+  refreshKeyValue: number;
+}) {
+  if (
+    HostStreamIFrameElements[props.screen.stream_id]?.refreshKeyValue !==
+    props.refreshKeyValue
+  ) {
+    HostStreamIFrameElements[props.screen.stream_id] = {
+      refreshKeyValue: props.refreshKeyValue,
+      e: <HostStreamIFrame screen={props.screen} />,
+    };
   }
-);
+  return HostStreamIFrameElements[props.screen.stream_id].e;
+}
 
 function HostStreamIFrame(props: { screen: ScreenType }) {
-  console.log(new Date(), props.screen);
+  console.log(new Date(), "debug callback b", props.screen);
   const [params, updateParams] = useState<{ [key: string]: string } | null>(
     null
   );

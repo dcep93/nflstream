@@ -45,7 +45,7 @@ export default class StreamsFetcher extends Fetcher<StreamType[], null> {
             (game) =>
               game.state === "in" ||
               (game.state === "pre" &&
-                game.startTime - Date.now() < 1000 * 60 * 60) ||
+                game.startTime - Date.now() < 1000 * 60 * 60 * 12) ||
               (game.state === "post" &&
                 game.startTime - Date.now() > 1000 * 60 * 60 * 3)
           )

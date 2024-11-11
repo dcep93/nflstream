@@ -1,10 +1,10 @@
-import { ReactElement, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ScreenType } from ".";
 import { getHostParams, HOST } from "../Fetcher/StreamsFetcher";
 import Log from "../Log";
-import HostSrcDoc from "./HostSrcDoc";
 
 import style from "../index.module.css";
+import HostSrcDoc from "./HostSrcDoc";
 import msStyle from "./index.module.css";
 import Scoreboard, { SCOREBOARD_SRC } from "./Scoreboard";
 
@@ -129,11 +129,6 @@ function ObjectFitIframe(props: {
 }
 
 function IframeWrapper(props: { screen: ScreenType; refreshKeyValue: number }) {
-  useEffect(
-    () => console.log(new Date(), "debug callback a", props.screen),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
   return (
     <div
       style={{
@@ -166,7 +161,7 @@ function IframeWrapper(props: { screen: ScreenType; refreshKeyValue: number }) {
               // border: "1px solid lightgray",
             }}
           >
-            <MemoizedHostStreamIFrame {...props} />
+            <HostStreamIFrame {...props} />
           </div>
         </div>
       ) : props.screen.src === SCOREBOARD_SRC ? (
@@ -182,48 +177,37 @@ function IframeWrapper(props: { screen: ScreenType; refreshKeyValue: number }) {
   );
 }
 
-const HostStreamIFrameElements: {
-  [iFrameTitle: string]: { refreshKeyValue: number; e: ReactElement };
-} = {};
-function MemoizedHostStreamIFrame(props: {
+function HostStreamIFrame(props: {
   screen: ScreenType;
   refreshKeyValue: number;
 }) {
-  if (
-    HostStreamIFrameElements[props.screen.iFrameTitle]?.refreshKeyValue !==
-    props.refreshKeyValue
-  ) {
-    HostStreamIFrameElements[props.screen.iFrameTitle] = {
-      refreshKeyValue: props.refreshKeyValue,
-      e: <HostStreamIFrame screen={props.screen} />,
-    };
-  }
-  return HostStreamIFrameElements[props.screen.iFrameTitle].e;
-}
-
-function HostStreamIFrame(props: { screen: ScreenType }) {
-  console.log(new Date(), "debug callback b", props.screen);
-  const [params, updateParams] = useState<{ [key: string]: string } | null>(
-    null
+  const [iframeE, updateIframeE] = useState<JSX.Element | null>(null);
+  useEffect(
+    () => {
+      console.log(new Date(), "debug callback a", {
+        ...props.screen,
+        ref: Boolean(props.screen.ref),
+      });
+      getHostParams(props.screen.raw_url, false)
+        .then((params) => ({
+          ...params,
+          iFrameTitle: props.screen.iFrameTitle,
+        }))
+        .then((params) => (
+          <iframe
+            ref={props.screen.ref}
+            style={{
+              height: "100%",
+              width: "98%",
+            }}
+            title={props.screen.iFrameTitle}
+            srcDoc={HostSrcDoc(params)}
+          ></iframe>
+        ))
+        .then((ife) => updateIframeE(ife));
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [props.refreshKeyValue]
   );
-  if (params === null) {
-    getHostParams(props.screen.raw_url, false)
-      .then((params) => ({ ...params, iFrameTitle: props.screen.iFrameTitle }))
-      .then(updateParams);
-  }
-  return (
-    <>
-      {params !== null && (
-        <iframe
-          ref={props.screen.ref}
-          style={{
-            height: "100%",
-            width: "98%",
-          }}
-          title={props.screen.iFrameTitle}
-          srcDoc={HostSrcDoc(params)}
-        ></iframe>
-      )}
-    </>
-  );
+  return <>{iframeE}</>;
 }

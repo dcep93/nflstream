@@ -86,7 +86,7 @@ export default function Scoreboard() {
                   <div>probability: {(100 * o.probability).toFixed(2)}%</div>
                   <div>
                     {o.teams.map((t, j) => (
-                      <div key={j} style={{ maxWidth: "13em" }}>
+                      <div key={j} style={{ maxWidth: "12em" }}>
                         {t.score} ({t.projected.toFixed(2)}) {t.teamName}
                       </div>
                     ))}

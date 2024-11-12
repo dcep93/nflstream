@@ -71,7 +71,7 @@ export default function Scoreboard() {
                 ...o,
                 probability: 0.5 + Math.atan(o.zScore) / Math.PI,
               }))
-              .sort((a, b) => b.probability - a.probability)
+              .sort((a, b) => a.probability - b.probability)
               .map((o, i) => (
                 <div
                   key={i}

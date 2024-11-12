@@ -195,6 +195,7 @@ function HostStreamIFrame(props: {
         }))
         .then((params) => (
           <iframe
+            key={props.refreshKeyValue}
             ref={props.screen.ref}
             style={{
               height: "100%",

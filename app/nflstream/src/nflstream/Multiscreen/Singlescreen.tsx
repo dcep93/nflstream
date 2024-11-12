@@ -184,10 +184,6 @@ function HostStreamIFrame(props: {
   const [iframeE, updateIframeE] = useState<JSX.Element | null>(null);
   useEffect(
     () => {
-      console.log(new Date(), "debug callback a", {
-        ...props.screen,
-        ref: Boolean(props.screen.ref),
-      });
       getHostParams(props.screen.raw_url, false)
         .then((params) => ({
           ...params,

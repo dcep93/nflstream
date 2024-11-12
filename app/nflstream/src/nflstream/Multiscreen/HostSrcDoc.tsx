@@ -71,6 +71,8 @@ export default function HostSrcDoc(params: { [key: string]: string }) {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const console = window._console;
 
+            console.log(new Date(), "HostSrcDoc", params);
+
             const _flowplayer = Object.assign(window).flowplayer;
             var _flowapi: any;
 

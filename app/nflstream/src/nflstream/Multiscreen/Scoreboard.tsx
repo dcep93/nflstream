@@ -61,7 +61,7 @@ export default function Scoreboard() {
               }))
               .map((o) => ({
                 ...o,
-                zScore: Math.pow(o.zScore, 2),
+                zScore: Math.pow(o.zScore, 1.5),
               }))
               .map((o) => ({
                 ...o,

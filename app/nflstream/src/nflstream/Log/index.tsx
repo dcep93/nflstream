@@ -191,7 +191,7 @@ function SubLog(props: { log: LogType; bigPlay: string }) {
             <div>
               {(drive.plays || []).map((play, j) => (
                 <div key={j} className={logStyle.playByPlayContent}>
-                  {play.text.startsWith("Timeout") ? (
+                  {play.text.startsWith("Official Timeout") ? (
                     <div>{play.text}</div>
                   ) : (
                     <div>

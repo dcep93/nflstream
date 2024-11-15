@@ -53,9 +53,7 @@ export class DelayedLog extends React.Component<
   static updateTimeout: ReturnType<typeof setTimeout> | undefined;
   componentDidUpdate(prevProps: PropsType) {
     if (JSON.stringify(this.props) === JSON.stringify(prevProps)) return;
-    const play = (this.props.log?.playByPlay || [])[0]?.plays?.find(
-      (p) => !p.text.startsWith("Timeout")
-    );
+    const play = (this.props.log?.playByPlay || [])[0]?.plays?.[0];
     const delayMs = getLogDelayMs();
     if (play) {
       const bigPlayRaw = this.getBigPlay(play);
@@ -191,15 +189,13 @@ function SubLog(props: { log: LogType; bigPlay: string }) {
             <div>
               {(drive.plays || []).map((play, j) => (
                 <div key={j} className={logStyle.playByPlayContent}>
-                  {play.text.toLowerCase().includes("timeout") ? (
-                    <div>{play.text}</div>
-                  ) : (
+                  {
                     <div>
                       <div>{play.down}</div>
                       <div>{play.clock}</div>
                       <div>{play.text}</div>
                     </div>
-                  )}
+                  }
                 </div>
               ))}
             </div>

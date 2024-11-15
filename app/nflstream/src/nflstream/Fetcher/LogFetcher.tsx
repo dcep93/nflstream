@@ -1,5 +1,5 @@
 import Fetcher, { cacheF, LogType } from ".";
-import { extension_id } from "..";
+import { clog, extension_id } from "..";
 
 class LogFetcher extends Fetcher<LogType | null, number> {
   intervalMs = 3 * 1000;
@@ -54,17 +54,22 @@ class LogFetcher extends Fetcher<LogType | null, number> {
         const playByPlay = drives.map((drive) => ({
           team: drive.team.shortDisplayName,
           result: drive.displayResult,
-          plays: drive.plays.reverse().map((p: any) => ({
-            down: p.start.downDistanceText,
-            text: p.text,
-            clock: `Q${p.period.number} ${p.clock.displayValue}`,
-            distance: p.statYardage,
-          })),
+          plays: drive.plays
+            .reverse()
+            .filter((p: any) => p.participants)
+            .map((p: any) => ({
+              down: p.start.downDistanceText,
+              text: p.text,
+              clock: `Q${p.period.number} ${p.clock.displayValue}`,
+              distance: p.statYardage,
+            })),
           description: drive.description,
           score: `${drive.plays[0].awayScore} - ${drive.plays[0].homeScore}`,
           yardsToEndzone: drive.plays[0].end.yardsToEndzone,
         }));
-        const timestamp = (obj.drives.current.plays as { wallclock?: number }[])
+        const timestamp = clog(
+          obj.drives.current.plays as { wallclock?: number }[]
+        )
           .map((p) => p.wallclock)
           .find((w) => w)!;
         const boxScore = ["passing", "receiving", "rushing"].map((key) => ({

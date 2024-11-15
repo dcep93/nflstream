@@ -78,7 +78,6 @@ export default function Scoreboard() {
                   style={{
                     border: "2px solid grey",
                     borderRadius: "10px",
-                    margin: "1em",
                     padding: "0.5em",
                     backgroundColor: "lightgrey",
                   }}

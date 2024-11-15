@@ -64,7 +64,9 @@ class LogFetcher extends Fetcher<LogType | null, number> {
           score: `${drive.plays[0].awayScore} - ${drive.plays[0].homeScore}`,
           yardsToEndzone: drive.plays[0].end.yardsToEndzone,
         }));
-        const timestamp = obj.drives.current.plays[0].wallclock;
+        const timestamp = (obj.drives.current.plays as { wallclock?: number }[])
+          .map((p) => p.wallclock)
+          .find((w) => w)!;
         const boxScore = ["passing", "receiving", "rushing"].map((key) => ({
           key,
           labels:

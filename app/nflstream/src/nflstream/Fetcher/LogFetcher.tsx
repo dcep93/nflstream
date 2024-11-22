@@ -1,5 +1,5 @@
 import Fetcher, { cacheF, LogType } from ".";
-import { clog, extension_id } from "..";
+import { extension_id } from "..";
 
 class LogFetcher extends Fetcher<LogType | null, number> {
   intervalMs = 3 * 1000;
@@ -67,9 +67,7 @@ class LogFetcher extends Fetcher<LogType | null, number> {
           score: `${drive.plays[0].awayScore} - ${drive.plays[0].homeScore}`,
           yardsToEndzone: drive.plays[0].end.yardsToEndzone,
         }));
-        const timestamp = clog(
-          obj.drives.current.plays as { wallclock?: number }[]
-        )
+        const timestamp = (obj.drives.current.plays as { wallclock?: number }[])
           .map((p) => p.wallclock)
           .find((w) => w)!;
         const boxScore = ["passing", "receiving", "rushing"].map((key) => ({

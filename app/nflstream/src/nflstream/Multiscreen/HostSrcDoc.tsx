@@ -114,10 +114,10 @@ export default function HostSrcDoc(params: { [key: string]: string }) {
                 // iOS allows only native fullscreen from within iframes
                 native_fullscreen: true,
               };
-              fetch(`https://${HOST}/tv/testurl-` + masterkey + ".txt")
+              fetch(`https://${HOST}/tv/testurl-${masterkey}.txt`)
                 .then((resp) => resp.text())
-                .then((text) => {
-                  Object.assign(window, { testurl: text });
+                .then((testurl) => {
+                  Object.assign(window, { testurl });
                 })
                 .then(() => initPlayer(hlsurl));
             };

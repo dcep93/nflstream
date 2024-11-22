@@ -336,7 +336,7 @@ export default function HostSrcDoc(params: { [key: string]: string }) {
               }
 
               const loadedInterval = setInterval(() => {
-                if (_flowapi.video.buffer > 0) {
+                if (_flowapi.video.buffer > 60) {
                   clearInterval(loadedInterval);
                   update_muted();
                   window.parent.postMessage(

@@ -185,6 +185,7 @@ function SubLog(props: { log: LogType; bigPlay: string }) {
           ))}
         </div>
         <div>bigplay: {props.bigPlay}</div>
+        <div style={{ height: "2em" }}></div>
         {(playByPlay || []).map((drive, i) => (
           <div key={i}>
             <div className={logStyle.logHeader}>

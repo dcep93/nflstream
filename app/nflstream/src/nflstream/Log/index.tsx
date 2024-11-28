@@ -174,18 +174,18 @@ function SubLog(props: { log: LogType; bigPlay: string }) {
     <div className={logStyle.log}>
       <div className={logStyle.logContent}>
         <div>
-          <span>{new Date(props.log.timestamp).toLocaleTimeString()}</span>
+          <span>{new Date(props.log.timestamp).toLocaleTimeString()}</span>{" "}
+          <span>[bigplay: {props.bigPlay}]</span>
         </div>
         <div>
           {props.log.teams.map((t) => (
-            <div key={t.name} title={JSON.stringify(t.statistics, null, 2)}>
+            <span key={t.name} title={JSON.stringify(t.statistics, null, 2)}>
               {t.name} - {t.statistics.possessionTime}={t.statistics.totalYards}
               /{t.statistics.totalOffensivePlays}
-            </div>
+            </span>
           ))}
         </div>
-        <div>bigplay: {props.bigPlay}</div>
-        <div style={{ height: "2em" }}></div>
+        <div style={{ height: "1em" }}></div>
         {(playByPlay || []).map((drive, i) => (
           <div key={i}>
             <div className={logStyle.logHeader}>

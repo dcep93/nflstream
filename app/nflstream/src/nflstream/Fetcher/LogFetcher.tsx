@@ -94,6 +94,17 @@ class LogFetcher extends Fetcher<LogType | null, number> {
         const log = {
           gameId,
           timestamp,
+          teams: obj.boxscore.teams.map(
+            (t: {
+              team: { name: string };
+              statistics: { name: string; displayValue: string }[];
+            }) => ({
+              name: t.team.name,
+              statistics: Object.fromEntries(
+                t.statistics.map((s) => [s.name, s.displayValue])
+              ),
+            })
+          ),
           playByPlay,
           boxScore,
         };

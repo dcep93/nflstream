@@ -11,6 +11,7 @@ export type StreamType = {
 export type LogType = {
   gameId: number;
   timestamp: number;
+  teams: { name: string; statistics: { [key: string]: string } }[];
   playByPlay: DriveType[];
   boxScore: BoxScoreType[];
 };

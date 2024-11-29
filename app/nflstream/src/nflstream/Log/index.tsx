@@ -172,7 +172,7 @@ function SubLog(props: { log: LogType; bigPlay: string }) {
   }
   return (
     <div className={logStyle.log}>
-      <div className={logStyle.logContent}>
+      <div className={logStyle.logContent} style={{ height: "70%" }}>
         <div>
           <span>{new Date(props.log.timestamp).toLocaleTimeString()}</span>{" "}
           <span>[bigplay: {props.bigPlay}]</span>
@@ -211,7 +211,7 @@ function SubLog(props: { log: LogType; bigPlay: string }) {
           </div>
         ))}
       </div>
-      <div className={logStyle.logContent}>
+      <div className={logStyle.logContent} style={{ height: "28%" }}>
         <AutoScroller speed={0.1}>
           <>
             {(props.log.boxScore || []).map((boxScore, i) => (

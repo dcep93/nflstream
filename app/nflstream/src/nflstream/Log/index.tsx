@@ -177,7 +177,7 @@ function SubLog(props: { log: LogType; bigPlay: string }) {
           <span>{new Date(props.log.timestamp).toLocaleTimeString()}</span>{" "}
           <span>[bigplay: {props.bigPlay}]</span>
         </div>
-        <div>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
           {props.log.teams.map((t) => (
             <span key={t.name} title={JSON.stringify(t.statistics, null, 2)}>
               {t.name} - {t.statistics.possessionTime}={t.statistics.totalYards}

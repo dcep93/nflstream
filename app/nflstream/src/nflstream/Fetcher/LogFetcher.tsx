@@ -20,25 +20,38 @@ class LogFetcher extends Fetcher<LogType | null, number> {
       .then((resps) => (resps as string[]).map((resp) => JSON.parse(resp)))
       .then(([obj, coreObj]) =>
         Promise.resolve()
-          .then(() => coreObj.items.slice().reverse()[0])
-          .then((coreItem) =>
-            coreItem === undefined
-              ? obj
-              : Promise.resolve()
+          .then(() => coreObj.items.slice().reverse())
+          .then((coreItems: { $ref: string; id: string }[]) =>
+            coreItems
+              .filter((coreItem) => coreItem !== undefined)
+              .map((coreItem) =>
+                Promise.resolve()
                   .then(() => coreItem["$ref"])
                   .then((driveUrl) => fetchE(driveUrl, 2 * 1000))
                   .then((driveResp) => JSON.parse(driveResp))
                   .then((driveObj) =>
                     fetchE(driveObj.team["$ref"], 24 * 60 * 60 * 1000)
                       .then((teamResp) => JSON.parse(teamResp))
-                      .then((teamObj) => {
-                        driveObj.team = teamObj;
-                        driveObj.plays = driveObj.plays.items;
-                        obj.drives.current = driveObj;
-                        return obj;
-                      })
+                      .then((teamObj) => ({
+                        ...coreItem,
+                        team: teamObj,
+                        plays: driveObj.plays.items,
+                      }))
                   )
+              )
           )
+          .then((drivePromises) => Promise.all(drivePromises))
+          .then((driveObjs) =>
+            driveObjs.filter((driveObj) => driveObj.plays?.length > 0)
+          )
+          .then((driveObjs) => {
+            if (driveObjs.length > 0) {
+              console.log(obj.drives.previous, driveObjs);
+              obj.drives.current = driveObjs[0];
+              obj.drives.previous = driveObjs.slice(1);
+            }
+          })
+          .then(() => obj)
       )
       .then((obj) => {
         if (!obj.drives) return null;

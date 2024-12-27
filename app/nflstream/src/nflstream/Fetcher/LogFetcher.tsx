@@ -24,10 +24,12 @@ class LogFetcher extends Fetcher<LogType | null, number> {
           .then((coreItems: { $ref: string; id: string }[]) =>
             coreItems
               .filter((coreItem) => coreItem !== undefined)
-              .map((coreItem) =>
+              .map((coreItem, index) =>
                 Promise.resolve()
                   .then(() => coreItem["$ref"])
-                  .then((driveUrl) => fetchE(driveUrl, 2 * 1000))
+                  .then((driveUrl) =>
+                    fetchE(driveUrl, index === 0 ? 2 * 1000 : 5 * 60 * 1000)
+                  )
                   .then((driveResp) => JSON.parse(driveResp))
                   .then((driveObj) =>
                     fetchE(driveObj.team["$ref"], 24 * 60 * 60 * 1000)

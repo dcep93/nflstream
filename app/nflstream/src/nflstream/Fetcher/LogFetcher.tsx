@@ -49,7 +49,7 @@ class LogFetcher extends Fetcher<LogType | null, number> {
           .then((driveObjs) => {
             if (driveObjs.length > 0) {
               obj.drives.current = driveObjs[0];
-              obj.drives.previous = driveObjs.slice(1);
+              obj.drives.previous = driveObjs.slice(1).reverse();
             }
           })
           .then(() => obj)

@@ -11,9 +11,7 @@ export const isMobile =
   new URLSearchParams(window.location.search).get("remote") !== null ||
   window.screen.width * window.screen.height < 500_000;
 
-export const titleMessageDiv = (
-  <div>did you know that there's a coconut tree under the oval office</div>
-);
+export const titleMessageDiv = <div>FTC</div>;
 
 export default function Options() {
   return (

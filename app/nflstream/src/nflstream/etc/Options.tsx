@@ -7,9 +7,11 @@ export const autoRefreshRef = createRef<HTMLInputElement>();
 export const muteCommercialRef = createRef<HTMLInputElement>();
 export const remoteRef = createRef<HTMLInputElement>();
 
+const params = new URLSearchParams(window.location.search);
 export const isMobile =
-  new URLSearchParams(window.location.search).get("remote") !== null ||
-  window.screen.width * window.screen.height < 500_000;
+  params.get("desktop") === null && (
+  params.get("remote") !== null ||
+  window.screen.width * window.screen.height < 500_000);
 
 export const titleMessageDiv = <div>FTC</div>;
 

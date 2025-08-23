@@ -107,7 +107,7 @@ type matchupTeam = {
 class ScoreFetcher extends Fetcher<scoresType, null> {
   intervalMs = 20_000;
   static leagueId = 203836968;
-  static year = 2024;
+  static year = 2025;
 
   getResponse<T extends typeof ScoreFetcher>() {
     return (this.constructor as T).staticGetResponse(this.intervalMs);

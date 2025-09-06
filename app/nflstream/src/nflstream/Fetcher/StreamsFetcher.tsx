@@ -1,4 +1,6 @@
 import Fetcher, { cacheF, StreamType } from ".";
+import { getClapprParams, isClappr } from "../Multiscreen/ClapprSrcDoc";
+import { getFlowPlayerParams } from "../Multiscreen/FlowPlayerSrcDoc";
 
 export const HOST = localStorage.getItem("host")!;
 
@@ -71,25 +73,12 @@ export function getHostParams(
   url: string,
   hardRefresh: boolean
 ): Promise<{ [key: string]: string }> {
-  return fetchP(url, hardRefresh ? 0 : 10 * 60 * 1000, (text) =>
-    Promise.resolve().then(() =>
-      Object.fromEntries(
-        Object.entries({
-          key: /var key= '(.*)';/,
-          masterkey: /var masterkey= '(.*)'/,
-          masterinf: /window.masterinf = (.*);/,
-        })
-          .map(([k, re]) => ({ k, matched: (text.match(re) || [])[1] }))
-          .map(({ k, matched }) => [
-            k,
-            matched?.startsWith("{") ? btoa(matched) : matched,
-          ])
-      )
-    )
-  );
+  return isClappr
+    ? getClapprParams(url, hardRefresh)
+    : getFlowPlayerParams(url, hardRefresh);
 }
 
-function fetchP<T>(
+export function fetchP<T>(
   url: string,
   maxAgeMs: number,
   textToCache: (text: string) => Promise<T>

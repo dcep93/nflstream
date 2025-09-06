@@ -1,6 +1,6 @@
 import ReactDomServer from "react-dom/server";
-import { HOST } from "../Fetcher/StreamsFetcher";
 import { muteCommercialRef } from "../etc/Options";
+import { fetchP, HOST } from "../Fetcher/StreamsFetcher";
 
 export default function FlowPlayerSrcDoc(params: { [key: string]: string }) {
   function FunctionToScript<T>(props: { t: T; f: (t: T) => void }) {
@@ -392,5 +392,27 @@ export default function FlowPlayerSrcDoc(params: { [key: string]: string }) {
         <canvas id="canvas" hidden />
       </body>
     </html>
+  );
+}
+
+export function getFlowPlayerParams(
+  url: string,
+  hardRefresh: boolean
+): Promise<{ [key: string]: string }> {
+  return fetchP(url, hardRefresh ? 0 : 10 * 60 * 1000, (text) =>
+    Promise.resolve().then(() =>
+      Object.fromEntries(
+        Object.entries({
+          key: /var key= '(.*)';/,
+          masterkey: /var masterkey= '(.*)'/,
+          masterinf: /window.masterinf = (.*);/,
+        })
+          .map(([k, re]) => ({ k, matched: (text.match(re) || [])[1] }))
+          .map(({ k, matched }) => [
+            k,
+            matched?.startsWith("{") ? btoa(matched) : matched,
+          ])
+      )
+    )
   );
 }

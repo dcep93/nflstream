@@ -121,7 +121,24 @@ export default function ClapprSrcDoc(params: { [key: string]: string }) {
               plugins: [(window as any).HlsjsPlayback], // provided by clappr-hlsjs-playback script above
             });
 
-            player.on((window as any).Clappr.Events.PLAYER_PLAY, customInit);
+            function isLoaded(): boolean {
+              // video.buffer > 45
+              return true;
+            }
+
+            function isBrief(): boolean {
+              // _flowapi.video.buffer < 60
+              return true;
+            }
+
+            function fastForward() {
+              // video.currentTime = _flowapi.video.buffer - 5;
+            }
+
+            function getLag(): number {
+              // _flowapi.video.buffer - video.currentTime;
+              return 0;
+            }
 
             function customInit() {
               const video = document.getElementsByTagName("video")[0];
@@ -267,16 +284,16 @@ export default function ClapprSrcDoc(params: { [key: string]: string }) {
                 return new Promise<void>((resolve) => {
                   const accelerateInterval = setInterval(() => {
                     if (!video.paused) {
-                      const behind = _flowapi.video.buffer - video.currentTime;
-                      if (behind > (firstTime ? 5 : 20)) {
+                      const lag = getLag();
+                      if (lag > (firstTime ? 5 : 20)) {
                         triggered = true;
-                      } else if (behind < 5) {
+                      } else if (lag < 5) {
                         triggered = false;
                       }
                       video.playbackRate = triggered ? 3 : 1;
                     }
                     if (firstTime) {
-                      if (_flowapi.video.buffer < 60) {
+                      if (isBrief()) {
                         return;
                       }
                     } else {
@@ -293,7 +310,7 @@ export default function ClapprSrcDoc(params: { [key: string]: string }) {
               }
 
               const loadedInterval = setInterval(() => {
-                if (_flowapi.video.buffer > 45) {
+                if (isLoaded()) {
                   clearInterval(loadedInterval);
                   update_muted();
                   window.parent.postMessage(
@@ -307,7 +324,7 @@ export default function ClapprSrcDoc(params: { [key: string]: string }) {
 
                   muteCommercialLoop();
 
-                  video.currentTime = _flowapi.video.buffer - 5;
+                  fastForward();
                   catchUp(true).then(() => {
                     catchUp(false);
                     var recentTimestamp = 0;
@@ -336,6 +353,8 @@ export default function ClapprSrcDoc(params: { [key: string]: string }) {
                 }
               }, 10);
             }
+
+            player.on((window as any).Clappr.Events.PLAYER_PLAY, customInit);
           }}
         />
       </body>

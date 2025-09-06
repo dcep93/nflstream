@@ -40,6 +40,8 @@ function initialize() {
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   database = getDatabase(app);
+  if (true) return;
+  // TODO
   const analytics = getAnalytics(app);
   console.log("firebase", analytics);
 }

@@ -2,7 +2,7 @@ import ReactDomServer from "react-dom/server";
 import { HOST } from "../Fetcher/StreamsFetcher";
 import { muteCommercialRef } from "../etc/Options";
 
-export default function HostSrcDoc(params: { [key: string]: string }) {
+export default function FlowPlayerSrcDoc(params: { [key: string]: string }) {
   function FunctionToScript<T>(props: { t: T; f: (t: T) => void }) {
     return (
       <script

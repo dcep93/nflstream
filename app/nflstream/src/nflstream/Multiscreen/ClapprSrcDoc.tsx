@@ -46,7 +46,7 @@ export default function ClapprSrcDoc(params: { [key: string]: string }) {
 
               const origSend = xhr.send;
               xhr.send = function (body?: Document | BodyInit | null) {
-                const payload = (window as any).prefetched[xhr.__meta.url];
+                const payload = (window as any).params[xhr.__meta.url];
                 console.log({ ...xhr.__meta, body, payload });
                 if (!payload) {
                   return origSend.call(xhr, body as any);
@@ -93,6 +93,7 @@ export default function ClapprSrcDoc(params: { [key: string]: string }) {
             muteCommercial: muteCommercialRef.current?.checked,
           }}
           f={({ params, muteCommercial }) => {
+            (window as any).params = params;
             const source = params.source;
             if (!source) {
               alert("invalid params");

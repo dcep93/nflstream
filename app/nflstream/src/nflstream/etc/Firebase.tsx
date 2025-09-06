@@ -23,23 +23,14 @@ type BlobType = any;
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  // apiKey: "AIzaSyBBwbpV7vb8U-4xKsViCZZ3MVoiUOLrlkw",
-  // authDomain: "nflstream.firebaseapp.com",
-  // databaseURL: "https://nflstream-default-rtdb.firebaseio.com",
-  // projectId: "nflstream",
-  // storageBucket: "nflstream.appspot.com",
-  // messagingSenderId: "240735247504",
-  // appId: "1:240735247504:web:ba802c87e43087169f0c15",
-  // measurementId: "G-KTTBDNJXF3",
-
-  apiKey: "AIzaSyD6FMqmSTbv-cxRkgWZ7-iyPVTUlkVzjuM",
-  authDomain: "fir-320421.firebaseapp.com",
-  databaseURL: "https://firebase-320421-default-rtdb.firebaseio.com",
-  projectId: "firebase-320421",
-  storageBucket: "firebase-320421.appspot.com",
-  messagingSenderId: "532025077082",
-  appId: "1:532025077082:web:0570d675c7caac9bca9763",
-  measurementId: "G-7M3Q897DJW",
+  apiKey: "AIzaSyBBwbpV7vb8U-4xKsViCZZ3MVoiUOLrlkw",
+  authDomain: "nflstream.firebaseapp.com",
+  databaseURL: "https://nflstream-default-rtdb.firebaseio.com",
+  projectId: "nflstream",
+  storageBucket: "nflstream.appspot.com",
+  messagingSenderId: "240735247504",
+  appId: "1:240735247504:web:ba802c87e43087169f0c15",
+  measurementId: "G-KTTBDNJXF3",
 };
 
 function initialize() {

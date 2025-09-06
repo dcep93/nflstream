@@ -120,7 +120,6 @@ export default function ClapprSrcDoc(params: { [key: string]: string }) {
               },
               plugins: [(window as any).HlsjsPlayback], // provided by clappr-hlsjs-playback script above
             });
-            player.play();
 
             // function customInit() {
             //   const video = document.getElementsByTagName("video")[0];

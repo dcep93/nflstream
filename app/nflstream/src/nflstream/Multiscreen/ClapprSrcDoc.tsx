@@ -66,7 +66,6 @@ export default function ClapprSrcDoc(params: { [key: string]: string }) {
 
               return xhr;
             }
-            // Preserve prototype and constants
             (InterceptedXHR as any).prototype = OrigXHR.prototype;
             for (const k of Object.getOwnPropertyNames(OrigXHR)) {
               try {
@@ -74,7 +73,6 @@ export default function ClapprSrcDoc(params: { [key: string]: string }) {
               } catch {}
             }
 
-            // Install
             (window as any).XMLHttpRequest = InterceptedXHR as any;
           }}
         />
@@ -100,25 +98,21 @@ export default function ClapprSrcDoc(params: { [key: string]: string }) {
               return;
             }
 
-            // Initialize Clappr with hls.js playback
             const player = new (window as any).Clappr.Player({
               parentId: "#player",
               source,
-              autoPlay: true, // browsers may require muted autoplay
-              mute: true, // unmute after it starts if you want
-              poster:
-                "https://dummyimage.com/960x540/222/aaaaaa&text=Loading+stream...",
+              autoPlay: true,
+              mute: true,
               height: "100%",
               width: "100%",
               playback: {
                 crossOrigin: "anonymous",
-                // hls.js config (optional, tweak as needed)
                 hlsjsConfig: {
                   lowLatencyMode: true,
                   backBufferLength: 90,
                 },
               },
-              plugins: [(window as any).HlsjsPlayback], // provided by clappr-hlsjs-playback script above
+              plugins: [(window as any).HlsjsPlayback],
             });
 
             function isLoaded(): boolean {

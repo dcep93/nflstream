@@ -2,16 +2,16 @@ import ReactDomServer from "react-dom/server";
 import { muteCommercialRef } from "../etc/Options";
 import { fetchP, HOST } from "../Fetcher/StreamsFetcher";
 
+export function FunctionToScript<T>(props: { t: T; f: (t: T) => void }) {
+  return (
+    <script
+      dangerouslySetInnerHTML={{
+        __html: `\n(${props.f.toString()})(${JSON.stringify(props.t)})\n`,
+      }}
+    ></script>
+  );
+}
 export default function FlowPlayerSrcDoc(params: { [key: string]: string }) {
-  function FunctionToScript<T>(props: { t: T; f: (t: T) => void }) {
-    return (
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `\n(${props.f.toString()})(${JSON.stringify(props.t)})\n`,
-        }}
-      ></script>
-    );
-  }
   return ReactDomServer.renderToStaticMarkup(
     <html lang="en" className="hl-en not-logged-in no-touch">
       <head>

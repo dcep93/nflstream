@@ -4,6 +4,7 @@ import { getHostParams, HOST } from "../Fetcher/StreamsFetcher";
 import Log from "../Log";
 
 import style from "../index.module.css";
+import ClapprSrcDoc, { isClappr } from "./ClapprSrcDoc";
 import FlowPlayerSrcDoc from "./FlowPlayerSrcDoc";
 import msStyle from "./index.module.css";
 import Scoreboard, { SCOREBOARD_SRC } from "./Scoreboard";
@@ -198,7 +199,7 @@ function HostStreamIFrame(props: {
               width: "98%",
             }}
             title={props.screen.iFrameTitle}
-            srcDoc={FlowPlayerSrcDoc(params)}
+            srcDoc={isClappr ? ClapprSrcDoc(params) : FlowPlayerSrcDoc(params)}
           ></iframe>
         ))
         .then((ife) => updateIframeE(ife));

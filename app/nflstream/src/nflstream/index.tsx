@@ -8,7 +8,7 @@ import { StreamType } from "./Fetcher";
 import StreamsFetcher, { HOST } from "./Fetcher/StreamsFetcher";
 import style from "./index.module.css";
 import Multiscreen, { ScreenType } from "./Multiscreen";
-import { SCOREBOARD_SRC } from "./Multiscreen/Scoreboard";
+import { SCOREBOARD_SRC, ScoreFetcher } from "./Multiscreen/Scoreboard";
 import recorded_sha from "./recorded_sha";
 
 declare global {
@@ -101,7 +101,7 @@ class NFLStream extends React.Component<
             this.state.hasExtension
               ? [
                   {
-                    raw_url: "",
+                    raw_url: `https://fantasy.espn.com/football/fantasycast?leagueId=${ScoreFetcher.leagueId}`,
                     name: SCOREBOARD_SRC,
                     stream_id: SCOREBOARD_SRC,
                     src: SCOREBOARD_SRC,

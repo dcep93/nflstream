@@ -59,7 +59,9 @@ export default class StreamsFetcher extends Fetcher<StreamType[], null> {
           }))
           .map((stream) => ({
             ...stream,
-            raw_url: `https://${HOST}/nfl/${stream.stream_id}`,
+            raw_url: isClappr
+              ? stream.stream_id
+              : `https://${HOST}/nfl/${stream.stream_id}`,
           }))
           .map((stream) =>
             getHostParams(stream.raw_url, false).then(() => stream)

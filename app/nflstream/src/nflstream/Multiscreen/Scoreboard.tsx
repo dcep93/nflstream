@@ -104,7 +104,7 @@ type matchupTeam = {
   totalPointsLive: number;
   totalProjectedPointsLive: number;
 };
-class ScoreFetcher extends Fetcher<scoresType, null> {
+export class ScoreFetcher extends Fetcher<scoresType, null> {
   intervalMs = 20_000;
   static leagueId = 203836968;
   static year = 2025;

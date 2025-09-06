@@ -79,28 +79,30 @@ export default function ClapprSrcDoc(params: { [key: string]: string }) {
           }}
         />
         <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>{" "}
-        <script src="https://cdn.jsdelivr.net/npm/clappr-hlsjs-playback@latest/dist/clappr-hlsjs-playback.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@clappr/hlsjs-playback@1.8.3/dist/hlsjs-playback.min.js"></script>
+      </head>
+
+      <body>
+        <div id="wrap">
+          <div id="player" style={{ height: "100vH", width: "100vW" }}></div>
+        </div>
+
         <FunctionToScript
           t={{
             params,
             muteCommercial: muteCommercialRef.current?.checked,
           }}
           f={({ params, muteCommercial }) => {
-            const key = params.key;
-            const prefetched = params.prefetched;
-            (window as any).prefetched = prefetched;
-            if (!key || !prefetched) {
+            const source = params.source;
+            if (!source) {
               alert("invalid params");
               return;
             }
 
-            // Demo HLS stream (replace with yours)
-            const src = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8";
-
             // Initialize Clappr with hls.js playback
             const player = new (window as any).Clappr.Player({
               parentId: "#player",
-              source: src,
+              source,
               autoPlay: true, // browsers may require muted autoplay
               mute: true, // unmute after it starts if you want
               poster:
@@ -117,6 +119,7 @@ export default function ClapprSrcDoc(params: { [key: string]: string }) {
               },
               plugins: [(window as any).HlsjsPlayback], // provided by clappr-hlsjs-playback script above
             });
+            player.play();
 
             // function customInit() {
             //   const video = document.getElementsByTagName("video")[0];
@@ -333,12 +336,6 @@ export default function ClapprSrcDoc(params: { [key: string]: string }) {
             // }
           }}
         />
-      </head>
-
-      <body>
-        <div id="wrap">
-          <div id="player"></div>
-        </div>
       </body>
     </html>
   );
@@ -352,10 +349,12 @@ export function getClapprParams(
   return fetchE("https://icrackstreams.app/nflstreams/live", maxAgeMs)
     .then(
       (text) =>
-        Array.from(text.matchAll(/href="(.*?-live-streaming-.*?)" class/))
-          .map((m) => m[0])
+        Array.from(text.matchAll(/href="(.*?-live-streaming-.*?)" class/g))
+          .map((m) => m[1])
           .find((m) => m.includes(stream_id))!
     )
     .then((raw_url) => fetchE(raw_url, hardRefresh ? 0 : maxAgeMs))
-    .then((text) => ({ text }));
+    .then((text) => ({
+      source: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+    }));
 }

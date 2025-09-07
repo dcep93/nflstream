@@ -1,25 +1,18 @@
 import ReactDomServer from "react-dom/server";
 import { muteCommercialRef } from "../etc/Options";
 import { StreamType } from "../Fetcher";
-import { fetchP, HOST } from "../Fetcher/StreamsFetcher";
+import { HOST } from "../Fetcher/StreamsFetcher";
+import FunctionToScript from "./FunctionToScript";
 
-export default {
+const DRIVER = {
   getRawUrl: (stream_id: string) => "https://icrackstreams.app/nflstreams/live",
   getHostParams: (stream: StreamType, hardRefresh: boolean) =>
     Promise.resolve({}),
-  getSrcDoc: FlowPlayerSrcDoc,
+  getSrcDoc,
 };
+export default DRIVER;
 
-function FunctionToScript<T>(props: { t: T; f: (t: T) => void }) {
-  return (
-    <script
-      dangerouslySetInnerHTML={{
-        __html: `\n(${props.f.toString()})(${JSON.stringify(props.t)})\n`,
-      }}
-    ></script>
-  );
-}
-function FlowPlayerSrcDoc(params: { [key: string]: string }) {
+function getSrcDoc(params: { [key: string]: string }) {
   return ReactDomServer.renderToStaticMarkup(
     <html lang="en" className="hl-en not-logged-in no-touch">
       <head>
@@ -400,27 +393,5 @@ function FlowPlayerSrcDoc(params: { [key: string]: string }) {
         <canvas id="canvas" hidden />
       </body>
     </html>
-  );
-}
-
-export function getFlowPlayerParams(
-  stream: StreamType,
-  hardRefresh: boolean
-): Promise<{ [key: string]: string }> {
-  return fetchP(stream.raw_url, hardRefresh ? 0 : 10 * 60 * 1000, (text) =>
-    Promise.resolve().then(() =>
-      Object.fromEntries(
-        Object.entries({
-          key: /var key= '(.*)';/,
-          masterkey: /var masterkey= '(.*)'/,
-          masterinf: /window.masterinf = (.*);/,
-        })
-          .map(([k, re]) => ({ k, matched: (text.match(re) || [])[1] }))
-          .map(({ k, matched }) => [
-            k,
-            matched?.startsWith("{") ? btoa(matched) : matched,
-          ])
-      )
-    )
   );
 }

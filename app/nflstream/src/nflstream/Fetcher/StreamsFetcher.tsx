@@ -1,5 +1,5 @@
 import Fetcher, { cacheF, StreamType } from ".";
-import ShakaDriver from "../Multiscreen/ShakaDriver";
+import ShakaDriver from "../Drivers/ShakaDriver";
 
 export const HOST_STORAGE_KEY = "host.v2";
 export const HOST = localStorage.getItem(HOST_STORAGE_KEY)!;

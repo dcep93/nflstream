@@ -1,18 +1,31 @@
 import ReactDomServer from "react-dom/server";
 import { muteCommercialRef } from "../etc/Options";
 import { StreamType } from "../Fetcher";
-import { fetchP, HOST } from "../Fetcher/StreamsFetcher";
+import { fetchE } from "../Fetcher/LogFetcher";
+import { HOST } from "../Fetcher/StreamsFetcher";
+import FunctionToScript from "./FunctionToScript";
 
-export function FunctionToScript<T>(props: { t: T; f: (t: T) => void }) {
-  return (
-    <script
-      dangerouslySetInnerHTML={{
-        __html: `\n(${props.f.toString()})(${JSON.stringify(props.t)})\n`,
-      }}
-    ></script>
-  );
-}
-export default function FlowPlayerSrcDoc(params: { [key: string]: string }) {
+const maxAgeMs = 10 * 60 * 1000;
+const DRIVER = {
+  getRawUrl: (stream_id: string) => `${HOST}/nflstreams/live`,
+  getHostParams: (stream: StreamType, hardRefresh: boolean) =>
+    fetchE(`${HOST}/nflstreams/live`, maxAgeMs)
+      .then(
+        (text) =>
+          Array.from(text.matchAll(/href="(.*?-live-streaming-.*?)" class/g))
+            .map((m) => m[1])
+            .find((m) => m.includes(stream.stream_id))!
+      )
+      .then((raw_url) => fetchE(raw_url, hardRefresh ? 0 : maxAgeMs))
+      .then((text) => ({
+        // TODO
+        source: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+      })),
+  getSrcDoc,
+};
+export default DRIVER;
+
+function getSrcDoc(params: { [key: string]: string }) {
   return ReactDomServer.renderToStaticMarkup(
     <html lang="en" className="hl-en not-logged-in no-touch">
       <head>
@@ -29,145 +42,119 @@ export default function FlowPlayerSrcDoc(params: { [key: string]: string }) {
         <FunctionToScript
           t={undefined}
           f={() => {
-            const _console = Object.assign({}, console);
-            Object.assign(window, { _console });
-            console.log = console.time = console.timeEnd = () => null;
+            const OrigXHR = window.XMLHttpRequest;
+
+            function InterceptedXHR(this: XMLHttpRequest) {
+              const xhr = new OrigXHR() as XMLHttpRequest & { __meta?: any };
+              xhr.__meta = {};
+
+              const origOpen = xhr.open;
+              xhr.open = function (
+                ...args: [
+                  method: string,
+                  url: string,
+                  async?: boolean,
+                  user?: string,
+                  password?: string
+                ]
+              ) {
+                const [method, url] = args;
+                xhr.__meta.method = method?.toUpperCase?.() || "GET";
+                xhr.__meta.url = url;
+                return origOpen.apply(xhr, args as any);
+              };
+
+              const origSend = xhr.send;
+              xhr.send = function (body?: Document | BodyInit | null) {
+                const payload = (window as any).params[xhr.__meta.url];
+                console.log({ ...xhr.__meta, body, payload });
+                if (!payload) {
+                  return origSend.call(xhr, body as any);
+                }
+                Object.defineProperty(xhr, "readyState", { value: 4 });
+                Object.defineProperty(xhr, "status", { value: 200 });
+                Object.defineProperty(xhr, "statusText", { value: "OK" });
+                Object.defineProperty(xhr, "responseText", {
+                  value: payload,
+                });
+                Object.defineProperty(xhr, "response", { value: payload });
+
+                xhr.dispatchEvent(new Event("readystatechange"));
+                xhr.dispatchEvent(new Event("load"));
+                xhr.dispatchEvent(new Event("loadend"));
+              };
+
+              return xhr;
+            }
+            (InterceptedXHR as any).prototype = OrigXHR.prototype;
+            for (const k of Object.getOwnPropertyNames(OrigXHR)) {
+              try {
+                (InterceptedXHR as any)[k] = (OrigXHR as any)[k];
+              } catch {}
+            }
+
+            (window as any).XMLHttpRequest = InterceptedXHR as any;
           }}
         />
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/flowplayer/7.2.7/skin/skin.css"
-        />
-        <script
-          type="text/javascript"
-          src="https://code.jquery.com/jquery-2.1.1.min.js"
-        ></script>
-        <script src={`https://${HOST}/js/hls.forcaster2.js?ver=1.4.5`}></script>
-        <script src={`https://${HOST}/js/flowplayer.min.js`}></script>
-        <script src={`https://${HOST}/js/p1.js`}></script>
+        <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>{" "}
+        <script src="https://cdn.jsdelivr.net/npm/@clappr/hlsjs-playback@1.8.3/dist/hlsjs-playback.min.js"></script>
+      </head>
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/js/materialize.min.js"></script>
-        <script src={`https://${HOST}/js/moment.js`}></script>
-
-        <link
-          rel="stylesheet"
-          href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"
-        />
-        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-        <script src={`https://${HOST}/js/jquery-input-file-text.js`}></script>
+      <body>
+        <div id="wrap">
+          <div id="player" style={{ height: "100vH", width: "100vW" }}></div>
+        </div>
 
         <FunctionToScript
           t={{
             params,
-            HOST,
             muteCommercial: muteCommercialRef.current?.checked,
           }}
-          f={({ params, HOST, muteCommercial }) => {
-            var key = params.key;
-            if (!key) {
+          f={({ params, muteCommercial }) => {
+            (window as any).params = params;
+            const source = params.source;
+            if (!source) {
               alert("invalid params");
               return;
             }
-            // @ts-ignore
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const console = window._console;
 
-            console.log(new Date(), "HostSrcDoc", params);
-
-            const _flowplayer = Object.assign(window).flowplayer;
-            var _flowapi: any;
-
-            const resources: { [key: string]: any } = {};
-
-            Object.assign(window, {
-              resources,
-              router: null,
-              routermode: 1, //1=resolution ,2=cacheproxy ,3=passthru
-              routercountry: "us",
-              masterinf: JSON.parse(atob(params.masterinf)),
+            const player = new (window as any).Clappr.Player({
+              parentId: "#player",
+              source,
+              autoPlay: true,
+              mute: true,
+              height: "100%",
+              width: "100%",
+              playback: {
+                crossOrigin: "anonymous",
+                hlsjsConfig: {
+                  lowLatencyMode: true,
+                  backBufferLength: 90,
+                },
+              },
+              plugins: [(window as any).HlsjsPlayback],
             });
 
-            setInterval(function () {
-              var records = window.performance.getEntriesByType("resource");
-              for (var i = 0; i < records.length; i++) {
-                var record: any = records[i];
-                resources[record.name] = record.responseEnd;
-              }
-              window.performance.clearResourceTimings();
-            }, 200);
+            function isLoaded(): boolean {
+              // video.buffer > 45
+              return true;
+            }
 
-            window.onload = function () {
-              // var reloadCount = 0;
-              // var reloadStart = true;
-              // var isplaying = false;
+            function isBrief(): boolean {
+              // _flowapi.video.buffer < 60
+              return true;
+            }
 
-              // var cloudindex = 0;
-              // var edges = {};
+            function fastForward() {
+              // video.currentTime = _flowapi.video.buffer - 5;
+            }
 
-              var masterkey = params.masterkey;
-              //var hlsurl='https://tstreams.info/1/'+key;
-              //var hlsurl='https://proxy.tstreams.info/master/nfl/us/'+masterkey;
-              var hlsurl = "https://tstreams.info/" + masterkey + ".m3u8";
-
-              // var timer;
-              _flowplayer.conf = {
-                fullscreen: true,
-                // iOS allows only native fullscreen from within iframes
-                native_fullscreen: true,
-              };
-              fetch(`https://${HOST}/tv/testurl-${masterkey}.txt`)
-                .then((resp) => resp.text())
-                .then((testurl) => {
-                  Object.assign(window, { testurl });
-                })
-                .then(() => initPlayer(hlsurl));
-            };
-
-            function initPlayer(hlsurl: string) {
-              _flowapi = _flowplayer("#hlsjslive", {
-                splash: true,
-                preload: "auto",
-                // autoplay: false,
-                muted: true,
-                ratio: 9 / 16,
-
-                // stream only available via https:
-                // force loading of Flash HLS via https
-                swfHls:
-                  "https://releases.flowplayer.org/7.0.4/flowplayerhls.swf",
-
-                clip: {
-                  // enable hlsjs in desktop Safari for manual quality selection
-                  // CAVEAT: may cause decoding problems with some streams!
-                  hlsjs: {
-                    safari: true,
-                    recoverNetworkError: true,
-                    listeners: [
-                      "hlsFragLoaded",
-                      "hlsLevelLoading",
-                      "hlsLevelLoaded",
-                    ],
-                  },
-                  live: true,
-                  dvr: true,
-                  sources: [{ type: "application/x-mpegurl", src: hlsurl }],
-                },
-              });
-              Object.assign(window, {
-                flowapi: _flowapi,
-              });
-              customInit();
+            function getLag(): number {
+              // _flowapi.video.buffer - video.currentTime;
+              return 0;
             }
 
             function customInit() {
-              Array.from(document.getElementsByTagName("a")).find((a) =>
-                a.href.endsWith("/hello/?from=player")
-              )!.style.opacity = "0";
-
-              (
-                document.getElementsByClassName("fp-ui")[0] as HTMLElement
-              ).click();
-
               const video = document.getElementsByTagName("video")[0];
               var subscreen_muted = true;
               function update_muted() {
@@ -311,16 +298,16 @@ export default function FlowPlayerSrcDoc(params: { [key: string]: string }) {
                 return new Promise<void>((resolve) => {
                   const accelerateInterval = setInterval(() => {
                     if (!video.paused) {
-                      const behind = _flowapi.video.buffer - video.currentTime;
-                      if (behind > (firstTime ? 5 : 20)) {
+                      const lag = getLag();
+                      if (lag > (firstTime ? 5 : 20)) {
                         triggered = true;
-                      } else if (behind < 5) {
+                      } else if (lag < 5) {
                         triggered = false;
                       }
                       video.playbackRate = triggered ? 3 : 1;
                     }
                     if (firstTime) {
-                      if (_flowapi.video.buffer < 60) {
+                      if (isBrief()) {
                         return;
                       }
                     } else {
@@ -337,7 +324,7 @@ export default function FlowPlayerSrcDoc(params: { [key: string]: string }) {
               }
 
               const loadedInterval = setInterval(() => {
-                if (_flowapi.video.buffer > 45) {
+                if (isLoaded()) {
                   clearInterval(loadedInterval);
                   update_muted();
                   window.parent.postMessage(
@@ -351,7 +338,7 @@ export default function FlowPlayerSrcDoc(params: { [key: string]: string }) {
 
                   muteCommercialLoop();
 
-                  video.currentTime = _flowapi.video.buffer - 5;
+                  fastForward();
                   catchUp(true).then(() => {
                     catchUp(false);
                     var recentTimestamp = 0;
@@ -380,40 +367,11 @@ export default function FlowPlayerSrcDoc(params: { [key: string]: string }) {
                 }
               }, 10);
             }
+
+            player.on((window as any).Clappr.Events.PLAYER_PLAY, customInit);
           }}
         />
-      </head>
-
-      <body>
-        <div
-          id="hlsjslive"
-          className="fp-slim"
-          style={{ display: "block", outline: "none" }}
-        ></div>
-        <canvas id="canvas" hidden />
       </body>
     </html>
-  );
-}
-
-export function getFlowPlayerParams(
-  stream: StreamType,
-  hardRefresh: boolean
-): Promise<{ [key: string]: string }> {
-  return fetchP(stream.raw_url, hardRefresh ? 0 : 10 * 60 * 1000, (text) =>
-    Promise.resolve().then(() =>
-      Object.fromEntries(
-        Object.entries({
-          key: /var key= '(.*)';/,
-          masterkey: /var masterkey= '(.*)'/,
-          masterinf: /window.masterinf = (.*);/,
-        })
-          .map(([k, re]) => ({ k, matched: (text.match(re) || [])[1] }))
-          .map(({ k, matched }) => [
-            k,
-            matched?.startsWith("{") ? btoa(matched) : matched,
-          ])
-      )
-    )
   );
 }

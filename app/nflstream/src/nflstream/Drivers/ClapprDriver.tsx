@@ -24,7 +24,7 @@ const ClapprDriver = {
         (text) =>
           ({
             source: `${window.atob(
-              "aHR0cHM6Ly9wbDIuZ250bGVvc2Vhbi5zaXRlL3BsYXlsaXN0LzM2NDgyL2xvYWQtcGxheWxpc3Q="
+              "aHR0cHM6Ly9wbDIuZ250bGVvc2Vhbi5zaXRlL3BsYXlsaXN0LzM2NDUyL2xvYWQtcGxheWxpc3Q="
             )}////.m3u8`,
           } as Record<string, string>)
       ),

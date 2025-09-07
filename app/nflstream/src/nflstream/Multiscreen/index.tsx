@@ -72,11 +72,7 @@ class Multiscreen extends React.Component<
           );
         }
       } else if (event.data.action === "proxy") {
-        fetchE(event.data.url, 0, {
-          headers: {
-            referer: "https://gooz.aapmains.net/",
-          },
-        }).then((response) => {
+        fetchE(event.data.url, 0).then((response) => {
           const ref = this.getScreen()?.ref;
           if (ref)
             ref.current?.contentWindow?.postMessage(

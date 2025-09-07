@@ -21,5 +21,15 @@
     "accept_tls_channel_id": true
   },
   "host_permissions": ["https://www.espn.com/", "<all_urls>"],
-  "manifest_version": 3
+  "manifest_version": 3,
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset_1",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  },
+  "permissions": ["declarativeNetRequest"]
 }

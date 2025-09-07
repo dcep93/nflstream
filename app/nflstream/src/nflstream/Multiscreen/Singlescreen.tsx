@@ -108,7 +108,8 @@ function ObjectFitIframe(props: {
         justifyContent: "space-around",
       }}
     >
-      {!props.hasExtension ||
+      {true ||
+      !props.hasExtension ||
       !props.screen.espnId ||
       props.screen.skipLog ? null : (
         <Log

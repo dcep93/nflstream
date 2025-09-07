@@ -6,7 +6,7 @@ import { HOST } from "../Fetcher/StreamsFetcher";
 import FunctionToScript from "./FunctionToScript";
 
 const maxAgeMs = 10 * 60 * 1000;
-const DRIVER = {
+const ClapprDriver = {
   getRawUrl: (stream_id: string) => `${HOST}/nflstreams/live`,
   getHostParams: (stream: StreamType, hardRefresh: boolean) =>
     fetchE(`${HOST}/nflstreams/live`, maxAgeMs)
@@ -18,12 +18,13 @@ const DRIVER = {
       )
       .then((raw_url) => fetchE(raw_url, hardRefresh ? 0 : maxAgeMs))
       .then((text) => ({
-        // TODO
-        source: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+        source: window.atob(
+          "aHR0cHM6Ly9wbDIuZ250bGVvc2Vhbi5zaXRlL3BsYXlsaXN0LzM2NDU5L2xvYWQtcGxheWxpc3Q="
+        ),
       })),
   getSrcDoc,
 };
-export default DRIVER;
+export default ClapprDriver;
 
 function getSrcDoc(params: { [key: string]: string }) {
   return ReactDomServer.renderToStaticMarkup(

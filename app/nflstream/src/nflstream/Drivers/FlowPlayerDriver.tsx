@@ -4,7 +4,7 @@ import { StreamType } from "../Fetcher";
 import { fetchP, HOST } from "../Fetcher/StreamsFetcher";
 import FunctionToScript from "./FunctionToScript";
 
-const DRIVER = {
+const FlowPlayerDriver = {
   getRawUrl: (stream_id: string) => `https://${HOST}/nfl/${stream_id}`,
   getHostParams: (stream: StreamType, hardRefresh: boolean) =>
     fetchP(stream.raw_url, hardRefresh ? 0 : 10 * 60 * 1000, (text) =>
@@ -25,7 +25,7 @@ const DRIVER = {
     ),
   getSrcDoc,
 };
-export default DRIVER;
+export default FlowPlayerDriver;
 
 function getSrcDoc(params: { [key: string]: string }) {
   return ReactDomServer.renderToStaticMarkup(

@@ -1,9 +1,9 @@
 import Fetcher, { cacheF, StreamType } from ".";
-import ShakaDriver from "../Drivers/ShakaDriver";
+import ClapprDriver from "../Drivers/ClapprDriver";
 
 export const HOST_STORAGE_KEY = "host.v2";
 export const HOST = localStorage.getItem(HOST_STORAGE_KEY)!;
-export const DRIVER = ShakaDriver;
+export const DRIVER = ClapprDriver;
 
 export default class StreamsFetcher extends Fetcher<StreamType[], null> {
   intervalMs = 10 * 60 * 1000;

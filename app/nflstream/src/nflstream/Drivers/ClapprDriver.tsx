@@ -7,16 +7,16 @@ import FunctionToScript from "./FunctionToScript";
 
 const maxAgeMs = 10 * 60 * 1000;
 const ClapprDriver = {
-  getRawUrl: (stream_id: string) => `${HOST}/nflstreams/live`,
+  getRawUrl: (stream_id: string) => `https://${HOST}/nflstreams/live`,
   getHostParams: (stream: StreamType, hardRefresh: boolean) =>
-    fetchE(`${HOST}/nflstreams/live`, maxAgeMs)
-      .then(
-        (text) =>
-          Array.from(text.matchAll(/href="(.*?-live-streaming-.*?)" class/g))
-            .map((m) => m[1])
-            .find((m) => m.includes(stream.stream_id))!
-      )
-      .then((raw_url) => fetchE(raw_url, hardRefresh ? 0 : maxAgeMs))
+    fetchE(`https://${HOST}/nflstreams/live`, maxAgeMs)
+      // .then(
+      //   (text) =>
+      //     Array.from(text.matchAll(/href="(.*?-live-streaming-.*?)" class/g))
+      //       .map((m) => m[1])
+      //       .find((m) => m.includes(stream.stream_id))!
+      // )
+      // .then((raw_url) => fetchE(raw_url, hardRefresh ? 0 : maxAgeMs))
       .then((text) => ({
         source: window.atob(
           "aHR0cHM6Ly9wbDIuZ250bGVvc2Vhbi5zaXRlL3BsYXlsaXN0LzM2NDU5L2xvYWQtcGxheWxpc3Q="

@@ -115,7 +115,7 @@ class NFLStream extends React.Component<
           .concat(...getStreamsFromUrlQuery()),
       });
     };
-    return md5(HOST || "") !== "c1d94a185f9959737bd1be30537c710d" ? (
+    return md5(HOST || "") !== "01ff79624460db1d04dce5d92cce3079" ? (
       <HostPrompt />
     ) : this.state?.hasExtension === undefined ? null : (
       <div className={style.main} style={{ backgroundColor: "black" }}>

@@ -2,7 +2,8 @@ import Fetcher, { cacheF, StreamType } from ".";
 import { getClapprParams, isClappr } from "../Multiscreen/ClapprSrcDoc";
 import { getFlowPlayerParams } from "../Multiscreen/FlowPlayerSrcDoc";
 
-export const HOST = localStorage.getItem("host")!;
+export const HOST_STORAGE_KEY = "host.v2";
+export const HOST = localStorage.getItem(HOST_STORAGE_KEY)!;
 
 export default class StreamsFetcher extends Fetcher<StreamType[], null> {
   intervalMs = 10 * 60 * 1000;

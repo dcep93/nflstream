@@ -5,7 +5,10 @@ import Menu from "./etc/Menu";
 import { isMobile } from "./etc/Options";
 import Remote from "./etc/Remote";
 import { StreamType } from "./Fetcher";
-import StreamsFetcher, { HOST } from "./Fetcher/StreamsFetcher";
+import StreamsFetcher, {
+  HOST,
+  HOST_STORAGE_KEY,
+} from "./Fetcher/StreamsFetcher";
 import style from "./index.module.css";
 import Multiscreen, { ScreenType } from "./Multiscreen";
 import { SCOREBOARD_SRC, ScoreFetcher } from "./Multiscreen/Scoreboard";
@@ -208,7 +211,7 @@ function getStreamsFromUrlQuery(): StreamType[] {
 function HostPrompt() {
   const pw = window.prompt("choose a host:");
   if (pw) {
-    localStorage.setItem("host", pw);
+    localStorage.setItem(HOST_STORAGE_KEY, pw);
     window.location.reload();
   }
   return null;

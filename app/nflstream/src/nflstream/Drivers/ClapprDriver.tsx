@@ -46,27 +46,17 @@ function getSrcDoc(params: { [key: string]: string }) {
         }
         `}
         </style>
-        <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@clappr/hlsjs-playback@1.8.3/dist/hlsjs-playback.min.js"></script>
-      </head>
-
-      <body>
-        <div id="wrap">
-          <div id="player" style={{ height: "100vH", width: "100vW" }}></div>
-        </div>
-
         <FunctionToScript
-          t={{
-            source: params.source,
-            muteCommercial: muteCommercialRef.current?.checked,
-          }}
-          f={({ source, muteCommercial }) => {
-            if (!source) {
-              alert("invalid params");
-              return;
-            }
-
-            const extension_id = "jbdpjafpomdbklfifcclbkflmnnjefdc"; // local
+          t={null}
+          f={() => {
+            const promises: { [key: string]: (response: string) => void } = {};
+            window.addEventListener("message", (event) => {
+              if (event.data.source !== "nflstream") return;
+              if (event.data.proxy === undefined) return;
+              const p = promises[event.data.key];
+              delete promises[event.data.key];
+              p(event.data.response);
+            });
             function getPayload(
               __meta: Record<string, string>
             ): Promise<string | undefined> {
@@ -74,13 +64,20 @@ function getSrcDoc(params: { [key: string]: string }) {
               if (url.includes(".ts?token=")) {
                 return Promise.resolve(undefined);
               }
-              return new Promise<string>((resolve) =>
-                window.chrome.runtime.sendMessage(
-                  extension_id,
-                  { url },
-                  (response: any) => resolve(response)
-                )
-              );
+              const key = crypto.randomUUID();
+              return new Promise<string>((resolve) => {
+                promises[key] = resolve;
+                window.parent.postMessage(
+                  {
+                    source: "nflstream.html",
+                    action: "proxy",
+                    key,
+                    url,
+                    iFrameTitle: params.iFrameTitle,
+                  },
+                  "*"
+                );
+              });
             }
             const OrigXHR = window.XMLHttpRequest;
 
@@ -134,6 +131,27 @@ function getSrcDoc(params: { [key: string]: string }) {
             }
 
             window.XMLHttpRequest = InterceptedXHR as any;
+          }}
+        />
+        <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@clappr/hlsjs-playback@1.8.3/dist/hlsjs-playback.min.js"></script>
+      </head>
+
+      <body>
+        <div id="wrap">
+          <div id="player" style={{ height: "100vH", width: "100vW" }}></div>
+        </div>
+
+        <FunctionToScript
+          t={{
+            source: params.source,
+            muteCommercial: muteCommercialRef.current?.checked,
+          }}
+          f={({ source, muteCommercial }) => {
+            if (!source) {
+              alert("invalid params");
+              return;
+            }
 
             const player = new (window as any).Clappr.Player({
               parentId: "#player",
@@ -181,6 +199,7 @@ function getSrcDoc(params: { [key: string]: string }) {
 
               window.addEventListener("message", (event) => {
                 if (event.data.source !== "nflstream") return;
+                if (event.data.mute === undefined) return;
                 subscreen_muted =
                   event.data.mute !== null ? event.data.mute : !subscreen_muted;
                 update_muted();

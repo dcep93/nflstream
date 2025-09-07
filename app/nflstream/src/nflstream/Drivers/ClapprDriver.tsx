@@ -47,15 +47,15 @@ function getSrcDoc(params: { [key: string]: string }) {
         `}
         </style>
         <FunctionToScript
-          t={null}
-          f={() => {
+          t={params}
+          f={(params) => {
             const promises: { [key: string]: (response: string) => void } = {};
             window.addEventListener("message", (event) => {
               if (event.data.source !== "nflstream") return;
-              if (event.data.proxy === undefined) return;
+              if (event.data.response === undefined) return;
               const p = promises[event.data.key];
               delete promises[event.data.key];
-              p(event.data.response);
+              p(event.data.proxy);
             });
             function getPayload(
               __meta: Record<string, string>

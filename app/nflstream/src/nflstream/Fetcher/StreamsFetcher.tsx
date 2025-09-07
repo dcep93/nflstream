@@ -1,9 +1,9 @@
 import Fetcher, { cacheF, StreamType } from ".";
-import { getClapprParams, isClappr } from "../Multiscreen/ClapprSrcDoc";
-import { getFlowPlayerParams } from "../Multiscreen/FlowPlayerSrcDoc";
+import ShakaDriver from "../Multiscreen/ShakaDriver";
 
 export const HOST_STORAGE_KEY = "host.v2";
 export const HOST = localStorage.getItem(HOST_STORAGE_KEY)!;
+export const DRIVER = ShakaDriver;
 
 export default class StreamsFetcher extends Fetcher<StreamType[], null> {
   intervalMs = 10 * 60 * 1000;
@@ -60,25 +60,14 @@ export default class StreamsFetcher extends Fetcher<StreamType[], null> {
           }))
           .map((stream) => ({
             ...stream,
-            raw_url: getRawUrl(stream.stream_id),
+            raw_url: DRIVER.getRawUrl(stream.stream_id),
           }))
-          .map((stream) => getHostParams(stream, false).then(() => stream))
+          .map((stream) =>
+            DRIVER.getHostParams(stream, false).then(() => stream)
+          )
       )
       .then((ps) => Promise.all(ps));
   }
-}
-
-function getRawUrl(stream_id: string): string {
-  return `https://${HOST}/nfl/${stream_id}`;
-}
-
-export function getHostParams(
-  stream: StreamType,
-  hardRefresh: boolean
-): Promise<{ [key: string]: string }> {
-  return isClappr
-    ? getClapprParams(stream, hardRefresh)
-    : getFlowPlayerParams(stream, hardRefresh);
 }
 
 export function fetchP<T>(

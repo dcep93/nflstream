@@ -3,7 +3,14 @@ import { muteCommercialRef } from "../etc/Options";
 import { StreamType } from "../Fetcher";
 import { fetchP, HOST } from "../Fetcher/StreamsFetcher";
 
-export function FunctionToScript<T>(props: { t: T; f: (t: T) => void }) {
+export default {
+  getRawUrl: (stream_id: string) => "https://icrackstreams.app/nflstreams/live",
+  getHostParams: (stream: StreamType, hardRefresh: boolean) =>
+    Promise.resolve({}),
+  getSrcDoc: FlowPlayerSrcDoc,
+};
+
+function FunctionToScript<T>(props: { t: T; f: (t: T) => void }) {
   return (
     <script
       dangerouslySetInnerHTML={{
@@ -12,7 +19,7 @@ export function FunctionToScript<T>(props: { t: T; f: (t: T) => void }) {
     ></script>
   );
 }
-export default function FlowPlayerSrcDoc(params: { [key: string]: string }) {
+function FlowPlayerSrcDoc(params: { [key: string]: string }) {
   return ReactDomServer.renderToStaticMarkup(
     <html lang="en" className="hl-en not-logged-in no-touch">
       <head>

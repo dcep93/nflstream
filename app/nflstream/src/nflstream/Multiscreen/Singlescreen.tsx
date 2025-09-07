@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 import { ScreenType } from ".";
-import { getHostParams, HOST } from "../Fetcher/StreamsFetcher";
+import { DRIVER, HOST } from "../Fetcher/StreamsFetcher";
 import Log from "../Log";
 
 import style from "../index.module.css";
-import ClapprSrcDoc, { isClappr } from "./ClapprSrcDoc";
-import FlowPlayerSrcDoc from "./FlowPlayerSrcDoc";
 import msStyle from "./index.module.css";
 import Scoreboard, { SCOREBOARD_SRC } from "./Scoreboard";
 
@@ -62,7 +60,7 @@ export function Singlescreen(props: {
             Promise.resolve()
               .then(() =>
                 props.screen.src === HOST
-                  ? getHostParams(props.screen, true)
+                  ? DRIVER.getHostParams(props.screen, true)
                   : Promise.resolve({})
               )
               .then(() => props.refreshKeyF());
@@ -185,7 +183,7 @@ function HostStreamIFrame(props: {
   const [iframeE, updateIframeE] = useState<JSX.Element | null>(null);
   useEffect(
     () => {
-      getHostParams(props.screen, false)
+      DRIVER.getHostParams(props.screen, false)
         .then((params) => ({
           ...params,
           iFrameTitle: props.screen.iFrameTitle,
@@ -199,7 +197,7 @@ function HostStreamIFrame(props: {
               width: "98%",
             }}
             title={props.screen.iFrameTitle}
-            srcDoc={isClappr ? ClapprSrcDoc(params) : FlowPlayerSrcDoc(params)}
+            srcDoc={DRIVER.getSrcDoc(params)}
           ></iframe>
         ))
         .then((ife) => updateIframeE(ife));

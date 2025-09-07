@@ -4,8 +4,6 @@ import { StreamType } from "../Fetcher";
 import { fetchE } from "../Fetcher/LogFetcher";
 import { FunctionToScript } from "./FlowPlayerSrcDoc";
 
-export const isClappr = process.env.NODE_ENV === "development";
-
 export default function ClapprSrcDoc(params: { [key: string]: string }) {
   return ReactDomServer.renderToStaticMarkup(
     <html lang="en" className="hl-en not-logged-in no-touch">

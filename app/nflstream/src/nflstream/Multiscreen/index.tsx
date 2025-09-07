@@ -2,7 +2,7 @@ import React from "react";
 import { autoRefreshRef, remoteRef } from "../etc/Options";
 import { onUpdateRemote, updateRemote } from "../etc/Remote";
 import { StreamType } from "../Fetcher";
-import { getHostParams } from "../Fetcher/StreamsFetcher";
+import { DRIVER } from "../Fetcher/StreamsFetcher";
 import { DelayedLog } from "../Log";
 import msStyle from "./index.module.css";
 import { Singlescreen } from "./Singlescreen";
@@ -64,12 +64,10 @@ class Multiscreen extends React.Component<
         }
       } else if (event.data.action === "refresh") {
         if (autoRefreshRef.current?.checked) {
-          Promise.resolve(this.getScreen()).then(
-            (screen) =>
-              screen &&
-              getHostParams(screen, true).then(() =>
-                this.refreshScreen(event.data.iFrameTitle)
-              )
+          Promise.resolve(this.getScreen()).then((screen) =>
+            DRIVER.getHostParams(screen!, true).then(() =>
+              this.refreshScreen(event.data.iFrameTitle)
+            )
           );
         }
       }

@@ -18,9 +18,9 @@ const ClapprDriver = {
       // )
       // .then((raw_url) => fetchE(raw_url, hardRefresh ? 0 : maxAgeMs))
       .then((text) => ({
-        source: window.atob(
-          "aHR0cHM6Ly9wbDIuZ250bGVvc2Vhbi5zaXRlL3BsYXlsaXN0LzM2NDU5L2xvYWQtcGxheWxpc3Q="
-        ),
+        source: `${window.atob(
+          "aHR0cHM6Ly9wbDIuZ250bGVvc2Vhbi5zaXRlL3BsYXlsaXN0LzM2NDgyL2xvYWQtcGxheWxpc3Q="
+        )}////.m3u8`,
       })),
   getSrcDoc,
 };
@@ -43,6 +43,11 @@ function getSrcDoc(params: { [key: string]: string }) {
         <FunctionToScript
           t={undefined}
           f={() => {
+            function getPayload(
+              __meta: Record<string, string>
+            ): Promise<string | undefined> {
+              return Promise.resolve(params[__meta.url]);
+            }
             const OrigXHR = window.XMLHttpRequest;
 
             function InterceptedXHR(this: XMLHttpRequest) {
@@ -64,25 +69,26 @@ function getSrcDoc(params: { [key: string]: string }) {
                 xhr.__meta.url = url;
                 return origOpen.apply(xhr, args as any);
               };
-
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
               const origSend = xhr.send;
               xhr.send = function (body?: Document | BodyInit | null) {
-                const payload = (window as any).params[xhr.__meta.url];
-                console.log({ ...xhr.__meta, body, payload });
-                if (!payload) {
-                  return origSend.call(xhr, body as any);
-                }
-                Object.defineProperty(xhr, "readyState", { value: 4 });
-                Object.defineProperty(xhr, "status", { value: 200 });
-                Object.defineProperty(xhr, "statusText", { value: "OK" });
-                Object.defineProperty(xhr, "responseText", {
-                  value: payload,
-                });
-                Object.defineProperty(xhr, "response", { value: payload });
+                getPayload(xhr.__meta).then((payload) => {
+                  console.log({ ...xhr.__meta, body, payload });
+                  if (!payload) {
+                    // return origSend.call(xhr, body as any);
+                  }
+                  Object.defineProperty(xhr, "readyState", { value: 4 });
+                  Object.defineProperty(xhr, "status", { value: 200 });
+                  Object.defineProperty(xhr, "statusText", { value: "OK" });
+                  Object.defineProperty(xhr, "responseText", {
+                    value: payload,
+                  });
+                  Object.defineProperty(xhr, "response", { value: payload });
 
-                xhr.dispatchEvent(new Event("readystatechange"));
-                xhr.dispatchEvent(new Event("load"));
-                xhr.dispatchEvent(new Event("loadend"));
+                  xhr.dispatchEvent(new Event("readystatechange"));
+                  xhr.dispatchEvent(new Event("load"));
+                  xhr.dispatchEvent(new Event("loadend"));
+                });
               };
 
               return xhr;
@@ -94,10 +100,10 @@ function getSrcDoc(params: { [key: string]: string }) {
               } catch {}
             }
 
-            (window as any).XMLHttpRequest = InterceptedXHR as any;
+            window.XMLHttpRequest = InterceptedXHR as any;
           }}
         />
-        <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>{" "}
+        <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@clappr/hlsjs-playback@1.8.3/dist/hlsjs-playback.min.js"></script>
       </head>
 
@@ -112,7 +118,6 @@ function getSrcDoc(params: { [key: string]: string }) {
             muteCommercial: muteCommercialRef.current?.checked,
           }}
           f={({ params, muteCommercial }) => {
-            (window as any).params = params;
             const source = params.source;
             if (!source) {
               alert("invalid params");

@@ -25,8 +25,8 @@ export function clog<T>(t: T): T {
   return t;
 }
 
-export const extension_id = "jbdpjafpomdbklfifcclbkflmnnjefdc"; // local
-// export const extension_id = "jjlokcmkcepehbfepbffkmkkbnggkmje";
+// export const extension_id = "jbdpjafpomdbklfifcclbkflmnnjefdc"; // local
+export const extension_id = "jjlokcmkcepehbfepbffkmkkbnggkmje";
 
 // const expected_version = "3.1.1";
 

@@ -14,7 +14,7 @@ export const isMobile =
   (params.get("remote") !== null ||
     window.screen.width * window.screen.height < 500_000);
 
-export const titleMessageDiv = <div>FTC</div>;
+export const titleMessageDiv = <div>NFLStream</div>;
 
 export default function Options() {
   return (

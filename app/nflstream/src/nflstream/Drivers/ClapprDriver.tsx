@@ -10,18 +10,24 @@ const ClapprDriver = {
   getRawUrl: (stream_id: string) => `https://${HOST}/nflstreams/live`,
   getHostParams: (stream: StreamType, hardRefresh: boolean) =>
     fetchE(`https://${HOST}/nflstreams/live`, maxAgeMs)
+      // .then(
+      //   (text) =>
+      //     Array.from(text.matchAll(/href="(.*?-live-streaming-.*?)" class/g))
+      //       .map((m) => m[1])
+      //       .find((m) => m.includes(stream.stream_id))!
+      // )
+      // .then((raw_url) => fetchE(raw_url, hardRefresh ? 0 : maxAgeMs))
+      // .then((text) => text.match(/<iframe.*?src="(.*?)"/))
+      // .then((gooz_match) => fetchE(clog(gooz_match![1]), 0))
+      // .then(clog)
       .then(
         (text) =>
-          Array.from(text.matchAll(/href="(.*?-live-streaming-.*?)" class/g))
-            .map((m) => m[1])
-            .find((m) => m.includes(stream.stream_id))!
-      )
-      .then((raw_url) => fetchE(raw_url, hardRefresh ? 0 : maxAgeMs))
-      .then((text) => ({
-        source: `${window.atob(
-          "aHR0cHM6Ly9wbDIuZ250bGVvc2Vhbi5zaXRlL3BsYXlsaXN0LzM2NDgyL2xvYWQtcGxheWxpc3Q="
-        )}////.m3u8`,
-      })),
+          ({
+            source: `${window.atob(
+              "aHR0cHM6Ly9wbDIuZ250bGVvc2Vhbi5zaXRlL3BsYXlsaXN0LzM2NDk5L2xvYWQtcGxheWxpc3Q="
+            )}////.m3u8`,
+          } as Record<string, string>)
+      ),
   getSrcDoc,
 };
 export default ClapprDriver;
@@ -41,12 +47,23 @@ function getSrcDoc(params: { [key: string]: string }) {
         `}
         </style>
         <FunctionToScript
-          t={params}
-          f={(params) => {
+          t={null}
+          f={() => {
+            const extension_id = "jbdpjafpomdbklfifcclbkflmnnjefdc"; // local
             function getPayload(
               __meta: Record<string, string>
             ): Promise<string | undefined> {
-              return Promise.resolve(params[__meta.url]);
+              const url = __meta.url;
+              if (url.includes(".ts?token=")) {
+                return Promise.resolve(undefined);
+              }
+              return new Promise<string>((resolve) =>
+                window.chrome.runtime.sendMessage(
+                  extension_id,
+                  { url },
+                  (response: any) => resolve(response)
+                )
+              );
             }
             const OrigXHR = window.XMLHttpRequest;
 
@@ -69,13 +86,12 @@ function getSrcDoc(params: { [key: string]: string }) {
                 xhr.__meta.url = url;
                 return origOpen.apply(xhr, args as any);
               };
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
               const origSend = xhr.send;
               xhr.send = function (body?: Document | BodyInit | null) {
                 getPayload(xhr.__meta).then((payload) => {
                   console.log({ ...xhr.__meta, body, payload });
-                  if (!payload) {
-                    // return origSend.call(xhr, body as any);
+                  if (xhr.__meta.url.includes(".ts?token=")) {
+                    return origSend.call(xhr, body as any);
                   }
                   Object.defineProperty(xhr, "readyState", { value: 4 });
                   Object.defineProperty(xhr, "status", { value: 200 });
@@ -114,11 +130,10 @@ function getSrcDoc(params: { [key: string]: string }) {
 
         <FunctionToScript
           t={{
-            params,
+            source: params.source,
             muteCommercial: muteCommercialRef.current?.checked,
           }}
-          f={({ params, muteCommercial }) => {
-            const source = params.source;
+          f={({ source, muteCommercial }) => {
             if (!source) {
               alert("invalid params");
               return;

@@ -62,6 +62,7 @@ export default class StreamsFetcher extends Fetcher<StreamType[], null> {
             ...stream,
             raw_url: DRIVER.getRawUrl(stream.stream_id),
           }))
+          .slice(0, 1)
           .map((stream) =>
             DRIVER.getHostParams(stream, false).then(() => stream)
           )

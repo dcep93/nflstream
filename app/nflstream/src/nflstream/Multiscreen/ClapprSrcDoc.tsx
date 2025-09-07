@@ -1,5 +1,6 @@
 import ReactDomServer from "react-dom/server";
 import { muteCommercialRef } from "../etc/Options";
+import { StreamType } from "../Fetcher";
 import { fetchE } from "../Fetcher/LogFetcher";
 import { FunctionToScript } from "./FlowPlayerSrcDoc";
 
@@ -358,7 +359,7 @@ export default function ClapprSrcDoc(params: { [key: string]: string }) {
 
 const maxAgeMs = 10 * 60 * 1000;
 export function getClapprParams(
-  stream_id: string,
+  stream: StreamType,
   hardRefresh: boolean
 ): Promise<{ [key: string]: string }> {
   return fetchE("https://icrackstreams.app/nflstreams/live", maxAgeMs)
@@ -366,7 +367,7 @@ export function getClapprParams(
       (text) =>
         Array.from(text.matchAll(/href="(.*?-live-streaming-.*?)" class/g))
           .map((m) => m[1])
-          .find((m) => m.includes(stream_id))!
+          .find((m) => m.includes(stream.stream_id))!
     )
     .then((raw_url) => fetchE(raw_url, hardRefresh ? 0 : maxAgeMs))
     .then((text) => ({

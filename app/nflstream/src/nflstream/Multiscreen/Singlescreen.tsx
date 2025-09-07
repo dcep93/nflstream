@@ -62,7 +62,7 @@ export function Singlescreen(props: {
             Promise.resolve()
               .then(() =>
                 props.screen.src === HOST
-                  ? getHostParams(props.screen.raw_url, true)
+                  ? getHostParams(props.screen, true)
                   : Promise.resolve({})
               )
               .then(() => props.refreshKeyF());
@@ -185,7 +185,7 @@ function HostStreamIFrame(props: {
   const [iframeE, updateIframeE] = useState<JSX.Element | null>(null);
   useEffect(
     () => {
-      getHostParams(props.screen.raw_url, false)
+      getHostParams(props.screen, false)
         .then((params) => ({
           ...params,
           iFrameTitle: props.screen.iFrameTitle,

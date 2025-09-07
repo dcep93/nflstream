@@ -59,25 +59,25 @@ export default class StreamsFetcher extends Fetcher<StreamType[], null> {
           }))
           .map((stream) => ({
             ...stream,
-            raw_url: isClappr
-              ? stream.stream_id
-              : `https://${HOST}/nfl/${stream.stream_id}`,
+            raw_url: getRawUrl(stream.stream_id),
           }))
-          .map((stream) =>
-            getHostParams(stream.raw_url, false).then(() => stream)
-          )
+          .map((stream) => getHostParams(stream, false).then(() => stream))
       )
       .then((ps) => Promise.all(ps));
   }
 }
 
+function getRawUrl(stream_id: string): string {
+  return `https://${HOST}/nfl/${stream_id}`;
+}
+
 export function getHostParams(
-  url: string,
+  stream: StreamType,
   hardRefresh: boolean
 ): Promise<{ [key: string]: string }> {
   return isClappr
-    ? getClapprParams(url, hardRefresh)
-    : getFlowPlayerParams(url, hardRefresh);
+    ? getClapprParams(stream, hardRefresh)
+    : getFlowPlayerParams(stream, hardRefresh);
 }
 
 export function fetchP<T>(

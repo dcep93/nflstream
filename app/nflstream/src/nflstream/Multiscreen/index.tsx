@@ -67,7 +67,7 @@ class Multiscreen extends React.Component<
           Promise.resolve(this.getScreen()).then(
             (screen) =>
               screen &&
-              getHostParams(screen.raw_url, true).then(() =>
+              getHostParams(screen, true).then(() =>
                 this.refreshScreen(event.data.iFrameTitle)
               )
           );

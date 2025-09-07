@@ -1,5 +1,6 @@
 import ReactDomServer from "react-dom/server";
 import { muteCommercialRef } from "../etc/Options";
+import { StreamType } from "../Fetcher";
 import { fetchP, HOST } from "../Fetcher/StreamsFetcher";
 
 export function FunctionToScript<T>(props: { t: T; f: (t: T) => void }) {
@@ -396,10 +397,10 @@ export default function FlowPlayerSrcDoc(params: { [key: string]: string }) {
 }
 
 export function getFlowPlayerParams(
-  url: string,
+  stream: StreamType,
   hardRefresh: boolean
 ): Promise<{ [key: string]: string }> {
-  return fetchP(url, hardRefresh ? 0 : 10 * 60 * 1000, (text) =>
+  return fetchP(stream.raw_url, hardRefresh ? 0 : 10 * 60 * 1000, (text) =>
     Promise.resolve().then(() =>
       Object.fromEntries(
         Object.entries({

@@ -1,4 +1,5 @@
 import { createRef } from "react";
+import { HOST_STORAGE_KEY } from "../Fetcher/StreamsFetcher";
 import { defaultLogDelayMs } from "../Log";
 import style from "../index.module.css";
 
@@ -9,9 +10,9 @@ export const remoteRef = createRef<HTMLInputElement>();
 
 const params = new URLSearchParams(window.location.search);
 export const isMobile =
-  params.get("desktop") === null && (
-  params.get("remote") !== null ||
-  window.screen.width * window.screen.height < 500_000);
+  params.get("desktop") === null &&
+  (params.get("remote") !== null ||
+    window.screen.width * window.screen.height < 500_000);
 
 export const titleMessageDiv = <div>FTC</div>;
 
@@ -35,6 +36,15 @@ export default function Options() {
         <input ref={remoteRef} type={"checkbox"} />
         <span> follow remote</span>
       </div>
+      <button
+        onClick={() => {
+          if (!window.confirm("Are you sure?")) return;
+          localStorage.removeItem(HOST_STORAGE_KEY);
+          window.location.reload();
+        }}
+      >
+        reset host
+      </button>
     </div>
   );
 }

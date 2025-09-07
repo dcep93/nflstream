@@ -23,9 +23,11 @@ const ClapprDriver = {
       .then(
         (text) =>
           ({
-            source: `${window.atob(
-              "aHR0cHM6Ly9wbDIuZ250bGVvc2Vhbi5zaXRlL3BsYXlsaXN0LzM2NDUyL2xvYWQtcGxheWxpc3Q="
-            )}////.m3u8`,
+            // source: `${window.atob(
+            //   "aHR0cHM6Ly9wbDIuZ250bGVvc2Vhbi5zaXRlL3BsYXlsaXN0LzM2NDUyL2xvYWQtcGxheWxpc3Q="
+            // )}////.m3u8`,
+            source:
+              "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8",
           } as Record<string, string>)
       ),
   getSrcDoc,
@@ -144,10 +146,11 @@ function getSrcDoc(params: { [key: string]: string }) {
 
         <FunctionToScript
           t={{
-            source: params.source,
+            params,
             muteCommercial: muteCommercialRef.current?.checked,
           }}
-          f={({ source, muteCommercial }) => {
+          f={({ params, muteCommercial }) => {
+            const source = params.source;
             if (!source) {
               alert("invalid params");
               return;

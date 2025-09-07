@@ -10,13 +10,13 @@ const ClapprDriver = {
   getRawUrl: (stream_id: string) => `https://${HOST}/nflstreams/live`,
   getHostParams: (stream: StreamType, hardRefresh: boolean) =>
     fetchE(`https://${HOST}/nflstreams/live`, maxAgeMs)
-      // .then(
-      //   (text) =>
-      //     Array.from(text.matchAll(/href="(.*?-live-streaming-.*?)" class/g))
-      //       .map((m) => m[1])
-      //       .find((m) => m.includes(stream.stream_id))!
-      // )
-      // .then((raw_url) => fetchE(raw_url, hardRefresh ? 0 : maxAgeMs))
+      .then(
+        (text) =>
+          Array.from(text.matchAll(/href="(.*?-live-streaming-.*?)" class/g))
+            .map((m) => m[1])
+            .find((m) => m.includes(stream.stream_id))!
+      )
+      .then((raw_url) => fetchE(raw_url, hardRefresh ? 0 : maxAgeMs))
       .then((text) => ({
         source: `${window.atob(
           "aHR0cHM6Ly9wbDIuZ250bGVvc2Vhbi5zaXRlL3BsYXlsaXN0LzM2NDgyL2xvYWQtcGxheWxpc3Q="
@@ -41,8 +41,8 @@ function getSrcDoc(params: { [key: string]: string }) {
         `}
         </style>
         <FunctionToScript
-          t={undefined}
-          f={() => {
+          t={params}
+          f={(params) => {
             function getPayload(
               __meta: Record<string, string>
             ): Promise<string | undefined> {

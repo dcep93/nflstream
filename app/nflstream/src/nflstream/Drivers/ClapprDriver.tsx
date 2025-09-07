@@ -23,11 +23,11 @@ const ClapprDriver = {
       .then(
         (text) =>
           ({
-            // source: `${window.atob(
-            //   "aHR0cHM6Ly9wbDIuZ250bGVvc2Vhbi5zaXRlL3BsYXlsaXN0LzM2NDUyL2xvYWQtcGxheWxpc3Q="
-            // )}////.m3u8`,
-            source:
-              "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8",
+            source: true
+              ? `${window.atob(
+                  "aHR0cHM6Ly9wbDIuZ250bGVvc2Vhbi5zaXRlL3BsYXlsaXN0LzM2NDUyL2xvYWQtcGxheWxpc3Q="
+                )}////.m3u8`
+              : "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8",
           } as Record<string, string>)
       ),
   getSrcDoc,
@@ -65,6 +65,9 @@ function getSrcDoc(params: { [key: string]: string }) {
               const url = __meta.url.split("////")[0];
               if (url.includes(".ts?token=")) {
                 return Promise.resolve(undefined);
+              }
+              if (url.includes("caxi")) {
+                // return Promise.resolve(undefined);
               }
               const key = crypto.randomUUID();
               return new Promise<string>((resolve) => {

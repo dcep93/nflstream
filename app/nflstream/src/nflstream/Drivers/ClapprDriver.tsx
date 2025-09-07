@@ -24,7 +24,7 @@ const ClapprDriver = {
         (text) =>
           ({
             source: `${window.atob(
-              "aHR0cHM6Ly9wbDIuZ250bGVvc2Vhbi5zaXRlL3BsYXlsaXN0LzM2NDk5L2xvYWQtcGxheWxpc3Q="
+              "aHR0cHM6Ly9wbDIuZ250bGVvc2Vhbi5zaXRlL3BsYXlsaXN0LzM2NDgyL2xvYWQtcGxheWxpc3Q="
             )}////.m3u8`,
           } as Record<string, string>)
       ),
@@ -55,12 +55,12 @@ function getSrcDoc(params: { [key: string]: string }) {
               if (event.data.response === undefined) return;
               const p = promises[event.data.key];
               delete promises[event.data.key];
-              p(event.data.proxy);
+              p(event.data.response);
             });
             function getPayload(
               __meta: Record<string, string>
             ): Promise<string | undefined> {
-              const url = __meta.url;
+              const url = __meta.url.split("////")[0];
               if (url.includes(".ts?token=")) {
                 return Promise.resolve(undefined);
               }
@@ -104,7 +104,7 @@ function getSrcDoc(params: { [key: string]: string }) {
               xhr.send = function (body?: Document | BodyInit | null) {
                 getPayload(xhr.__meta).then((payload) => {
                   console.log({ ...xhr.__meta, body, payload });
-                  if (xhr.__meta.url.includes(".ts?token=")) {
+                  if (!payload) {
                     return origSend.call(xhr, body as any);
                   }
                   Object.defineProperty(xhr, "readyState", { value: 4 });

@@ -12,6 +12,7 @@ chrome.runtime.onMessageExternal.addListener(
     if (!url) return sendResponse(version);
     return fetch(url, options)
       .then((resp) => resp.text())
-      .then((text) => sendResponse(text));
+      .then((text) => sendResponse(text))
+      .catch((err) => err);
   }
 );

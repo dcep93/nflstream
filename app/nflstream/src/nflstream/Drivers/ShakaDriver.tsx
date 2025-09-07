@@ -12,6 +12,6 @@ export default ShakaDriver;
 
 function getSrcDoc(params: { [key: string]: string }) {
   return ReactDomServer.renderToStaticMarkup(
-    <div style={{ color: "WHITE" }}>WIP</div>
+    <div style={{ color: "WHITE" }}>ShakaDriver WIP</div>
   );
 }

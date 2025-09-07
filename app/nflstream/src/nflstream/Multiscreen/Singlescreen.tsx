@@ -3,6 +3,7 @@ import { ScreenType } from ".";
 import { DRIVER, HOST } from "../Fetcher/StreamsFetcher";
 import Log from "../Log";
 
+import { extension_id } from "..";
 import style from "../index.module.css";
 import msStyle from "./index.module.css";
 import Scoreboard, { SCOREBOARD_SRC } from "./Scoreboard";
@@ -181,6 +182,7 @@ function HostStreamIFrame(props: {
   refreshKeyValue: number;
 }) {
   const [iframeE, updateIframeE] = useState<JSX.Element | null>(null);
+  // console.log(DRIVER.getSrcDoc({}));
   useEffect(
     () => {
       DRIVER.getHostParams(props.screen, false)
@@ -197,7 +199,9 @@ function HostStreamIFrame(props: {
               width: "98%",
             }}
             title={props.screen.iFrameTitle}
-            srcDoc={DRIVER.getSrcDoc(params)}
+            src={`chrome-extension://${extension_id}/iframe.html?params=${encodeURIComponent(
+              JSON.stringify(params)
+            )}`}
           ></iframe>
         ))
         .then((ife) => updateIframeE(ife));

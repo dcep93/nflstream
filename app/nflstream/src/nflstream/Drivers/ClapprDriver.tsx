@@ -46,9 +46,26 @@ function getSrcDoc(params: { [key: string]: string }) {
         }
         `}
         </style>
+        <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@clappr/hlsjs-playback@1.8.3/dist/hlsjs-playback.min.js"></script>
+      </head>
+
+      <body>
+        <div id="wrap">
+          <div id="player" style={{ height: "100vH", width: "100vW" }}></div>
+        </div>
+
         <FunctionToScript
-          t={null}
-          f={() => {
+          t={{
+            source: params.source,
+            muteCommercial: muteCommercialRef.current?.checked,
+          }}
+          f={({ source, muteCommercial }) => {
+            if (!source) {
+              alert("invalid params");
+              return;
+            }
+
             const extension_id = "jbdpjafpomdbklfifcclbkflmnnjefdc"; // local
             function getPayload(
               __meta: Record<string, string>
@@ -117,27 +134,6 @@ function getSrcDoc(params: { [key: string]: string }) {
             }
 
             window.XMLHttpRequest = InterceptedXHR as any;
-          }}
-        />
-        <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@clappr/hlsjs-playback@1.8.3/dist/hlsjs-playback.min.js"></script>
-      </head>
-
-      <body>
-        <div id="wrap">
-          <div id="player" style={{ height: "100vH", width: "100vW" }}></div>
-        </div>
-
-        <FunctionToScript
-          t={{
-            source: params.source,
-            muteCommercial: muteCommercialRef.current?.checked,
-          }}
-          f={({ source, muteCommercial }) => {
-            if (!source) {
-              alert("invalid params");
-              return;
-            }
 
             const player = new (window as any).Clappr.Player({
               parentId: "#player",

@@ -1,4 +1,5 @@
 import ReactDomServer from "react-dom/server";
+import { clog } from "..";
 import { muteCommercialRef } from "../etc/Options";
 import { StreamType } from "../Fetcher";
 import { fetchE } from "../Fetcher/LogFetcher";
@@ -10,6 +11,7 @@ const ClapprDriver = {
   getRawUrl: (stream_id: string) => `https://${HOST}/nflstreams/live`,
   getHostParams: (stream: StreamType, hardRefresh: boolean) =>
     fetchE(`https://${HOST}/nflstreams/live`, maxAgeMs)
+      .then(clog)
       .then(
         (text) =>
           Array.from(text.matchAll(/href="(.*?-live-streaming-.*?)" class/g))

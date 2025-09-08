@@ -26,7 +26,10 @@ export default function Scoreboard() {
       <ScoreFetcher
         payload={null}
         handleResponse={(_scores) => {
-          timeout = setTimeout(() => updateScores(_scores), getLogDelayMs());
+          timeout = setTimeout(
+            () => updateScores(_scores),
+            !scores ? 0 : getLogDelayMs()
+          );
         }}
       />
       {scores === null ? (

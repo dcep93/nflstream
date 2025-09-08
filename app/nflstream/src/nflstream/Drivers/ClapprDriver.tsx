@@ -119,7 +119,10 @@ function getSrcDoc(params: { [key: string]: string }) {
               plugins: [(window as any).HlsjsPlayback],
             });
 
+            var initialized = false;
             function customInit() {
+              if (initialized) return;
+              initialized = true;
               const video = document.getElementsByTagName("video")[0];
               var subscreen_muted = true;
               function update_muted() {
@@ -289,7 +292,6 @@ function getSrcDoc(params: { [key: string]: string }) {
                 });
               }
 
-              console.log(292);
               const loadedInterval = setInterval(() => {
                 if (video.duration >= 45) {
                   clearInterval(loadedInterval);

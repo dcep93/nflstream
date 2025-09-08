@@ -73,7 +73,10 @@ export default class StreamsFetcher extends Fetcher<StreamType[], null> {
             DRIVER.getHostParams(stream, false).then(() => stream)
           )
       )
-      .then((ps) => Promise.all(ps));
+      .then((ps) => Promise.all(ps))
+      .catch((err) => [
+        { raw_url: "", name: err.toString(), stream_id: "ERROR", src: "ERROR" },
+      ]);
   }
 }
 

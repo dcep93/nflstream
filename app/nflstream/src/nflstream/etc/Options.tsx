@@ -6,6 +6,7 @@ import style from "../index.module.css";
 export const logDelayRef = createRef<HTMLInputElement>();
 export const autoRefreshRef = createRef<HTMLInputElement>();
 export const muteCommercialRef = createRef<HTMLInputElement>();
+export const displayLogRef = createRef<HTMLInputElement>();
 export const remoteRef = createRef<HTMLInputElement>();
 
 const params = new URLSearchParams(window.location.search);
@@ -49,6 +50,10 @@ export default function Options() {
       <div>
         <input ref={muteCommercialRef} type={"checkbox"} defaultChecked />
         <span> mute nfl+ commercials</span>
+      </div>
+      <div>
+        <input ref={displayLogRef} type={"checkbox"} defaultChecked />
+        <span> display logs</span>
       </div>
       <div>
         <input ref={remoteRef} type={"checkbox"} />

@@ -3,6 +3,7 @@ import { ScreenType } from ".";
 import { DRIVER, HOST } from "../Fetcher/StreamsFetcher";
 import Log from "../Log";
 
+import { displayLogRef } from "../etc/Options";
 import style from "../index.module.css";
 import msStyle from "./index.module.css";
 import Scoreboard, { SCOREBOARD_SRC } from "./Scoreboard";
@@ -11,7 +12,6 @@ export function Singlescreen(props: {
   index: number;
   screen: ScreenType;
   isSelected: boolean;
-  hasExtension: boolean;
   removeScreen: () => void;
   updateSelected: () => void;
   numScreens: number;
@@ -97,7 +97,6 @@ function ObjectFitIframe(props: {
   updateRedzone: (redZone: boolean) => void;
   updateBigPlay: (isBigPlay: boolean) => void;
   isSelected: boolean;
-  hasExtension: boolean;
 }) {
   return (
     <div
@@ -108,9 +107,7 @@ function ObjectFitIframe(props: {
         justifyContent: "space-around",
       }}
     >
-      {!props.hasExtension ||
-      !props.screen.espnId ||
-      props.screen.skipLog ? null : (
+      {!props.screen.espnId || !displayLogRef.current?.checked ? null : (
         <Log
           espnId={props.screen.espnId!}
           updateBigPlay={props.updateBigPlay}

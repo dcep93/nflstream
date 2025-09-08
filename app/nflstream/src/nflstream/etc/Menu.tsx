@@ -46,11 +46,10 @@ class Menu extends React.Component<
                     <div
                       className={[style.bubble, style.hover].join(" ")}
                       onClick={(e) =>
-                        e.metaKey
-                          ? window.open(obj.stream.raw_url)
-                          : this.props.addScreen(
-                              streamToScreen(obj.stream, e.shiftKey)
-                            )
+                        !e.metaKey
+                          ? this.props.addScreen(streamToScreen(obj.stream))
+                          : obj.stream.raw_url &&
+                            window.open(obj.stream.raw_url)
                       }
                     >
                       <div title={obj.stream.raw_url}>
@@ -90,10 +89,6 @@ function Guide() {
           broken links.)
         </li>
         <li>Click a minimized stream to move it to the spotlight.</li>
-        <li>
-          Streams will include a delayed play-by-play log. You can disable this
-          by holding shift when opening a stream.
-        </li>
         <li>
           Click a stream's title in the multiscreen to remove it, or the 🔄
           symbol to refresh it. (Streams by default automatically refresh)

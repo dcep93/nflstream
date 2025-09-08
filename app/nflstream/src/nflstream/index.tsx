@@ -28,7 +28,7 @@ export function clog<T>(t: T): T {
 export const EXTENSION_STORAGE_KEY = "extension_id";
 export const extension_id =
   localStorage.getItem(EXTENSION_STORAGE_KEY) ||
-  "jbdpjafpomdbklfifcclbkflmnnjefdcx";
+  "jbdpjafpomdbklfifcclbkflmnnjefdc";
 
 // const expected_version = "3.1.1";
 
@@ -74,7 +74,7 @@ class NFLStream extends React.Component<
         this.state.streams!.find((s) => s.stream_id === stream_id)
       )
       .filter(Boolean)
-      .map((stream) => streamToScreen(stream!, false));
+      .map((stream) => streamToScreen(stream!));
   }
 
   componentDidUpdate() {
@@ -120,23 +120,38 @@ class NFLStream extends React.Component<
     // icrackstreams.app
     return md5(HOST || "") !== "01ff79624460db1d04dce5d92cce3079" ? (
       <HostPrompt />
-    ) : this.state?.hasExtension === undefined ? null : (
+    ) : this.state?.hasExtension === undefined ? (
+      <div>checking for extension...</div>
+    ) : (
       <div className={style.main} style={{ backgroundColor: "black" }}>
-        <StreamsFetcher
-          ref={ref}
-          handleResponse={handleResponse}
-          payload={null}
-        />
+        {!this.state.hasExtension ? null : (
+          <StreamsFetcher
+            ref={ref}
+            handleResponse={handleResponse}
+            payload={null}
+          />
+        )}
         <Menu
           refreshStreams={() =>
-            ref.current!.getResponse(5 * 1000).then(handleResponse)
+            ref.current?.getResponse(5 * 1000).then(handleResponse)
           }
           addScreen={(screen) =>
             this.setState({
               screens: (this.state?.screens || []).concat(screen),
             })
           }
-          streams={this.state?.streams}
+          streams={
+            !this.state.hasExtension
+              ? [
+                  {
+                    raw_url: "",
+                    name: "extension not detected",
+                    stream_id: "ERROR",
+                    src: "ERROR",
+                  },
+                ]
+              : this.state?.streams
+          }
         />
         {this.state.initialized === false ? (
           <ForceInteract
@@ -151,7 +166,6 @@ class NFLStream extends React.Component<
         ) : (
           this.state.initialized && (
             <Multiscreen
-              hasExtension={this.state.hasExtension}
               screens={this.state?.screens || []}
               removeScreen={(iFrameTitle) =>
                 this.setState({
@@ -188,13 +202,9 @@ function ForceInteract(props: { interact: () => void }) {
   );
 }
 
-export function streamToScreen(
-  stream: StreamType,
-  skipLog: boolean
-): ScreenType {
+export function streamToScreen(stream: StreamType): ScreenType {
   return {
     iFrameTitle: (Math.random() + 1).toString(36).substring(2),
-    skipLog,
     ref: React.createRef() as React.RefObject<HTMLIFrameElement>,
     ...stream,
   };

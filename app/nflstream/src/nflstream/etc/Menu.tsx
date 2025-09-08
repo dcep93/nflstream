@@ -77,18 +77,22 @@ function Guide() {
       <ol>
         <li>This app is used to watch multiple NFL streams.</li>
         <li>
+          <a href="https://github.com/dcep93/nflstream/releases/tag/unpacked_extension">
+            Download
+          </a>{" "}
+          and unzip the chrome extension. Visit chrome://extensions, turn on
+          developer mode, click load unpacked, and select the downloaded
+          extension. Copy the id, and paste it in the Options below.
+        </li>
+        <li>
           Click a game to open a stream and place it on the multiscreen.
           (Streams are borrowed from other sources, so I can't do anything about
           broken links.)
         </li>
         <li>Click a minimized stream to move it to the spotlight.</li>
         <li>
-          If you have the{" "}
-          <a href="https://chrome.google.com/webstore/detail/nfl-stream/jjlokcmkcepehbfepbffkmkkbnggkmje?hl=en&u_producttype=chrome-extension-667709&u_country=au&funnel=convert-pdf&gclid=Cj0KCQjwwNWKBhDAARIsAJ8HkhfEFO3SAM6aK42aSfntfnUY6yIRKS6A7DiyPG00l1mf8743CELeGaQaAksoEALw_wcB">
-            chrome extension
-          </a>
-          , streams will include a delayed play-by-play log. You can disable
-          this by holding shift when opening a stream.
+          Streams will include a delayed play-by-play log. You can disable this
+          by holding shift when opening a stream.
         </li>
         <li>
           Click a stream's title in the multiscreen to remove it, or the 🔄

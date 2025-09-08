@@ -28,11 +28,11 @@ class LogFetcher extends Fetcher<LogType | null, number> {
                 Promise.resolve()
                   .then(() => coreItem["$ref"])
                   .then((driveUrl) =>
-                    fetchE(driveUrl, index === 0 ? 2 * 1000 : 5 * 60 * 1000)
+                    fetchES(driveUrl, index === 0 ? 2 * 1000 : 5 * 60 * 1000)
                   )
                   .then((driveResp) => JSON.parse(driveResp))
                   .then((driveObj) =>
-                    fetchE(driveObj.team["$ref"], 24 * 60 * 60 * 1000)
+                    fetchES(driveObj.team["$ref"], 24 * 60 * 60 * 1000)
                       .then((teamResp) => JSON.parse(teamResp))
                       .then((teamObj) => ({
                         ...coreItem,
@@ -127,13 +127,13 @@ class LogFetcher extends Fetcher<LogType | null, number> {
   }
 }
 
-export function fetchE(
+export function fetchE<T>(
   url: string,
   maxAgeMs: number,
   options: any = undefined,
-  f: (response: string) => Promise<string> = (response) =>
-    Promise.resolve(response)
-): Promise<string> {
+  f: (response: string) => Promise<T> = (response) =>
+    Promise.resolve(response as T)
+): Promise<T> {
   return cacheF(url, maxAgeMs, () =>
     new Promise<string>((resolve) =>
       window.chrome.runtime.sendMessage(
@@ -144,5 +144,6 @@ export function fetchE(
     ).then((response) => f(response))
   );
 }
+export const fetchES = fetchE<string>;
 
 export default LogFetcher;

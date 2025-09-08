@@ -25,8 +25,10 @@ export function clog<T>(t: T): T {
   return t;
 }
 
-export const extension_id = "jbdpjafpomdbklfifcclbkflmnnjefdc"; // local
-// export const extension_id = "jjlokcmkcepehbfepbffkmkkbnggkmje";
+export const EXTENSION_STORAGE_KEY = "extension_id";
+export const extension_id =
+  localStorage.getItem(EXTENSION_STORAGE_KEY) ||
+  "jbdpjafpomdbklfifcclbkflmnnjefdc";
 
 // const expected_version = "3.1.1";
 
@@ -115,6 +117,7 @@ class NFLStream extends React.Component<
           .concat(...getStreamsFromUrlQuery()),
       });
     };
+    // icrackstreams.app
     return md5(HOST || "") !== "01ff79624460db1d04dce5d92cce3079" ? (
       <HostPrompt />
     ) : this.state?.hasExtension === undefined ? null : (
@@ -208,7 +211,10 @@ function getStreamsFromUrlQuery(): StreamType[] {
   }));
 }
 
+var prompted = false;
 function HostPrompt() {
+  if (prompted) return null;
+  prompted = true;
   const pw = window.prompt("choose a host:");
   if (pw) {
     localStorage.setItem(HOST_STORAGE_KEY, pw);

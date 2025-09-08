@@ -1,5 +1,7 @@
 import Fetcher, { cacheF, StreamType } from ".";
+import { clog } from "..";
 import ClapprDriver from "../Drivers/ClapprDriver";
+import { fetchE } from "./LogFetcher";
 
 export const HOST_STORAGE_KEY = "host.v2";
 export const HOST = localStorage.getItem(HOST_STORAGE_KEY)!;
@@ -10,37 +12,42 @@ export default class StreamsFetcher extends Fetcher<StreamType[], null> {
 
   getResponse(_maxAgeMs: number | null = null) {
     const maxAgeMs = _maxAgeMs !== null ? _maxAgeMs : 10 * 60 * 1000;
-    return fetchP("https://www.espn.com/nfl/schedule", maxAgeMs, (text) =>
-      Promise.resolve(text)
-        .then(
-          (text) =>
-            text.match(/(?<=window\['__espnfitt__'\]=).*(?=;<\/script>)/)![0]
-        )
-        .then(JSON.parse)
-        .then(
-          (o: {
-            page: {
-              content: {
-                events: {
-                  [date: string]: {
-                    id: string;
-                    teams: { shortName: string }[];
-                    date: string;
-                    status: { state: "in" | "pre" | "post" };
-                  }[];
+    return fetchE(
+      "https://www.espn.com/nfl/schedule",
+      maxAgeMs,
+      undefined,
+      (text) =>
+        Promise.resolve(text)
+          .then(
+            (text) =>
+              text.match(/(?<=window\['__espnfitt__'\]=).*(?=;<\/script>)/)![0]
+          )
+          .then(clog)
+          .then(JSON.parse)
+          .then(
+            (o: {
+              page: {
+                content: {
+                  events: {
+                    [date: string]: {
+                      id: string;
+                      teams: { shortName: string }[];
+                      date: string;
+                      status: { state: "in" | "pre" | "post" };
+                    }[];
+                  };
                 };
               };
-            };
-          }) =>
-            Object.values(o.page.content.events).flatMap((es) =>
-              es.map((e) => ({
-                startTime: new Date(e.date).getTime(),
-                state: e.status.state,
-                espnId: parseInt(e.id),
-                teams: e.teams.map((t) => t.shortName).reverse(),
-              }))
-            )
-        )
+            }) =>
+              Object.values(o.page.content.events).flatMap((es) =>
+                es.map((e) => ({
+                  startTime: new Date(e.date).getTime(),
+                  state: e.status.state,
+                  espnId: parseInt(e.id),
+                  teams: e.teams.map((t) => t.shortName).reverse(),
+                }))
+              )
+          )
     )
       .then((games) =>
         games

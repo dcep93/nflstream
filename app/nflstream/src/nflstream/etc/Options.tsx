@@ -1,5 +1,5 @@
 import { createRef } from "react";
-import { HOST_STORAGE_KEY } from "../Fetcher/StreamsFetcher";
+import { extension_id, EXTENSION_STORAGE_KEY } from "..";
 import { defaultLogDelayMs } from "../Log";
 import style from "../index.module.css";
 
@@ -21,8 +21,26 @@ export default function Options() {
     <div className={style.bubble}>
       <h3>Options</h3>
       <div>
-        <input ref={logDelayRef} defaultValue={defaultLogDelayMs} />
-        <span> log delay ms</span>
+        <span>extension_id </span>
+        <input
+          style={{ width: "6em" }}
+          defaultValue={extension_id}
+          onChange={(e) =>
+            Promise.resolve()
+              .then(() =>
+                localStorage.setItem(EXTENSION_STORAGE_KEY, e.target.value)
+              )
+              .then(() => window.location.reload())
+          }
+        />
+      </div>
+      <div>
+        <span>log delay ms </span>
+        <input
+          style={{ width: "6em" }}
+          ref={logDelayRef}
+          defaultValue={defaultLogDelayMs}
+        />
       </div>
       <div>
         <input ref={autoRefreshRef} type={"checkbox"} defaultChecked />
@@ -39,11 +57,11 @@ export default function Options() {
       <button
         onClick={() => {
           if (!window.confirm("Are you sure?")) return;
-          localStorage.removeItem(HOST_STORAGE_KEY);
+          localStorage.clear();
           window.location.reload();
         }}
       >
-        reset host
+        clear cache
       </button>
     </div>
   );

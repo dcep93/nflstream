@@ -1,8 +1,7 @@
 import ReactDomServer from "react-dom/server";
-import { clog } from "..";
 import { muteCommercialRef } from "../etc/Options";
 import { StreamType } from "../Fetcher";
-import { fetchE } from "../Fetcher/LogFetcher";
+import { fetchES } from "../Fetcher/LogFetcher";
 import { HOST } from "../Fetcher/StreamsFetcher";
 import FunctionToScript from "./FunctionToScript";
 
@@ -10,17 +9,16 @@ const maxAgeMs = 10 * 60 * 1000;
 const ClapprDriver = {
   getRawUrl: (stream_id: string) => `https://${HOST}/nflstreams/live`,
   getHostParams: (stream: StreamType, hardRefresh: boolean) =>
-    fetchE(`https://${HOST}/nflstreams/live`, maxAgeMs)
-      .then(clog)
+    fetchES(`https://${HOST}/nflstreams/live`, maxAgeMs)
       .then(
         (text) =>
           Array.from(text.matchAll(/href="(.*?-live-streaming-.*?)" class/g))
             .map((m) => m[1])
             .find((m) => m.includes(stream.stream_id))!
       )
-      .then((raw_url) => fetchE(raw_url, hardRefresh ? 0 : maxAgeMs))
+      .then((raw_url) => fetchES(raw_url, hardRefresh ? 0 : maxAgeMs))
       .then((text) => text.match(/<iframe.*?src="(.*?)"/)![1])
-      .then((gooz_src) => fetchE(gooz_src, 0))
+      .then((gooz_src) => fetchES(gooz_src, 0))
       .then((text) => text.match(/window\.atob\('(.*?)'\)/)![1])
       .then((encoded) => atob(encoded))
       .then(

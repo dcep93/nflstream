@@ -176,58 +176,33 @@ function getSrcDoc(params: { [key: string]: string }) {
                     video.videoWidth,
                     video.videoHeight
                   ).data;
-                  const num_channels = 4;
-                  const num_segments = 40;
-                  const segment_size =
-                    raw_data.length / num_channels / num_segments;
-                  if (segment_size % 1 !== 0) return Promise.resolve([]);
-                  const segments: Data[][] = [];
-                  function helper(segment_index: number): Promise<Data[]> {
-                    if (subscreen_muted) return Promise.resolve([]);
-                    if (segment_index === num_segments)
-                      return Promise.resolve(segments.flatMap((s) => s));
-                    segments.push(
-                      Array.from(new Array(segment_size))
-                        .map((_, i) => i + segment_index * segment_size)
-                        .map((i) =>
-                          Array.from(
-                            raw_data.slice(
-                              i * num_channels,
-                              (i + 1) * num_channels
-                            )
-                          )
-                        )
-                        .map((channels) => ({
-                          channels: channels.slice(0, 3),
-                          alpha: channels[3],
-                        }))
-                        .map((o) => ({
-                          channels: o.channels,
-                          alpha: o.alpha,
-                          avg:
-                            o.channels.reduce((a, b) => a + b, 0) /
-                            o.channels.length,
-                        }))
-                        .map((o) => ({
-                          channels: o.channels,
-                          alpha: o.alpha,
-                          avg: o.avg,
-                          diff: o.channels
-                            .map((c) => Math.abs(c - o.avg))
-                            .reduce((a, b) => a + b, 0),
-                        }))
-                    );
-                    return new Promise((resolve) =>
-                      setTimeout(
-                        resolve,
-                        muteCommercialLoopPeriodMs / (num_segments + 1)
+                  return Promise.resolve(
+                    Array.from(new Array(video.videoWidth * video.videoHeight))
+                      .map((_, i) =>
+                        Array.from(raw_data.slice(i * 4, i * 4 + 4))
                       )
-                    ).then(() => helper(segment_index + 1));
-                  }
-                  return helper(0);
+                      .map((channels) => ({
+                        channels: channels.slice(0, 3),
+                        alpha: channels[3],
+                      }))
+                      .map((o) => ({
+                        channels: o.channels,
+                        alpha: o.alpha,
+                        avg:
+                          o.channels.reduce((a, b) => a + b, 0) /
+                          o.channels.length,
+                      }))
+                      .map((o) => ({
+                        channels: o.channels,
+                        alpha: o.alpha,
+                        avg: o.avg,
+                        diff: o.channels
+                          .map((c) => Math.abs(c - o.avg))
+                          .reduce((a, b) => a + b, 0),
+                      }))
+                  );
                 }
                 function get_is_commercial(data: Data[]) {
-                  (window as any).comm_data = data;
                   const filtered = {
                     zeros: data.filter(
                       (d) => d.alpha === 0 && d.avg === 0 && d.diff === 0
@@ -253,6 +228,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                     .then(() => get_data())
                     .catch(() => [])
                     .then((sliced_data) => {
+                      (window as any).comm_data = sliced_data;
                       const is_commercial = get_is_commercial(sliced_data);
                       const should_mute = subscreen_muted || is_commercial;
                       if (should_mute !== video.muted) {

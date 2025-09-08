@@ -4,6 +4,7 @@ import ClapprDriver from "../Drivers/ClapprDriver";
 import { fetchE } from "./LogFetcher";
 
 export const HOST_STORAGE_KEY = "host.v2";
+export const ACTIVE_HOST = "icrackstreams.app";
 export const HOST = localStorage.getItem(HOST_STORAGE_KEY)!;
 export const DRIVER = ClapprDriver;
 

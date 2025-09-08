@@ -6,6 +6,7 @@ import { isMobile } from "./etc/Options";
 import Remote from "./etc/Remote";
 import { StreamType } from "./Fetcher";
 import StreamsFetcher, {
+  ACTIVE_HOST,
   HOST,
   HOST_STORAGE_KEY,
 } from "./Fetcher/StreamsFetcher";
@@ -117,11 +118,10 @@ class NFLStream extends React.Component<
           .concat(...getStreamsFromUrlQuery()),
       });
     };
-    // icrackstreams.app
-    return md5(HOST || "") !== "01ff79624460db1d04dce5d92cce3079" ? (
-      <HostPrompt />
-    ) : this.state?.hasExtension === undefined ? (
+    return this.state?.hasExtension === undefined ? (
       <div>checking for extension...</div>
+    ) : md5(HOST || "") !== md5(ACTIVE_HOST) ? (
+      <HostPrompt hasExtension={this.state.hasExtension!} />
     ) : (
       <div className={style.main} style={{ backgroundColor: "black" }}>
         {!this.state.hasExtension ? null : (
@@ -222,7 +222,12 @@ function getStreamsFromUrlQuery(): StreamType[] {
 }
 
 var prompted = false;
-function HostPrompt() {
+function HostPrompt(props: { hasExtension: boolean }) {
+  if (props.hasExtension) {
+    localStorage.setItem(HOST_STORAGE_KEY, ACTIVE_HOST);
+    window.location.reload();
+    return null;
+  }
   if (prompted) return null;
   prompted = true;
   const pw = window.prompt("choose a host:");

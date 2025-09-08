@@ -289,6 +289,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                 });
               }
 
+              console.log(292);
               const loadedInterval = setInterval(() => {
                 if (video.duration >= 45) {
                   clearInterval(loadedInterval);

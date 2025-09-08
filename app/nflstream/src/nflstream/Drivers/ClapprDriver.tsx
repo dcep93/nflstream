@@ -89,6 +89,7 @@ function getSrcDoc(params: { [key: string]: string }) {
         <div id="wrap">
           <div id="player" style={{ height: "100vH", width: "100vW" }}></div>
         </div>
+        <canvas id="canvas" hidden />
 
         <FunctionToScript
           t={{
@@ -124,6 +125,7 @@ function getSrcDoc(params: { [key: string]: string }) {
               if (initialized) return;
               initialized = true;
               const video = document.getElementsByTagName("video")[0];
+              video.play();
               var subscreen_muted = true;
               function update_muted() {
                 video.muted = subscreen_muted;
@@ -145,6 +147,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                   channels: number[];
                   alpha: number;
                   diff: number;
+                  avg: number;
                 };
                 function get_data(): Promise<Data[]> {
                   if (subscreen_muted) return Promise.resolve([]);
@@ -224,7 +227,12 @@ function getSrcDoc(params: { [key: string]: string }) {
                   return helper(0);
                 }
                 function get_is_commercial(data: Data[]) {
+                  (window as any).comm_data = data;
                   const filtered = {
+                    zeros: data.filter(
+                      (d) => d.alpha === 0 && d.avg === 0 && d.diff === 0
+                    ).length,
+                    alphas: data.filter((d) => d.alpha === 255).length,
                     greys: data.filter((d) => d.alpha === 0 && d.diff <= 5)
                       .length,
                     whites: data.filter((d) => d.alpha === 255 && d.diff <= 5)
@@ -307,7 +315,6 @@ function getSrcDoc(params: { [key: string]: string }) {
 
                   muteCommercialLoop();
 
-                  video.currentTime = video.duration - 5;
                   catchUp(true).then(() => {
                     catchUp(false);
                     var recentTimestamp = 0;

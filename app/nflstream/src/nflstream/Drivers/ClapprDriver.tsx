@@ -119,25 +119,6 @@ function getSrcDoc(params: { [key: string]: string }) {
               plugins: [(window as any).HlsjsPlayback],
             });
 
-            function isLoaded(): boolean {
-              // video.buffer > 45
-              return true;
-            }
-
-            function isBrief(): boolean {
-              // _flowapi.video.buffer < 60
-              return true;
-            }
-
-            function fastForward() {
-              // video.currentTime = _flowapi.video.buffer - 5;
-            }
-
-            function getLag(): number {
-              // _flowapi.video.buffer - video.currentTime;
-              return 0;
-            }
-
             function customInit() {
               const video = document.getElementsByTagName("video")[0];
               var subscreen_muted = true;
@@ -283,7 +264,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                 return new Promise<void>((resolve) => {
                   const accelerateInterval = setInterval(() => {
                     if (!video.paused) {
-                      const lag = getLag();
+                      const lag = video.duration - video.currentTime;
                       if (lag > (firstTime ? 5 : 20)) {
                         triggered = true;
                       } else if (lag < 5) {
@@ -292,7 +273,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                       video.playbackRate = triggered ? 3 : 1;
                     }
                     if (firstTime) {
-                      if (isBrief()) {
+                      if (video.duration < 60) {
                         return;
                       }
                     } else {
@@ -309,7 +290,7 @@ function getSrcDoc(params: { [key: string]: string }) {
               }
 
               const loadedInterval = setInterval(() => {
-                if (isLoaded()) {
+                if (video.duration >= 45) {
                   clearInterval(loadedInterval);
                   update_muted();
                   window.parent.postMessage(
@@ -323,7 +304,7 @@ function getSrcDoc(params: { [key: string]: string }) {
 
                   muteCommercialLoop();
 
-                  fastForward();
+                  video.currentTime = video.duration - 5;
                   catchUp(true).then(() => {
                     catchUp(false);
                     var recentTimestamp = 0;

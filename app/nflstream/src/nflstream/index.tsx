@@ -28,7 +28,7 @@ export function clog<T>(t: T): T {
 export const EXTENSION_STORAGE_KEY = "extension_id";
 export const extension_id =
   localStorage.getItem(EXTENSION_STORAGE_KEY) ||
-  "jbdpjafpomdbklfifcclbkflmnnjefdc";
+  "jbdpjafpomdbklfifcclbkflmnnjefdcx";
 
 // const expected_version = "3.1.1";
 

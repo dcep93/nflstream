@@ -10,3 +10,9 @@ export default function FunctionToScript<T>(props: {
     ></script>
   );
 }
+
+function x() {
+  const OrigXHR = window.XMLHttpRequest;
+  Object.getOwnPropertyNames(OrigXHR);
+}
+console.log(x.toString());

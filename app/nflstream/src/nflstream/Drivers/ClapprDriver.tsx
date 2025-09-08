@@ -276,9 +276,9 @@ function getSrcDoc(params: { [key: string]: string }) {
                   const accelerateInterval = setInterval(() => {
                     if (!video.paused) {
                       const lag = video.duration - video.currentTime;
-                      if (lag > (firstTime ? 20 : 30)) {
+                      if (lag > (firstTime ? 30 : 50)) {
                         triggered = true;
-                      } else if (lag < 10) {
+                      } else if (lag < 20) {
                         triggered = false;
                       }
                       video.playbackRate = triggered ? 3 : 1;

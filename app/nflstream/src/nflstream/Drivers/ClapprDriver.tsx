@@ -71,7 +71,9 @@ function getSrcDoc(params: { [key: string]: string }) {
               return xhr;
             }
             (InterceptedXHR as any).prototype = OrigXHR.prototype;
-            for (const k of Object.getOwnPropertyNames(OrigXHR)) {
+            const x = Object.getOwnPropertyNames(OrigXHR);
+            console.log(x);
+            for (let k of Object.getOwnPropertyNames(OrigXHR)) {
               try {
                 (InterceptedXHR as any)[k] = (OrigXHR as any)[k];
               } catch {}

@@ -14,7 +14,8 @@
     },
     "condition": {
       "urlFilter": "*",
-      "resourceTypes": ["xmlhttprequest", "script", "main_frame", "sub_frame"]
+      "resourceTypes": ["xmlhttprequest", "script", "main_frame", "sub_frame"],
+      "excludedDomains": ["icrackstreams.app"]
     }
   }
 ]

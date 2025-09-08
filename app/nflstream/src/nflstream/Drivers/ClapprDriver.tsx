@@ -25,7 +25,7 @@ const ClapprDriver = {
           ({
             source: true
               ? `${window.atob(
-                  "aHR0cHM6Ly9wbDIuZ250bGVvc2Vhbi5zaXRlL3BsYXlsaXN0LzM2NDUyL2xvYWQtcGxheWxpc3Q="
+                  "aHR0cHM6Ly9wbDIuZ250bGVvc2Vhbi5zaXRlL3BsYXlsaXN0LzM2NDcxL2xvYWQtcGxheWxpc3Q="
                 )}////.m3u8`
               : "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8",
           } as Record<string, string>)
@@ -51,39 +51,6 @@ function getSrcDoc(params: { [key: string]: string }) {
         <FunctionToScript
           t={params}
           f={(params) => {
-            const promises: { [key: string]: (response: string) => void } = {};
-            window.addEventListener("message", (event) => {
-              if (event.data.source !== "nflstream") return;
-              if (event.data.response === undefined) return;
-              const p = promises[event.data.key];
-              delete promises[event.data.key];
-              p(event.data.response);
-            });
-            function getPayload(
-              __meta: Record<string, string>
-            ): Promise<string | undefined> {
-              const url = __meta.url.split("////")[0];
-              if (url.includes(".ts?token=")) {
-                return Promise.resolve(undefined);
-              }
-              if (url.includes("caxi")) {
-                // return Promise.resolve(undefined);
-              }
-              const key = crypto.randomUUID();
-              return new Promise<string>((resolve) => {
-                promises[key] = resolve;
-                window.parent.postMessage(
-                  {
-                    source: "nflstream.html",
-                    action: "proxy",
-                    key,
-                    url,
-                    iFrameTitle: params.iFrameTitle,
-                  },
-                  "*"
-                );
-              });
-            }
             const OrigXHR = window.XMLHttpRequest;
 
             function InterceptedXHR(this: XMLHttpRequest) {
@@ -100,30 +67,8 @@ function getSrcDoc(params: { [key: string]: string }) {
                   password?: string
                 ]
               ) {
-                const [method, url] = args;
-                xhr.__meta.method = method?.toUpperCase?.() || "GET";
-                xhr.__meta.url = url;
+                args[1] = args[1].split("////")[0];
                 return origOpen.apply(xhr, args as any);
-              };
-              const origSend = xhr.send;
-              xhr.send = function (body?: Document | BodyInit | null) {
-                getPayload(xhr.__meta).then((payload) => {
-                  console.log({ ...xhr.__meta, body, payload });
-                  if (!payload) {
-                    return origSend.call(xhr, body as any);
-                  }
-                  Object.defineProperty(xhr, "readyState", { value: 4 });
-                  Object.defineProperty(xhr, "status", { value: 200 });
-                  Object.defineProperty(xhr, "statusText", { value: "OK" });
-                  Object.defineProperty(xhr, "responseText", {
-                    value: payload,
-                  });
-                  Object.defineProperty(xhr, "response", { value: payload });
-
-                  xhr.dispatchEvent(new Event("readystatechange"));
-                  xhr.dispatchEvent(new Event("load"));
-                  xhr.dispatchEvent(new Event("loadend"));
-                });
               };
 
               return xhr;

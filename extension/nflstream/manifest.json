@@ -1,7 +1,7 @@
 {
   "name": "NFL Stream",
   "description": "Assistant for nflstream.web.app: allows fetching of logs.",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "icons": {
     "16": "favicon.png",
     "48": "favicon.png",
@@ -10,12 +10,6 @@
   "background": {
     "service_worker": "background.js"
   },
-  "web_accessible_resources": [
-    {
-      "resources": ["iframe.html"],
-      "matches": ["<all_urls>"]
-    }
-  ],
   "externally_connectable": {
     "matches": ["http://localhost/*", "https://nflstream.web.app/"],
     "accept_tls_channel_id": true

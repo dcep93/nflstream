@@ -17,5 +17,23 @@
       "resourceTypes": ["xmlhttprequest", "script", "main_frame", "sub_frame"],
       "excludedDomains": ["icrackstreams.app"]
     }
+  },
+  {
+    "id": 2,
+    "priority": 2,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        {
+          "header": "Referer",
+          "operation": "set",
+          "value": "https://icrackstreams.app/"
+        }
+      ]
+    },
+    "condition": {
+      "urlFilter": "https://gooz.aapmains.net/",
+      "resourceTypes": ["xmlhttprequest", "script", "main_frame", "sub_frame"]
+    }
   }
 ]

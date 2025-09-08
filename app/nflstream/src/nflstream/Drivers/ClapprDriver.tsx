@@ -10,24 +10,21 @@ const ClapprDriver = {
   getRawUrl: (stream_id: string) => `https://${HOST}/nflstreams/live`,
   getHostParams: (stream: StreamType, hardRefresh: boolean) =>
     fetchE(`https://${HOST}/nflstreams/live`, maxAgeMs)
-      // .then(
-      //   (text) =>
-      //     Array.from(text.matchAll(/href="(.*?-live-streaming-.*?)" class/g))
-      //       .map((m) => m[1])
-      //       .find((m) => m.includes(stream.stream_id))!
-      // )
-      // .then((raw_url) => fetchE(raw_url, hardRefresh ? 0 : maxAgeMs))
-      // .then((text) => text.match(/<iframe.*?src="(.*?)"/))
-      // .then((gooz_match) => fetchE(clog(gooz_match![1]), 0))
-      // .then(clog)
       .then(
         (text) =>
+          Array.from(text.matchAll(/href="(.*?-live-streaming-.*?)" class/g))
+            .map((m) => m[1])
+            .find((m) => m.includes(stream.stream_id))!
+      )
+      .then((raw_url) => fetchE(raw_url, hardRefresh ? 0 : maxAgeMs))
+      .then((text) => text.match(/<iframe.*?src="(.*?)"/)![1])
+      .then((gooz_src) => fetchE(gooz_src, 0))
+      .then((text) => text.match(/window\.atob\('(.*?)'\)/)![1])
+      .then((encoded) => atob(encoded))
+      .then(
+        (gntleocen_src) =>
           ({
-            source: true
-              ? `${window.atob(
-                  "aHR0cHM6Ly9wbDIuZ250bGVvc2Vhbi5zaXRlL3BsYXlsaXN0LzM2NDcxL2xvYWQtcGxheWxpc3Q="
-                )}////.m3u8`
-              : "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8",
+            source: `${gntleocen_src}////.m3u8`,
           } as Record<string, string>)
       ),
   getSrcDoc,

@@ -81,7 +81,8 @@ function Guide() {
           </a>{" "}
           and unzip the chrome extension. Visit chrome://extensions, turn on
           developer mode, click load unpacked, and select the downloaded
-          extension. Copy the id, and paste it in the Options below.
+          extension. Copy the id, and paste it in the Options below. Maybe
+          someday I can publish to the store.
         </li>
         <li>
           Click a game to open a stream and place it on the multiscreen.

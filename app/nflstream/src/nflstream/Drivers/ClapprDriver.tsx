@@ -106,7 +106,7 @@ function getSrcDoc(params: { [key: string]: string }) {
               xhr.send = function (body?: Document | BodyInit | null) {
                 const __meta = xhr.__meta;
                 getPayload(__meta).then((payload) => {
-                  console.log({ ...__meta, body, payload });
+                  console.log({ __meta, body, payload });
                   if (!payload) {
                     return origSend.call(xhr, body as any);
                   }

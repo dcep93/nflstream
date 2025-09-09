@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { clog } from "..";
 import Fetcher from "../Fetcher";
 import { fetchC } from "../Fetcher/LogFetcher";
 import { getLogDelayMs } from "../Log";
@@ -125,6 +126,7 @@ export class ScoreFetcher extends Fetcher<scoresType, null> {
         ).then((response) =>
           Promise.resolve(response)
             .then(JSON.parse)
+            .then(clog)
             .then(
               (response: {
                 teams: { id: number; name: string }[];

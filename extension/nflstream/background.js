@@ -20,6 +20,6 @@ chrome.runtime.onMessageExternal.addListener(
         return resp.text();
       })
       .then((text) => sendResponse(text))
-      .catch((err) => console.error(err));
+      .catch((err) => console.trace(err));
   }
 );

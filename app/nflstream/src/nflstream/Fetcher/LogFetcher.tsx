@@ -12,7 +12,7 @@ class LogFetcher extends Fetcher<LogType | null, number> {
           10 * 1000
         ),
         fetchC(
-          `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/${gameId}/competitions/${gameId}/drives?limit=1000&test=x`,
+          `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/${gameId}/competitions/${gameId}/drives?limit=1000`,
           10 * 1000
         ),
       ])
@@ -28,11 +28,11 @@ class LogFetcher extends Fetcher<LogType | null, number> {
                 Promise.resolve()
                   .then(() => coreItem["$ref"])
                   .then((driveUrl) =>
-                    fetchES(driveUrl, index === 0 ? 2 * 1000 : 5 * 60 * 1000)
+                    fetchC(driveUrl, index === 0 ? 2 * 1000 : 5 * 60 * 1000)
                   )
                   .then((driveResp) => JSON.parse(driveResp))
                   .then((driveObj) =>
-                    fetchES(driveObj.team["$ref"], 24 * 60 * 60 * 1000)
+                    fetchC(driveObj.team["$ref"], 24 * 60 * 60 * 1000)
                       .then((teamResp) => JSON.parse(teamResp))
                       .then((teamObj) => ({
                         ...coreItem,

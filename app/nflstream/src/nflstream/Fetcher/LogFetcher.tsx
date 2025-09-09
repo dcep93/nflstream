@@ -12,7 +12,7 @@ class LogFetcher extends Fetcher<LogType | null, number> {
           10 * 1000
         ),
         fetchC(
-          `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/${gameId}/competitions/${gameId}/drives?limit=1000`,
+          `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/${gameId}/competitions/${gameId}/drives?limit=1000&test=x`,
           10 * 1000
         ),
       ])

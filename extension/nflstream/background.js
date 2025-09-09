@@ -9,9 +9,16 @@ fetch(chrome.runtime.getURL("manifest.json"))
 
 chrome.runtime.onMessageExternal.addListener(
   ({ url, options }, _, sendResponse) => {
+    console.log({ url });
     if (!url) return sendResponse(version);
     return fetch(url, options)
-      .then((resp) => resp.text())
+      .then((resp) => {
+        if (resp.status >= 400)
+          return resp.text().then((text) => {
+            throw new Error(text);
+          });
+        return resp.text();
+      })
       .then((text) => sendResponse(text))
       .catch((err) => console.error(err));
   }

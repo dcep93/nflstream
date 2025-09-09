@@ -32,7 +32,7 @@ class LogFetcher extends Fetcher<LogType | null, number> {
                   )
                   .then((driveResp) => JSON.parse(driveResp))
                   .then((driveObj) =>
-                    fetchC(driveObj.team["$ref"], 24 * 60 * 60 * 1000)
+                    fetchES(driveObj.team["$ref"], 24 * 60 * 60 * 1000)
                       .then((teamResp) => JSON.parse(teamResp))
                       .then((teamObj) => ({
                         ...coreItem,

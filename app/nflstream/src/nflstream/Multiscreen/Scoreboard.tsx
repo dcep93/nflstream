@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Fetcher from "../Fetcher";
-import { fetchC } from "../Fetcher/LogFetcher";
+import { fetchE } from "../Fetcher/LogFetcher";
 import { getLogDelayMs } from "../Log";
 import AutoScroller from "../Log/Autoscroller";
 
@@ -109,7 +109,6 @@ type matchupTeam = {
 };
 export class ScoreFetcher extends Fetcher<scoresType, null> {
   intervalMs = 20_000;
-  static leagueId = 203836968;
   static year = 2025;
 
   getResponse<T extends typeof ScoreFetcher>() {
@@ -117,12 +116,12 @@ export class ScoreFetcher extends Fetcher<scoresType, null> {
   }
 
   static staticGetResponse(intervalMs: number) {
-    return Promise.resolve()
-      .then(() =>
-        fetchC(
-          `https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/${ScoreFetcher.year}/segments/0/leagues/${ScoreFetcher.leagueId}?view=mMatchup&view=mMatchupScore&view=mRoster&view=mScoreboard&view=mSettings&view=mStatus&view=mTeam&view=modular&view=mNav`,
-          30_000
-        ).then((response) =>
+    return Promise.resolve().then(() =>
+      fetchE(
+        `/content_script`,
+        intervalMs,
+        { type: "scoreboard", year: ScoreFetcher.year },
+        (response) =>
           Promise.resolve(response)
             .then(JSON.parse)
             .then(
@@ -146,9 +145,7 @@ export class ScoreFetcher extends Fetcher<scoresType, null> {
                     }))
                   )
             )
-            .then(JSON.stringify)
-        )
       )
-      .then((response) => JSON.parse(response));
+    );
   }
 }

@@ -274,7 +274,6 @@ function getSrcDoc(params: { [key: string]: string }) {
                     .then(() => get_data())
                     .catch(() => [])
                     .then((sliced_data) => {
-                      (window as any).comm_data = sliced_data;
                       const is_commercial = get_is_commercial(sliced_data);
                       const should_mute = subscreen_muted || is_commercial;
                       if (should_mute !== video.muted) {

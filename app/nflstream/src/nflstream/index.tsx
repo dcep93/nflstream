@@ -12,6 +12,7 @@ import StreamsFetcher, {
 } from "./Fetcher/StreamsFetcher";
 import style from "./index.module.css";
 import Multiscreen, { ScreenType } from "./Multiscreen";
+import { SCOREBOARD_SRC } from "./Multiscreen/Scoreboard";
 import recorded_sha from "./recorded_sha";
 
 declare global {
@@ -102,20 +103,19 @@ class NFLStream extends React.Component<
     const handleResponse = (streams: StreamType[]) => {
       this.setState({
         streams: streams
-          // .concat([
-          //   {
-          //     raw_url: `https://fantasy.espn.com/football/fantasycast?leagueId=${ScoreFetcher.leagueId}`,
-          //     name: SCOREBOARD_SRC,
-          //     stream_id: SCOREBOARD_SRC,
-          //     src: SCOREBOARD_SRC,
-          //   },
-          // ])
+          .concat([
+            {
+              raw_url: "",
+              name: SCOREBOARD_SRC,
+              stream_id: SCOREBOARD_SRC,
+              src: SCOREBOARD_SRC,
+            },
+          ])
           .concat(...getStreamsFromUrlQuery()),
       });
     };
-    return this.state?.hasExtension === undefined ? (
-      <div>checking for extension...</div>
-    ) : md5(HOST || "") !== md5(ACTIVE_HOST) ? (
+    return this.state?.hasExtension === undefined ? null : md5(HOST || "") !==
+      md5(ACTIVE_HOST) ? (
       <HostPrompt hasExtension={this.state.hasExtension!} />
     ) : (
       <div className={style.main} style={{ backgroundColor: "black" }}>

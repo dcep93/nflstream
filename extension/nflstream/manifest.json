@@ -25,5 +25,12 @@
       }
     ]
   },
-  "permissions": ["declarativeNetRequest"]
+  "permissions": ["tabs", "declarativeNetRequest"],
+  "content_scripts": [
+    {
+      "matches": ["https://fantasy.espn.com/*"],
+      "js": ["content_script.js"],
+      "run_at": "document_start"
+    }
+  ]
 }

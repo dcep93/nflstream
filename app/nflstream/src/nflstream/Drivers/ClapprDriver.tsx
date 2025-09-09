@@ -252,6 +252,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                   const filtered = {
                     zeros: data.filter((d) => d.alpha === 0 && d.avg === 0)
                       .length,
+                    nonzeros: data.filter((d) => d.avg !== 0).length,
                     alphas: data.filter((d) => d.alpha === 255).length,
                     blues: data.filter(
                       (d) => d.channels[2] - d.channels[0] - d.channels[1] > 20

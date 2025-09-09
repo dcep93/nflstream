@@ -7,11 +7,11 @@ class LogFetcher extends Fetcher<LogType | null, number> {
     const gameId = this.props.payload;
     return Promise.resolve()
       .then(() => [
-        fetchE(
+        fetchC(
           `https://site.web.api.espn.com/apis/site/v2/sports/football/nfl/summary?region=us&lang=en&contentorigin=espn&event=${gameId}`,
           10 * 1000
         ),
-        fetchE(
+        fetchC(
           `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/${gameId}/competitions/${gameId}/drives?limit=1000`,
           10 * 1000
         ),
@@ -125,6 +125,10 @@ class LogFetcher extends Fetcher<LogType | null, number> {
         return log;
       });
   }
+}
+
+export function fetchC(url: string, maxAgeMs: number) {
+  return cacheF(url, maxAgeMs, () => fetch(url).then((resp) => resp.text()));
 }
 
 export function fetchE<T>(

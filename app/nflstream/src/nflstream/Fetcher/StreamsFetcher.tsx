@@ -73,9 +73,17 @@ export default class StreamsFetcher extends Fetcher<StreamType[], null> {
           )
       )
       .then((ps) => Promise.all(ps))
-      .catch((err) => [
-        { raw_url: "", name: err.toString(), stream_id: "ERROR", src: "ERROR" },
-      ]);
+      .catch((err) => {
+        console.error(err);
+        return [
+          {
+            raw_url: "",
+            name: err.toString(),
+            stream_id: "ERROR",
+            src: "ERROR",
+          },
+        ];
+      });
   }
 }
 

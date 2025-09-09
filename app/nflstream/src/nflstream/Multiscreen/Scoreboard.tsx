@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Fetcher from "../Fetcher";
-import { fetchE } from "../Fetcher/LogFetcher";
+import { fetchC } from "../Fetcher/LogFetcher";
 import { getLogDelayMs } from "../Log";
 import AutoScroller from "../Log/Autoscroller";
 
@@ -119,38 +119,34 @@ export class ScoreFetcher extends Fetcher<scoresType, null> {
   static staticGetResponse(intervalMs: number) {
     return Promise.resolve()
       .then(() =>
-        fetchE(
+        fetchC(
           `https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/${ScoreFetcher.year}/segments/0/leagues/${ScoreFetcher.leagueId}?view=mMatchup&view=mMatchupScore&view=mRoster&view=mScoreboard&view=mSettings&view=mStatus&view=mTeam&view=modular&view=mNav`,
-          30_000,
-          undefined,
-          (response) =>
-            Promise.resolve(response)
-              .then(JSON.parse)
-              .then(
-                (response: {
-                  teams: { id: number; name: string }[];
-                  scoringPeriodId: number;
-                  schedule: {
-                    matchupPeriodId: number;
-                    away: matchupTeam;
-                    home: matchupTeam;
-                  }[];
-                }) =>
-                  response.schedule
-                    .filter(
-                      (m) => m.matchupPeriodId === response.scoringPeriodId
-                    )
-                    .map((m) =>
-                      [m.away, m.home].map((t) => ({
-                        teamName: response.teams.find(
-                          (rt) => rt.id === t.teamId
-                        )!.name,
-                        score: t.totalPointsLive,
-                        projected: t.totalProjectedPointsLive,
-                      }))
-                    )
-              )
-              .then(JSON.stringify)
+          30_000
+        ).then((response) =>
+          Promise.resolve(response)
+            .then(JSON.parse)
+            .then(
+              (response: {
+                teams: { id: number; name: string }[];
+                scoringPeriodId: number;
+                schedule: {
+                  matchupPeriodId: number;
+                  away: matchupTeam;
+                  home: matchupTeam;
+                }[];
+              }) =>
+                response.schedule
+                  .filter((m) => m.matchupPeriodId === response.scoringPeriodId)
+                  .map((m) =>
+                    [m.away, m.home].map((t) => ({
+                      teamName: response.teams.find((rt) => rt.id === t.teamId)!
+                        .name,
+                      score: t.totalPointsLive,
+                      projected: t.totalProjectedPointsLive,
+                    }))
+                  )
+            )
+            .then(JSON.stringify)
         )
       )
       .then((response) => JSON.parse(response));

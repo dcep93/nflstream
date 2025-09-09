@@ -212,9 +212,8 @@ function getSrcDoc(params: { [key: string]: string }) {
                     "canvas"
                   ) as HTMLCanvasElement;
 
-                  canvas.width = video.width;
-                  canvas.height = video.height;
-                  console.log(video.width, video.height);
+                  canvas.width = video.videoWidth;
+                  canvas.height = video.videoHeight;
                   if (!canvas) {
                     return Promise.resolve([]);
                   }

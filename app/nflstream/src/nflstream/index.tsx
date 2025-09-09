@@ -39,7 +39,7 @@ class NFLStream extends React.Component<
     backgroundColor?: string;
     streams?: StreamType[];
     screens: ScreenType[];
-    hasExtension?: boolean;
+    extensionVersion?: string;
     initialized?: boolean;
   }
 > {
@@ -48,21 +48,21 @@ class NFLStream extends React.Component<
     console.log(recorded_sha);
     if (!window.chrome?.runtime) {
       console.log("componentDidMount", "no chrome runtime");
-      this.setState({ hasExtension: false });
+      this.setState({ extensionVersion: "" });
     } else {
       new Promise((resolve, reject) => {
         window.chrome.runtime.sendMessage(extension_id, {}, (response: any) => {
           if (response === undefined) return reject("empty response");
           // if (response < expected_version) return reject("old version");
           console.log("componentDidMount", "extension detected", response);
-          this.setState({ hasExtension: true });
+          this.setState({ extensionVersion: response });
           resolve(null);
         });
       }).catch((err: Error) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         window.chrome.runtime.lastError;
         console.log("componentDidMount", "extension not detected", err);
-        this.setState({ hasExtension: false });
+        this.setState({ extensionVersion: "" });
       });
     }
   }
@@ -114,12 +114,13 @@ class NFLStream extends React.Component<
           .concat(...getStreamsFromUrlQuery()),
       });
     };
-    return this.state?.hasExtension === undefined ? null : md5(HOST || "") !==
-      md5(ACTIVE_HOST) ? (
-      <HostPrompt hasExtension={this.state.hasExtension!} />
+    return this.state?.extensionVersion === undefined ? null : md5(
+        HOST || ""
+      ) !== md5(ACTIVE_HOST) ? (
+      <HostPrompt extensionVersion={this.state.extensionVersion!} />
     ) : (
       <div className={style.main} style={{ backgroundColor: "black" }}>
-        {!this.state.hasExtension ? null : (
+        {!this.state.extensionVersion ? null : (
           <StreamsFetcher
             ref={ref}
             handleResponse={handleResponse}
@@ -136,7 +137,7 @@ class NFLStream extends React.Component<
             })
           }
           streams={
-            !this.state.hasExtension
+            !this.state.extensionVersion
               ? [
                   {
                     raw_url: "",
@@ -217,8 +218,8 @@ function getStreamsFromUrlQuery(): StreamType[] {
 }
 
 var prompted = false;
-function HostPrompt(props: { hasExtension: boolean }) {
-  if (props.hasExtension) {
+function HostPrompt(props: { extensionVersion: string }) {
+  if (props.extensionVersion) {
     localStorage.setItem(HOST_STORAGE_KEY, ACTIVE_HOST);
     window.location.reload();
     return null;

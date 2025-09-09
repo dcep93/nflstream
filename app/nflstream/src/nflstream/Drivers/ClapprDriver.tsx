@@ -201,7 +201,6 @@ function getSrcDoc(params: { [key: string]: string }) {
                 type Data = {
                   channels: number[];
                   alpha: number;
-                  diff: number;
                   avg: number;
                 };
                 function get_data(): Promise<Data[]> {

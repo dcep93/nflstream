@@ -255,6 +255,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                 }
                 function get_is_commercial(data: Data[]) {
                   const filtered = {
+                    total: data.length,
                     whites: data.filter(
                       (d) =>
                         d.channels[0] == d.channels[1] &&

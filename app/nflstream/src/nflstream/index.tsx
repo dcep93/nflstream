@@ -12,7 +12,6 @@ import StreamsFetcher, {
 } from "./Fetcher/StreamsFetcher";
 import style from "./index.module.css";
 import Multiscreen, { ScreenType } from "./Multiscreen";
-import { SCOREBOARD_SRC, ScoreFetcher } from "./Multiscreen/Scoreboard";
 import recorded_sha from "./recorded_sha";
 
 declare global {
@@ -103,18 +102,14 @@ class NFLStream extends React.Component<
     const handleResponse = (streams: StreamType[]) => {
       this.setState({
         streams: streams
-          .concat(
-            this.state.hasExtension
-              ? [
-                  {
-                    raw_url: `https://fantasy.espn.com/football/fantasycast?leagueId=${ScoreFetcher.leagueId}`,
-                    name: SCOREBOARD_SRC,
-                    stream_id: SCOREBOARD_SRC,
-                    src: SCOREBOARD_SRC,
-                  },
-                ]
-              : []
-          )
+          // .concat([
+          //   {
+          //     raw_url: `https://fantasy.espn.com/football/fantasycast?leagueId=${ScoreFetcher.leagueId}`,
+          //     name: SCOREBOARD_SRC,
+          //     stream_id: SCOREBOARD_SRC,
+          //     src: SCOREBOARD_SRC,
+          //   },
+          // ])
           .concat(...getStreamsFromUrlQuery()),
       });
     };

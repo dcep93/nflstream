@@ -14,7 +14,7 @@
     },
     "condition": {
       "urlFilter": "*",
-      "resourceTypes": ["xmlhttprequest", "script", "sub_frame"],
+      "resourceTypes": ["script", "sub_frame"],
       "excludedDomains": ["icrackstreams.app"],
       "initiatorDomains": ["nflstream.web.app", "localhost"]
     }

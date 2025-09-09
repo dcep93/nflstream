@@ -247,35 +247,19 @@ function getSrcDoc(params: { [key: string]: string }) {
                           o.channels.reduce((a, b) => a + b, 0) /
                           o.channels.length,
                       }))
-                      .map((o) => ({
-                        channels: o.channels,
-                        alpha: o.alpha,
-                        avg: o.avg,
-                        diff: o.channels
-                          .map((c) => Math.abs(c - o.avg))
-                          .reduce((a, b) => a + b, 0),
-                      }))
                   );
                 }
                 function get_is_commercial(data: Data[]) {
                   const filtered = {
-                    zeros: data.filter(
-                      (d) => d.alpha === 0 && d.avg === 0 && d.diff === 0
-                    ).length,
+                    zeros: data.filter((d) => d.alpha === 0 && d.avg === 0)
+                      .length,
                     alphas: data.filter((d) => d.alpha === 255).length,
-                    greys: data.filter((d) => d.alpha === 0 && d.diff <= 5)
-                      .length,
-                    whites: data.filter((d) => d.alpha === 255 && d.diff <= 5)
-                      .length,
                     blues: data.filter(
                       (d) => d.channels[2] - d.channels[0] - d.channels[1] > 20
                     ).length,
                   };
-                  const is_commercial =
-                    filtered.greys >= 876_600 &&
-                    filtered.whites + filtered.blues >= 44_000 &&
-                    filtered.blues >= 20;
-                  return is_commercial;
+                  console.log(filtered);
+                  return false;
                 }
                 function mute_if_commercial() {
                   const start_time = Date.now();

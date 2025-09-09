@@ -76,15 +76,6 @@ function Guide() {
       <ol>
         <li>This app is used to watch multiple NFL streams.</li>
         <li>
-          uhhh actually the chrome extension is broken. It should be fixed
-          within 10 minutes of the game starting tho. If you wanna fix it
-          yourself,{" "}
-          <a href="https://github.com/dcep93/nflstream/blob/master/extension/nflstream/rules.json">
-            this
-          </a>{" "}
-          is the problem.
-        </li>
-        <li>
           <a href="https://github.com/dcep93/nflstream/releases/tag/unpacked_extension">
             Download
           </a>{" "}

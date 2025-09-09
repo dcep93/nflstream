@@ -57,12 +57,13 @@ function getSrcDoc(params: { [key: string]: string }) {
               p(event.data.response);
             });
             function getPayload(
-              mmeta: Record<string, string>
+              __meta: Record<string, string>
             ): Promise<string | undefined> {
-              console.log(62);
-              console.log({ mmeta });
-              if (mmeta.url.includes("caxi")) return Promise.resolve(undefined);
-              if (mmeta.url.includes(".ts?")) return Promise.resolve(undefined);
+              console.log({ __meta });
+              if (__meta.url.includes("caxi"))
+                return Promise.resolve(undefined);
+              if (__meta.url.includes(".ts?"))
+                return Promise.resolve(undefined);
               const key = crypto.randomUUID();
               return new Promise<string>((resolve) => {
                 promises[key] = resolve;
@@ -71,7 +72,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                     source: "nflstream.html",
                     action: "proxy",
                     key,
-                    url: mmeta.url.split("////")[0],
+                    url: __meta.url.split("////")[0],
                     iFrameTitle: params.iFrameTitle,
                   },
                   "*"
@@ -103,9 +104,9 @@ function getSrcDoc(params: { [key: string]: string }) {
 
               const origSend = xhr.send;
               xhr.send = function (body?: Document | BodyInit | null) {
-                getPayload(xhr.__meta).then((payload) => {
-                  console.log(106);
-                  console.log({ ...xhr.__meta, body, payload });
+                const __meta = xhr.__meta;
+                getPayload(__meta).then((payload) => {
+                  console.log({ ...__meta, body, payload });
                   if (!payload) {
                     return origSend.call(xhr, body as any);
                   }

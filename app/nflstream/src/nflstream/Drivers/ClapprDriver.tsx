@@ -59,7 +59,10 @@ function getSrcDoc(params: { [key: string]: string }) {
             function getPayload(
               __meta: Record<string, string>
             ): Promise<string | undefined> {
-              if (__meta.url.endsWith("caxi"))
+              console.log({ __meta });
+              if (__meta.url.includes("caxi"))
+                return Promise.resolve(undefined);
+              if (__meta.url.includes(".ts?"))
                 return Promise.resolve(undefined);
               const key = crypto.randomUUID();
               return new Promise<string>((resolve) => {
@@ -94,7 +97,6 @@ function getSrcDoc(params: { [key: string]: string }) {
                 ]
               ) {
                 const [method, url] = args;
-                console.log("open", url);
                 xhr.__meta.method = method?.toUpperCase?.() || "GET";
                 xhr.__meta.url = url;
                 return origOpen.apply(xhr, args as any);

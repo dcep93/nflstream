@@ -99,9 +99,11 @@ export function cacheF<T>(
     cached = { timestamp, data, version: cacheVersion };
     cache[key] = cached;
     const localCached = JSON.stringify(cached);
-    try {
-      window.localStorage.setItem(key, localCached);
-    } catch {}
+    if (maxAgeMs >= 0) {
+      try {
+        window.localStorage.setItem(key, localCached);
+      } catch {}
+    }
     return data;
   });
 }

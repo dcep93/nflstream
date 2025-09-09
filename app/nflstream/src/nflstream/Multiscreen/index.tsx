@@ -70,7 +70,7 @@ class Multiscreen extends React.Component<
           );
         }
       } else if (event.data.action === "proxy") {
-        fetchE(event.data.url, 0).then((response) =>
+        fetchE(event.data.url, -1).then((response) =>
           this.props.screens
             .find((s) => s.iFrameTitle === event.data.iFrameTitle)
             ?.ref.current?.contentWindow?.postMessage(

@@ -107,9 +107,7 @@ function ObjectFitIframe(props: {
         justifyContent: "space-around",
       }}
     >
-      {true ||
-      !props.screen.espnId ||
-      !displayLogRef.current?.checked ? null : (
+      {!props.screen.espnId || !displayLogRef.current?.checked ? null : (
         <Log
           espnId={props.screen.espnId!}
           updateBigPlay={props.updateBigPlay}

@@ -180,12 +180,6 @@ function getSrcDoc(params: { [key: string]: string }) {
               if (initialized) return;
               initialized = true;
               const video = document.getElementsByTagName("video")[0];
-              const canvas = document.getElementById(
-                "canvas"
-              ) as HTMLCanvasElement;
-
-              canvas.width = video.width;
-              canvas.height = video.height;
               video.play();
               var subscreen_muted = true;
               function update_muted() {
@@ -214,12 +208,17 @@ function getSrcDoc(params: { [key: string]: string }) {
                   if (video.videoWidth === 0) {
                     return Promise.resolve([]);
                   }
+                  const canvas = document.getElementById(
+                    "canvas"
+                  ) as HTMLCanvasElement;
+
+                  canvas.width = video.width;
+                  canvas.height = video.height;
+                  console.log(video.width, video.height);
                   if (!canvas) {
                     return Promise.resolve([]);
                   }
-                  const ctx = canvas.getContext("2d", {
-                    willReadFrequently: true,
-                  })!;
+                  const ctx = canvas.getContext("2d")!;
                   ctx.clearRect(0, 0, video.videoWidth, video.videoHeight);
                   ctx.drawImage(
                     video,

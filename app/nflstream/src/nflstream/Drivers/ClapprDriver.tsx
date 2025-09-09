@@ -258,7 +258,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                     total: data.length,
                     whites: data.filter(
                       (d) =>
-                        d.channels[0] == d.channels[1] &&
+                        d.channels[0] === d.channels[1] &&
                         d.channels[1] === d.channels[2]
                     ).length,
                     blues: data.filter(

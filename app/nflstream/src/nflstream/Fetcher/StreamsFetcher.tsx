@@ -1,5 +1,4 @@
-import Fetcher, { cacheF, StreamType } from ".";
-import { clog } from "..";
+import Fetcher, { StreamType } from ".";
 import ClapprDriver from "../Drivers/ClapprDriver";
 import { fetchE } from "./LogFetcher";
 
@@ -23,7 +22,6 @@ export default class StreamsFetcher extends Fetcher<StreamType[], null> {
             (text) =>
               text.match(/(?<=window\['__espnfitt__'\]=).*(?=;<\/script>)/)![0]
           )
-          .then(clog)
           .then(JSON.parse)
           .then(
             (o: {
@@ -81,20 +79,20 @@ export default class StreamsFetcher extends Fetcher<StreamType[], null> {
   }
 }
 
-export function fetchP<T>(
-  url: string,
-  maxAgeMs: number,
-  textToCache: (text: string) => Promise<T>
-): Promise<T> {
-  return cacheF(url, maxAgeMs, () =>
-    fetch("https://proxy420.appspot.com", {
-      method: "POST",
-      body: JSON.stringify({ maxAgeMs, url }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((resp) => resp.text())
-      .then((text) => textToCache(text))
-  );
-}
+// export function fetchP<T>(
+//   url: string,
+//   maxAgeMs: number,
+//   textToCache: (text: string) => Promise<T>
+// ): Promise<T> {
+//   return cacheF(url, maxAgeMs, () =>
+//     fetch("https://proxy420.appspot.com", {
+//       method: "POST",
+//       body: JSON.stringify({ maxAgeMs, url }),
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//     })
+//       .then((resp) => resp.text())
+//       .then((text) => textToCache(text))
+//   );
+// }

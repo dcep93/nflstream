@@ -2,6 +2,7 @@ import React from "react";
 import { autoRefreshRef, remoteRef } from "../etc/Options";
 import { onUpdateRemote, updateRemote } from "../etc/Remote";
 import { StreamType } from "../Fetcher";
+import { fetchE } from "../Fetcher/LogFetcher";
 import { DRIVER } from "../Fetcher/StreamsFetcher";
 import { DelayedLog } from "../Log";
 import msStyle from "./index.module.css";
@@ -68,6 +69,15 @@ class Multiscreen extends React.Component<
             )
           );
         }
+      } else if (event.data.action === "proxy") {
+        fetchE(event.data.url, 0).then((response) =>
+          this.props.screens
+            .find((s) => s.iFrameTitle === event.data.iFrameTitle)
+            ?.ref.current?.contentWindow?.postMessage(
+              { key: event.data.key, response, source: "nflstream" },
+              "*"
+            )
+        );
       }
     });
     this.setState({ selected: "" });

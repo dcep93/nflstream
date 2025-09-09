@@ -57,13 +57,11 @@ function getSrcDoc(params: { [key: string]: string }) {
               p(event.data.response);
             });
             function getPayload(
-              __meta: Record<string, string>
+              mmeta: Record<string, string>
             ): Promise<string | undefined> {
-              console.log({ __meta });
-              if (__meta.url.includes("caxi"))
-                return Promise.resolve(undefined);
-              if (__meta.url.includes(".ts?"))
-                return Promise.resolve(undefined);
+              console.log({ mmeta });
+              if (mmeta.url.includes("caxi")) return Promise.resolve(undefined);
+              if (mmeta.url.includes(".ts?")) return Promise.resolve(undefined);
               const key = crypto.randomUUID();
               return new Promise<string>((resolve) => {
                 promises[key] = resolve;
@@ -72,7 +70,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                     source: "nflstream.html",
                     action: "proxy",
                     key,
-                    url: __meta.url.split("////")[0],
+                    url: mmeta.url.split("////")[0],
                     iFrameTitle: params.iFrameTitle,
                   },
                   "*"

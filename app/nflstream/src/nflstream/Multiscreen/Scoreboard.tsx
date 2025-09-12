@@ -6,37 +6,38 @@ import AutoScroller from "../Log/Autoscroller";
 
 export const SCOREBOARD_SRC = "scoreboard";
 
-type scoresType = {
+type ScoreboardDataType = {
   leagueId: number;
   isGuillotine: boolean;
   scores: { teamName: string; score: number; projected: number }[][];
 };
 
 export default function Scoreboard() {
-  const [scores, updateScores] = useState<scoresType | null>(null);
+  const [scoreboardData, updatescoreboardData] =
+    useState<ScoreboardDataType | null>(null);
   var timeout: NodeJS.Timeout;
   return (
     <div
       style={{ height: "100%", width: "100%" }}
       onClick={() =>
         ScoreFetcher.staticGetResponse(1000)
-          .then((_scores) => {
+          .then((_scoreboardData) => {
             clearTimeout(timeout);
-            return _scores;
+            return _scoreboardData;
           })
-          .then(updateScores)
+          .then(updatescoreboardData)
       }
     >
       <ScoreFetcher
         payload={null}
-        handleResponse={(_scores) => {
+        handleResponse={(_scoreboardData) => {
           timeout = setTimeout(
-            () => updateScores(_scores),
-            !scores ? 0 : getLogDelayMs()
+            () => updatescoreboardData(_scoreboardData),
+            !_scoreboardData ? 0 : getLogDelayMs()
           );
         }}
       />
-      {scores === null ? (
+      {scoreboardData === null ? (
         <div>loading...</div>
       ) : (
         <AutoScroller speed={0.03}>
@@ -48,7 +49,7 @@ export default function Scoreboard() {
               justifyContent: "space-between",
             }}
           >
-            {scores.scores
+            {scoreboardData.scores
               .map((teams) => teams.sort((a, b) => b.projected - a.projected))
               .map((teams) => ({
                 teams,
@@ -111,7 +112,7 @@ type matchupTeam = {
   totalPointsLive: number;
   totalProjectedPointsLive: number;
 };
-export class ScoreFetcher extends Fetcher<scoresType, null> {
+export class ScoreFetcher extends Fetcher<ScoreboardDataType, null> {
   intervalMs = 20_000;
   static year = 2025;
 
@@ -119,7 +120,7 @@ export class ScoreFetcher extends Fetcher<scoresType, null> {
     return (this.constructor as T).staticGetResponse(this.intervalMs);
   }
 
-  static staticGetResponse(intervalMs: number): Promise<scoresType> {
+  static staticGetResponse(intervalMs: number): Promise<ScoreboardDataType> {
     return Promise.resolve().then(() =>
       fetchE(
         `/content_script`,
@@ -157,7 +158,7 @@ export class ScoreFetcher extends Fetcher<scoresType, null> {
                   )
                   .then((scores) => ({
                     scores,
-                    isGuillotine: false,
+                    isGuillotine: [367176096].includes(response.id),
                     leagueId: response.id,
                   }))
             )

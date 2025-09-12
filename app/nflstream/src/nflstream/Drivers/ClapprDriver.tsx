@@ -254,6 +254,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                   );
                 }
                 function get_is_commercial(data: Data[]) {
+                  (window as any).comm_data = data;
                   const filtered = {
                     total: data.length,
                     whites: data.filter(
@@ -334,7 +335,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                     "*"
                   );
 
-                  console.log(muteCommercialLoop);
+                  muteCommercialLoop();
 
                   catchUp(true).then(() => {
                     catchUp(false);

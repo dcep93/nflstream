@@ -49,62 +49,78 @@ export default function Scoreboard() {
               justifyContent: "space-between",
             }}
           >
-            {scoreboardData.scores
-              .map((teams) => teams.sort((a, b) => b.projected - a.projected))
-              .map((teams) => ({
-                teams,
-                diff: teams[0].projected - teams[1].projected,
-                upcoming: teams
-                  .map((t) => t.projected - t.score)
-                  .map((tDiff) => tDiff + Math.min(tDiff, 5))
-                  .reduce((a, b) => a + b, 0),
-              }))
-              .map((o) => ({
-                ...o,
-                stddev: o.upcoming / 4,
-              }))
-              .map((o) => ({
-                ...o,
-                zScore: o.diff / o.stddev,
-              }))
-              .map((o) => ({
-                ...o,
-                zScore: Math.pow(o.zScore, 1.5),
-              }))
-              .map((o) => ({
-                ...o,
-                zScore: o.zScore * Math.pow(2, Math.abs(o.zScore)),
-              }))
-              .map((o) => ({
-                ...o,
-                probability: 0.5 + Math.atan(o.zScore) / Math.PI,
-              }))
-              .sort((a, b) => a.probability - b.probability)
-              .map((o, i) => (
-                <div
-                  key={i}
-                  style={{
-                    border: "2px solid grey",
-                    borderRadius: "10px",
-                    padding: "0.2em",
-                    backgroundColor: "lightgrey",
-                  }}
-                >
-                  <div>probability: {(100 * o.probability).toFixed(2)}%</div>
-                  <div>
-                    {o.teams.map((t, j) => (
-                      <div key={j} style={{ maxWidth: "13em" }}>
-                        {t.score} ({t.projected.toFixed(2)}) {t.teamName}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
+            {scoreboardData.isGuillotine ? (
+              <Guillotine scoreboardData={scoreboardData} />
+            ) : (
+              <Standard scoreboardData={scoreboardData} />
+            )}
           </div>
         </AutoScroller>
       )}
     </div>
   );
+}
+
+function Standard(props: { scoreboardData: ScoreboardDataType }) {
+  return (
+    <>
+      {props.scoreboardData.scores
+        .map((teams) => teams.sort((a, b) => b.projected - a.projected))
+        .map((teams) => ({
+          teams,
+          diff: teams[0].projected - teams[1].projected,
+          upcoming: teams
+            .map((t) => t.projected - t.score)
+            .map((tDiff) => tDiff + Math.min(tDiff, 5))
+            .reduce((a, b) => a + b, 0),
+        }))
+        .map((o) => ({
+          ...o,
+          stddev: o.upcoming / 4,
+        }))
+        .map((o) => ({
+          ...o,
+          zScore: o.diff / o.stddev,
+        }))
+        .map((o) => ({
+          ...o,
+          zScore: Math.pow(o.zScore, 1.5),
+        }))
+        .map((o) => ({
+          ...o,
+          zScore: o.zScore * Math.pow(2, Math.abs(o.zScore)),
+        }))
+        .map((o) => ({
+          ...o,
+          probability: 0.5 + Math.atan(o.zScore) / Math.PI,
+        }))
+        .sort((a, b) => a.probability - b.probability)
+        .map((o, i) => (
+          <div
+            key={i}
+            style={{
+              border: "2px solid grey",
+              borderRadius: "10px",
+              padding: "0.2em",
+              backgroundColor: "lightgrey",
+            }}
+          >
+            <div>probability: {(100 * o.probability).toFixed(2)}%</div>
+            <div>
+              {o.teams.map((t, j) => (
+                <div key={j} style={{ maxWidth: "13em" }}>
+                  {t.score} ({t.projected.toFixed(2)}) {t.teamName}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+    </>
+  );
+}
+
+function Guillotine(props: { scoreboardData: ScoreboardDataType }) {
+  return <div style={{ color: "white" }}>gotem</div>;
 }
 
 type matchupTeam = {

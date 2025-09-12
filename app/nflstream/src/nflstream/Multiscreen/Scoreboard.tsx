@@ -15,7 +15,7 @@ export default function Scoreboard() {
     <div
       style={{ height: "100%", width: "100%" }}
       onClick={() =>
-        ScoreFetcher.staticGetResponse(10_000)
+        ScoreFetcher.staticGetResponse(1000)
           .then((_scores) => {
             clearTimeout(timeout);
             return _scores;

@@ -334,7 +334,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                     "*"
                   );
 
-                  // muteCommercialLoop();
+                  console.log(muteCommercialLoop);
 
                   catchUp(true).then(() => {
                     catchUp(false);

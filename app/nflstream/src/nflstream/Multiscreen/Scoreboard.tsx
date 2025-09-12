@@ -3,6 +3,7 @@ import Fetcher from "../Fetcher";
 import { fetchE } from "../Fetcher/LogFetcher";
 import { getLogDelayMs } from "../Log";
 import AutoScroller from "../Log/Autoscroller";
+import { probNormalMinAll } from "./guillotine";
 
 export const SCOREBOARD_SRC = "scoreboard";
 
@@ -20,7 +21,7 @@ export default function Scoreboard() {
     <div
       style={{ height: "100%", width: "100%" }}
       onClick={() =>
-        ScoreFetcher.staticGetResponse(1000)
+        ScoreFetcher.staticGetResponse(100)
           .then((_scoreboardData) => {
             clearTimeout(timeout);
             return _scoreboardData;
@@ -120,7 +121,47 @@ function Standard(props: { scoreboardData: ScoreboardDataType }) {
 }
 
 function Guillotine(props: { scoreboardData: ScoreboardDataType }) {
-  return <div style={{ color: "white" }}>gotem</div>;
+  const teams = props.scoreboardData.scores
+    .flatMap((teams) => teams)
+    .filter((o) => o.projected > 0)
+    .map((o) => ({
+      ...o,
+      tDiff: o.projected - o.score,
+    }))
+    .map((o) => ({ ...o, upcoming: o.tDiff + Math.min(o.tDiff, 5) }))
+    .map((o) => ({
+      ...o,
+      stddev: o.upcoming / 4,
+    }));
+  const probabilities = probNormalMinAll(
+    teams.map((t) => t.projected),
+    teams.map((t) => t.stddev)
+  );
+  return (
+    <>
+      {teams
+        .map((o, i) => ({ ...o, probability: probabilities[i] }))
+        .sort((a, b) => b.probability - a.probability)
+        .map((o, i) => (
+          <div
+            key={i}
+            style={{
+              border: "2px solid grey",
+              borderRadius: "10px",
+              padding: "0.2em",
+              backgroundColor: "lightgrey",
+            }}
+          >
+            <div>probability: {(100 * o.probability).toFixed(2)}%</div>
+            <div>
+              <div style={{ maxWidth: "13em" }}>
+                {o.score} ({o.projected.toFixed(2)}) {o.teamName}
+              </div>
+            </div>
+          </div>
+        ))}
+    </>
+  );
 }
 
 type matchupTeam = {

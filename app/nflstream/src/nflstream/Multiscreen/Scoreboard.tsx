@@ -6,7 +6,11 @@ import AutoScroller from "../Log/Autoscroller";
 
 export const SCOREBOARD_SRC = "scoreboard";
 
-type scoresType = { teamName: string; score: number; projected: number }[][];
+type scoresType = {
+  leagueId: number;
+  isGuillotine: boolean;
+  scores: { teamName: string; score: number; projected: number }[][];
+};
 
 export default function Scoreboard() {
   const [scores, updateScores] = useState<scoresType | null>(null);
@@ -44,7 +48,7 @@ export default function Scoreboard() {
               justifyContent: "space-between",
             }}
           >
-            {scores
+            {scores.scores
               .map((teams) => teams.sort((a, b) => b.projected - a.projected))
               .map((teams) => ({
                 teams,
@@ -115,7 +119,7 @@ export class ScoreFetcher extends Fetcher<scoresType, null> {
     return (this.constructor as T).staticGetResponse(this.intervalMs);
   }
 
-  static staticGetResponse(intervalMs: number) {
+  static staticGetResponse(intervalMs: number): Promise<scoresType> {
     return Promise.resolve().then(() =>
       fetchE(
         `/content_script`,
@@ -126,6 +130,7 @@ export class ScoreFetcher extends Fetcher<scoresType, null> {
             .then(JSON.parse)
             .then(
               (response: {
+                id: number;
                 teams: { id: number; name: string }[];
                 scoringPeriodId: number;
                 schedule: {
@@ -134,16 +139,27 @@ export class ScoreFetcher extends Fetcher<scoresType, null> {
                   home: matchupTeam;
                 }[];
               }) =>
-                response.schedule
-                  .filter((m) => m.matchupPeriodId === response.scoringPeriodId)
-                  .map((m) =>
-                    [m.away, m.home].map((t) => ({
-                      teamName: response.teams.find((rt) => rt.id === t.teamId)!
-                        .name,
-                      score: t.totalPointsLive,
-                      projected: t.totalProjectedPointsLive,
-                    }))
+                Promise.resolve()
+                  .then(() =>
+                    response.schedule
+                      .filter(
+                        (m) => m.matchupPeriodId === response.scoringPeriodId
+                      )
+                      .map((m) =>
+                        [m.away, m.home].map((t) => ({
+                          teamName: response.teams.find(
+                            (rt) => rt.id === t.teamId
+                          )!.name,
+                          score: t.totalPointsLive,
+                          projected: t.totalProjectedPointsLive,
+                        }))
+                      )
                   )
+                  .then((scores) => ({
+                    scores,
+                    isGuillotine: false,
+                    leagueId: response.id,
+                  }))
             )
       )
     );

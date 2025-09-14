@@ -77,7 +77,10 @@ export default class StreamsFetcher extends Fetcher<StreamType[], null> {
           .map((stream) =>
             DRIVER.getHostParams(stream, false)
               .then(() => stream)
-              .catch((err) => null as any as StreamType)
+              .catch((err) => {
+                console.error(err);
+                return null as any as StreamType;
+              })
           )
       )
       .then((ps) => Promise.all(ps))

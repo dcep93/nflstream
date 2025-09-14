@@ -139,6 +139,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                   if (!payload) {
                     return origSend.call(xhr, body as any);
                   }
+
                   Object.defineProperty(xhr, "readyState", { value: 4 });
                   Object.defineProperty(xhr, "status", { value: 200 });
                   Object.defineProperty(xhr, "statusText", { value: "OK" });

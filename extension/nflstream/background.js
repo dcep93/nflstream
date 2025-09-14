@@ -40,6 +40,24 @@ chrome.runtime.onMessageExternal.addListener(
           return resp.text().then((text) => {
             throw new Error(text);
           });
+        const encoding = resp.headers.get("content-encoding");
+        if (
+          encoding &&
+          encoding.toLowerCase() === "zstd" &&
+          url.endsWith(".txt")
+        ) {
+          return resp
+            .arrayBuffer()
+            .then((buf) => new Uint8Array(buf))
+            .then((bytes) => {
+              let bin = "";
+              const chunk = 0x8000; // avoid call stack blowups
+              for (let i = 0; i < bytes.length; i += chunk) {
+                bin += String.fromCharCode(...bytes.subarray(i, i + chunk));
+              }
+              return btoa(bin);
+            });
+        }
         return resp.text();
       })
       .then((text) => sendResponse(text))

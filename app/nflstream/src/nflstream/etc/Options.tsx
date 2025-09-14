@@ -48,7 +48,7 @@ export default function Options() {
         <span> autorefresh</span>
       </div>
       <div>
-        <input ref={muteCommercialRef} type={"checkbox"} defaultChecked />
+        <input ref={muteCommercialRef} type={"checkbox"} />
         <span> mute nfl+ commercials</span>
       </div>
       <div>

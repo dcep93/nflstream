@@ -116,7 +116,6 @@ export class DelayedLog extends React.Component<
   }
 
   updateNow(log: LogType | undefined = undefined) {
-    console.log({ log });
     if (!log) log = this.props.log;
     if (log?.timestamp < this.state?.log?.timestamp) return;
     this.setState({ log });

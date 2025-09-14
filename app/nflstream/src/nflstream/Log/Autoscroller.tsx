@@ -31,6 +31,7 @@ export default class AutoScroller extends React.Component<Props, State> {
   }
 
   helper(fakeState: FakeState) {
+    console.log("helper");
     if (!this.state?.ref) return;
     const now = Date.now();
     fakeState.last = now;

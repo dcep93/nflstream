@@ -36,7 +36,6 @@ const ClapprDriver = {
             teams: ["", matched.split("/").reverse()[0]],
           }))
       )
-      .then(clog)
       .then((extra) => games.concat(extra)),
   getRawUrl: (stream_id: string) => `https://${HOST}/nflstreams/live`,
   getHostParams: (stream: StreamType, hardRefresh: boolean) =>
@@ -50,6 +49,7 @@ const ClapprDriver = {
       .then((raw_url) => fetchES(raw_url, hardRefresh ? 0 : maxAgeMs))
       .then((text) => text.match(/<iframe.*?src="(.*?)"/)![1])
       .then((gooz_src) => fetchES(gooz_src, 0))
+      .then(clog)
       .then((text) => text.match(/window\.atob\('(.*?)'\)/)![1])
       .then((encoded) => atob(encoded))
       .then(

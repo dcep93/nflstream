@@ -88,7 +88,6 @@ function getSrcDoc(params: { [key: string]: string }) {
             function getPayload(
               __meta: Record<string, string>
             ): Promise<string | undefined> {
-              console.log({ __meta });
               if (__meta.url.includes("caxi"))
                 return Promise.resolve(undefined);
               if (__meta.url.includes(".ts?"))
@@ -135,7 +134,6 @@ function getSrcDoc(params: { [key: string]: string }) {
               xhr.send = function (body?: Document | BodyInit | null) {
                 const __meta = xhr.__meta;
                 getPayload(__meta).then((payload) => {
-                  console.log({ __meta, body, payload });
                   if (!payload) {
                     return origSend.call(xhr, body as any);
                   }

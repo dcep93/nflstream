@@ -40,6 +40,12 @@ export default class AutoScroller extends React.Component<Props, State> {
     const currentlyScrolled = this.state.ref.current?.scrollTop || 0;
     if (fakeState.sleeping) return;
     const d = Math.abs(fakeState.offset - currentlyScrolled);
+    console.log({
+      a: this.state.ref.current?.scrollTop ?? -1,
+      b: Math.ceil(fakeState.offset),
+      c: currentlyScrolled,
+      d,
+    });
     if (Math.abs(fakeState.offset - currentlyScrolled) > 1) {
       fakeState.sleeping = true;
       setTimeout(() => {
@@ -59,12 +65,6 @@ export default class AutoScroller extends React.Component<Props, State> {
     fakeState.offset +=
       (this.props.speed * scrollableAmount * PERIOD_MS) / 1000;
     this.state.ref.current?.scrollTo({ top: Math.ceil(fakeState.offset) });
-    console.log({
-      a: this.state.ref.current?.scrollTop ?? -1,
-      b: Math.ceil(fakeState.offset),
-      c: currentlyScrolled,
-      d,
-    });
   }
 
   render() {

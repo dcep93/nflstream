@@ -46,7 +46,7 @@ export default class AutoScroller extends React.Component<Props, State> {
       c: currentlyScrolled,
       d,
     });
-    if (Math.abs(fakeState.offset - currentlyScrolled) > 1) {
+    if (Math.abs(fakeState.offset - currentlyScrolled) > 10) {
       fakeState.sleeping = true;
       setTimeout(() => {
         if (scrollableAmount - currentlyScrolled < 5) {

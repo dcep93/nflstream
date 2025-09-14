@@ -2,7 +2,10 @@
 
 set -euo pipefail
 
+mkdir -p /tmp/github-cache
+
 cd app/nflstream
 npm install
 yarn build
-rm -rf node_modules
+
+mv node_modules /tmp/github-cache

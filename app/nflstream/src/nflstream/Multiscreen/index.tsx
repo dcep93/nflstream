@@ -55,7 +55,7 @@ class Multiscreen extends React.Component<
     );
     window.addEventListener("message", (event) => {
       if (event.data.source !== "nflstream.html") return;
-      console.log(new Date(), event.data);
+      // console.log(new Date(), event.data);
       if (event.data.action === "loaded") {
         if (event.data.iFrameTitle === this.state?.selected) {
           const ref = this.getScreen()?.ref;

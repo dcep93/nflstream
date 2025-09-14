@@ -4,25 +4,35 @@
 //  - If σ_i = 0: p_i = (1/K) * ∏_{j: σ_j>0} P(X_j ≥ μ_i), where K is # of zero-σ with the same μ_i,
 //    provided no zero-σ has mean < μ_i. Else p_i = 0.
 //  - If σ_i > 0: use 1-D Gauss–Hermite on ∫ φ(z) Π_{j≠i} [1 - F_j(μ_i + σ_i z)] dz,
-//    where for zero-σ competitors F_j(x) = 1{x ≥ μ_j} (indicator).
+//    where for zero-σ competitors F_j(x) = 1{x ≥ μ_j}.
 export function probNormalMinAll(
   mus: number[],
   sigmas: number[],
-  points: 20 | 32 = 32
+  points: 20 | 32 = 32,
+  zeroSigmaEps = 0 // set to ~1e-12 if your inputs are noisy
 ): number[] {
   const n = mus.length;
   if (sigmas.length !== n)
     throw new Error("mus and sigmas must have same length");
 
+  // Validate inputs
+  for (let i = 0; i < n; i++) {
+    if (!(Number.isFinite(mus[i]) && Number.isFinite(sigmas[i])))
+      throw new Error("mus/sigmas must be finite numbers");
+    if (sigmas[i] < 0) throw new Error("sigmas must be ≥ 0");
+  }
+
+  const isZero = (s: number) => s <= zeroSigmaEps;
+
   const zeroIdx: number[] = [];
-  for (let i = 0; i < n; i++) if (sigmas[i] === 0) zeroIdx.push(i);
+  for (let i = 0; i < n; i++) if (isZero(sigmas[i])) zeroIdx.push(i);
 
   // Precompute zero-σ stats
   let minZeroMu = +Infinity;
   const zeroCountByMu = new Map<number, number>();
   for (const i of zeroIdx) {
     const mu = mus[i];
-    minZeroMu = Math.min(minZeroMu, mu);
+    if (mu < minZeroMu) minZeroMu = mu;
     zeroCountByMu.set(mu, (zeroCountByMu.get(mu) ?? 0) + 1);
   }
 
@@ -38,15 +48,14 @@ export function probNormalMinAll(
     }
     // Count ties among zero-σ at the same mean
     const K = zeroCountByMu.get(mu_i)!; // >= 1
-    // Continuous competitors (σ>0) don't tie at exactly μ_i with positive prob, so only split among degenerate equals.
     // p = (1/K) * Π_{j: σ_j>0} P(X_j ≥ μ_i) = (1/K) * Π SF((μ_i - μ_j)/σ_j)
     let logp = 0;
     for (let j = 0; j < n; j++) {
       if (j === i) continue;
-      if (sigmas[j] === 0) {
-        // If another zero-σ has mean < μ_i we already returned 0 above.
-        // If mean > μ_i, it cannot beat μ_i (always > μ_i), contributes factor 1.
-        // If mean == μ_i, tie-split handled by 1/K.
+      if (isZero(sigmas[j])) {
+        // If another zero-σ has mean < μ_i we already set 0 above.
+        // If mean > μ_i, it cannot beat μ_i; factor 1.
+        // If mean == μ_i, tie handled by 1/K.
         continue;
       }
       const t = (mu_i - mus[j]) / sigmas[j];
@@ -66,32 +75,28 @@ export function probNormalMinAll(
   // Gauss–Hermite for σ_i > 0
   const { x, w } = points === 20 ? GH20 : GH32;
   const invSqrtPi = 1 / Math.sqrt(Math.PI);
-  // For quick rejection: if any zero-σ exist, we must have x < minZeroMu for a contribution.
   const haveZero = zeroIdx.length > 0;
 
   for (let i = 0; i < n; i++) {
-    if (sigmas[i] === 0) continue; // already handled exactly
+    if (isZero(sigmas[i])) continue; // already handled exactly
     const mu_i = mus[i],
       si = sigmas[i];
 
     let acc = 0;
     for (let k = 0; k < x.length; k++) {
+      // E_z[ Π_{j≠i} P(X_j ≥ mu_i + si * z√2) ] with z~N(0,1)
       const z = Math.SQRT2 * x[k];
       const xi = mu_i + si * z;
 
-      // Zero-σ competitors: require xi < μ_j for all of them, else integrand is 0.
-      if (haveZero && xi >= minZeroMu) {
-        // If xi ≥ minZeroMu, at least one zero-σ with μ = minZeroMu dominates (indicator zero)
-        continue;
-      }
+      // Zero-σ competitors: require xi < μ_min_zero for any contribution.
+      if (haveZero && !(xi < minZeroMu)) continue;
 
       // Positive-σ competitors: multiply survival probabilities
       let logProd = 0;
       for (let j = 0; j < n; j++) {
         if (j === i) continue;
-        if (sigmas[j] === 0) {
-          // We already enforced xi < minZeroMu. If there exist zero-σ with μ > minZeroMu,
-          // they still satisfy xi < μ_j since μ_j >= minZeroMu > xi. So contribute factor 1.
+        if (isZero(sigmas[j])) {
+          // We enforced xi < minZeroMu. Since every zero-σ has μ ≥ minZeroMu > xi, factor = 1.
           continue;
         }
         const t = (xi - mus[j]) / sigmas[j];
@@ -102,12 +107,12 @@ export function probNormalMinAll(
         }
         logProd += Math.log(sf);
       }
-      acc += w[k] * Math.exp(logProd);
+      if (logProd > -Infinity) acc += w[k] * Math.exp(logProd);
     }
     out[i] = invSqrtPi * acc;
   }
 
-  // Optional normalization to mitigate tiny quadrature error; comment out if you prefer raw.
+  // Optional normalization to mitigate tiny quadrature error
   const s = out.reduce((a, b) => a + b, 0);
   if (isFinite(s) && s > 0) {
     for (let i = 0; i < n; i++) out[i] /= s;
@@ -138,7 +143,6 @@ function erfc(x: number): number {
 
 /* ---------- Gauss–Hermite nodes/weights ---------- */
 /* For ∫_{-∞}^{∞} e^{-t^2} f(t) dt ≈ Σ w_k f(x_k). */
-
 const GH20 = {
   x: [
     -5.387480890011232, -4.603682449550744, -3.944764040115625,

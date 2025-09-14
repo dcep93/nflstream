@@ -148,6 +148,10 @@ function Guillotine(props: { scoreboardData: ScoreboardDataType }) {
     .map((o) => ({
       ...o,
       stddev: o.upcoming / 4,
+    }))
+    .map((o) => ({
+      ...o,
+      stddev: Math.max(Math.abs(o.stddev), 0.01),
     }));
   const probabilities = probNormalMinAll(
     teams.map((t) => t.projected),

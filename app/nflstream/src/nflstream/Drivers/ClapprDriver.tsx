@@ -1,5 +1,4 @@
 import ReactDomServer from "react-dom/server";
-import { clog } from "..";
 import { muteCommercialRef } from "../etc/Options";
 import { StreamType } from "../Fetcher";
 import { fetchES } from "../Fetcher/LogFetcher";
@@ -49,7 +48,6 @@ const ClapprDriver = {
       .then((raw_url) => fetchES(raw_url, hardRefresh ? 0 : maxAgeMs))
       .then((text) => text.match(/<iframe.*?src="(.*?)"/)![1])
       .then((gooz_src) => fetchES(gooz_src, 0))
-      .then(clog)
       .then((text) => text.match(/window\.atob\('(.*?)'\)/)![1])
       .then((encoded) => atob(encoded))
       .then(

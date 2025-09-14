@@ -14,9 +14,9 @@ jobs:
           path: |
             app/nflstream/node_modules
             app/node_modules
-          key: ${{ runner.os }}
+          key: v1
           restore-keys: |
-            ${{ runner.os }}
+            v1
 
       - run: bash .github/workflows/record_sha.sh
       - run: bash .github/workflows/build_react.sh

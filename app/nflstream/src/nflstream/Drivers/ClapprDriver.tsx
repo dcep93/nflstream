@@ -233,7 +233,6 @@ function getSrcDoc(params: { [key: string]: string }) {
 
               function muteCommercialLoop() {
                 if (!muteCommercial) return;
-                console.log("muteCommercialLoop");
                 const muteCommercialLoopPeriodMs = 1000;
                 type Data = {
                   channels: number[];
@@ -374,6 +373,7 @@ function getSrcDoc(params: { [key: string]: string }) {
 
                   muteCommercialLoop();
 
+                  video.currentTime = video.duration - 10;
                   catchUp(true).then(() => {
                     catchUp(false);
                     var recentTimestamp = 0;

@@ -46,3 +46,54 @@ chrome.runtime.onMessageExternal.addListener(
       .catch((err) => console.trace(err));
   }
 );
+
+// background.js (MV3 service worker)
+chrome.runtime.onInstalled.addListener(async () => {
+  const rules = [
+    {
+      id: 1001,
+      priority: 2,
+      action: {
+        type: "modifyHeaders",
+        requestHeaders: [
+          {
+            header: "Referer",
+            operation: "set",
+            value: "https://icrackstreams.app/",
+          },
+        ],
+      },
+      condition: {
+        // Initiator is the extension itself:
+        domains: [chrome.runtime.id],
+        requestDomains: ["gooz.aapmains.net"],
+        resourceTypes: ["xmlhttprequest"],
+      },
+    },
+    {
+      id: 1002,
+      priority: 1,
+      action: {
+        type: "modifyHeaders",
+        requestHeaders: [
+          {
+            header: "Referer",
+            operation: "set",
+            value: "https://gooz.aapmains.net/",
+          },
+        ],
+      },
+      condition: {
+        domains: [chrome.runtime.id],
+        excludedRequestDomains: ["gooz.aapmains.net"],
+        urlFilter: "|http*://*",
+        resourceTypes: ["xmlhttprequest"],
+      },
+    },
+  ];
+
+  await chrome.declarativeNetRequest.updateDynamicRules({
+    removeRuleIds: rules.map((r) => r.id),
+    addRules: rules,
+  });
+});

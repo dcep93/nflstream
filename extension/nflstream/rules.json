@@ -16,15 +16,15 @@
       "initiatorDomains": ["nflstream.web.app", "localhost"],
       "requestDomains": ["gooz.aapmains.net"],
       "resourceTypes": [
-        "main_frame",
-        "sub_frame",
         "xmlhttprequest",
+        "sub_frame",
         "script",
         "image",
         "media",
         "font",
         "stylesheet",
-        "other"
+        "other",
+        "main_frame"
       ]
     }
   },
@@ -46,15 +46,15 @@
       "excludedRequestDomains": ["gooz.aapmains.net"],
       "urlFilter": "|http*://*",
       "resourceTypes": [
-        "main_frame",
-        "sub_frame",
         "xmlhttprequest",
+        "sub_frame",
         "script",
         "image",
         "media",
         "font",
         "stylesheet",
-        "other"
+        "other",
+        "main_frame"
       ]
     }
   }

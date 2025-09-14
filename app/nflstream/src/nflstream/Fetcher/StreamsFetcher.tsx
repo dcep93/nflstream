@@ -57,6 +57,7 @@ export default class StreamsFetcher extends Fetcher<StreamType[], null> {
         games
           .filter(
             (game) =>
+              !game.espnId ||
               game.state === "in" ||
               (game.state === "pre" &&
                 game.startTime - Date.now() < 1000 * 60 * 60) ||

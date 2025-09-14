@@ -7,24 +7,43 @@ import { HOST } from "../Fetcher/StreamsFetcher";
 import FunctionToScript from "./FunctionToScript";
 
 const maxAgeMs = 10 * 60 * 1000;
+const matchRegex =
+  /href="(https:\/\/icrackstreams\.app\/live.*?stream.*?)" class/g;
 const ClapprDriver = {
   includeSpecialStreams: (
     games: {
       startTime: number;
       state: "in" | "pre" | "post";
-      espnId: number;
+      espnId?: number;
       teams: string[];
     }[]
   ) =>
     fetchES(`https://${HOST}/nflstreams/live`, maxAgeMs)
+      .then((text) =>
+        Array.from(text.matchAll(matchRegex))
+          .map((m) => m[1])
+          .filter(
+            (matched) =>
+              games.findIndex((g) =>
+                g.teams
+                  .map((t) => t.toLowerCase())
+                  .includes(matched.split("/").reverse()[0].split("-")[0])
+              ) === -1
+          )
+          .map((matched) => ({
+            startTime: 0,
+            state: "in" as "in",
+            teams: ["", matched.split("/").reverse()[0]],
+          }))
+      )
       .then(clog)
-      .then(() => games),
+      .then((extra) => games.concat(extra)),
   getRawUrl: (stream_id: string) => `https://${HOST}/nflstreams/live`,
   getHostParams: (stream: StreamType, hardRefresh: boolean) =>
     fetchES(`https://${HOST}/nflstreams/live`, maxAgeMs)
       .then(
         (text) =>
-          Array.from(text.matchAll(/href="(.*?-live-streaming-.*?)" class/g))
+          Array.from(text.matchAll(matchRegex))
             .map((m) => m[1])
             .find((m) => m.includes(stream.stream_id))!
       )

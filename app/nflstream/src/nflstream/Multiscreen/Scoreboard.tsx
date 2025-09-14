@@ -7,10 +7,22 @@ import { probNormalMinAll } from "./guillotine";
 
 export const SCOREBOARD_SRC = "scoreboard";
 
+type ScoreboardPlayersType = {
+  name: string;
+  score: number;
+  projected: number;
+  isStarting: boolean;
+}[];
+
 type ScoreboardDataType = {
   leagueId: number;
   isGuillotine: boolean;
-  scores: { teamName: string; score: number; projected: number }[][];
+  scores: {
+    teamName: string;
+    score: number;
+    projected: number;
+    players: ScoreboardPlayersType;
+  }[][];
 };
 
 export default function Scoreboard() {
@@ -109,7 +121,11 @@ function Standard(props: { scoreboardData: ScoreboardDataType }) {
             <div>probability: {(100 * o.probability).toFixed(2)}%</div>
             <div>
               {o.teams.map((t, j) => (
-                <div key={j} style={{ maxWidth: "13em" }}>
+                <div
+                  key={j}
+                  style={{ maxWidth: "13em" }}
+                  title={getTitle(t.players)}
+                >
                   {t.score} ({t.projected.toFixed(2)}) {t.teamName}
                 </div>
               ))}
@@ -154,7 +170,7 @@ function Guillotine(props: { scoreboardData: ScoreboardDataType }) {
           >
             <div>probability: {(100 * o.probability).toFixed(2)}%</div>
             <div>
-              <div style={{ maxWidth: "13em" }}>
+              <div style={{ maxWidth: "13em" }} title={getTitle(o.players)}>
                 {o.score} ({o.projected.toFixed(2)}) {o.teamName}
               </div>
             </div>
@@ -162,6 +178,14 @@ function Guillotine(props: { scoreboardData: ScoreboardDataType }) {
         ))}
     </>
   );
+}
+
+function getTitle(players: ScoreboardPlayersType): string {
+  return players
+    .sort((a, b) => b.score - a.score)
+    .sort((a, b) => (b.isStarting ? 1 : 0 - (a.isStarting ? 1 : 0)))
+    .map((p) => `${p.name} / ${p.score} / ${p.projected}`)
+    .join("\n");
 }
 
 type matchupTeam = {
@@ -189,7 +213,26 @@ export class ScoreFetcher extends Fetcher<ScoreboardDataType, null> {
             .then(
               (response: {
                 id: number;
-                teams: { id: number; name: string }[];
+                teams: {
+                  id: number;
+                  name: string;
+                  roster: {
+                    entries: {
+                      lineupSlotId: number;
+                      playerPoolEntry: {
+                        player: {
+                          fullName: string;
+                          stats: {
+                            appliedTotal: number;
+                            statSourceId: number;
+                            statSplitTypeId: number;
+                            scoringPeriodId: number;
+                          }[];
+                        };
+                      };
+                    }[];
+                  };
+                }[];
                 scoringPeriodId: number;
                 schedule: {
                   matchupPeriodId: number;
@@ -210,6 +253,31 @@ export class ScoreFetcher extends Fetcher<ScoreboardDataType, null> {
                           )!.name,
                           score: t.totalPointsLive,
                           projected: t.totalProjectedPointsLive,
+                          players: response.teams
+                            .find((rt) => rt.id === t.teamId)!
+                            .roster.entries.map((e) => ({
+                              name: e.playerPoolEntry.player.fullName,
+                              score:
+                                e.playerPoolEntry.player.stats.find(
+                                  (s) =>
+                                    s.statSourceId === 0 &&
+                                    s.statSplitTypeId === 1 &&
+                                    s.scoringPeriodId ===
+                                      response.scoringPeriodId
+                                )?.appliedTotal || Number.POSITIVE_INFINITY,
+                              projected:
+                                e.playerPoolEntry.player.stats.find(
+                                  (s) =>
+                                    s.statSourceId === 1 &&
+                                    s.statSplitTypeId === 1 &&
+                                    s.scoringPeriodId ===
+                                      response.scoringPeriodId
+                                )?.appliedTotal || Number.POSITIVE_INFINITY,
+                              isStarting: ![
+                                20, // bench
+                                21, // IR
+                              ].includes(e.lineupSlotId),
+                            })),
                         }))
                       )
                   )

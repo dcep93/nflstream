@@ -140,6 +140,14 @@ function getSrcDoc(params: { [key: string]: string }) {
                     return origSend.call(xhr, body as any);
                   }
 
+                  if (__meta.url.endsWith(".txt")) {
+                    const bin = atob(payload.replace(/\s+/g, ""));
+                    const out = new Uint8Array(bin.length);
+                    for (let i = 0; i < bin.length; i++)
+                      out[i] = bin.charCodeAt(i);
+                    payload = out as any;
+                  }
+
                   Object.defineProperty(xhr, "readyState", { value: 4 });
                   Object.defineProperty(xhr, "status", { value: 200 });
                   Object.defineProperty(xhr, "statusText", { value: "OK" });

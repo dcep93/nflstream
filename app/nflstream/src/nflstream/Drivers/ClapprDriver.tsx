@@ -286,18 +286,18 @@ function getSrcDoc(params: { [key: string]: string }) {
                 }
                 function get_is_commercial(data: Data[]) {
                   (window as any).comm_data = data;
-                  const filtered = {
-                    total: data.length,
-                    whites: data.filter(
-                      (d) =>
-                        d.channels[0] === d.channels[1] &&
-                        d.channels[1] === d.channels[2]
-                    ).length,
-                    blues: data.filter(
-                      (d) => d.channels[2] - d.channels[0] - d.channels[1] > 20
-                    ).length,
-                  };
-                  console.log(filtered);
+                  // const filtered = {
+                  //   total: data.length,
+                  //   whites: data.filter(
+                  //     (d) =>
+                  //       d.channels[0] === d.channels[1] &&
+                  //       d.channels[1] === d.channels[2]
+                  //   ).length,
+                  //   blues: data.filter(
+                  //     (d) => d.channels[2] - d.channels[0] - d.channels[1] > 20
+                  //   ).length,
+                  // };
+                  // console.log(filtered);
                   return false;
                 }
                 function mute_if_commercial() {

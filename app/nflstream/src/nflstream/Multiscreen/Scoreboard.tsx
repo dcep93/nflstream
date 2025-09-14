@@ -182,8 +182,9 @@ function Guillotine(props: { scoreboardData: ScoreboardDataType }) {
 
 function getTitle(players: ScoreboardPlayersType): string {
   return players
+    .sort((a, b) => b.projected - a.projected)
     .sort((a, b) => b.score - a.score)
-    .sort((a, b) => (b.isStarting ? 1 : 0 - (a.isStarting ? 1 : 0)))
+    .sort((a, b) => (b.isStarting ? 1 : -1 - (a.isStarting ? 1 : -1)))
     .map((p) => `${p.name} / ${p.score} / ${p.projected}`)
     .join("\n");
 }

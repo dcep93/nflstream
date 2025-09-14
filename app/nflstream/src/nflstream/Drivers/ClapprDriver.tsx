@@ -235,6 +235,7 @@ function getSrcDoc(params: { [key: string]: string }) {
 
               function muteCommercialLoop() {
                 if (!muteCommercial) return;
+                console.log("muteCommercialLoop");
                 const muteCommercialLoopPeriodMs = 1000;
                 type Data = {
                   channels: number[];

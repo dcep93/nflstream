@@ -277,7 +277,13 @@ export class ScoreFetcher extends Fetcher<ScoreboardDataType, null> {
                                 20, // bench
                                 21, // IR
                               ].includes(e.lineupSlotId),
-                            })),
+                            }))
+                            .concat({
+                              name: "<BENCH>",
+                              score: Number.POSITIVE_INFINITY,
+                              projected: Number.POSITIVE_INFINITY,
+                              isStarting: false,
+                            }),
                         }))
                       )
                   )

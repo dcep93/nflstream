@@ -1,4 +1,5 @@
 import ReactDomServer from "react-dom/server";
+import { clog } from "..";
 import { muteCommercialRef } from "../etc/Options";
 import { StreamType } from "../Fetcher";
 import { fetchES } from "../Fetcher/LogFetcher";
@@ -7,6 +8,17 @@ import FunctionToScript from "./FunctionToScript";
 
 const maxAgeMs = 10 * 60 * 1000;
 const ClapprDriver = {
+  includeSpecialStreams: (
+    games: {
+      startTime: number;
+      state: "in" | "pre" | "post";
+      espnId: number;
+      teams: string[];
+    }[]
+  ) =>
+    fetchES(`https://${HOST}/nflstreams/live`, maxAgeMs)
+      .then(clog)
+      .then(() => games),
   getRawUrl: (stream_id: string) => `https://${HOST}/nflstreams/live`,
   getHostParams: (stream: StreamType, hardRefresh: boolean) =>
     fetchES(`https://${HOST}/nflstreams/live`, maxAgeMs)

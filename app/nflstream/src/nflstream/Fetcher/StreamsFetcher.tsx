@@ -49,6 +49,11 @@ export default class StreamsFetcher extends Fetcher<StreamType[], null> {
           )
     )
       .then((games) =>
+        !DRIVER.includeSpecialStreams
+          ? games
+          : DRIVER.includeSpecialStreams(games)
+      )
+      .then((games) =>
         games
           .filter(
             (game) =>

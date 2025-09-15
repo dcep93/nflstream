@@ -346,11 +346,18 @@ function getSrcDoc(params: { [key: string]: string }) {
                     }
                     other[d.toString()] = (other[d.toString()] ?? 0) + 1;
                   });
-                  if (counts.darkblue / data.length < 49249 / 156420 / 1.5)
+                  console.log(counts);
+                  if (
+                    Object.values(counts).reduce((a, b) => a + b, 0) /
+                      data.length <
+                    78000 / 156420
+                  )
                     return false;
-                  if (counts.blue / data.length < 33786 / 156420 / 1.5)
+                  if (counts.darkblue / data.length < 49249 / 156420 / 2)
                     return false;
-                  if (counts.white / data.length < 23355 / 156420 / 1.5)
+                  if (counts.blue / data.length < 33786 / 156420 / 2)
+                    return false;
+                  if (counts.white / data.length < 23355 / 156420 / 2)
                     return false;
                   return true;
                 }

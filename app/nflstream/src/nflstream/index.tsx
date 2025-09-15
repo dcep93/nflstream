@@ -1,7 +1,7 @@
 import md5 from "md5";
 import React, { useEffect } from "react";
 import firebase from "./etc/Firebase";
-import Menu from "./etc/Menu";
+import Menu, { extension_package_url } from "./etc/Menu";
 import { isMobile } from "./etc/Options";
 import Remote from "./etc/Remote";
 import { StreamType } from "./Fetcher";
@@ -49,11 +49,11 @@ class NFLStream extends React.Component<
     console.log(recorded_sha);
     if (!window.chrome?.runtime) {
       console.log("componentDidMount", "no chrome runtime");
-      this.setState({ extensionVersion: "" });
+      this.setState({ extensionVersion: "- no_chrome_runtime" });
     } else {
       new Promise((resolve, reject) => {
         window.chrome.runtime.sendMessage(extension_id, {}, (response: any) => {
-          if (response === undefined) return reject("empty response");
+          if (response === undefined) return reject("empty_response");
           // if (response < expected_version) return reject("old version");
           console.log("componentDidMount", "extension detected", response);
           this.setState({ extensionVersion: response });
@@ -63,7 +63,7 @@ class NFLStream extends React.Component<
         // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         window.chrome.runtime.lastError;
         console.log("componentDidMount", "extension not detected", err);
-        this.setState({ extensionVersion: "" });
+        this.setState({ extensionVersion: `- ${err}` });
       });
     }
   }
@@ -117,7 +117,7 @@ class NFLStream extends React.Component<
               ? []
               : [
                   {
-                    raw_url: "",
+                    raw_url: extension_package_url,
                     name: `update extension ${extension_version} vs ${this.state
                       ?.extensionVersion!}`,
                     stream_id: "ERROR",
@@ -150,18 +150,7 @@ class NFLStream extends React.Component<
               screens: (this.state?.screens || []).concat(screen),
             })
           }
-          streams={
-            !this.state.extensionVersion
-              ? [
-                  {
-                    raw_url: "",
-                    name: "extension not detected",
-                    stream_id: "ERROR",
-                    src: "ERROR",
-                  },
-                ]
-              : this.state?.streams
-          }
+          streams={this.state?.streams}
         />
         {this.state.initialized === false ? (
           <ForceInteract

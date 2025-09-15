@@ -296,11 +296,14 @@ function getSrcDoc(params: { [key: string]: string }) {
                   return Promise.resolve(pixels);
                 }
                 const KERNELS = Object.entries({
-                  blue: [
+                  darkblue: [
                     [15, 42, 120, 255],
                     [22, 59, 158, 255],
                     [30, 76, 189, 255],
+                  ],
+                  blue: [
                     [50, 106, 221, 255],
+                    [57, 125, 255, 255],
                     [61, 132, 255, 255],
                   ],
                   white: [
@@ -319,14 +322,32 @@ function getSrcDoc(params: { [key: string]: string }) {
                     const found = KERNELS.find(({ v }) => {
                       if (v[0][0] > d[0]) return false;
                       if (v[v.length - 1][0] < d[0]) return false;
+                      console.log(
+                        d.slice(1, 3).map((_, i) => ({
+                          a: d[i + 1],
+                          b: d[0] - v[0][0],
+                          c: v[v.length - 1][0] - v[0][0],
+                          x:
+                            ((d[0] - v[0][0]) *
+                              (v[v.length - 1][i + 1] - v[0][i + 1])) /
+                            (v[v.length - 1][0] - v[0][0]),
+                          dd:
+                            d[i + 1] -
+                            (v[0][i + 1] +
+                              ((d[0] - v[0][0]) *
+                                (v[v.length - 1][0] - v[0][0])) /
+                                (v[v.length - 1][i + 1] - v[0][i + 1])),
+                        }))
+                      );
                       const distance = d
                         .slice(1)
                         .map(
                           (_, i) =>
                             d[i + 1] -
-                            ((d[0] - v[0][0]) *
-                              (v[v.length - 1][0] - v[0][0])) /
-                              (v[v.length - 1][i + 1] - v[0][i + 1])
+                            (v[0][i + 1] +
+                              ((d[0] - v[0][0]) *
+                                (v[v.length - 1][i + 1] - v[0][i + 1])) /
+                                (v[v.length - 1][0] - v[0][0]))
                         )
                         .map((dd) => Math.pow(dd, 2))
                         .reduce((a, b) => a + b, 0);

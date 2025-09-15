@@ -26,6 +26,7 @@ export function clog<T>(t: T): T {
   return t;
 }
 
+const extension_version = "6.2.2";
 export const EXTENSION_STORAGE_KEY = "extension_id";
 export const extension_id =
   localStorage.getItem(EXTENSION_STORAGE_KEY) ||
@@ -111,6 +112,19 @@ class NFLStream extends React.Component<
               src: SCOREBOARD_SRC,
             },
           ])
+          .concat(
+            this.state?.extensionVersion! >= extension_version
+              ? []
+              : [
+                  {
+                    raw_url: "",
+                    name: `update extension ${extension_version} vs ${this.state
+                      ?.extensionVersion!}`,
+                    stream_id: "ERROR",
+                    src: "ERROR",
+                  },
+                ]
+          )
           .concat(...getStreamsFromUrlQuery()),
       });
     };

@@ -1,12 +1,6 @@
 console.log("background");
 
-var version = null;
 var contentScriptTabId = null;
-
-fetch(chrome.runtime.getURL("manifest.json"))
-  .then((resp) => resp.json())
-  .then((j) => j.version)
-  .then((_version) => (version = _version));
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.type === "content_script_init" && sender.tab?.id) {
@@ -17,7 +11,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 chrome.runtime.onMessageExternal.addListener(
   ({ url, options }, _, sendResponse) => {
     console.log({ url });
-    if (!url) return sendResponse(version);
+    if (!url)
+      return fetch(chrome.runtime.getURL("manifest.json"))
+        .then((resp) => resp.json())
+        .then((j) => j.version)
+        .then(sendResponse);
     if (url === "/content_script")
       return (
         contentScriptTabId &&

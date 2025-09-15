@@ -316,7 +316,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                     [229, 223, 247, 255],
                     [255, 255, 255, 255],
                   ],
-                }).map(([k, v]) => ({ k, v }));
+                }).map((o) => ({ k: o[0], v: o[1] }));
                 function get_is_commercial(data: number[][]) {
                   const counts = Object.fromEntries(
                     KERNELS.map(({ k }) => [k, 0])

@@ -297,16 +297,21 @@ function getSrcDoc(params: { [key: string]: string }) {
                 }
                 const KERNELS = Object.entries({
                   darkblue: [
+                    [13, 38, 114, 255],
                     [15, 42, 120, 255],
                     [22, 59, 158, 255],
                     [30, 76, 189, 255],
+                    [33, 81, 197, 255],
                   ],
                   blue: [
-                    [50, 106, 221, 255],
+                    [50, 116, 221, 255],
+                    [54, 126, 255, 255],
                     [57, 125, 255, 255],
                     [61, 132, 255, 255],
                   ],
                   white: [
+                    [190, 186, 206, 255],
+                    [206, 200, 222, 255],
                     [212, 205, 227, 255],
                     [229, 223, 247, 255],
                     [255, 255, 255, 255],
@@ -320,38 +325,20 @@ function getSrcDoc(params: { [key: string]: string }) {
                   const other: any = {};
                   data.forEach((d) => {
                     const found = KERNELS.find(({ v }) => {
-                      if (v[0][0] > d[0]) return false;
-                      if (v[v.length - 1][0] < d[0]) return false;
-                      console.log(
-                        d.slice(1, 3).map((_, i) => ({
-                          a: d[i + 1],
-                          b: d[0] - v[0][0],
-                          c: v[v.length - 1][0] - v[0][0],
-                          x:
-                            ((d[0] - v[0][0]) *
-                              (v[v.length - 1][i + 1] - v[0][i + 1])) /
-                            (v[v.length - 1][0] - v[0][0]),
-                          dd:
-                            d[i + 1] -
-                            (v[0][i + 1] +
-                              ((d[0] - v[0][0]) *
-                                (v[v.length - 1][0] - v[0][0])) /
-                                (v[v.length - 1][i + 1] - v[0][i + 1])),
-                        }))
-                      );
+                      if (v[0][0] - d[0] > 2) return false;
+                      if (d[0] - v[v.length - 1][0] > 2) return false;
                       const distance = d
                         .slice(1)
-                        .map(
-                          (_, i) =>
-                            d[i + 1] -
-                            (v[0][i + 1] +
-                              ((d[0] - v[0][0]) *
-                                (v[v.length - 1][i + 1] - v[0][i + 1])) /
-                                (v[v.length - 1][0] - v[0][0]))
-                        )
-                        .map((dd) => Math.pow(dd, 2))
+                        .map((_, i) => ({
+                          x: d[0] - v[0][0],
+                          X: v[v.length - 1][0] - v[0][0],
+                          y: d[i + 1] - v[0][i + 1],
+                          Y: v[v.length - 1][i + 1] - v[0][i + 1],
+                        }))
+                        .map((o) => (o.x / o.X) * o.Y - o.y)
+                        .map((distance) => Math.pow(distance, 2))
                         .reduce((a, b) => a + b, 0);
-                      if (distance > 1000) return false;
+                      if (distance > 500) return false;
                       return true;
                     });
                     if (found !== undefined) {
@@ -361,14 +348,13 @@ function getSrcDoc(params: { [key: string]: string }) {
                     }
                     other[d.toString()] = (other[d.toString()] ?? 0) + 1;
                   });
-                  const o = Object.entries(other)
-                    .map(([k, v]) => ({ k, v: v as number }))
-                    .sort((a, b) => b.v - a.v)
-                    .slice(0, 100);
-                  console.log(
-                    JSON.stringify({ x: count / data.length, counts, o })
-                  );
-                  return false;
+                  if (counts.darkblue / data.length < 49249 / 156420 / 1.5)
+                    return false;
+                  if (counts.blue / data.length < 33786 / 156420 / 1.5)
+                    return false;
+                  if (counts.white / data.length < 23355 / 156420 / 1.5)
+                    return false;
+                  return true;
                 }
                 function mute_if_commercial() {
                   const start_time = Date.now();

@@ -244,12 +244,12 @@ function getSrcDoc(params: { [key: string]: string }) {
                   const canvas = document.getElementById(
                     "canvas"
                   ) as HTMLCanvasElement;
-
-                  canvas.width = video.videoWidth;
-                  canvas.height = video.videoHeight;
                   if (!canvas) {
                     return Promise.resolve([]);
                   }
+
+                  canvas.width = video.videoWidth;
+                  canvas.height = video.videoHeight;
                   const ctx = canvas.getContext("2d", {
                     willReadFrequently: true,
                   })!;
@@ -268,11 +268,21 @@ function getSrcDoc(params: { [key: string]: string }) {
                     video.videoWidth,
                     video.videoHeight
                   ).data;
-
-                  const widthStart = Math.floor(video.videoWidth * 0.3);
-                  const widthSize = Math.floor(video.videoWidth * 0.3);
-                  const heightStart = Math.floor(video.videoHeight * 0.3);
-                  const heightSize = Math.floor(video.videoHeight * 0.3);
+                  // x,y 229x472
+                  // w,h 1582x279
+                  // W,H 2135x1211
+                  const widthStart = Math.floor(
+                    video.videoWidth * (229 / 2135)
+                  );
+                  const widthSize = Math.floor(
+                    video.videoWidth * (1582 / 2135)
+                  );
+                  const heightStart = Math.floor(
+                    video.videoHeight * (472 / 1211)
+                  );
+                  const heightSize = Math.floor(
+                    video.videoHeight * (279 / 1211)
+                  );
 
                   const pixels = Array.from(new Array(heightSize))
                     .flatMap((_, y) =>
@@ -285,34 +295,58 @@ function getSrcDoc(params: { [key: string]: string }) {
 
                   return Promise.resolve(pixels);
                 }
+                const KERNELS = Object.entries({
+                  blue: [
+                    [15, 42, 120, 255],
+                    [22, 59, 158, 255],
+                    [30, 76, 189, 255],
+                    [50, 106, 221, 255],
+                    [61, 132, 255, 255],
+                  ],
+                  white: [
+                    [212, 205, 227, 255],
+                    [229, 223, 247, 255],
+                    [255, 255, 255, 255],
+                  ],
+                }).map(([k, v]) => ({ k, v }));
                 function get_is_commercial(data: number[][]) {
-                  (window as any).comm_data = data;
-                  const counts = { whites: 0, blues: 0 };
+                  var count = 0;
+                  const counts = Object.fromEntries(
+                    KERNELS.map(({ k }) => [k, 0])
+                  );
                   const other: any = {};
                   data.forEach((d) => {
+                    const found = KERNELS.find(({ v }) => {
+                      if (v[0][0] > d[0]) return false;
+                      if (v[v.length - 1][0] < d[0]) return false;
+                      const distance = d
+                        .slice(1)
+                        .map(
+                          (_, i) =>
+                            d[i + 1] -
+                            ((d[0] - v[0][0]) *
+                              (v[v.length - 1][0] - v[0][0])) /
+                              (v[v.length - 1][i + 1] - v[0][i + 1])
+                        )
+                        .map((dd) => Math.pow(dd, 2))
+                        .reduce((a, b) => a + b, 0);
+                      if (distance > 1000) return false;
+                      return true;
+                    });
+                    if (found !== undefined) {
+                      counts[found.k]++;
+                      count++;
+                      return;
+                    }
                     other[d.toString()] = (other[d.toString()] ?? 0) + 1;
-                    if (d[0] + d[1] + d[2] < 10) {
-                      counts.whites++;
-                      return;
-                    }
-                    if (d[2] - d[1] - d[0] > 20) {
-                      counts.blues++;
-                      return;
-                    }
                   });
-                  console.log({ data, other });
-                  // const filtered = {
-                  //   total: data.length,
-                  //   whites: data.filter(
-                  //     (d) =>
-                  //       d.channels[0] === d.channels[1] &&
-                  //       d.channels[1] === d.channels[2]
-                  //   ).length,
-                  //   blues: data.filter(
-                  //     (d) => d.channels[2] - d.channels[0] - d.channels[1] > 20
-                  //   ).length,
-                  // };
-                  // console.log(filtered);
+                  const o = Object.entries(other)
+                    .map(([k, v]) => ({ k, v: v as number }))
+                    .sort((a, b) => b.v - a.v)
+                    .slice(0, 100);
+                  console.log(
+                    JSON.stringify({ x: count / data.length, counts, o })
+                  );
                   return false;
                 }
                 function mute_if_commercial() {

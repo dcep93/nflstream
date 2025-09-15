@@ -52,7 +52,7 @@ export default function Scoreboard() {
       />
       {scoreboardData === null ? (
         <h2 style={{ color: "#AAAAAA" }}>
-          open your fantasy page on a separate tab
+          open your espn fantasy page on a separate tab
         </h2>
       ) : (
         <AutoScroller speed={0.03}>

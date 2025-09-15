@@ -318,7 +318,6 @@ function getSrcDoc(params: { [key: string]: string }) {
                   ],
                 }).map(([k, v]) => ({ k, v }));
                 function get_is_commercial(data: number[][]) {
-                  var count = 0;
                   const counts = Object.fromEntries(
                     KERNELS.map(({ k }) => [k, 0])
                   );
@@ -343,7 +342,6 @@ function getSrcDoc(params: { [key: string]: string }) {
                     });
                     if (found !== undefined) {
                       counts[found.k]++;
-                      count++;
                       return;
                     }
                     other[d.toString()] = (other[d.toString()] ?? 0) + 1;

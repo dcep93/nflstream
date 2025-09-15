@@ -92,6 +92,8 @@ function getSrcDoc(params: { [key: string]: string }) {
                 return Promise.resolve(undefined);
               if (__meta.url.includes(".ts?"))
                 return Promise.resolve(undefined);
+              if (!__meta.url.includes("////"))
+                return Promise.resolve(undefined);
               const key = crypto.randomUUID();
               return new Promise<string>((resolve) => {
                 promises[key] = resolve;

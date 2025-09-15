@@ -44,20 +44,28 @@ export default function Options() {
         />
       </div>
       <div>
-        <input ref={autoRefreshRef} type={"checkbox"} defaultChecked />
-        <span> autorefresh</span>
+        <label>
+          <input ref={autoRefreshRef} type={"checkbox"} defaultChecked />
+          <span> autorefresh</span>
+        </label>
       </div>
       <div>
-        <input ref={muteCommercialRef} type={"checkbox"} />
-        <span> mute nfl+ commercials</span>
+        <label>
+          <input ref={muteCommercialRef} type={"checkbox"} defaultChecked />
+          <span> mute nfl+ commercials</span>
+        </label>
       </div>
       <div>
-        <input ref={displayLogRef} type={"checkbox"} defaultChecked />
-        <span> display logs</span>
+        <label>
+          <input ref={displayLogRef} type={"checkbox"} defaultChecked />
+          <span> display logs</span>
+        </label>
       </div>
       <div>
-        <input ref={remoteRef} type={"checkbox"} />
-        <span> follow remote</span>
+        <label>
+          <input ref={remoteRef} type={"checkbox"} />
+          <span> follow remote</span>
+        </label>
       </div>
       <button
         onClick={() => {

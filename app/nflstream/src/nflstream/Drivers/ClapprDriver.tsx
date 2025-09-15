@@ -236,12 +236,7 @@ function getSrcDoc(params: { [key: string]: string }) {
               function muteCommercialLoop() {
                 if (!muteCommercial) return;
                 const muteCommercialLoopPeriodMs = 1000;
-                type Data = {
-                  channels: number[];
-                  alpha: number;
-                  avg: number;
-                };
-                function get_data(): Promise<Data[]> {
+                function get_data(): Promise<number[][]> {
                   if (subscreen_muted) return Promise.resolve([]);
                   if (video.videoWidth === 0) {
                     return Promise.resolve([]);
@@ -273,26 +268,39 @@ function getSrcDoc(params: { [key: string]: string }) {
                     video.videoWidth,
                     video.videoHeight
                   ).data;
-                  return Promise.resolve(
-                    Array.from(new Array(video.videoWidth * video.videoHeight))
-                      .map((_, i) =>
-                        Array.from(raw_data.slice(i * 4, i * 4 + 4))
+
+                  const widthStart = Math.floor(video.videoWidth * 0.3);
+                  const widthSize = Math.floor(video.videoWidth * 0.3);
+                  const heightStart = Math.floor(video.videoHeight * 0.3);
+                  const heightSize = Math.floor(video.videoHeight * 0.3);
+
+                  const pixels = Array.from(new Array(heightSize))
+                    .flatMap((_, y) =>
+                      Array.from(new Array(widthSize)).map(
+                        (_, x) =>
+                          video.videoWidth * (heightStart + y) + widthStart + x
                       )
-                      .map((channels) => ({
-                        channels: channels.slice(0, 3),
-                        alpha: channels[3],
-                      }))
-                      .map((o) => ({
-                        channels: o.channels,
-                        alpha: o.alpha,
-                        avg:
-                          o.channels.reduce((a, b) => a + b, 0) /
-                          o.channels.length,
-                      }))
-                  );
+                    )
+                    .map((i) => Array.from(raw_data.slice(i * 4, i * 4 + 4)));
+
+                  return Promise.resolve(pixels);
                 }
-                function get_is_commercial(data: Data[]) {
+                function get_is_commercial(data: number[][]) {
                   (window as any).comm_data = data;
+                  const counts = { whites: 0, blues: 0 };
+                  const other: any = {};
+                  data.forEach((d) => {
+                    other[d.toString()] = (other[d.toString()] ?? 0) + 1;
+                    if (d[0] + d[1] + d[2] < 10) {
+                      counts.whites++;
+                      return;
+                    }
+                    if (d[2] - d[1] - d[0] > 20) {
+                      counts.blues++;
+                      return;
+                    }
+                  });
+                  console.log({ data, other });
                   // const filtered = {
                   //   total: data.length,
                   //   whites: data.filter(

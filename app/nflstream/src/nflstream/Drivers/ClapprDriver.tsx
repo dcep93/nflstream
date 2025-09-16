@@ -346,19 +346,11 @@ function getSrcDoc(params: { [key: string]: string }) {
                     }
                     other[d.toString()] = (other[d.toString()] ?? 0) + 1;
                   });
-                  console.log(counts);
-                  if (
-                    Object.values(counts).reduce((a, b) => a + b, 0) /
-                      data.length <
-                    78000 / 156420
-                  )
+                  console.log(JSON.stringify({ counts, length: data.length }));
+                  if (counts.darkblue / data.length < 18000 / 156420)
                     return false;
-                  if (counts.darkblue / data.length < 49249 / 156420 / 2)
-                    return false;
-                  if (counts.blue / data.length < 33786 / 156420 / 2)
-                    return false;
-                  if (counts.white / data.length < 23355 / 156420 / 2)
-                    return false;
+                  if (counts.blue / data.length < 30000 / 156420) return false;
+                  if (counts.white / data.length < 20000 / 156420) return false;
                   return true;
                 }
                 function mute_if_commercial() {
@@ -368,6 +360,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                     .catch(() => [])
                     .then((sliced_data) => {
                       const is_commercial = get_is_commercial(sliced_data);
+                      console.log({ is_commercial });
                       const should_mute = subscreen_muted || is_commercial;
                       if (should_mute !== video.muted) {
                         video.muted = should_mute;

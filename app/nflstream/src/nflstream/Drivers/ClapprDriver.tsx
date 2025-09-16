@@ -236,16 +236,16 @@ function getSrcDoc(params: { [key: string]: string }) {
               function muteCommercialLoop() {
                 if (!muteCommercial) return;
                 const muteCommercialLoopPeriodMs = 1000;
-                function get_data(): Promise<number[][]> {
-                  if (subscreen_muted) return Promise.resolve([]);
+                function get_data(): ImageDataArray | null {
+                  if (subscreen_muted) return null;
                   if (video.videoWidth === 0) {
-                    return Promise.resolve([]);
+                    return null;
                   }
                   const canvas = document.getElementById(
                     "canvas"
                   ) as HTMLCanvasElement;
                   if (!canvas) {
-                    return Promise.resolve([]);
+                    return null;
                   }
 
                   canvas.width = video.videoWidth;
@@ -268,68 +268,65 @@ function getSrcDoc(params: { [key: string]: string }) {
                     video.videoWidth,
                     video.videoHeight
                   ).data;
-                  // x,y 229x472
-                  // w,h 1582x279
-                  // W,H 2135x1211
-                  const scale = 4;
-                  const widthStart = Math.floor(
-                    video.videoWidth * (229 / 2135)
-                  );
-                  const widthSize = Math.floor(
-                    (video.videoWidth * (1582 / 2135)) / scale
-                  );
-                  const heightStart = Math.floor(
-                    video.videoHeight * (472 / 1211)
-                  );
-                  const heightSize = Math.floor(
-                    (video.videoHeight * (279 / 1211)) / scale
-                  );
-
-                  const pixels = Array.from(new Array(heightSize))
-                    .map((_, y) => Math.floor(y * scale))
+                  return raw_data;
+                }
+                const BLUE_KERNELS = {
+                  name: "blue",
+                  scale: 4,
+                  widthStart: Math.floor(video.videoWidth * (229 / 2135)),
+                  widthSize: Math.floor(video.videoWidth * (1582 / 2135)),
+                  heightStart: Math.floor(video.videoHeight * (472 / 1211)),
+                  heightSize: Math.floor(video.videoHeight * (279 / 1211)),
+                  kernels: Object.entries({
+                    darkblue: [
+                      [13, 38, 114, 255],
+                      [15, 42, 120, 255],
+                      [22, 59, 158, 255],
+                      [30, 76, 189, 255],
+                      [33, 81, 197, 255],
+                    ],
+                    blue: [
+                      [50, 116, 221, 255],
+                      [54, 126, 255, 255],
+                      [57, 125, 255, 255],
+                      [61, 132, 255, 255],
+                    ],
+                    white: [
+                      [190, 186, 206, 255],
+                      [206, 200, 222, 255],
+                      [212, 205, 227, 255],
+                      [229, 223, 247, 255],
+                      [255, 255, 255, 255],
+                    ],
+                  }).map((o) => ({ k: o[0], v: o[1] })),
+                };
+                function get_is_commercial(
+                  kernels: typeof BLUE_KERNELS,
+                  raw_data: ImageDataArray
+                ) {
+                  const data = Array.from(
+                    new Array(Math.floor(kernels.heightSize / kernels.scale))
+                  )
+                    .map((_, y) => Math.floor(y * kernels.scale))
                     .flatMap((y) =>
-                      Array.from(new Array(widthSize))
-                        .map((_, x) => Math.floor(x * scale))
+                      Array.from(
+                        new Array(Math.floor(kernels.widthSize / kernels.scale))
+                      )
+                        .map((_, x) => Math.floor(x * kernels.scale))
                         .map(
                           (x) =>
-                            video.videoWidth * (heightStart + y) +
-                            widthStart +
+                            video.videoWidth * (kernels.heightStart + y) +
+                            kernels.widthStart +
                             x
                         )
                     )
                     .map((i) => Array.from(raw_data.slice(i * 4, i * 4 + 4)));
-
-                  return Promise.resolve(pixels);
-                }
-                const KERNELS = Object.entries({
-                  darkblue: [
-                    [13, 38, 114, 255],
-                    [15, 42, 120, 255],
-                    [22, 59, 158, 255],
-                    [30, 76, 189, 255],
-                    [33, 81, 197, 255],
-                  ],
-                  blue: [
-                    [50, 116, 221, 255],
-                    [54, 126, 255, 255],
-                    [57, 125, 255, 255],
-                    [61, 132, 255, 255],
-                  ],
-                  white: [
-                    [190, 186, 206, 255],
-                    [206, 200, 222, 255],
-                    [212, 205, 227, 255],
-                    [229, 223, 247, 255],
-                    [255, 255, 255, 255],
-                  ],
-                }).map((o) => ({ k: o[0], v: o[1] }));
-                function get_is_commercial(data: number[][]) {
                   const counts = Object.fromEntries(
-                    KERNELS.map(({ k }) => [k, 0])
+                    kernels.kernels.map(({ k }) => [k, 0])
                   );
-                  const other: any = {};
+                  const other: Record<string, number> = {};
                   data.forEach((d) => {
-                    const found = KERNELS.find(({ v }) => {
+                    const found = kernels.kernels.find(({ v }) => {
                       if (v[0][0] - d[0] > 2) return false;
                       if (d[0] - v[v.length - 1][0] > 2) return false;
                       const distance = d
@@ -352,21 +349,42 @@ function getSrcDoc(params: { [key: string]: string }) {
                     }
                     other[d.toString()] = (other[d.toString()] ?? 0) + 1;
                   });
-                  console.log(JSON.stringify({ counts, length: data.length }));
-                  if (counts.darkblue / data.length < 16000 / 156420)
-                    return false;
-                  if (counts.blue / data.length < 30000 / 156420) return false;
-                  if (counts.white / data.length < 20000 / 156420) return false;
-                  return true;
+                  const h = () => {
+                    if (counts.darkblue / data.length < 16000 / 156420)
+                      return false;
+                    if (counts.blue / data.length < 30000 / 156420)
+                      return false;
+                    if (counts.white / data.length < 20000 / 156420)
+                      return false;
+                    return true;
+                  };
+                  const rval = h();
+                  const common = Object.entries(other)
+                    .map(([k, v]) => ({ k, v }))
+                    .sort((a, b) => b.v - a.v)
+                    .slice(0, 10);
+                  console.log(
+                    JSON.stringify({
+                      name: kernels.name,
+                      rval,
+                      counts,
+                      length: data.length,
+                      common,
+                    })
+                  );
+                  return rval;
                 }
                 function mute_if_commercial() {
                   const start_time = Date.now();
                   Promise.resolve()
                     .then(() => get_data())
-                    .catch(() => [])
+                    .catch(() => null)
                     .then((sliced_data) => {
-                      const is_commercial = get_is_commercial(sliced_data);
-                      console.log({ is_commercial });
+                      if (sliced_data === null) return;
+                      const is_commercial = get_is_commercial(
+                        BLUE_KERNELS,
+                        sliced_data
+                      );
                       const should_mute = subscreen_muted || is_commercial;
                       if (should_mute !== video.muted) {
                         video.muted = should_mute;

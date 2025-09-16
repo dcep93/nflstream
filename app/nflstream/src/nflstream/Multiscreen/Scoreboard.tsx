@@ -159,29 +159,32 @@ function Guillotine(props: { scoreboardData: ScoreboardDataType }) {
     teams.map((t) => t.projected),
     teams.map((t) => t.stddev)
   );
+  const thunderdomeCount = 3;
+  const displayTeams = teams
+    .map((o, i) => ({ ...o, probability: probabilities[i] }))
+    .sort((a, b) => b.probability - a.probability);
+  if (probabilities.filter((p) => p > 0.01).length <= thunderdomeCount)
+    displayTeams.splice(thunderdomeCount);
   return (
     <>
-      {teams
-        .map((o, i) => ({ ...o, probability: probabilities[i] }))
-        .sort((a, b) => b.probability - a.probability)
-        .map((o, i) => (
-          <div
-            key={i}
-            style={{
-              border: "2px solid grey",
-              borderRadius: "10px",
-              padding: "0.2em",
-              backgroundColor: "lightgrey",
-            }}
-          >
-            <div>probability: {(100 * o.probability).toFixed(2)}%</div>
-            <div>
-              <div style={{ maxWidth: "13em" }} title={getTitle(o.players)}>
-                {o.score} ({o.projected.toFixed(2)}) {o.teamName}
-              </div>
+      {displayTeams.map((o, i) => (
+        <div
+          key={i}
+          style={{
+            border: "2px solid grey",
+            borderRadius: "10px",
+            padding: "0.2em",
+            backgroundColor: "lightgrey",
+          }}
+        >
+          <div>probability: {(100 * o.probability).toFixed(2)}%</div>
+          <div>
+            <div style={{ maxWidth: "13em" }} title={getTitle(o.players)}>
+              {o.score} ({o.projected.toFixed(2)}) {o.teamName}
             </div>
           </div>
-        ))}
+        </div>
+      ))}
     </>
   );
 }

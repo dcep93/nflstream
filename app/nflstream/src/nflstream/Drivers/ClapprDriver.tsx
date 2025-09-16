@@ -271,25 +271,31 @@ function getSrcDoc(params: { [key: string]: string }) {
                   // x,y 229x472
                   // w,h 1582x279
                   // W,H 2135x1211
+                  const scale = 4;
                   const widthStart = Math.floor(
                     video.videoWidth * (229 / 2135)
                   );
                   const widthSize = Math.floor(
-                    video.videoWidth * (1582 / 2135)
+                    (video.videoWidth * (1582 / 2135)) / scale
                   );
                   const heightStart = Math.floor(
                     video.videoHeight * (472 / 1211)
                   );
                   const heightSize = Math.floor(
-                    video.videoHeight * (279 / 1211)
+                    (video.videoHeight * (279 / 1211)) / scale
                   );
 
                   const pixels = Array.from(new Array(heightSize))
-                    .flatMap((_, y) =>
-                      Array.from(new Array(widthSize)).map(
-                        (_, x) =>
-                          video.videoWidth * (heightStart + y) + widthStart + x
-                      )
+                    .map((_, y) => Math.floor(y * scale))
+                    .flatMap((y) =>
+                      Array.from(new Array(widthSize))
+                        .map((_, x) => Math.floor(x * scale))
+                        .map(
+                          (x) =>
+                            video.videoWidth * (heightStart + y) +
+                            widthStart +
+                            x
+                        )
                     )
                     .map((i) => Array.from(raw_data.slice(i * 4, i * 4 + 4)));
 

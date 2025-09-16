@@ -347,7 +347,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                     other[d.toString()] = (other[d.toString()] ?? 0) + 1;
                   });
                   console.log(JSON.stringify({ counts, length: data.length }));
-                  if (counts.darkblue / data.length < 18000 / 156420)
+                  if (counts.darkblue / data.length < 16000 / 156420)
                     return false;
                   if (counts.blue / data.length < 30000 / 156420) return false;
                   if (counts.white / data.length < 20000 / 156420) return false;

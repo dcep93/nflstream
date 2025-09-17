@@ -91,7 +91,7 @@ function Standard(props: { scoreboardData: ScoreboardDataType }) {
         }))
         .map((o) => ({
           ...o,
-          stddev: o.upcoming / 4,
+          stddev: 8 * Math.pow(o.upcoming / 15, 0.5),
         }))
         .map((o) => ({
           ...o,
@@ -99,15 +99,7 @@ function Standard(props: { scoreboardData: ScoreboardDataType }) {
         }))
         .map((o) => ({
           ...o,
-          zScore: Math.pow(o.zScore, 1.5),
-        }))
-        .map((o) => ({
-          ...o,
-          zScore: o.zScore * Math.pow(2, Math.abs(o.zScore)),
-        }))
-        .map((o) => ({
-          ...o,
-          probability: 0.5 + Math.atan(o.zScore) / Math.PI,
+          probability: 0.5 * (1 + erf(o.zScore / Math.SQRT2)),
         }))
         .sort((a, b) => a.probability - b.probability)
         .map((o, i) => (
@@ -149,11 +141,11 @@ function Guillotine(props: { scoreboardData: ScoreboardDataType }) {
     .map((o) => ({ ...o, upcoming: o.tDiff + Math.min(o.tDiff, 5) }))
     .map((o) => ({
       ...o,
-      stddev: o.upcoming / 4,
+      stddev: 8 * Math.pow(o.upcoming / 15, 0.5),
     }))
     .map((o) => ({
       ...o,
-      stddev: Math.max(Math.abs(o.stddev), 0.01),
+      stddev: o.stddev > 0 ? o.stddev : 0.01,
     }));
   const probabilities = probNormalMinAll(
     teams.map((t) => t.projected),
@@ -321,4 +313,25 @@ export class ScoreFetcher extends Fetcher<ScoreboardDataType, null> {
       )
     );
   }
+}
+
+function erf(x: number): number {
+  // save the sign of x
+  const sign = x >= 0 ? 1 : -1;
+  x = Math.abs(x);
+
+  // constants
+  const a1 = 0.254829592;
+  const a2 = -0.284496736;
+  const a3 = 1.421413741;
+  const a4 = -1.453152027;
+  const a5 = 1.061405429;
+  const p = 0.3275911;
+
+  // Abramowitz & Stegun formula 7.1.26
+  const t = 1 / (1 + p * x);
+  const y =
+    1 - ((((a5 * t + a4) * t + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+
+  return sign * y;
 }

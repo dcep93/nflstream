@@ -236,11 +236,7 @@ function getSrcDoc(params: { [key: string]: string }) {
               function muteCommercialLoop() {
                 if (!muteCommercial) return;
                 const muteCommercialLoopPeriodMs = 1000;
-                type ImageDataArray =
-                  | Uint8ClampedArray
-                  | Uint8Array
-                  | Uint16Array
-                  | Float32Array;
+                type ImageDataArray = Uint8ClampedArray;
                 function get_data(): ImageDataArray | null {
                   if (subscreen_muted) return null;
                   if (video.videoWidth === 0) {

@@ -26,13 +26,11 @@ export function clog<T>(t: T): T {
   return t;
 }
 
-const extension_version = "6.2.2";
+const extension_version = "7.0.0";
 export const EXTENSION_STORAGE_KEY = "extension_id";
 export const extension_id =
   localStorage.getItem(EXTENSION_STORAGE_KEY) ||
   "jbdpjafpomdbklfifcclbkflmnnjefdc";
-
-// const expected_version = "3.1.1";
 
 class NFLStream extends React.Component<
   {},

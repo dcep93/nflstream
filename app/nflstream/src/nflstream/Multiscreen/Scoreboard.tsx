@@ -91,7 +91,7 @@ function Standard(props: { scoreboardData: ScoreboardDataType }) {
         }))
         .map((o) => ({
           ...o,
-          stddev: 8 * Math.pow(o.upcoming / 15, 0.5),
+          stddev: 8 * Math.pow(o.upcoming / 12, 0.5),
         }))
         .map((o) => ({
           ...o,
@@ -141,7 +141,7 @@ function Guillotine(props: { scoreboardData: ScoreboardDataType }) {
     .map((o) => ({ ...o, upcoming: o.tDiff + Math.min(o.tDiff, 5) }))
     .map((o) => ({
       ...o,
-      stddev: 8 * Math.pow(o.upcoming / 15, 0.5),
+      stddev: 8 * Math.pow(o.upcoming / 12, 0.5),
     }))
     .map((o) => ({
       ...o,

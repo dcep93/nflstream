@@ -88,10 +88,6 @@ function getSrcDoc(params: { [key: string]: string }) {
             function getPayload(
               __meta: Record<string, string>
             ): Promise<string | undefined> {
-              if (__meta.url.includes("caxi"))
-                return Promise.resolve(undefined);
-              if (__meta.url.includes(".ts?"))
-                return Promise.resolve(undefined);
               if (!__meta.url.includes("////"))
                 return Promise.resolve(undefined);
               const key = crypto.randomUUID();

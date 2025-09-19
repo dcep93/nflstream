@@ -8,25 +8,14 @@
         {
           "header": "Referer",
           "operation": "set",
-          "value": "https://gooz.aapmains.net/"
+          "value": "https://icrackstreams.app/"
         }
       ]
     },
     "condition": {
       "initiatorDomains": ["nflstream.web.app", "localhost"],
-      "excludedRequestDomains": ["gooz.aapmains.net"],
-      "urlFilter": "|http*://*",
-      "resourceTypes": [
-        "xmlhttprequest",
-        "sub_frame",
-        "script",
-        "image",
-        "media",
-        "font",
-        "stylesheet",
-        "other",
-        "main_frame"
-      ]
+      "requestDomains": ["gooz.aapmains.net"],
+      "resourceTypes": ["xmlhttprequest"]
     }
   },
   {
@@ -38,24 +27,34 @@
         {
           "header": "Referer",
           "operation": "set",
-          "value": "https://icrackstreams.app/"
+          "value": "https://gooz.aapmains.net/"
         }
       ]
     },
     "condition": {
       "initiatorDomains": ["nflstream.web.app", "localhost"],
-      "requestDomains": ["gooz.aapmains.net"],
-      "resourceTypes": [
-        "xmlhttprequest",
-        "sub_frame",
-        "script",
-        "image",
-        "media",
-        "font",
-        "stylesheet",
-        "other",
-        "main_frame"
+      "excludedRequestDomains": ["gooz.aapmains.net"],
+      "urlFilter": "|http*://*",
+      "resourceTypes": ["xmlhttprequest"]
+    }
+  },
+  {
+    "id": 3,
+    "priority": 3,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        {
+          "header": "Referer",
+          "operation": "remove"
+        }
       ]
+    },
+    "condition": {
+      "initiatorDomains": ["nflstream.web.app", "localhost"],
+      "excludedRequestDomains": ["gooz.aapmains.net"],
+      "regexFilter": "^https://[^?]+segment_[^?]+\\.ts\\?token=",
+      "resourceTypes": ["xmlhttprequest"]
     }
   }
 ]

@@ -447,7 +447,7 @@ function getSrcDoc(params: { [key: string]: string }) {
 
                   muteCommercialLoop();
 
-                  video.currentTime = video.duration - 10;
+                  video.currentTime = video.duration - 15;
                   catchUp(true).then(() => {
                     catchUp(false);
                     var recentTimestamp = 0;

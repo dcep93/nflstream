@@ -6,7 +6,8 @@ import { HOST } from "../Fetcher/StreamsFetcher";
 import FunctionToScript from "./FunctionToScript";
 
 const FlowPlayerDriver = {
-  getRawUrl: (stream_id: string) => `https://${HOST}/nfl/${stream_id}`,
+  getRawUrl: (stream: StreamType) =>
+    Promise.resolve(`https://${HOST}/nfl/${stream.stream_id}`),
   getHostParams: (stream: StreamType, hardRefresh: boolean) =>
     fetchE(
       stream.raw_url,

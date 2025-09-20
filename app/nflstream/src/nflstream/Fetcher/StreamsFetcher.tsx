@@ -48,11 +48,7 @@ export default class StreamsFetcher extends Fetcher<StreamType[], null> {
               )
           )
     )
-      .then((games) =>
-        !DRIVER.includeSpecialStreams
-          ? games
-          : DRIVER.includeSpecialStreams(games)
-      )
+      .then((games) => DRIVER.includeSpecialStreams(games))
       .then((games) =>
         games
           .filter(
@@ -69,14 +65,14 @@ export default class StreamsFetcher extends Fetcher<StreamType[], null> {
             stream_id: game.teams[1].toLowerCase(),
             isStream: true,
             espnId: game.espnId,
-          }))
-          .map((stream) => ({
-            ...stream,
-            raw_url: DRIVER.getRawUrl(stream.stream_id),
+            raw_url: "",
           }))
           .map((stream) =>
-            DRIVER.getHostParams(stream, false)
-              .then(() => stream)
+            DRIVER.getRawUrl(stream)
+              .then((raw_url) => ({ ...stream, raw_url }))
+              .then((stream) =>
+                DRIVER.getHostParams(stream, false).then(() => stream)
+              )
               .catch((err) => {
                 console.error(err);
                 return null as any as StreamType;

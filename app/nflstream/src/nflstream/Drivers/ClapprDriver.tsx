@@ -8,6 +8,13 @@ import FunctionToScript from "./FunctionToScript";
 const maxAgeMs = 10 * 60 * 1000;
 const matchRegex =
   /href="(https:\/\/icrackstreams\.app\/live.*?stream.*?)" class/g;
+const getRawUrl = (stream: StreamType) =>
+  fetchES(`https://${HOST}/nflstreams/live`, maxAgeMs).then(
+    (text) =>
+      Array.from(text.matchAll(matchRegex))
+        .map((m) => m[1])
+        .find((m) => m.includes(stream.stream_id))!
+  );
 const ClapprDriver = {
   includeSpecialStreams: (
     games: {
@@ -36,15 +43,9 @@ const ClapprDriver = {
           }))
       )
       .then((extra) => games.concat(extra)),
-  getRawUrl: (stream_id: string) => `https://${HOST}/nflstreams/live`,
+  getRawUrl,
   getHostParams: (stream: StreamType, hardRefresh: boolean) =>
-    fetchES(`https://${HOST}/nflstreams/live`, maxAgeMs)
-      .then(
-        (text) =>
-          Array.from(text.matchAll(matchRegex))
-            .map((m) => m[1])
-            .find((m) => m.includes(stream.stream_id))!
-      )
+    getRawUrl(stream)
       .then((raw_url) => fetchES(raw_url, hardRefresh ? 0 : maxAgeMs))
       .then((text) => text.match(/<iframe.*?src="(.*?)"/)![1])
       .then((gooz_src) => fetchES(gooz_src, 0))

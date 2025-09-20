@@ -3,7 +3,7 @@ import { StreamType } from "../Fetcher";
 import { HOST } from "../Fetcher/StreamsFetcher";
 
 const ShakaDriver = {
-  getRawUrl: (stream_id: string) => HOST,
+  getRawUrl: (stream: StreamType) => Promise.resolve(HOST),
   getHostParams: (stream: StreamType, hardRefresh: boolean) =>
     Promise.resolve({}),
   getSrcDoc,

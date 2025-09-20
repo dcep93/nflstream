@@ -12,7 +12,7 @@ import StreamsFetcher, {
 } from "./Fetcher/StreamsFetcher";
 import style from "./index.module.css";
 import Multiscreen, { ScreenType } from "./Multiscreen";
-import { SCOREBOARD_SRC } from "./Multiscreen/Scoreboard";
+import { SCOREBOARD_ID } from "./Multiscreen/Scoreboard";
 import recorded_sha from "./recorded_sha";
 
 declare global {
@@ -105,9 +105,9 @@ class NFLStream extends React.Component<
           .concat([
             {
               raw_url: "",
-              name: SCOREBOARD_SRC,
-              stream_id: SCOREBOARD_SRC,
-              src: SCOREBOARD_SRC,
+              name: SCOREBOARD_ID,
+              stream_id: SCOREBOARD_ID,
+              isStream: false,
             },
           ])
           .concat(
@@ -119,7 +119,7 @@ class NFLStream extends React.Component<
                     name: `update extension ${extension_version} vs ${this.state
                       ?.extensionVersion!}`,
                     stream_id: "ERROR",
-                    src: "ERROR",
+                    isStream: false,
                   },
                 ]
           )
@@ -213,7 +213,7 @@ function getStreamsFromUrlQuery(): StreamType[] {
   ).map((raw_url, i) => ({
     raw_url,
     name: `extra_${i + 1}`,
-    src: "extra",
+    isStream: false,
     stream_id: `extra_${i + 1}`,
   }));
 }

@@ -5,7 +5,7 @@ import { getLogDelayMs } from "../Log";
 import AutoScroller from "../Log/Autoscroller";
 import { probNormalMinAll } from "./guillotine";
 
-export const SCOREBOARD_SRC = "scoreboard";
+export const SCOREBOARD_ID = "scoreboard";
 
 type ScoreboardPlayersType = {
   name: string;

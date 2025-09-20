@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { ScreenType } from ".";
-import { DRIVER, HOST } from "../Fetcher/StreamsFetcher";
+import { DRIVER } from "../Fetcher/StreamsFetcher";
 import Log from "../Log";
 
 import { displayLogRef } from "../etc/Options";
 import style from "../index.module.css";
 import msStyle from "./index.module.css";
-import Scoreboard, { SCOREBOARD_SRC } from "./Scoreboard";
+import Scoreboard, { SCOREBOARD_ID } from "./Scoreboard";
 
 export function Singlescreen(props: {
   index: number;
@@ -59,7 +59,7 @@ export function Singlescreen(props: {
           onClick={() => {
             Promise.resolve()
               .then(() =>
-                props.screen.src === HOST
+                props.screen.isStream
                   ? DRIVER.getHostParams(props.screen, true)
                   : Promise.resolve({})
               )
@@ -72,7 +72,9 @@ export function Singlescreen(props: {
       <div className={msStyle.screen}>
         <div className={msStyle.subscreen}>
           <div
-            hidden={props.isSelected || props.screen.src === SCOREBOARD_SRC}
+            hidden={
+              props.isSelected || props.screen.stream_id === SCOREBOARD_ID
+            }
             className={msStyle.screen_mask}
             onClick={() => {
               props.updateSelected();
@@ -133,7 +135,7 @@ function IframeWrapper(props: { screen: ScreenType; refreshKeyValue: number }) {
         alignItems: "center",
       }}
     >
-      {props.screen.src === HOST ? (
+      {props.screen.isStream ? (
         <div
           style={{
             width: "100%",
@@ -160,7 +162,7 @@ function IframeWrapper(props: { screen: ScreenType; refreshKeyValue: number }) {
             <HostStreamIFrame {...props} />
           </div>
         </div>
-      ) : props.screen.src === SCOREBOARD_SRC ? (
+      ) : props.screen.stream_id === SCOREBOARD_ID ? (
         <Scoreboard />
       ) : (
         <iframe

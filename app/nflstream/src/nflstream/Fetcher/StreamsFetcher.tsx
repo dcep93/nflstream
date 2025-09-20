@@ -67,7 +67,7 @@ export default class StreamsFetcher extends Fetcher<StreamType[], null> {
           .map((game) => ({
             name: game.teams.join(" @ "),
             stream_id: game.teams[1].toLowerCase(),
-            src: HOST,
+            isStream: true,
             espnId: game.espnId,
           }))
           .map((stream) => ({
@@ -92,27 +92,9 @@ export default class StreamsFetcher extends Fetcher<StreamType[], null> {
             raw_url: "",
             name: err.toString(),
             stream_id: "ERROR",
-            src: "ERROR",
+            isStream: false,
           },
         ];
       });
   }
 }
-
-// export function fetchP<T>(
-//   url: string,
-//   maxAgeMs: number,
-//   textToCache: (text: string) => Promise<T>
-// ): Promise<T> {
-//   return cacheF(url, maxAgeMs, () =>
-//     fetch("https://proxy420.appspot.com", {
-//       method: "POST",
-//       body: JSON.stringify({ maxAgeMs, url }),
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//     })
-//       .then((resp) => resp.text())
-//       .then((text) => textToCache(text))
-//   );
-// }

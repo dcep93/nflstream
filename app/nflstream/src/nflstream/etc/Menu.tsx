@@ -46,6 +46,7 @@ class Menu extends React.Component<
                     <div
                       className={[style.bubble, style.hover].join(" ")}
                       onClick={(e) =>
+                        obj.stream.raw_url !== extension_package_url &&
                         !e.metaKey
                           ? this.props.addScreen(streamToScreen(obj.stream))
                           : obj.stream.raw_url &&

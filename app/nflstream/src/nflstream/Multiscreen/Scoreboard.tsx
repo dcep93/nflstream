@@ -107,7 +107,6 @@ function Standard(props: { scoreboardData: ScoreboardDataType }) {
               borderRadius: "10px",
               padding: "0.2em",
               backgroundColor: "lightgrey",
-              flexGrow: 1,
             }}
           >
             <div>probability: {(100 * o.probability).toFixed(2)}%</div>
@@ -115,10 +114,13 @@ function Standard(props: { scoreboardData: ScoreboardDataType }) {
               {o.teams.map((t, j) => (
                 <div
                   key={j}
-                  style={{ maxWidth: "13em" }}
+                  style={{ maxWidth: "11em" }}
                   title={getTitle(t.players)}
                 >
-                  {t.score} ({t.projected.toFixed(2)}) {t.teamName}
+                  <div>
+                    {t.score} ({t.projected.toFixed(2)})
+                  </div>
+                  <div>{t.teamName}</div>
                 </div>
               ))}
             </div>
@@ -180,13 +182,15 @@ function Guillotine(props: { scoreboardData: ScoreboardDataType }) {
             borderRadius: "10px",
             padding: "0.2em",
             backgroundColor: "lightgrey",
-            flexGrow: 1,
           }}
         >
           <div>probability: {(100 * o.probability).toFixed(2)}%</div>
           <div>
-            <div style={{ maxWidth: "13em" }} title={getTitle(o.players)}>
-              {o.score} ({o.projected.toFixed(2)}) {o.teamName}
+            <div style={{ maxWidth: "11em" }} title={getTitle(o.players)}>
+              <div>
+                {o.score} ({o.projected.toFixed(2)})
+              </div>
+              <div>{o.teamName}</div>
             </div>
           </div>
         </div>

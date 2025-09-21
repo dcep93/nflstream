@@ -107,6 +107,7 @@ function Standard(props: { scoreboardData: ScoreboardDataType }) {
               borderRadius: "10px",
               padding: "0.2em",
               backgroundColor: "lightgrey",
+              flexGrow: 1,
             }}
           >
             <div>probability: {(100 * o.probability).toFixed(2)}%</div>
@@ -179,6 +180,7 @@ function Guillotine(props: { scoreboardData: ScoreboardDataType }) {
             borderRadius: "10px",
             padding: "0.2em",
             backgroundColor: "lightgrey",
+            flexGrow: 1,
           }}
         >
           <div>probability: {(100 * o.probability).toFixed(2)}%</div>

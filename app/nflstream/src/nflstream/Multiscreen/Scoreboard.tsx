@@ -114,7 +114,7 @@ function Standard(props: { scoreboardData: ScoreboardDataType }) {
               {o.teams.map((t, j) => (
                 <div
                   key={j}
-                  style={{ maxWidth: "11em" }}
+                  style={{ maxWidth: "10em" }}
                   title={getTitle(t.players)}
                 >
                   <div>
@@ -186,7 +186,7 @@ function Guillotine(props: { scoreboardData: ScoreboardDataType }) {
         >
           <div>probability: {(100 * o.probability).toFixed(2)}%</div>
           <div>
-            <div style={{ maxWidth: "11em" }} title={getTitle(o.players)}>
+            <div style={{ maxWidth: "10em" }} title={getTitle(o.players)}>
               <div>
                 {o.score} ({o.projected.toFixed(2)})
               </div>

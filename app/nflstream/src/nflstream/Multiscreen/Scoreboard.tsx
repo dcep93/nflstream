@@ -34,11 +34,8 @@ export default function Scoreboard() {
       style={{ height: "100%", width: "100%" }}
       onClick={() =>
         ScoreFetcher.staticGetResponse(100)
-          .then((_scoreboardData) => {
-            clearTimeout(timeout);
-            return _scoreboardData;
-          })
           .then(updatescoreboardData)
+          .then(() => clearTimeout(timeout))
       }
     >
       <ScoreFetcher

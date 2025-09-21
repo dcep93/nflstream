@@ -2,9 +2,7 @@ import Fetcher, { StreamType } from ".";
 import ClapprDriver from "../Drivers/ClapprDriver";
 import { fetchE } from "./LogFetcher";
 
-export const HOST_STORAGE_KEY = "host.v2";
-export const ACTIVE_HOST = "icrackstreams.app";
-export const HOST = localStorage.getItem(HOST_STORAGE_KEY)!;
+export const HOST = "icrackstreams.app";
 export const DRIVER = ClapprDriver;
 
 export default class StreamsFetcher extends Fetcher<StreamType[], null> {

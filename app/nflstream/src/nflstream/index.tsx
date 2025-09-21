@@ -5,11 +5,7 @@ import Menu, { extension_package_url } from "./etc/Menu";
 import { isMobile } from "./etc/Options";
 import Remote from "./etc/Remote";
 import { StreamType } from "./Fetcher";
-import StreamsFetcher, {
-  ACTIVE_HOST,
-  HOST,
-  HOST_STORAGE_KEY,
-} from "./Fetcher/StreamsFetcher";
+import StreamsFetcher from "./Fetcher/StreamsFetcher";
 import style from "./index.module.css";
 import Multiscreen, { ScreenType } from "./Multiscreen";
 import { SCOREBOARD_ID } from "./Multiscreen/Scoreboard";
@@ -26,6 +22,9 @@ export function clog<T>(t: T): T {
   return t;
 }
 
+const passwordKey = "host.v2";
+const password = "mustbeusedlegally";
+const userPassword = localStorage.getItem(passwordKey)!;
 const extension_version = "7.0.0";
 export const EXTENSION_STORAGE_KEY = "extension_id";
 export const extension_id =
@@ -127,9 +126,9 @@ class NFLStream extends React.Component<
       });
     };
     return this.state?.extensionVersion === undefined ? null : md5(
-        HOST || ""
-      ) !== md5(ACTIVE_HOST) ? (
-      <HostPrompt extensionVersion={this.state.extensionVersion!} />
+        userPassword || ""
+      ) !== md5(password) ? (
+      <PasswordPrompt extensionVersion={this.state.extensionVersion!} />
     ) : (
       <div className={style.main} style={{ backgroundColor: "black" }}>
         {!this.state.extensionVersion ? null : (
@@ -219,17 +218,17 @@ function getStreamsFromUrlQuery(): StreamType[] {
 }
 
 var prompted = false;
-function HostPrompt(props: { extensionVersion: string }) {
+function PasswordPrompt(props: { extensionVersion: string }) {
   if (props.extensionVersion) {
-    localStorage.setItem(HOST_STORAGE_KEY, ACTIVE_HOST);
+    localStorage.setItem(passwordKey, password);
     window.location.reload();
     return null;
   }
   if (prompted) return null;
   prompted = true;
-  const pw = window.prompt("choose a host:");
+  const pw = window.prompt("enter password:");
   if (pw) {
-    localStorage.setItem(HOST_STORAGE_KEY, pw);
+    localStorage.setItem(passwordKey, pw);
     window.location.reload();
   }
   return null;

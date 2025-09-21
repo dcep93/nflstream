@@ -22,7 +22,7 @@ export function clog<T>(t: T): T {
   return t;
 }
 
-const passwordKey = "host.v2";
+const passwordKey = "password.v1";
 const password = "mustbeusedlegally";
 const userPassword = localStorage.getItem(passwordKey)!;
 const extension_version = "7.0.0";

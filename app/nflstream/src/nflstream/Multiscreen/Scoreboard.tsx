@@ -58,7 +58,7 @@ export default function Scoreboard() {
               display: "flex",
               flexWrap: "wrap",
               alignItems: "center",
-              justifyContent: "space-between",
+              justifyContent: "space-around",
             }}
           >
             {scoreboardData.isGuillotine ? (
@@ -228,91 +228,94 @@ export class ScoreFetcher extends Fetcher<ScoreboardDataType, null> {
         intervalMs,
         { type: "scoreboard", year: ScoreFetcher.year },
         (response) =>
-          Promise.resolve(response)
-            .then(JSON.parse)
-            .then(
-              (response: {
-                id: number;
-                teams: {
-                  id: number;
-                  name: string;
-                  roster: {
-                    entries: {
-                      lineupSlotId: number;
-                      playerPoolEntry: {
-                        player: {
-                          fullName: string;
-                          stats: {
-                            appliedTotal: number;
-                            statSourceId: number;
-                            statSplitTypeId: number;
-                            scoringPeriodId: number;
-                          }[];
-                        };
+          response === undefined
+            ? Promise.reject("content_script.scoreboard.undefined")
+            : Promise.resolve(response)
+                .then(JSON.parse)
+                .then(
+                  (response: {
+                    id: number;
+                    teams: {
+                      id: number;
+                      name: string;
+                      roster: {
+                        entries: {
+                          lineupSlotId: number;
+                          playerPoolEntry: {
+                            player: {
+                              fullName: string;
+                              stats: {
+                                appliedTotal: number;
+                                statSourceId: number;
+                                statSplitTypeId: number;
+                                scoringPeriodId: number;
+                              }[];
+                            };
+                          };
+                        }[];
                       };
                     }[];
-                  };
-                }[];
-                scoringPeriodId: number;
-                schedule: {
-                  matchupPeriodId: number;
-                  away: matchupTeam;
-                  home: matchupTeam;
-                }[];
-              }) =>
-                Promise.resolve()
-                  .then(() =>
-                    response.schedule
-                      .filter(
-                        (m) => m.matchupPeriodId === response.scoringPeriodId
-                      )
-                      .map((m) =>
-                        [m.away, m.home].map((t) => ({
-                          teamName: response.teams.find(
-                            (rt) => rt.id === t.teamId
-                          )!.name,
-                          score: t.totalPointsLive,
-                          projected: t.totalProjectedPointsLive,
-                          players: response.teams
-                            .find((rt) => rt.id === t.teamId)!
-                            .roster.entries.map((e) => ({
-                              name: e.playerPoolEntry.player.fullName,
-                              score:
-                                e.playerPoolEntry.player.stats.find(
-                                  (s) =>
-                                    s.statSourceId === 0 &&
-                                    s.statSplitTypeId === 1 &&
-                                    s.scoringPeriodId ===
-                                      response.scoringPeriodId
-                                )?.appliedTotal || Number.POSITIVE_INFINITY,
-                              projected:
-                                e.playerPoolEntry.player.stats.find(
-                                  (s) =>
-                                    s.statSourceId === 1 &&
-                                    s.statSplitTypeId === 1 &&
-                                    s.scoringPeriodId ===
-                                      response.scoringPeriodId
-                                )?.appliedTotal || Number.POSITIVE_INFINITY,
-                              isStarting: ![
-                                20, // bench
-                                21, // IR
-                              ].includes(e.lineupSlotId),
+                    scoringPeriodId: number;
+                    schedule: {
+                      matchupPeriodId: number;
+                      away: matchupTeam;
+                      home: matchupTeam;
+                    }[];
+                  }) =>
+                    Promise.resolve()
+                      .then(() =>
+                        response.schedule
+                          .filter(
+                            (m) =>
+                              m.matchupPeriodId === response.scoringPeriodId
+                          )
+                          .map((m) =>
+                            [m.away, m.home].map((t) => ({
+                              teamName: response.teams.find(
+                                (rt) => rt.id === t.teamId
+                              )!.name,
+                              score: t.totalPointsLive,
+                              projected: t.totalProjectedPointsLive,
+                              players: response.teams
+                                .find((rt) => rt.id === t.teamId)!
+                                .roster.entries.map((e) => ({
+                                  name: e.playerPoolEntry.player.fullName,
+                                  score:
+                                    e.playerPoolEntry.player.stats.find(
+                                      (s) =>
+                                        s.statSourceId === 0 &&
+                                        s.statSplitTypeId === 1 &&
+                                        s.scoringPeriodId ===
+                                          response.scoringPeriodId
+                                    )?.appliedTotal || Number.POSITIVE_INFINITY,
+                                  projected:
+                                    e.playerPoolEntry.player.stats.find(
+                                      (s) =>
+                                        s.statSourceId === 1 &&
+                                        s.statSplitTypeId === 1 &&
+                                        s.scoringPeriodId ===
+                                          response.scoringPeriodId
+                                    )?.appliedTotal || Number.POSITIVE_INFINITY,
+                                  isStarting: ![
+                                    20, // bench
+                                    21, // IR
+                                  ].includes(e.lineupSlotId),
+                                }))
+                                .concat({
+                                  name: "<BENCH>",
+                                  score: Number.POSITIVE_INFINITY,
+                                  projected: Number.POSITIVE_INFINITY,
+                                  isStarting: false,
+                                }),
                             }))
-                            .concat({
-                              name: "<BENCH>",
-                              score: Number.POSITIVE_INFINITY,
-                              projected: Number.POSITIVE_INFINITY,
-                              isStarting: false,
-                            }),
-                        }))
+                          )
                       )
-                  )
-                  .then((scores) => ({
-                    scores,
-                    isGuillotine: [367176096].includes(response.id),
-                    leagueId: response.id,
-                  }))
-            )
+                      .then((scores) => ({
+                        scores,
+                        isGuillotine: [367176096].includes(response.id),
+                        leagueId: response.id,
+                      }))
+                )
       )
     );
   }

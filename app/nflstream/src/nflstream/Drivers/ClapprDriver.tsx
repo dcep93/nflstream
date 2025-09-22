@@ -314,7 +314,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                     name: "white",
                     scale: 4,
                     baseDiffAllowed: 5,
-                    totalDiffAllowed: 50,
+                    totalDiffAllowed: 27,
                     widthStart: Math.floor(video.videoWidth * (435 / 1120)),
                     widthSize: Math.floor(video.videoWidth * (250 / 1120)),
                     heightStart: Math.floor(video.videoHeight * (270 / 634)),

@@ -31,8 +31,16 @@ export const extension_id =
   localStorage.getItem(EXTENSION_STORAGE_KEY) ||
   "jbdpjafpomdbklfifcclbkflmnnjefdc";
 
-class NFLStream extends React.Component<
-  {},
+function NFLStream() {
+  return (
+    <>
+      <Sub divRef={React.createRef()} />
+    </>
+  );
+}
+
+class Sub extends React.Component<
+  { divRef: React.RefObject<HTMLDivElement> },
   {
     backgroundColor?: string;
     streams?: StreamType[];
@@ -76,7 +84,6 @@ class NFLStream extends React.Component<
       .map((stream) => streamToScreen(stream!));
   }
 
-  divRef = React.createRef<HTMLDivElement>();
   componentDidUpdate() {
     if (this.state?.initialized === undefined) {
       if (this.state?.streams !== undefined) {
@@ -84,7 +91,7 @@ class NFLStream extends React.Component<
         if (screens.length === 0) {
           this.setState({ initialized: true, screens });
         } else {
-          this.divRef.current?.scrollIntoView({
+          this.props.divRef.current?.scrollIntoView({
             behavior: "smooth",
             block: "nearest",
           });
@@ -155,7 +162,7 @@ class NFLStream extends React.Component<
           streams={this.state?.streams}
         />
         {this.state.initialized === false ? (
-          <div ref={this.divRef}>
+          <div ref={this.props.divRef}>
             <ForceInteract
               interact={() =>
                 this.state?.initialized ||

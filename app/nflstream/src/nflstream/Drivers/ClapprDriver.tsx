@@ -56,7 +56,8 @@ const ClapprDriver = {
           ({
             source: `${gntleocen_src}////.m3u8`,
           } as Record<string, string>)
-      ),
+      )
+      .catch((err) => ({})),
   getSrcDoc,
 };
 export default ClapprDriver;

@@ -306,10 +306,10 @@ function getSrcDoc(params: { [key: string]: string }) {
                     scale: 4,
                     baseDiffAllowed: 2,
                     totalDiffAllowed: 1,
-                    widthStart: Math.floor(video.videoWidth * (700 / 2135)),
-                    widthSize: Math.floor(video.videoWidth * (700 / 2135)),
-                    heightStart: Math.floor(video.videoHeight * (400 / 1211)),
-                    heightSize: Math.floor(video.videoHeight * (400 / 1211)),
+                    widthStart: Math.floor(video.videoWidth * (445 / 1120)),
+                    widthSize: Math.floor(video.videoWidth * (230 / 1120)),
+                    heightStart: Math.floor(video.videoHeight * (280 / 634)),
+                    heightSize: Math.floor(video.videoHeight * (55 / 634)),
                     kernels: Object.entries({
                       white: [
                         [235, 235, 235, 255],

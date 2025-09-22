@@ -73,7 +73,7 @@ export default abstract class Fetcher<T, U> extends React.Component<
 
 const cacheVersion = "1.0.2";
 const cache: {
-  [key: string]: { timestamp: number; data: any; version: string };
+  [key: string]: Promise<{ timestamp: number; data: any; version: string }>;
 } = {};
 export function cacheF<T>(
   key: string,
@@ -81,30 +81,37 @@ export function cacheF<T>(
   f: () => Promise<T>
 ): Promise<T> {
   const timestamp = new Date().getTime();
-  var cached = cache[key];
-  if (!cached) {
+  var _cached = cache[key];
+  if (!_cached) {
     const localCached = window.localStorage.getItem(key);
     if (localCached !== null) {
-      cached = JSON.parse(localCached);
+      _cached = Promise.resolve(JSON.parse(localCached));
     }
   }
-  if (
-    cached &&
-    timestamp - cached!.timestamp < maxAgeMs &&
-    cached!.version === cacheVersion
-  ) {
-    return Promise.resolve(cached.data as T);
-  }
-  return f().then((data) => {
-    cached = { timestamp, data, version: cacheVersion };
-    cache[key] = cached;
-    const localCached = JSON.stringify(cached);
-    if (maxAgeMs >= 0) {
-      try {
-        window.localStorage.setItem(key, localCached);
-      } catch {}
+  return (_cached || Promise.resolve(null)).then((cached) => {
+    if (
+      cached &&
+      timestamp - cached!.timestamp < maxAgeMs &&
+      cached!.version === cacheVersion
+    ) {
+      return Promise.resolve(cached.data as T);
     }
-    return data;
+    const cacheF = f().then((data) => {
+      cached = { timestamp, data, version: cacheVersion };
+      cache[key] = Promise.resolve(cached);
+      return cached;
+    });
+    const rval = cacheF.then((cached) => {
+      const localCached = JSON.stringify(cached);
+      if (maxAgeMs >= 0) {
+        try {
+          window.localStorage.setItem(key, localCached);
+        } catch {}
+      }
+      return cached.data;
+    });
+    cache[key] = cacheF;
+    return rval;
   });
 }
 

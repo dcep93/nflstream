@@ -33,7 +33,8 @@ export default function Scoreboard() {
     <div
       style={{ height: "100%", width: "100%" }}
       onClick={() =>
-        ScoreFetcher.staticGetResponse(100)
+        Promise.resolve()
+          .then(() => ScoreFetcher.staticGetResponse(100))
           .then(updatescoreboardData)
           .then(() => clearTimeout(timeout))
       }

@@ -279,42 +279,54 @@ function getSrcDoc(params: { [key: string]: string }) {
                     heightStart: Math.floor(video.videoHeight * (472 / 1211)),
                     heightSize: Math.floor(video.videoHeight * (279 / 1211)),
                     kernels: Object.entries({
-                      darkblue: [
-                        [13, 38, 114, 255],
-                        [15, 42, 120, 255],
-                        [22, 59, 158, 255],
-                        [30, 76, 189, 255],
-                        [33, 81, 197, 255],
-                      ],
-                      blue: [
-                        [50, 116, 221, 255],
-                        [54, 126, 255, 255],
-                        [57, 125, 255, 255],
-                        [61, 132, 255, 255],
-                      ],
-                      white: [
-                        [190, 186, 206, 255],
-                        [206, 200, 222, 255],
-                        [212, 205, 227, 255],
-                        [229, 223, 247, 255],
-                        [255, 255, 255, 255],
-                      ],
+                      darkblue: {
+                        needed: 16000 / 156420,
+                        kernels: [
+                          [13, 38, 114, 255],
+                          [15, 42, 120, 255],
+                          [22, 59, 158, 255],
+                          [30, 76, 189, 255],
+                          [33, 81, 197, 255],
+                        ],
+                      },
+                      blue: {
+                        needed: 30000 / 156420,
+                        kernels: [
+                          [50, 116, 221, 255],
+                          [54, 126, 255, 255],
+                          [57, 125, 255, 255],
+                          [61, 132, 255, 255],
+                        ],
+                      },
+                      white: {
+                        needed: 20000 / 156420,
+                        kernels: [
+                          [190, 186, 206, 255],
+                          [206, 200, 222, 255],
+                          [212, 205, 227, 255],
+                          [229, 223, 247, 255],
+                          [255, 255, 255, 255],
+                        ],
+                      },
                     }).map((o) => ({ k: o[0], v: o[1] })),
                   },
                   {
                     name: "white",
                     scale: 4,
-                    baseDiffAllowed: 2,
-                    totalDiffAllowed: 1,
-                    widthStart: Math.floor(video.videoWidth * (445 / 1120)),
-                    widthSize: Math.floor(video.videoWidth * (230 / 1120)),
-                    heightStart: Math.floor(video.videoHeight * (280 / 634)),
-                    heightSize: Math.floor(video.videoHeight * (55 / 634)),
+                    baseDiffAllowed: 5,
+                    totalDiffAllowed: 50,
+                    widthStart: Math.floor(video.videoWidth * (435 / 1120)),
+                    widthSize: Math.floor(video.videoWidth * (250 / 1120)),
+                    heightStart: Math.floor(video.videoHeight * (270 / 634)),
+                    heightSize: Math.floor(video.videoHeight * (75 / 634)),
                     kernels: Object.entries({
-                      white: [
-                        [235, 235, 235, 255],
-                        [235, 235, 235, 255],
-                      ],
+                      white: {
+                        needed: 350 / 1491,
+                        kernels: [
+                          [235, 235, 235, 255],
+                          [235, 235, 235, 255],
+                        ],
+                      },
                     }).map((o) => ({ k: o[0], v: o[1] })),
                   },
                 ];
@@ -349,7 +361,8 @@ function getSrcDoc(params: { [key: string]: string }) {
                       );
                       const other: Record<string, number> = {};
                       data.forEach((d) => {
-                        const found = kernels.kernels.find(({ v }) => {
+                        const found = kernels.kernels.find((o) => {
+                          const v = o.v.kernels;
                           if (v[0][0] - d[0] > kernels.baseDiffAllowed)
                             return false;
                           if (
@@ -377,23 +390,10 @@ function getSrcDoc(params: { [key: string]: string }) {
                         }
                         other[d.toString()] = (other[d.toString()] ?? 0) + 1;
                       });
-                      const h = () => {
-                        if (kernels.name === "blue") {
-                          if (counts.darkblue / data.length < 16000 / 156420)
-                            return false;
-                          if (counts.blue / data.length < 30000 / 156420)
-                            return false;
-                          if (counts.white / data.length < 20000 / 156420)
-                            return false;
-                          return true;
-                        } else if (kernels.name === "white") {
-                          if (counts.white / data.length < 250 / 6136) {
-                            return false;
-                          }
-                          return true;
-                        }
-                      };
-                      const rval = h();
+                      const rval =
+                        kernels.kernels.find(
+                          ({ k, v }) => counts[k] / data.length < v.needed
+                        ) === undefined;
                       const common = Object.entries(other)
                         .map(([k, v]) => ({ k, v }))
                         .sort((a, b) => b.v - a.v)

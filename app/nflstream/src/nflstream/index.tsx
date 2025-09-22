@@ -76,6 +76,7 @@ class NFLStream extends React.Component<
       .map((stream) => streamToScreen(stream!));
   }
 
+  divRef = React.createRef<HTMLDivElement>();
   componentDidUpdate() {
     if (this.state?.initialized === undefined) {
       if (this.state?.streams !== undefined) {
@@ -83,6 +84,10 @@ class NFLStream extends React.Component<
         if (screens.length === 0) {
           this.setState({ initialized: true, screens });
         } else {
+          this.divRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+          });
           this.setState({ initialized: false });
         }
       }
@@ -150,19 +155,20 @@ class NFLStream extends React.Component<
           streams={this.state?.streams}
         />
         {this.state.initialized === false ? (
-          <ForceInteract
-            interact={() =>
-              this.state?.initialized ||
-              this.setState({
-                initialized: true,
-                screens: this.getHashedScreens(),
-              })
-            }
-          />
+          <div ref={this.divRef}>
+            <ForceInteract
+              interact={() =>
+                this.state?.initialized ||
+                this.setState({
+                  initialized: true,
+                  screens: this.getHashedScreens(),
+                })
+              }
+            />
+          </div>
         ) : (
           this.state.initialized && (
             <Multiscreen
-              divRef={React.createRef()}
               screens={this.state?.screens || []}
               removeScreen={(iFrameTitle) =>
                 this.setState({

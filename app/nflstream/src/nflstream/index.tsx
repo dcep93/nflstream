@@ -171,7 +171,10 @@ class Sub extends React.Component<
           }
           streams={this.state?.streams}
         />
-        <div ref={this.props.divRef} style={{ width: "100vW" }}>
+        <div
+          ref={this.props.divRef}
+          style={{ width: "100vW", display: "flex" }}
+        >
           {this.state.initialized === false ? (
             <ForceInteract interact={interact} />
           ) : (

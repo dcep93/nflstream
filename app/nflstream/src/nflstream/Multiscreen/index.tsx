@@ -147,10 +147,7 @@ class Multiscreen extends React.Component<
 
   render() {
     return (
-      <div
-        className={msStyle.screens_wrapper}
-        style={{ backgroundColor: "black" }}
-      >
+      <div className={msStyle.screens_wrapper}>
         {this.props.screens.length === 0 ? null : (
           <div className={msStyle.screens}>
             {this.props.screens.map((screen, i) => (

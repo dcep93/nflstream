@@ -17,6 +17,7 @@ class Multiscreen extends React.Component<
   {
     screens: ScreenType[];
     removeScreen: (iFrameTitle: string) => void;
+    divRef: React.RefObject<HTMLDivElement>;
   },
   {
     selected: string;
@@ -24,10 +25,11 @@ class Multiscreen extends React.Component<
     refreshes: { [iFrameTitle: string]: number };
   }
 > {
-  mounted = false;
   componentDidMount(): void {
-    if (this.mounted) return;
-    this.mounted = true;
+    this.props.divRef.current!.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+    });
     onUpdateRemote(
       ({ src, selected }) =>
         remoteRef.current?.checked &&
@@ -140,6 +142,7 @@ class Multiscreen extends React.Component<
   render() {
     return (
       <div
+        ref={this.props.divRef}
         className={msStyle.screens_wrapper}
         style={{ backgroundColor: "black" }}
       >

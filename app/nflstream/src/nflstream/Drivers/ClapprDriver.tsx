@@ -83,6 +83,7 @@ function getSrcDoc(params: { [key: string]: string }) {
               if (event.data.source !== "nflstream") return;
               if (event.data.response === undefined) return;
               const p = promises[event.data.key];
+              if (!p) return;
               delete promises[event.data.key];
               p(event.data.response);
             });

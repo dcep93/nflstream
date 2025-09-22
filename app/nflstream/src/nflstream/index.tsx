@@ -162,6 +162,7 @@ class NFLStream extends React.Component<
         ) : (
           this.state.initialized && (
             <Multiscreen
+              divRef={React.createRef()}
               screens={this.state?.screens || []}
               removeScreen={(iFrameTitle) =>
                 this.setState({

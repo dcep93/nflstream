@@ -395,7 +395,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                           (o) => counts[o.k] / data.length < o.v.needed
                         ) === undefined;
                       const common = Object.entries(other)
-                        .map(([k, v]) => ({ k, v }))
+                        .map((o) => ({ k: o[0], v: o[1] }))
                         .sort((a, b) => b.v - a.v)
                         .slice(0, 10);
                       console.log(

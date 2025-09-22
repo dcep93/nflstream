@@ -270,6 +270,25 @@ function getSrcDoc(params: { [key: string]: string }) {
                 }
                 const all_kernels = [
                   {
+                    name: "white",
+                    scale: 4,
+                    baseDiffAllowed: 0,
+                    totalDiffAllowed: 48,
+                    widthStart: Math.floor(video.videoWidth * (435 / 1120)),
+                    widthSize: Math.floor(video.videoWidth * (250 / 1120)),
+                    heightStart: Math.floor(video.videoHeight * (270 / 634)),
+                    heightSize: Math.floor(video.videoHeight * (75 / 634)),
+                    kernels: Object.entries({
+                      white: {
+                        needed: 350 / 1491,
+                        kernels: [
+                          [234, 235, 235, 255],
+                          [246, 232, 234, 255],
+                        ],
+                      },
+                    }).map((o) => ({ k: o[0], v: o[1] })),
+                  },
+                  {
                     name: "blue",
                     scale: 4,
                     baseDiffAllowed: 2,
@@ -306,25 +325,6 @@ function getSrcDoc(params: { [key: string]: string }) {
                           [212, 205, 227, 255],
                           [229, 223, 247, 255],
                           [255, 255, 255, 255],
-                        ],
-                      },
-                    }).map((o) => ({ k: o[0], v: o[1] })),
-                  },
-                  {
-                    name: "white",
-                    scale: 4,
-                    baseDiffAllowed: 0,
-                    totalDiffAllowed: 27,
-                    widthStart: Math.floor(video.videoWidth * (435 / 1120)),
-                    widthSize: Math.floor(video.videoWidth * (250 / 1120)),
-                    heightStart: Math.floor(video.videoHeight * (270 / 634)),
-                    heightSize: Math.floor(video.videoHeight * (75 / 634)),
-                    kernels: Object.entries({
-                      white: {
-                        needed: 350 / 1491,
-                        kernels: [
-                          [234, 235, 235, 255],
-                          [246, 232, 232, 255],
                         ],
                       },
                     }).map((o) => ({ k: o[0], v: o[1] })),

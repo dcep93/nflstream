@@ -19,6 +19,7 @@ class Multiscreen extends React.Component<
     removeScreen: (iFrameTitle: string) => void;
   },
   {
+    isUnmounted: boolean;
     unsubscribe: () => void;
     selected: string;
     src: string;
@@ -37,21 +38,25 @@ class Multiscreen extends React.Component<
           )
           .then((screen) => screen && this.updateSelected(screen, src))
     );
-    window.addEventListener("keydown", (e) =>
-      Promise.resolve(e)
-        .then((e) => e.key)
-        .then((key) => parseInt(key))
-        .then((index) =>
-          index === 0
-            ? Promise.resolve().then(() => DelayedLog.active?.updateNow())
-            : Promise.resolve()
-                .then(() => this.props.screens[index - 1])
-                .then(
-                  (screen) => screen && this.updateSelected(screen, "keydown")
-                )
-        )
+    window.addEventListener(
+      "keydown",
+      (e) =>
+        !this.state.isUnmounted &&
+        Promise.resolve(e)
+          .then((e) => e.key)
+          .then((key) => parseInt(key))
+          .then((index) =>
+            index === 0
+              ? Promise.resolve().then(() => DelayedLog.active?.updateNow())
+              : Promise.resolve()
+                  .then(() => this.props.screens[index - 1])
+                  .then(
+                    (screen) => screen && this.updateSelected(screen, "keydown")
+                  )
+          )
     );
     window.addEventListener("message", (event) => {
+      if (this.state.isUnmounted) return;
       if (event.data.source !== "nflstream.html") return;
       console.log(event.data);
       if (event.data.action === "loaded") {
@@ -83,6 +88,7 @@ class Multiscreen extends React.Component<
 
   componentWillUnmount(): void {
     this.state?.unsubscribe();
+    this.setState({ isUnmounted: true });
   }
 
   componentDidUpdate(): void {

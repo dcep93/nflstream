@@ -142,7 +142,13 @@ class Sub extends React.Component<
       ) !== md5(password) ? (
       <PasswordPrompt extensionVersion={this.state.extensionVersion!} />
     ) : (
-      <div className={style.main} style={{ backgroundColor: "black" }}>
+      <div
+        className={style.main}
+        style={{ backgroundColor: "black" }}
+        onClick={() =>
+          !this.state?.initialized && this.setState({ initialized: true })
+        }
+      >
         {!this.state.extensionVersion ? null : (
           <StreamsFetcher
             ref={ref}

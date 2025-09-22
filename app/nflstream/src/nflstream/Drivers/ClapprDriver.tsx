@@ -313,7 +313,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                   {
                     name: "white",
                     scale: 4,
-                    baseDiffAllowed: 5,
+                    baseDiffAllowed: 0,
                     totalDiffAllowed: 27,
                     widthStart: Math.floor(video.videoWidth * (435 / 1120)),
                     widthSize: Math.floor(video.videoWidth * (250 / 1120)),
@@ -323,8 +323,8 @@ function getSrcDoc(params: { [key: string]: string }) {
                       white: {
                         needed: 350 / 1491,
                         kernels: [
-                          [235, 235, 235, 255],
-                          [235, 235, 235, 255],
+                          [234, 235, 235, 255],
+                          [246, 235, 235, 255],
                         ],
                       },
                     }).map((o) => ({ k: o[0], v: o[1] })),

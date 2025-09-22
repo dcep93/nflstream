@@ -273,16 +273,16 @@ function getSrcDoc(params: { [key: string]: string }) {
                     name: "white",
                     scale: 4,
                     baseDiffAllowed: 0,
-                    totalDiffAllowed: 48,
+                    totalDiffAllowed: 72,
                     widthStart: Math.floor(video.videoWidth * (435 / 1120)),
                     widthSize: Math.floor(video.videoWidth * (250 / 1120)),
                     heightStart: Math.floor(video.videoHeight * (270 / 634)),
                     heightSize: Math.floor(video.videoHeight * (75 / 634)),
                     kernels: Object.entries({
                       white: {
-                        needed: 350 / 1491,
+                        needed: 250 / 1491,
                         kernels: [
-                          [234, 235, 235, 255],
+                          [231, 235, 235, 255],
                           [246, 232, 234, 255],
                         ],
                       },

@@ -272,6 +272,8 @@ function getSrcDoc(params: { [key: string]: string }) {
                   {
                     name: "blue",
                     scale: 4,
+                    baseDiffAllowed: 2,
+                    totalDiffAllowed: 500,
                     widthStart: Math.floor(video.videoWidth * (229 / 2135)),
                     widthSize: Math.floor(video.videoWidth * (1582 / 2135)),
                     heightStart: Math.floor(video.videoHeight * (472 / 1211)),
@@ -302,30 +304,16 @@ function getSrcDoc(params: { [key: string]: string }) {
                   {
                     name: "white",
                     scale: 4,
-                    widthStart: Math.floor(video.videoWidth * (229 / 2135)),
-                    widthSize: Math.floor(video.videoWidth * (1582 / 2135)),
-                    heightStart: Math.floor(video.videoHeight * (472 / 1211)),
-                    heightSize: Math.floor(video.videoHeight * (279 / 1211)),
+                    baseDiffAllowed: 2,
+                    totalDiffAllowed: 1,
+                    widthStart: Math.floor(video.videoWidth * (700 / 2135)),
+                    widthSize: Math.floor(video.videoWidth * (700 / 2135)),
+                    heightStart: Math.floor(video.videoHeight * (400 / 1211)),
+                    heightSize: Math.floor(video.videoHeight * (400 / 1211)),
                     kernels: Object.entries({
-                      darkblue: [
-                        [13, 38, 114, 255],
-                        [15, 42, 120, 255],
-                        [22, 59, 158, 255],
-                        [30, 76, 189, 255],
-                        [33, 81, 197, 255],
-                      ],
-                      blue: [
-                        [50, 116, 221, 255],
-                        [54, 126, 255, 255],
-                        [57, 125, 255, 255],
-                        [61, 132, 255, 255],
-                      ],
                       white: [
-                        [190, 186, 206, 255],
-                        [206, 200, 222, 255],
-                        [212, 205, 227, 255],
-                        [229, 223, 247, 255],
-                        [255, 255, 255, 255],
+                        [235, 235, 235, 255],
+                        [235, 235, 235, 255],
                       ],
                     }).map((o) => ({ k: o[0], v: o[1] })),
                   },
@@ -362,8 +350,13 @@ function getSrcDoc(params: { [key: string]: string }) {
                       const other: Record<string, number> = {};
                       data.forEach((d) => {
                         const found = kernels.kernels.find(({ v }) => {
-                          if (v[0][0] - d[0] > 2) return false;
-                          if (d[0] - v[v.length - 1][0] > 2) return false;
+                          if (v[0][0] - d[0] > kernels.baseDiffAllowed)
+                            return false;
+                          if (
+                            d[0] - v[v.length - 1][0] >
+                            kernels.baseDiffAllowed
+                          )
+                            return false;
                           const distance = d
                             .slice(1)
                             .map((_, i) => ({
@@ -375,7 +368,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                             .map((o) => (o.x / o.X) * o.Y - o.y)
                             .map((distance) => Math.pow(distance, 2))
                             .reduce((a, b) => a + b, 0);
-                          if (distance > 500) return false;
+                          if (distance > kernels.totalDiffAllowed) return false;
                           return true;
                         });
                         if (found !== undefined) {
@@ -385,13 +378,20 @@ function getSrcDoc(params: { [key: string]: string }) {
                         other[d.toString()] = (other[d.toString()] ?? 0) + 1;
                       });
                       const h = () => {
-                        if (counts.darkblue / data.length < 16000 / 156420)
-                          return false;
-                        if (counts.blue / data.length < 30000 / 156420)
-                          return false;
-                        if (counts.white / data.length < 20000 / 156420)
-                          return false;
-                        return true;
+                        if (kernels.name === "blue") {
+                          if (counts.darkblue / data.length < 16000 / 156420)
+                            return false;
+                          if (counts.blue / data.length < 30000 / 156420)
+                            return false;
+                          if (counts.white / data.length < 20000 / 156420)
+                            return false;
+                          return true;
+                        } else if (kernels.name === "white") {
+                          if (counts.white / data.length < 250 / 6136) {
+                            return false;
+                          }
+                          return true;
+                        }
                       };
                       const rval = h();
                       const common = Object.entries(other)

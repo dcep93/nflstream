@@ -25,19 +25,21 @@ type ScoreboardDataType = {
   }[][];
 };
 
+export var updateScoreboardNow = () => Promise.resolve();
+
 export default function Scoreboard() {
   const [scoreboardData, updatescoreboardData] =
     useState<ScoreboardDataType | null>(null);
   var timeout: NodeJS.Timeout;
+  updateScoreboardNow = () =>
+    Promise.resolve()
+      .then(() => ScoreFetcher.staticGetResponse(100))
+      .then(updatescoreboardData)
+      .then(() => clearTimeout(timeout));
   return (
     <div
       style={{ height: "100%", width: "100%" }}
-      onClick={() =>
-        Promise.resolve()
-          .then(() => ScoreFetcher.staticGetResponse(100))
-          .then(updatescoreboardData)
-          .then(() => clearTimeout(timeout))
-      }
+      onClick={updateScoreboardNow}
     >
       <ScoreFetcher
         payload={null}

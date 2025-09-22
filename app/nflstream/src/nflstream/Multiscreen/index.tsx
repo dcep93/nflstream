@@ -6,6 +6,7 @@ import { fetchE } from "../Fetcher/LogFetcher";
 import { DRIVER } from "../Fetcher/StreamsFetcher";
 import { DelayedLog } from "../Log";
 import msStyle from "./index.module.css";
+import { updateScoreboardNow } from "./Scoreboard";
 import { Singlescreen } from "./Singlescreen";
 
 export type ScreenType = StreamType & {
@@ -47,7 +48,9 @@ class Multiscreen extends React.Component<
           .then((key) => parseInt(key))
           .then((index) =>
             index === 0
-              ? Promise.resolve().then(() => DelayedLog.active?.updateNow())
+              ? Promise.resolve()
+                  .then(() => DelayedLog.active?.updateNow())
+                  .then(updateScoreboardNow)
               : Promise.resolve()
                   .then(() => this.props.screens[index - 1])
                   .then(

@@ -423,6 +423,8 @@ function getSrcDoc(params: { [key: string]: string }) {
                       if (should_mute !== video.muted) {
                         video.muted = should_mute;
                       }
+                    })
+                    .then(() => {
                       const mute_duration = Date.now() - start_time;
                       // console.log({ mute_duration });
                       setTimeout(

@@ -392,7 +392,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                       });
                       const rval =
                         kernels.kernels.find(
-                          ({ k, v }) => counts[k] / data.length < v.needed
+                          (o) => counts[o.k] / data.length < o.v.needed
                         ) === undefined;
                       const common = Object.entries(other)
                         .map(([k, v]) => ({ k, v }))

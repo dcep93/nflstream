@@ -161,8 +161,8 @@ class Sub extends React.Component<
           }
           streams={this.state?.streams}
         />
-        {this.state.initialized === false ? (
-          <div ref={this.props.divRef}>
+        <div ref={this.props.divRef} style={{ width: "100vW" }}>
+          {this.state.initialized === false ? (
             <ForceInteract
               interact={() =>
                 this.state?.initialized ||
@@ -172,21 +172,21 @@ class Sub extends React.Component<
                 })
               }
             />
-          </div>
-        ) : (
-          this.state.initialized && (
-            <Multiscreen
-              screens={this.state?.screens || []}
-              removeScreen={(iFrameTitle) =>
-                this.setState({
-                  screens: this.state.screens.filter(
-                    (o) => o.iFrameTitle !== iFrameTitle
-                  ),
-                })
-              }
-            />
-          )
-        )}
+          ) : (
+            this.state.initialized && (
+              <Multiscreen
+                screens={this.state?.screens || []}
+                removeScreen={(iFrameTitle) =>
+                  this.setState({
+                    screens: this.state.screens.filter(
+                      (o) => o.iFrameTitle !== iFrameTitle
+                    ),
+                  })
+                }
+              />
+            )
+          )}
+        </div>
       </div>
     );
   }
@@ -201,10 +201,6 @@ function ForceInteract(props: { interact: () => void }) {
     document.addEventListener("keydown", handleKeyDown);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  if (process.env.NODE_ENV === "development") {
-    setTimeout(handleKeyDown);
-    return null;
-  }
   return (
     <div style={{ color: "white" }} onClick={() => handleKeyDown()}>
       press enter to resume

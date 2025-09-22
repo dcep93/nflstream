@@ -9,6 +9,7 @@ import {
   ref,
   remove,
   set,
+  Unsubscribe,
 } from "firebase/database";
 import React from "react";
 
@@ -48,8 +49,11 @@ function __ref(path: string) {
   return ref(database, `/${firebaseConfig.projectId}/${path}`);
 }
 
-function _connect(path: string, callback: (value: BlobType) => void): void {
-  onValue(__ref(path), (snapshot: ResultType) => {
+function _connect(
+  path: string,
+  callback: (value: BlobType) => void
+): Unsubscribe {
+  return onValue(__ref(path), (snapshot: ResultType) => {
     var val = snapshot.val();
     console.log("firebase", Date.now() / 1000, window.location.href, val);
     callback(val);
@@ -74,22 +78,21 @@ function _delete(path: string): Promise<void> {
 
 abstract class FirebaseWrapper<T, U = {}> extends React.Component<
   U,
-  { state: T }
+  { state: T; unsubscribe: () => void }
 > {
   static firebaseWrapperComponent: FirebaseWrapper<any, any>;
   componentDidMount() {
-    const oldComponent = FirebaseWrapper.firebaseWrapperComponent;
-    FirebaseWrapper.firebaseWrapperComponent = this;
-    if (oldComponent) {
-      this.setState(oldComponent.state);
-    } else {
-      initialize();
-      _connect(this.getFirebasePath(), (state) =>
-        FirebaseWrapper.firebaseWrapperComponent.setState.bind(
-          FirebaseWrapper.firebaseWrapperComponent
-        )({ state })
-      );
-    }
+    initialize();
+    const unsubscribe = _connect(this.getFirebasePath(), (state) =>
+      FirebaseWrapper.firebaseWrapperComponent.setState.bind(
+        FirebaseWrapper.firebaseWrapperComponent
+      )({ state })
+    );
+    this.setState({ unsubscribe });
+  }
+
+  componentWillUnmount(): void {
+    this.state?.unsubscribe();
   }
 
   abstract getFirebasePath(): string;

@@ -61,7 +61,7 @@ export default class Remote extends firebase.FirebaseWrapper<RemoteType> {
 }
 
 export function onUpdateRemote(callback: (remote: RemoteType) => void) {
-  firebase._connect(firebasePath, callback);
+  return firebase._connect(firebasePath, callback);
 }
 
 export function updateRemote(remote: RemoteType) {

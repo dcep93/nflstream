@@ -19,13 +19,14 @@ class Multiscreen extends React.Component<
     removeScreen: (iFrameTitle: string) => void;
   },
   {
+    unsubscribe: () => void;
     selected: string;
     src: string;
     refreshes: { [iFrameTitle: string]: number };
   }
 > {
   componentDidMount(): void {
-    onUpdateRemote(
+    const unsubscribe = onUpdateRemote(
       ({ src, selected }) =>
         remoteRef.current?.checked &&
         src === "remote" &&
@@ -77,7 +78,11 @@ class Multiscreen extends React.Component<
         );
       }
     });
-    this.setState({ selected: "" });
+    this.setState({ selected: "", unsubscribe });
+  }
+
+  componentWillUnmount(): void {
+    this.state?.unsubscribe();
   }
 
   componentDidUpdate(): void {

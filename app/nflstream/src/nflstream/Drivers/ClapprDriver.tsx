@@ -268,109 +268,148 @@ function getSrcDoc(params: { [key: string]: string }) {
                   ).data;
                   return raw_data;
                 }
-                const BLUE_KERNELS = {
-                  name: "blue",
-                  scale: 4,
-                  widthStart: Math.floor(video.videoWidth * (229 / 2135)),
-                  widthSize: Math.floor(video.videoWidth * (1582 / 2135)),
-                  heightStart: Math.floor(video.videoHeight * (472 / 1211)),
-                  heightSize: Math.floor(video.videoHeight * (279 / 1211)),
-                  kernels: Object.entries({
-                    darkblue: [
-                      [13, 38, 114, 255],
-                      [15, 42, 120, 255],
-                      [22, 59, 158, 255],
-                      [30, 76, 189, 255],
-                      [33, 81, 197, 255],
-                    ],
-                    blue: [
-                      [50, 116, 221, 255],
-                      [54, 126, 255, 255],
-                      [57, 125, 255, 255],
-                      [61, 132, 255, 255],
-                    ],
-                    white: [
-                      [190, 186, 206, 255],
-                      [206, 200, 222, 255],
-                      [212, 205, 227, 255],
-                      [229, 223, 247, 255],
-                      [255, 255, 255, 255],
-                    ],
-                  }).map((o) => ({ k: o[0], v: o[1] })),
-                };
-                function get_is_commercial(
-                  kernels: typeof BLUE_KERNELS,
-                  raw_data: ImageDataArray
-                ) {
-                  const data = Array.from(
-                    new Array(Math.floor(kernels.heightSize / kernels.scale))
-                  )
-                    .map((_, y) => Math.floor(y * kernels.scale))
-                    .flatMap((y) =>
-                      Array.from(
-                        new Array(Math.floor(kernels.widthSize / kernels.scale))
-                      )
-                        .map((_, x) => Math.floor(x * kernels.scale))
-                        .map(
-                          (x) =>
-                            video.videoWidth * (kernels.heightStart + y) +
-                            kernels.widthStart +
-                            x
+                const all_kernels = [
+                  {
+                    name: "blue",
+                    scale: 4,
+                    widthStart: Math.floor(video.videoWidth * (229 / 2135)),
+                    widthSize: Math.floor(video.videoWidth * (1582 / 2135)),
+                    heightStart: Math.floor(video.videoHeight * (472 / 1211)),
+                    heightSize: Math.floor(video.videoHeight * (279 / 1211)),
+                    kernels: Object.entries({
+                      darkblue: [
+                        [13, 38, 114, 255],
+                        [15, 42, 120, 255],
+                        [22, 59, 158, 255],
+                        [30, 76, 189, 255],
+                        [33, 81, 197, 255],
+                      ],
+                      blue: [
+                        [50, 116, 221, 255],
+                        [54, 126, 255, 255],
+                        [57, 125, 255, 255],
+                        [61, 132, 255, 255],
+                      ],
+                      white: [
+                        [190, 186, 206, 255],
+                        [206, 200, 222, 255],
+                        [212, 205, 227, 255],
+                        [229, 223, 247, 255],
+                        [255, 255, 255, 255],
+                      ],
+                    }).map((o) => ({ k: o[0], v: o[1] })),
+                  },
+                  {
+                    name: "white",
+                    scale: 4,
+                    widthStart: Math.floor(video.videoWidth * (229 / 2135)),
+                    widthSize: Math.floor(video.videoWidth * (1582 / 2135)),
+                    heightStart: Math.floor(video.videoHeight * (472 / 1211)),
+                    heightSize: Math.floor(video.videoHeight * (279 / 1211)),
+                    kernels: Object.entries({
+                      darkblue: [
+                        [13, 38, 114, 255],
+                        [15, 42, 120, 255],
+                        [22, 59, 158, 255],
+                        [30, 76, 189, 255],
+                        [33, 81, 197, 255],
+                      ],
+                      blue: [
+                        [50, 116, 221, 255],
+                        [54, 126, 255, 255],
+                        [57, 125, 255, 255],
+                        [61, 132, 255, 255],
+                      ],
+                      white: [
+                        [190, 186, 206, 255],
+                        [206, 200, 222, 255],
+                        [212, 205, 227, 255],
+                        [229, 223, 247, 255],
+                        [255, 255, 255, 255],
+                      ],
+                    }).map((o) => ({ k: o[0], v: o[1] })),
+                  },
+                ];
+                function get_is_commercial(raw_data: ImageDataArray) {
+                  return (
+                    all_kernels.find((kernels) => {
+                      const data = Array.from(
+                        new Array(
+                          Math.floor(kernels.heightSize / kernels.scale)
                         )
-                    )
-                    .map((i) => Array.from(raw_data.slice(i * 4, i * 4 + 4)));
-                  const counts = Object.fromEntries(
-                    kernels.kernels.map(({ k }) => [k, 0])
+                      )
+                        .map((_, y) => Math.floor(y * kernels.scale))
+                        .flatMap((y) =>
+                          Array.from(
+                            new Array(
+                              Math.floor(kernels.widthSize / kernels.scale)
+                            )
+                          )
+                            .map((_, x) => Math.floor(x * kernels.scale))
+                            .map(
+                              (x) =>
+                                video.videoWidth * (kernels.heightStart + y) +
+                                kernels.widthStart +
+                                x
+                            )
+                        )
+                        .map((i) =>
+                          Array.from(raw_data.slice(i * 4, i * 4 + 4))
+                        );
+                      const counts = Object.fromEntries(
+                        kernels.kernels.map(({ k }) => [k, 0])
+                      );
+                      const other: Record<string, number> = {};
+                      data.forEach((d) => {
+                        const found = kernels.kernels.find(({ v }) => {
+                          if (v[0][0] - d[0] > 2) return false;
+                          if (d[0] - v[v.length - 1][0] > 2) return false;
+                          const distance = d
+                            .slice(1)
+                            .map((_, i) => ({
+                              x: d[0] - v[0][0],
+                              X: v[v.length - 1][0] - v[0][0],
+                              y: d[i + 1] - v[0][i + 1],
+                              Y: v[v.length - 1][i + 1] - v[0][i + 1],
+                            }))
+                            .map((o) => (o.x / o.X) * o.Y - o.y)
+                            .map((distance) => Math.pow(distance, 2))
+                            .reduce((a, b) => a + b, 0);
+                          if (distance > 500) return false;
+                          return true;
+                        });
+                        if (found !== undefined) {
+                          counts[found.k]++;
+                          return;
+                        }
+                        other[d.toString()] = (other[d.toString()] ?? 0) + 1;
+                      });
+                      const h = () => {
+                        if (counts.darkblue / data.length < 16000 / 156420)
+                          return false;
+                        if (counts.blue / data.length < 30000 / 156420)
+                          return false;
+                        if (counts.white / data.length < 20000 / 156420)
+                          return false;
+                        return true;
+                      };
+                      const rval = h();
+                      const common = Object.entries(other)
+                        .map(([k, v]) => ({ k, v }))
+                        .sort((a, b) => b.v - a.v)
+                        .slice(0, 10);
+                      console.log(
+                        JSON.stringify({
+                          name: kernels.name,
+                          rval,
+                          counts,
+                          length: data.length,
+                          common,
+                        })
+                      );
+                      return rval;
+                    }) !== undefined
                   );
-                  const other: Record<string, number> = {};
-                  data.forEach((d) => {
-                    const found = kernels.kernels.find(({ v }) => {
-                      if (v[0][0] - d[0] > 2) return false;
-                      if (d[0] - v[v.length - 1][0] > 2) return false;
-                      const distance = d
-                        .slice(1)
-                        .map((_, i) => ({
-                          x: d[0] - v[0][0],
-                          X: v[v.length - 1][0] - v[0][0],
-                          y: d[i + 1] - v[0][i + 1],
-                          Y: v[v.length - 1][i + 1] - v[0][i + 1],
-                        }))
-                        .map((o) => (o.x / o.X) * o.Y - o.y)
-                        .map((distance) => Math.pow(distance, 2))
-                        .reduce((a, b) => a + b, 0);
-                      if (distance > 500) return false;
-                      return true;
-                    });
-                    if (found !== undefined) {
-                      counts[found.k]++;
-                      return;
-                    }
-                    other[d.toString()] = (other[d.toString()] ?? 0) + 1;
-                  });
-                  const h = () => {
-                    if (counts.darkblue / data.length < 16000 / 156420)
-                      return false;
-                    if (counts.blue / data.length < 30000 / 156420)
-                      return false;
-                    if (counts.white / data.length < 20000 / 156420)
-                      return false;
-                    return true;
-                  };
-                  const rval = h();
-                  const common = Object.entries(other)
-                    .map(([k, v]) => ({ k, v }))
-                    .sort((a, b) => b.v - a.v)
-                    .slice(0, 10);
-                  console.log(
-                    JSON.stringify({
-                      name: kernels.name,
-                      rval,
-                      counts,
-                      length: data.length,
-                      common,
-                    })
-                  );
-                  return rval;
                 }
                 function mute_if_commercial() {
                   const start_time = Date.now();
@@ -379,10 +418,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                     .catch(() => null)
                     .then((sliced_data) => {
                       if (sliced_data === null) return;
-                      const is_commercial = get_is_commercial(
-                        BLUE_KERNELS,
-                        sliced_data
-                      );
+                      const is_commercial = get_is_commercial(sliced_data);
                       const should_mute = subscreen_muted || is_commercial;
                       if (should_mute !== video.muted) {
                         video.muted = should_mute;

@@ -324,7 +324,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                         needed: 350 / 1491,
                         kernels: [
                           [234, 235, 235, 255],
-                          [246, 235, 235, 255],
+                          [246, 232, 232, 255],
                         ],
                       },
                     }).map((o) => ({ k: o[0], v: o[1] })),

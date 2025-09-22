@@ -55,7 +55,12 @@ function _connect(
 ): Unsubscribe {
   return onValue(__ref(path), (snapshot: ResultType) => {
     var val = snapshot.val();
-    console.log("firebase", Date.now() / 1000, window.location.href, val);
+    console.log(
+      "firebase._connect",
+      Date.now() / 1000,
+      window.location.href,
+      val
+    );
     callback(val);
   });
 }

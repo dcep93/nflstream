@@ -137,6 +137,12 @@ class Sub extends React.Component<
           .concat(...getStreamsFromUrlQuery()),
       });
     };
+    const interact = () =>
+      this.state?.initialized ||
+      this.setState({
+        initialized: true,
+        screens: this.getHashedScreens(),
+      });
     return this.state?.extensionVersion === undefined ? null : md5(
         userPassword || ""
       ) !== md5(password) ? (
@@ -145,9 +151,7 @@ class Sub extends React.Component<
       <div
         className={style.main}
         style={{ backgroundColor: "black" }}
-        onClick={() =>
-          !this.state?.initialized && this.setState({ initialized: true })
-        }
+        onClick={interact}
       >
         {!this.state.extensionVersion ? null : (
           <StreamsFetcher
@@ -169,15 +173,7 @@ class Sub extends React.Component<
         />
         <div ref={this.props.divRef} style={{ width: "100vW" }}>
           {this.state.initialized === false ? (
-            <ForceInteract
-              interact={() =>
-                this.state?.initialized ||
-                this.setState({
-                  initialized: true,
-                  screens: this.getHashedScreens(),
-                })
-              }
-            />
+            <ForceInteract interact={interact} />
           ) : (
             this.state.initialized && (
               <Multiscreen

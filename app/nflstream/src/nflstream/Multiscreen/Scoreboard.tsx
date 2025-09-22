@@ -265,51 +265,57 @@ export class ScoreFetcher extends Fetcher<ScoreboardDataType, null> {
                   }) =>
                     Promise.resolve()
                       .then(() =>
-                        response.schedule
-                          .filter(
-                            (m) =>
-                              m.matchupPeriodId === response.scoringPeriodId
-                          )
-                          .map((m) =>
-                            [m.away, m.home].map((t) => ({
-                              teamName: response.teams.find(
-                                (rt) => rt.id === t.teamId
-                              )!.name,
-                              score: t.totalPointsLive,
-                              projected: t.totalProjectedPointsLive,
-                              players: response.teams
-                                .find((rt) => rt.id === t.teamId)!
-                                .roster.entries.map((e) => ({
-                                  name: e.playerPoolEntry.player.fullName,
-                                  score:
-                                    e.playerPoolEntry.player.stats.find(
-                                      (s) =>
-                                        s.statSourceId === 0 &&
-                                        s.statSplitTypeId === 1 &&
-                                        s.scoringPeriodId ===
-                                          response.scoringPeriodId
-                                    )?.appliedTotal || Number.POSITIVE_INFINITY,
-                                  projected:
-                                    e.playerPoolEntry.player.stats.find(
-                                      (s) =>
-                                        s.statSourceId === 1 &&
-                                        s.statSplitTypeId === 1 &&
-                                        s.scoringPeriodId ===
-                                          response.scoringPeriodId
-                                    )?.appliedTotal || Number.POSITIVE_INFINITY,
-                                  isStarting: ![
-                                    20, // bench
-                                    21, // IR
-                                  ].includes(e.lineupSlotId),
+                        response?.schedule === null
+                          ? Promise.reject(
+                              "content_script.scoreboard.schedule.null"
+                            )
+                          : response.schedule
+                              .filter(
+                                (m) =>
+                                  m.matchupPeriodId === response.scoringPeriodId
+                              )
+                              .map((m) =>
+                                [m.away, m.home].map((t) => ({
+                                  teamName: response.teams.find(
+                                    (rt) => rt.id === t.teamId
+                                  )!.name,
+                                  score: t.totalPointsLive,
+                                  projected: t.totalProjectedPointsLive,
+                                  players: response.teams
+                                    .find((rt) => rt.id === t.teamId)!
+                                    .roster.entries.map((e) => ({
+                                      name: e.playerPoolEntry.player.fullName,
+                                      score:
+                                        e.playerPoolEntry.player.stats.find(
+                                          (s) =>
+                                            s.statSourceId === 0 &&
+                                            s.statSplitTypeId === 1 &&
+                                            s.scoringPeriodId ===
+                                              response.scoringPeriodId
+                                        )?.appliedTotal ||
+                                        Number.POSITIVE_INFINITY,
+                                      projected:
+                                        e.playerPoolEntry.player.stats.find(
+                                          (s) =>
+                                            s.statSourceId === 1 &&
+                                            s.statSplitTypeId === 1 &&
+                                            s.scoringPeriodId ===
+                                              response.scoringPeriodId
+                                        )?.appliedTotal ||
+                                        Number.POSITIVE_INFINITY,
+                                      isStarting: ![
+                                        20, // bench
+                                        21, // IR
+                                      ].includes(e.lineupSlotId),
+                                    }))
+                                    .concat({
+                                      name: "<BENCH>",
+                                      score: Number.POSITIVE_INFINITY,
+                                      projected: Number.POSITIVE_INFINITY,
+                                      isStarting: false,
+                                    }),
                                 }))
-                                .concat({
-                                  name: "<BENCH>",
-                                  score: Number.POSITIVE_INFINITY,
-                                  projected: Number.POSITIVE_INFINITY,
-                                  isStarting: false,
-                                }),
-                            }))
-                          )
+                              )
                       )
                       .then((scores) => ({
                         scores,

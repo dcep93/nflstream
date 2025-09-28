@@ -138,7 +138,8 @@ class Sub extends React.Component<
       });
     };
     const interact = () =>
-      this.state?.initialized ||
+      !this.state.streams ||
+      this.state.initialized ||
       this.setState({
         initialized: true,
         screens: this.getHashedScreens(),

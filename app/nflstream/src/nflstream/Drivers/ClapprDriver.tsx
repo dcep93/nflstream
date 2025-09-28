@@ -405,10 +405,10 @@ function getSrcDoc(params: { [key: string]: string }) {
                         kernels.kernels.find(
                           (o) => counts[o.k] / data.length < o.v.needed
                         ) === undefined;
-                      const common = Object.entries(other)
-                        .map((o) => ({ k: o[0], v: o[1] }))
-                        .sort((a, b) => b.v - a.v)
-                        .slice(0, 10);
+                      // const common = Object.entries(other)
+                      //   .map((o) => ({ k: o[0], v: o[1] }))
+                      //   .sort((a, b) => b.v - a.v)
+                      //   .slice(0, 10);
                       // console.log(
                       //   JSON.stringify({
                       //     name: kernels.name,

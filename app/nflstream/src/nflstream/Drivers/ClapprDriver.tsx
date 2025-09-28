@@ -210,6 +210,7 @@ function getSrcDoc(params: { [key: string]: string }) {
               mute: true,
               height: "100%",
               width: "100%",
+              mediacontrol: { seekbar: "#00FF00" },
               playback: {
                 crossOrigin: "anonymous",
                 hlsjsConfig: {

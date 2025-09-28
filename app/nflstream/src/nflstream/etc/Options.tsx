@@ -1,7 +1,8 @@
 import { createRef } from "react";
 import { extension_id, EXTENSION_STORAGE_KEY } from "..";
-import { defaultLogDelayMs } from "../Log";
 import style from "../index.module.css";
+import { defaultLogDelayMs } from "../Log";
+import { refreshMultiscreen } from "../Multiscreen";
 
 export const logDelayRef = createRef<HTMLInputElement>();
 export const autoRefreshRef = createRef<HTMLInputElement>();
@@ -57,7 +58,12 @@ export default function Options() {
       </div>
       <div>
         <label>
-          <input ref={displayLogRef} type={"checkbox"} defaultChecked />
+          <input
+            ref={displayLogRef}
+            type={"checkbox"}
+            defaultChecked
+            onChange={() => refreshMultiscreen()}
+          />
           <span> display logs</span>
         </label>
       </div>

@@ -409,15 +409,15 @@ function getSrcDoc(params: { [key: string]: string }) {
                         .map((o) => ({ k: o[0], v: o[1] }))
                         .sort((a, b) => b.v - a.v)
                         .slice(0, 10);
-                      console.log(
-                        JSON.stringify({
-                          name: kernels.name,
-                          rval,
-                          counts,
-                          length: data.length,
-                          common,
-                        })
-                      );
+                      // console.log(
+                      //   JSON.stringify({
+                      //     name: kernels.name,
+                      //     rval,
+                      //     counts,
+                      //     length: data.length,
+                      //     common,
+                      //   })
+                      // );
                       return rval;
                     }) !== undefined
                   );

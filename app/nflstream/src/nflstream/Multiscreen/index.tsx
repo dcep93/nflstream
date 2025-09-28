@@ -1,5 +1,5 @@
 import React from "react";
-import { autoRefreshRef, remoteRef } from "../etc/Options";
+import { autoRefreshRef, displayLogRef, remoteRef } from "../etc/Options";
 import { onUpdateRemote, updateRemote } from "../etc/Remote";
 import { StreamType } from "../Fetcher";
 import { fetchE } from "../Fetcher/LogFetcher";
@@ -8,6 +8,8 @@ import { DelayedLog } from "../Log";
 import msStyle from "./index.module.css";
 import { updateScoreboardNow } from "./Scoreboard";
 import { Singlescreen } from "./Singlescreen";
+
+export var refreshMultiscreen = () => {};
 
 export type ScreenType = StreamType & {
   iFrameTitle: string;
@@ -20,6 +22,7 @@ class Multiscreen extends React.Component<
     removeScreen: (iFrameTitle: string) => void;
   },
   {
+    refreshKeyValue: number;
     isUnmounted: boolean;
     unsubscribe: () => void;
     selected: string;
@@ -85,7 +88,11 @@ class Multiscreen extends React.Component<
         );
       }
     });
-    this.setState({ selected: "", unsubscribe });
+    refreshMultiscreen = () =>
+      this.setState({
+        refreshKeyValue: this.state.refreshKeyValue + 1,
+      });
+    this.setState({ selected: "", unsubscribe, refreshKeyValue: 0 });
   }
 
   componentWillUnmount(): void {
@@ -149,8 +156,8 @@ class Multiscreen extends React.Component<
   }
 
   render() {
-    return (
-      <div className={msStyle.screens_wrapper}>
+    return this.state?.refreshKeyValue === undefined ? null : (
+      <div className={msStyle.screens_wrapper} key={this.state.refreshKeyValue}>
         {this.props.screens.length === 0 ? null : (
           <div className={msStyle.screens}>
             {this.props.screens.map((screen, i) => (
@@ -168,6 +175,7 @@ class Multiscreen extends React.Component<
                   this.updateSelected(screen, "singlescreen")
                 }
                 numScreens={this.props.screens.length}
+                hideLog={!screen.espnId || !displayLogRef.current?.checked}
               />
             ))}
           </div>

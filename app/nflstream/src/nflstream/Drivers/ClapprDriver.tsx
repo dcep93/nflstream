@@ -11,7 +11,7 @@ const matchRegex =
 const getRawUrl = (stream: StreamType) =>
   Promise.resolve()
     .then(() =>
-      stream.stream_id.startsWith("nfl") ? "nflstreams" : "cfbstreams"
+      stream.leagueName?.startsWith("nfl") ? "nflstreams" : "cfbstreams"
     )
     .then((path) =>
       fetchES(`https://${HOST}/${path}/live`, maxAgeMs).then(

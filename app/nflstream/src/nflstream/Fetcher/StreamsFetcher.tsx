@@ -10,42 +10,53 @@ export default class StreamsFetcher extends Fetcher<StreamType[], null> {
 
   getResponse(_maxAgeMs: number | null = null) {
     const maxAgeMs = _maxAgeMs !== null ? _maxAgeMs : 10 * 60 * 1000;
-    return fetchE(
-      "https://www.espn.com/nfl/schedule",
-      maxAgeMs,
-      undefined,
-      (text) =>
-        Promise.resolve(text)
-          .then(
+    return Promise.resolve()
+      .then(() => ["nfl", "college-football"])
+      .then((leagueScheduleUrls) =>
+        leagueScheduleUrls.map((leagueName) =>
+          fetchE(
+            `https://www.espn.com/${leagueName}/schedule`,
+            maxAgeMs,
+            undefined,
             (text) =>
-              text.match(/(?<=window\['__espnfitt__'\]=).*(?=;<\/script>)/)![0]
+              Promise.resolve(text)
+                .then(
+                  (text) =>
+                    text.match(
+                      /(?<=window\['__espnfitt__'\]=).*(?=;<\/script>)/
+                    )![0]
+                )
+                .then(JSON.parse)
+                .then(
+                  (o: {
+                    page: {
+                      content: {
+                        events: {
+                          [date: string]: {
+                            id: string;
+                            teams: { shortName: string }[];
+                            date: string;
+                            status: { state: "in" | "pre" | "post" };
+                          }[];
+                        };
+                      };
+                    };
+                  }) =>
+                    Object.values(o.page.content.events).flatMap((es) =>
+                      es.map((e) => ({
+                        leagueName,
+                        startTime: new Date(e.date).getTime(),
+                        state: e.status.state,
+                        espnId: parseInt(e.id),
+                        teams: e.teams.map((t) => t.shortName).reverse(),
+                      }))
+                    )
+                )
           )
-          .then(JSON.parse)
-          .then(
-            (o: {
-              page: {
-                content: {
-                  events: {
-                    [date: string]: {
-                      id: string;
-                      teams: { shortName: string }[];
-                      date: string;
-                      status: { state: "in" | "pre" | "post" };
-                    }[];
-                  };
-                };
-              };
-            }) =>
-              Object.values(o.page.content.events).flatMap((es) =>
-                es.map((e) => ({
-                  startTime: new Date(e.date).getTime(),
-                  state: e.status.state,
-                  espnId: parseInt(e.id),
-                  teams: e.teams.map((t) => t.shortName).reverse(),
-                }))
-              )
-          )
-    )
+        )
+      )
+      .then((ps) => Promise.all(ps))
+      .then((arrs) => arrs.flatMap((arr) => arr))
       .then((games) => DRIVER.includeSpecialStreams(games))
       .then((games) =>
         games
@@ -63,6 +74,7 @@ export default class StreamsFetcher extends Fetcher<StreamType[], null> {
             stream_id: game.teams[1].toLowerCase(),
             isStream: true,
             espnId: game.espnId,
+            leagueName: game.leagueName,
             raw_url: "",
           }))
           .map((stream) =>

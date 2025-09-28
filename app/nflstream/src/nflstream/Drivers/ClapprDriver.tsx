@@ -9,15 +9,23 @@ const maxAgeMs = 10 * 60 * 1000;
 const matchRegex =
   /href="(https:\/\/icrackstreams\.app\/live.*?stream.*?)" class/g;
 const getRawUrl = (stream: StreamType) =>
-  fetchES(`https://${HOST}/nflstreams/live`, maxAgeMs).then(
-    (text) =>
-      Array.from(text.matchAll(matchRegex))
-        .map((m) => m[1])
-        .find((m) => m.includes(stream.stream_id))!
-  );
+  Promise.resolve()
+    .then(() =>
+      stream.stream_id.startsWith("nfl") ? "nflstreams" : "cfbstreams"
+    )
+    .then((path) =>
+      fetchES(`https://${HOST}/${path}/live`, maxAgeMs).then(
+        (text) =>
+          Array.from(text.matchAll(matchRegex))
+            .map((m) => m[1])
+            .find((m) => m.includes(stream.stream_id))!
+      )
+    );
+
 const ClapprDriver = {
   includeSpecialStreams: (
     games: {
+      leagueName: string;
       startTime: number;
       state: "in" | "pre" | "post";
       espnId?: number;
@@ -40,6 +48,7 @@ const ClapprDriver = {
             startTime: 0,
             state: "in" as "in",
             teams: ["", matched.split("/").reverse()[0]],
+            leagueName: "nfl.extra",
           }))
       )
       .then((extra) => games.concat(extra)),

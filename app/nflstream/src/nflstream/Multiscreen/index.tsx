@@ -61,7 +61,6 @@ class Multiscreen extends React.Component<
     window.addEventListener("message", (event) => {
       if (this.state.isUnmounted) return;
       if (event.data.source !== "nflstream.html") return;
-      console.log(event.data);
       if (event.data.action === "loaded") {
         if (event.data.iFrameTitle === this.state?.selected) {
           const ref = this.getScreen()?.ref;
@@ -91,7 +90,8 @@ class Multiscreen extends React.Component<
 
   componentWillUnmount(): void {
     this.state?.unsubscribe();
-    this.setState({ isUnmounted: true });
+    // todo fix???????
+    // this.setState({ isUnmounted: true });
   }
 
   componentDidUpdate(): void {

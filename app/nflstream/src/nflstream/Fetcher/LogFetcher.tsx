@@ -1,18 +1,23 @@
-import Fetcher, { cacheF, LogType } from ".";
+import Fetcher, { cacheF, LogType, StreamType } from ".";
 import { extension_id } from "..";
 
-class LogFetcher extends Fetcher<LogType | null, number> {
+class LogFetcher extends Fetcher<LogType | null, StreamType> {
   intervalMs = 3 * 1000;
   getResponse() {
-    const gameId = this.props.payload;
     return Promise.resolve()
       .then(() => [
         fetchC(
-          `https://site.web.api.espn.com/apis/site/v2/sports/football/nfl/summary?region=us&lang=en&contentorigin=espn&event=${gameId}`,
+          `https://site.web.api.espn.com/apis/site/v2/sports/football/${
+            this.props.payload.leagueName
+          }/summary?region=us&lang=en&contentorigin=espn&event=${this.props
+            .payload.espnId!}`,
           10 * 1000
         ),
         fetchES(
-          `https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/${gameId}/competitions/${gameId}/drives?limit=1000`,
+          `https://sports.core.api.espn.com/v2/sports/football/leagues/${
+            this.props.payload.leagueName
+          }/events/${this.props.payload.espnId!}/competitions/${this.props
+            .payload.espnId!}/drives?limit=1000`,
           10 * 1000
         ),
       ])
@@ -106,7 +111,7 @@ class LogFetcher extends Fetcher<LogType | null, number> {
             .sort((a, b) => b.rank - a.rank),
         }));
         const log = {
-          gameId,
+          gameId: this.props.payload.espnId!,
           timestamp,
           teams: obj.boxscore.teams.map(
             (t: {

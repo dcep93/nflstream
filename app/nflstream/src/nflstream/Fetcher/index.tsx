@@ -6,6 +6,7 @@ export type StreamType = {
   stream_id: string;
   isStream: boolean;
   espnId?: number;
+  leagueName?: string;
 };
 
 export type LogType = {

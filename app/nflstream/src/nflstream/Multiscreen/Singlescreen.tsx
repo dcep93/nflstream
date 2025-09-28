@@ -111,7 +111,7 @@ function ObjectFitIframe(props: {
     >
       {!props.screen.espnId || !displayLogRef.current?.checked ? null : (
         <Log
-          espnId={props.screen.espnId!}
+          stream={props.screen}
           updateBigPlay={props.updateBigPlay}
           updateDrivingTeam={props.updateDrivingTeam}
           updateRedzone={props.updateRedzone}

@@ -1,5 +1,5 @@
 import React from "react";
-import { LogType, PlayType } from "../Fetcher";
+import { LogType, PlayType, StreamType } from "../Fetcher";
 import LogFetcher from "../Fetcher/LogFetcher";
 import { logDelayRef } from "../etc/Options";
 import AutoScroller from "./Autoscroller";
@@ -11,7 +11,7 @@ export const defaultLogDelayMs = bigPlayWarningMs; // 0 * 60 * 1000;
 
 class Log extends React.Component<
   {
-    espnId: number;
+    stream: StreamType;
     updateDrivingTeam: (drivingTeam: string) => void;
     updateRedzone: (redZone: boolean) => void;
     updateBigPlay: (isBigPlay: boolean) => void;
@@ -23,7 +23,7 @@ class Log extends React.Component<
     return (
       <>
         <LogFetcher
-          payload={this.props.espnId}
+          payload={this.props.stream}
           handleResponse={(log) => log && this.setState({ log })}
         />
         <DelayedLog
@@ -145,16 +145,7 @@ export class DelayedLog extends React.Component<
     if (!this.props.isSelected) return null;
     DelayedLog.active = this;
     return (
-      <div
-        className={logStyle.logWrapper}
-        onClick={(e) => {
-          e.metaKey
-            ? window.open(
-                `https://www.espn.com/nfl/game?gameId=${this.props.log.gameId}`
-              )
-            : this.onClick();
-        }}
-      >
+      <div className={logStyle.logWrapper} onClick={this.onClick.bind(this)}>
         <SubLog log={this.state?.log} bigPlay={this.state?.bigPlay} />
       </div>
     );

@@ -80,9 +80,11 @@ export default class StreamsFetcher extends Fetcher<StreamType[], null> {
           .map((stream) =>
             DRIVER.getRawUrl(stream)
               .then((raw_url) => ({ ...stream, raw_url }))
-              .then((stream) =>
-                DRIVER.getHostParams(stream, false).then(() => stream)
-              )
+              .then((stream) => {
+                // fetch async, dont wait
+                DRIVER.getHostParams(stream, false);
+                return stream;
+              })
               .catch((err) => {
                 console.error(err);
                 return null as any as StreamType;

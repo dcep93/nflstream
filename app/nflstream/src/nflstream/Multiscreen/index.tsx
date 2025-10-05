@@ -9,7 +9,7 @@ import msStyle from "./index.module.css";
 import { updateScoreboardNow } from "./Scoreboard";
 import { Singlescreen } from "./Singlescreen";
 
-export var refreshMultiscreen = () => {};
+export var refreshMultiscreen: (() => void) | undefined;
 
 export type ScreenType = StreamType & {
   iFrameTitle: string;
@@ -31,6 +31,7 @@ class Multiscreen extends React.Component<
   }
 > {
   componentDidMount(): void {
+    if (refreshMultiscreen) return;
     const unsubscribe = onUpdateRemote(
       ({ src, selected }) =>
         remoteRef.current?.checked &&

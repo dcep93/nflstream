@@ -62,7 +62,7 @@ export default function Options() {
             ref={displayLogRef}
             type={"checkbox"}
             defaultChecked
-            onChange={() => refreshMultiscreen()}
+            onChange={() => refreshMultiscreen?.()}
           />
           <span> display logs</span>
         </label>

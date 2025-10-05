@@ -48,7 +48,7 @@ class Multiscreen extends React.Component<
         !this.state.isUnmounted &&
         Promise.resolve(e)
           .then((e) => ({
-            ...e,
+            shiftKey: e.shiftKey,
             index: parseInt(e.code.split("Digit").reverse()[0]),
           }))
           .then(({ shiftKey, index }) =>
@@ -58,10 +58,12 @@ class Multiscreen extends React.Component<
                   .then(updateScoreboardNow)
               : Promise.resolve()
                   .then(() => this.props.screens[index - 1])
-                  .then((screen) =>
-                    screen && shiftKey
-                      ? this.props.removeScreen(screen.iFrameTitle)
-                      : this.updateSelected(screen, "keydown")
+                  .then(
+                    (screen) =>
+                      screen &&
+                      (shiftKey
+                        ? this.props.removeScreen(screen.iFrameTitle)
+                        : this.updateSelected(screen, "keydown"))
                   )
           )
     );

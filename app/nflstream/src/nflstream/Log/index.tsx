@@ -113,13 +113,13 @@ export class DelayedLog extends React.Component<
     if (log?.timestamp < this.state?.log?.timestamp) return;
     this.setState({ log });
     const playByPlay = log?.playByPlay || [];
-    const drive = ["Q2 0:00", "Q4 0:00"].includes(
-      (playByPlay[0]?.plays || [])[0]?.clock
-    )
-      ? undefined
-      : playByPlay[0]?.result === undefined
-      ? playByPlay[0]
-      : playByPlay[1];
+    const drive =
+      ["Q2 0:00", "Q4 0:00"].includes((playByPlay[0]?.plays || [])[0]?.clock) ||
+      ["End of Half", "End of Game"].includes(playByPlay[0].result || "")
+        ? undefined
+        : playByPlay[0]?.result === undefined
+        ? playByPlay[0]
+        : playByPlay[1];
     const drivingTeam = drive?.team;
     this.props.updateDrivingTeam(drivingTeam || "");
     const redZone =

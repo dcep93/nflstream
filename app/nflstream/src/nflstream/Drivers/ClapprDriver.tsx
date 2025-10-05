@@ -480,7 +480,7 @@ function getSrcDoc(params: { [key: string]: string }) {
               }
 
               const loadedInterval = setInterval(() => {
-                if (video.duration >= 45) {
+                if (video.duration >= 15) {
                   clearInterval(loadedInterval);
                   update_muted();
                   window.parent.postMessage(

@@ -101,7 +101,7 @@ function Standard(props: { scoreboardData: ScoreboardDataType }) {
           ...o,
           probability: 0.5 * (1 + erf(o.zScore / Math.SQRT2)),
         }))
-        .sort((a, b) => a.probability - b.probability)
+        .sort((a, b) => b.probability - a.probability)
         .map((o, i) => (
           <div
             key={i}
@@ -115,11 +115,7 @@ function Standard(props: { scoreboardData: ScoreboardDataType }) {
             <div>probability: {(100 * o.probability).toFixed(2)}%</div>
             <div>
               {o.teams.map((t, j) => (
-                <div
-                  key={j}
-                  style={{ maxWidth: "10em" }}
-                  title={getTitle(t.players)}
-                >
+                <div key={j} style={{ maxWidth: "10em" }}>
                   <div>
                     {t.score} ({t.projected.toFixed(2)})
                   </div>
@@ -163,7 +159,7 @@ function Guillotine(props: { scoreboardData: ScoreboardDataType }) {
       projected: o.projected,
       probability: probabilities[i],
     }))
-    .sort((a, b) => b.probability - a.probability);
+    .sort((a, b) => a.probability - b.probability);
   if (probabilities.filter((p) => p > 0.01).length <= thunderdomeCount) {
     displayTeams.splice(thunderdomeCount);
     displayTeams.unshift({
@@ -189,7 +185,7 @@ function Guillotine(props: { scoreboardData: ScoreboardDataType }) {
         >
           <div>probability: {(100 * o.probability).toFixed(2)}%</div>
           <div>
-            <div style={{ maxWidth: "10em" }} title={getTitle(o.players)}>
+            <div style={{ maxWidth: "10em" }}>
               <div>
                 {o.score} ({o.projected.toFixed(2)})
               </div>
@@ -200,15 +196,6 @@ function Guillotine(props: { scoreboardData: ScoreboardDataType }) {
       ))}
     </>
   );
-}
-
-function getTitle(players: ScoreboardPlayersType): string {
-  return players
-    .sort((a, b) => b.projected - a.projected)
-    .sort((a, b) => b.score - a.score)
-    .sort((a, b) => (b.isStarting ? 1 : -1 - (a.isStarting ? 1 : -1)))
-    .map((p) => `${p.name} / ${p.score} / ${p.projected}`)
-    .join("\n");
 }
 
 type matchupTeam = {

@@ -47,17 +47,21 @@ class Multiscreen extends React.Component<
       (e) =>
         !this.state.isUnmounted &&
         Promise.resolve(e)
-          .then((e) => e.key)
-          .then((key) => parseInt(key))
-          .then((index) =>
+          .then((e) => ({
+            ...e,
+            index: parseInt(e.code.split("Digit").reverse()[0]),
+          }))
+          .then(({ shiftKey, index }) =>
             index === 0
               ? Promise.resolve()
                   .then(() => DelayedLog.active?.updateNow())
                   .then(updateScoreboardNow)
               : Promise.resolve()
                   .then(() => this.props.screens[index - 1])
-                  .then(
-                    (screen) => screen && this.updateSelected(screen, "keydown")
+                  .then((screen) =>
+                    screen && shiftKey
+                      ? this.props.removeScreen(screen.iFrameTitle)
+                      : this.updateSelected(screen, "keydown")
                   )
           )
     );

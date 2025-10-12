@@ -71,7 +71,7 @@ class Menu extends React.Component<
 }
 
 export const extension_package_url =
-  "https://github.com/dcep93/nflstream/releases/tag/unpacked_extension";
+  "https://github.com/dcep93/nflstream/releases/tag/7.0.0";
 
 function Guide() {
   return (

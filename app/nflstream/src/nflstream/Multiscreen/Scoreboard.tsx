@@ -151,7 +151,7 @@ function Guillotine(props: { scoreboardData: ScoreboardDataType }) {
     teams.map((t) => t.stddev)
   );
   const thunderdomeCount = 3;
-  const displayTeams = teams
+  const rawDisplayTeams = teams
     .map((o, i) => ({
       teamName: o.teamName,
       players: o.players,
@@ -160,20 +160,29 @@ function Guillotine(props: { scoreboardData: ScoreboardDataType }) {
       probability: probabilities[i],
     }))
     .sort((a, b) => a.probability - b.probability);
-  if (probabilities.filter((p) => p > 0.01).length <= thunderdomeCount) {
-    displayTeams.splice(thunderdomeCount);
-    displayTeams.unshift({
-      teamName: "THUNDERDOME",
-      probability: 1,
-      players: [],
-      projected: Number.POSITIVE_INFINITY,
-      score: Number.POSITIVE_INFINITY,
-    });
-  }
+  const getDisplayTeams = () => {
+    const filteredTeams = rawDisplayTeams.filter(
+      ({ probability }) => probability > 0.01
+    );
+    if (filteredTeams.length <= thunderdomeCount) {
+      return [
+        {
+          teamName: "THUNDERDOME",
+          probability: 1,
+          players: [],
+          projected: Number.POSITIVE_INFINITY,
+          score: Number.POSITIVE_INFINITY,
+        },
+        ...filteredTeams,
+      ];
+    } else {
+      return rawDisplayTeams;
+    }
+  };
 
   return (
     <>
-      {displayTeams.map((o, i) => (
+      {getDisplayTeams().map((o, i) => (
         <div
           key={i}
           style={{

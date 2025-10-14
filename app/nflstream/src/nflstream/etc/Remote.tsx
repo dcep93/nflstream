@@ -17,7 +17,7 @@ export default class Remote extends firebase.FirebaseWrapper<RemoteType> {
   }
 
   render() {
-    if (!this.state) return <></>;
+    if (!this.state?.state) return <></>;
     return (
       <div>
         <div>

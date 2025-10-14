@@ -85,13 +85,10 @@ abstract class FirebaseWrapper<T, U = {}> extends React.Component<
   U,
   { state: T; unsubscribe: () => void }
 > {
-  static firebaseWrapperComponent: FirebaseWrapper<any, any>;
   componentDidMount() {
     initialize();
     const unsubscribe = _connect(this.getFirebasePath(), (state) =>
-      FirebaseWrapper.firebaseWrapperComponent?.setState.bind(
-        FirebaseWrapper.firebaseWrapperComponent
-      )({ state })
+      this.setState({ state })
     );
     this.setState({ unsubscribe });
   }

@@ -89,7 +89,7 @@ abstract class FirebaseWrapper<T, U = {}> extends React.Component<
   componentDidMount() {
     initialize();
     const unsubscribe = _connect(this.getFirebasePath(), (state) =>
-      FirebaseWrapper.firebaseWrapperComponent.setState.bind(
+      FirebaseWrapper.firebaseWrapperComponent?.setState.bind(
         FirebaseWrapper.firebaseWrapperComponent
       )({ state })
     );

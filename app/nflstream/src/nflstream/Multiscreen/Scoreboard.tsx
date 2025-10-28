@@ -23,13 +23,13 @@ type ScoreboardDataType = {
     projected: number;
     players: ScoreboardPlayersType;
   }[][];
-};
+} | null;
 
 export var updateScoreboardNow = () => Promise.resolve();
 
 export default function Scoreboard() {
   const [scoreboardData, updatescoreboardData] =
-    useState<ScoreboardDataType | null>(null);
+    useState<ScoreboardDataType>(null);
   var timeout: NodeJS.Timeout;
   updateScoreboardNow = () =>
     Promise.resolve()
@@ -77,6 +77,7 @@ export default function Scoreboard() {
 }
 
 function Standard(props: { scoreboardData: ScoreboardDataType }) {
+  if (!props.scoreboardData) return null;
   return (
     <>
       {props.scoreboardData.scores
@@ -130,6 +131,7 @@ function Standard(props: { scoreboardData: ScoreboardDataType }) {
 }
 
 function Guillotine(props: { scoreboardData: ScoreboardDataType }) {
+  if (!props.scoreboardData) return null;
   const teams = props.scoreboardData.scores
     .flatMap((teams) => teams)
     .filter((o) => o.projected > 0)
@@ -263,7 +265,7 @@ export class ScoreFetcher extends Fetcher<ScoreboardDataType, null> {
                   }) =>
                     Promise.resolve()
                       .then(() =>
-                        response?.schedule === null
+                        !response?.schedule
                           ? Promise.reject(
                               "content_script.scoreboard.schedule.null"
                             )
@@ -320,6 +322,10 @@ export class ScoreFetcher extends Fetcher<ScoreboardDataType, null> {
                         isGuillotine: [367176096].includes(response.id),
                         leagueId: response.id,
                       }))
+                      .catch((err) => {
+                        console.error(err);
+                        return null;
+                      })
                 )
       )
     );

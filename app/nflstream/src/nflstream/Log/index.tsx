@@ -1,5 +1,11 @@
 import React from "react";
-import { LogType, PlayType, StreamType } from "../Fetcher";
+import {
+  BoxScoreType,
+  DriveType,
+  LogType,
+  PlayType,
+  StreamType,
+} from "../Fetcher";
 import LogFetcher from "../Fetcher/LogFetcher";
 import { logDelayRef } from "../etc/Options";
 import AutoScroller from "./Autoscroller";
@@ -115,7 +121,7 @@ export class DelayedLog extends React.Component<
     const playByPlay = log?.playByPlay || [];
     const drive =
       ["Q2 0:00", "Q4 0:00"].includes((playByPlay[0]?.plays || [])[0]?.clock) ||
-      ["End of Half", "End of Game"].includes(playByPlay[0].result || "")
+      ["End of Half", "End of Game"].includes(playByPlay[0]?.result || "")
         ? undefined
         : playByPlay[0]?.result === undefined
         ? playByPlay[0]
@@ -172,6 +178,11 @@ function SubLog(props: { log: LogType; bigPlay: string }) {
         <div style={{ height: "1em" }}></div>
         {(playByPlay || []).map((drive, i) => (
           <div key={i}>
+            <DrivePlayerSummary
+              drive={drive}
+              boxScore={props.log.boxScore}
+              fantasyLog={props.log.fantasyLog}
+            />
             <div className={logStyle.logHeader}>
               <div>
                 {drive.team}: {drive.result || "*"}
@@ -240,6 +251,81 @@ function SubLog(props: { log: LogType; bigPlay: string }) {
 
 export function getLogDelayMs() {
   return parseInt(logDelayRef.current?.value || "") || defaultLogDelayMs;
+}
+
+function DrivePlayerSummary(props: {
+  drive: DriveType;
+  boxScore: BoxScoreType[];
+  fantasyLog?: LogType["fantasyLog"];
+}) {
+  const players = getBoxScorePlayersForDrive(
+    props.drive,
+    props.boxScore,
+    props.fantasyLog
+  );
+
+  if (players.length === 0) return null;
+
+  return (
+    <div className={logStyle.drivePlayers}>
+      {players.map((player, i) => (
+        <div key={i} className={logStyle.drivePlayerRow}>
+          <div className={logStyle.drivePlayerName}>
+            {player.name}
+            {player.manager && (
+              <span className={logStyle.drivePlayerManager}>
+                {" "}
+                ({player.manager})
+              </span>
+            )}
+          </div>
+          <div className={logStyle.drivePlayerStats}>
+            {player.labels.map((label, j) => (
+              <span key={j} className={logStyle.drivePlayerStat}>
+                {label}: {player.stats[j]}
+              </span>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+type DrivePlayerBoxScore = {
+  name: string;
+  stats: string[];
+  labels: string[];
+  manager?: string;
+};
+
+function getBoxScorePlayersForDrive(
+  drive: DriveType,
+  boxScore: BoxScoreType[],
+  fantasyLog?: LogType["fantasyLog"]
+): DrivePlayerBoxScore[] {
+  const playText = drive.plays?.[0]?.text;
+  if (!playText) return [];
+  const matches = (p1: string, p2: string) => true;
+  const normalizedPlayText = playText.toLowerCase();
+  const playersWithLabels = boxScore
+    .flatMap((section) =>
+      (section.players || []).map((player) => ({
+        name: player.name,
+        stats: player.stats,
+        labels: section.labels,
+      }))
+    )
+    .filter((player) => normalizedPlayText.includes(player.name.toLowerCase()))
+    .map((player) => ({
+      ...player,
+      manager: fantasyLog?.scores
+        ?.flatMap((s) => s)
+        .find((s) => s.players.find((p) => matches(p.name, player.name)))
+        ?.teamName,
+    }));
+
+  return playersWithLabels;
 }
 
 export default Log;

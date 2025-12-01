@@ -39,3 +39,40 @@
 .boxScore td {
   padding: 2px;
 }
+
+.drivePlayers {
+  padding: 0.2em 0;
+  color: #d1d1d6;
+  font-size: 0.95em;
+}
+
+.drivePlayerRow {
+  padding: 0.15em 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.drivePlayerRow:last-child {
+  border-bottom: none;
+}
+
+.drivePlayerName {
+  font-weight: 600;
+}
+
+.drivePlayerManager {
+  color: #8fd1ff;
+  font-size: 0.9em;
+}
+
+.drivePlayerStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35em;
+  margin-top: 0.1em;
+}
+
+.drivePlayerStat {
+  padding: 0.1em 0.35em;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 4px;
+}

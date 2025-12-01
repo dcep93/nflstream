@@ -1,4 +1,5 @@
 import React from "react";
+import { ScoreboardDataType } from "../Multiscreen/Scoreboard";
 
 export type StreamType = {
   raw_url: string;
@@ -15,6 +16,7 @@ export type LogType = {
   teams: { name: string; statistics: { [key: string]: string } }[];
   playByPlay: DriveType[];
   boxScore: BoxScoreType[];
+  fantasyLog?: ScoreboardDataType | null;
 };
 
 export type DriveType = {
@@ -37,6 +39,10 @@ export type BoxScoreType = {
   key: string;
   labels: string[];
   players?: { name: string; stats: string[] }[];
+};
+
+export type FantasyLogType = {
+  playerManagers: { [playerName: string]: string };
 };
 
 export default abstract class Fetcher<T, U> extends React.Component<

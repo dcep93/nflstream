@@ -1,5 +1,6 @@
 import Fetcher, { cacheF, LogType, StreamType } from ".";
 import { extension_id } from "..";
+import { ScoreboardDataType, ScoreFetcher } from "../Multiscreen/Scoreboard";
 
 class LogFetcher extends Fetcher<LogType | null, StreamType> {
   intervalMs = 3 * 1000;
@@ -127,13 +128,23 @@ class LogFetcher extends Fetcher<LogType | null, StreamType> {
           playByPlay,
           boxScore,
         };
-        return log;
+        return addFantasyLog(log);
       });
   }
 }
 
 export function fetchC(url: string, maxAgeMs: number) {
   return cacheF(url, maxAgeMs, () => fetch(url).then((resp) => resp.text()));
+}
+
+function addFantasyLog(log: LogType): Promise<LogType> {
+  return fetchFantasyLog()
+    .then((fantasyLog) => ({ ...log, fantasyLog }))
+    .catch(() => log);
+}
+
+function fetchFantasyLog(): Promise<ScoreboardDataType | null> {
+  return Promise.resolve(ScoreFetcher.cache);
 }
 
 export function fetchE<T>(

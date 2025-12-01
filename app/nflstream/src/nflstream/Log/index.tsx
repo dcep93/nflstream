@@ -153,7 +153,7 @@ export class DelayedLog extends React.Component<
 
 function SubLog(props: { log: LogType; bigPlay: string }) {
   if (!props.log) return null;
-  const playByPlay = props.log.playByPlay || [];
+  const playByPlay = [...(props.log.playByPlay || [])];
   if (
     playByPlay.length > 1 &&
     playByPlay[0].description === playByPlay[1].description
@@ -306,8 +306,8 @@ function getBoxScorePlayersForDrive(
 ): DrivePlayerBoxScore[] {
   const playText = drive.plays?.[0]?.text;
   if (!playText) return [];
-  const matches = (p1: string, p2: string) => true;
-  const normalizedPlayText = playText.toLowerCase();
+  const normalize = (text: string) => text.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const normalizedPlayText = normalize(playText);
   const playersWithLabels = boxScore
     .flatMap((section) =>
       (section.players || []).map((player) => ({
@@ -316,12 +316,17 @@ function getBoxScorePlayersForDrive(
         labels: section.labels,
       }))
     )
-    .filter((player) => normalizedPlayText.includes(player.name.toLowerCase()))
+    .filter((player) => normalizedPlayText.includes(normalize(player.name)))
     .map((player) => ({
       ...player,
       manager: fantasyLog?.scores
         ?.flatMap((s) => s)
-        .find((s) => s.players.find((p) => matches(p.name, player.name)))
+        .find(
+          (s) =>
+            s.players.find(
+              (p) => normalize(p.name) === normalize(player.name)
+            ) !== undefined
+        )
         ?.teamName,
     }));
 

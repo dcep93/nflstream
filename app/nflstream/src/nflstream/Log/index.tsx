@@ -278,13 +278,8 @@ function DrivePlayerSummary(props: {
       {players.map((player, i) => (
         <div key={i} className={logStyle.drivePlayerRow}>
           <div className={logStyle.drivePlayerName}>
-            {player.name}
-            {player.manager && (
-              <span className={logStyle.drivePlayerManager}>
-                {" "}
-                ({player.manager})
-              </span>
-            )}
+            {player.name} {player.manager} {player.points}{" "}
+            {player.starting || "bench"}
           </div>
         </div>
       ))}

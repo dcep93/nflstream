@@ -257,7 +257,7 @@ function DrivePlayerSummary(props: {
   const playParts = props.drive.plays?.[0]?.text
     .split(" ")
     .map((p) => p.split(".").map(normalize))
-    .filter((p) => p.length === 2);
+    .filter((p) => p.length >= 2);
   const players =
     !playParts || !props.fantasyLog
       ? []

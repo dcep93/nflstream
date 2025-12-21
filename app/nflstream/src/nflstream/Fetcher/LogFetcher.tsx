@@ -144,7 +144,7 @@ function addFantasyLog(log: LogType): Promise<LogType> {
 }
 
 function fetchFantasyLog(): Promise<ScoreboardDataType | null> {
-  return Promise.resolve(ScoreFetcher.cache);
+  return ScoreFetcher.staticGetResponse(1000);
 }
 
 export function fetchE<T>(

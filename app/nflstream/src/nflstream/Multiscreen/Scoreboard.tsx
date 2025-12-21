@@ -23,6 +23,12 @@ export type ScoreboardDataType = {
     projected: number;
     players: ScoreboardPlayersType;
   }[][];
+  allPlayers: {
+    name: string;
+    manager: string;
+    starting: boolean;
+    points: number;
+  }[];
 } | null;
 
 export var updateScoreboardNow = () => Promise.resolve();
@@ -324,6 +330,21 @@ export class ScoreFetcher extends Fetcher<ScoreboardDataType, null> {
                           scores,
                           isGuillotine: [367176096].includes(response.id),
                           leagueId: response.id,
+                          allPlayers: response.teams.flatMap((t) =>
+                            t.roster.entries.map((e) => ({
+                              name: e.playerPoolEntry.player.fullName,
+                              manager: t.name,
+                              starting: ![20, 21].includes(e.lineupSlotId),
+                              points:
+                                e.playerPoolEntry.player.stats.find(
+                                  (s) =>
+                                    s.statSourceId === 0 &&
+                                    s.statSplitTypeId === 1 &&
+                                    s.scoringPeriodId ===
+                                      response.scoringPeriodId
+                                )?.appliedTotal ?? 0,
+                            }))
+                          ),
                         }))
                         .catch((err) => {
                           console.error(err);

@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  BoxScoreType,
-  DriveType,
-  LogType,
-  PlayType,
-  StreamType,
-} from "../Fetcher";
+import { DriveType, LogType, PlayType, StreamType } from "../Fetcher";
 import LogFetcher from "../Fetcher/LogFetcher";
 import { logDelayRef } from "../etc/Options";
 import AutoScroller from "./Autoscroller";
@@ -178,11 +172,12 @@ function SubLog(props: { log: LogType; bigPlay: string }) {
         <div style={{ height: "1em" }}></div>
         {(playByPlay || []).map((drive, i) => (
           <div key={i}>
-            <DrivePlayerSummary
-              drive={drive}
-              boxScore={props.log.boxScore}
-              fantasyLog={props.log.fantasyLog}
-            />
+            {i === 0 && (
+              <DrivePlayerSummary
+                drive={drive}
+                fantasyLog={props.log.fantasyLog}
+              />
+            )}
             <div className={logStyle.logHeader}>
               <div>
                 {drive.team}: {drive.result || "*"}
@@ -255,14 +250,26 @@ export function getLogDelayMs() {
 
 function DrivePlayerSummary(props: {
   drive: DriveType;
-  boxScore: BoxScoreType[];
   fantasyLog?: LogType["fantasyLog"];
 }) {
-  const players = getBoxScorePlayersForDrive(
-    props.drive,
-    props.boxScore,
-    props.fantasyLog
-  );
+  const normalize = (text: string) =>
+    text.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const playParts = props.drive.plays?.[0]?.text
+    .split(" ")
+    .map((p) => p.split(".").map(normalize))
+    .filter((p) => p.length === 2);
+  const players =
+    !playParts || !props.fantasyLog
+      ? []
+      : props.fantasyLog.allPlayers
+          .map((p) => ({ ...p, normalized: normalize(p.name) }))
+          .filter((player) =>
+            playParts.find(
+              (p) =>
+                player.normalized.startsWith(p[0]) &&
+                player.normalized.endsWith(p[1])
+            )
+          );
 
   if (players.length === 0) return null;
 
@@ -279,58 +286,10 @@ function DrivePlayerSummary(props: {
               </span>
             )}
           </div>
-          <div className={logStyle.drivePlayerStats}>
-            {player.labels.map((label, j) => (
-              <span key={j} className={logStyle.drivePlayerStat}>
-                {label}: {player.stats[j]}
-              </span>
-            ))}
-          </div>
         </div>
       ))}
     </div>
   );
-}
-
-type DrivePlayerBoxScore = {
-  name: string;
-  stats: string[];
-  labels: string[];
-  manager?: string;
-};
-
-function getBoxScorePlayersForDrive(
-  drive: DriveType,
-  boxScore: BoxScoreType[],
-  fantasyLog?: LogType["fantasyLog"]
-): DrivePlayerBoxScore[] {
-  const playText = drive.plays?.[0]?.text;
-  if (!playText) return [];
-  const normalize = (text: string) => text.toLowerCase().replace(/[^a-z0-9]/g, "");
-  const normalizedPlayText = normalize(playText);
-  const playersWithLabels = boxScore
-    .flatMap((section) =>
-      (section.players || []).map((player) => ({
-        name: player.name,
-        stats: player.stats,
-        labels: section.labels,
-      }))
-    )
-    .filter((player) => normalizedPlayText.includes(normalize(player.name)))
-    .map((player) => ({
-      ...player,
-      manager: fantasyLog?.scores
-        ?.flatMap((s) => s)
-        .find(
-          (s) =>
-            s.players.find(
-              (p) => normalize(p.name) === normalize(player.name)
-            ) !== undefined
-        )
-        ?.teamName,
-    }));
-
-  return playersWithLabels;
 }
 
 export default Log;

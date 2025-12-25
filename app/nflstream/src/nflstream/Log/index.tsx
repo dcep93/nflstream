@@ -176,6 +176,7 @@ function SubLog(props: { log: LogType; bigPlay: string }) {
               <DrivePlayerSummary
                 drive={drive}
                 fantasyLog={props.log.fantasyLog}
+                boxScore={props.log.boxScore}
               />
             )}
             <div className={logStyle.logHeader}>
@@ -251,6 +252,7 @@ export function getLogDelayMs() {
 function DrivePlayerSummary(props: {
   drive: DriveType;
   fantasyLog?: LogType["fantasyLog"];
+  boxScore?: LogType["boxScore"];
 }) {
   const normalize = (text: string) =>
     text.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -258,6 +260,11 @@ function DrivePlayerSummary(props: {
     .split(" ")
     .map((p) => p.split(".").map(normalize))
     .filter((p) => p.length >= 2);
+  const boxScorePlayerNames = new Set(
+    (props.boxScore || [])
+      .flatMap((boxScore) => boxScore.players || [])
+      .map((player) => normalize(player.name))
+  );
   const players =
     !playParts || !props.fantasyLog
       ? []
@@ -268,7 +275,9 @@ function DrivePlayerSummary(props: {
               (p) =>
                 player.normalized.startsWith(p[0]) &&
                 player.normalized.endsWith(p[1])
-            )
+            ) &&
+            (boxScorePlayerNames.size === 0 ||
+              boxScorePlayerNames.has(player.normalized))
           );
 
   if (players.length === 0) return null;

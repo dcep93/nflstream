@@ -230,7 +230,7 @@ export class ScoreFetcher extends Fetcher<ScoreboardDataType, null> {
   }
 
   static staticGetResponse(intervalMs: number): Promise<ScoreboardDataType> {
-    return Promise.resolve()
+    const fetchPromise = Promise.resolve()
       .then(() =>
         fetchE(
           `/content_script`,
@@ -357,6 +357,18 @@ export class ScoreFetcher extends Fetcher<ScoreboardDataType, null> {
         ScoreFetcher.cache = response;
         return response;
       });
+
+    return new Promise<ScoreboardDataType>((resolve, reject) => {
+      const timeoutId = setTimeout(
+        () => reject(new Error("content_script.scoreboard.timeout")),
+        1_000
+      );
+
+      fetchPromise
+        .then((response) => resolve(response))
+        .catch(reject)
+        .finally(() => clearTimeout(timeoutId));
+    });
   }
 }
 

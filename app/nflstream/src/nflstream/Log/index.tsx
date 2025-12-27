@@ -270,14 +270,15 @@ function DrivePlayerSummary(props: {
       ? []
       : props.fantasyLog.allPlayers
           .map((p) => ({ ...p, normalized: normalize(p.name) }))
-          .filter((player) =>
-            playParts.find(
-              (p) =>
-                player.normalized.startsWith(p[0]) &&
-                player.normalized.endsWith(p[1])
-            ) &&
-            (boxScorePlayerNames.size === 0 ||
-              boxScorePlayerNames.has(player.normalized))
+          .filter(
+            (player) =>
+              playParts.find(
+                (p) =>
+                  player.normalized.startsWith(p[0]) &&
+                  player.normalized.endsWith(p[1])
+              ) &&
+              (boxScorePlayerNames.size === 0 ||
+                boxScorePlayerNames.has(player.normalized))
           );
 
   if (players.length === 0) return null;

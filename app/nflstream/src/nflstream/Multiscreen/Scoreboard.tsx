@@ -265,6 +265,10 @@ export class ScoreFetcher extends Fetcher<ScoreboardDataType, null> {
                         };
                       }[];
                       scoringPeriodId: number;
+                      status?: {
+                        currentMatchupPeriod?: number;
+                        latestScoringPeriod?: number;
+                      };
                       schedule: {
                         matchupPeriodId: number;
                         away: matchupTeam;
@@ -273,6 +277,20 @@ export class ScoreFetcher extends Fetcher<ScoreboardDataType, null> {
                     }) =>
                       Promise.resolve()
                         .then(() =>
+                          // Matchups are keyed by matchupPeriodId, which can diverge
+                          // from the current scoringPeriodId in the payload. Prefer
+                          // the explicit currentMatchupPeriod when present and fall
+                          // back to scoringPeriodId to maintain legacy behaviour.
+                          ({
+                            scoringPeriodId:
+                              response.status?.latestScoringPeriod ??
+                              response.scoringPeriodId,
+                            matchupPeriodId:
+                              response.status?.currentMatchupPeriod ??
+                              response.scoringPeriodId,
+                          })
+                        )
+                        .then((periods) =>
                           !response?.schedule
                             ? Promise.reject(
                                 "content_script.scoreboard.schedule.null"
@@ -281,7 +299,7 @@ export class ScoreFetcher extends Fetcher<ScoreboardDataType, null> {
                                 .filter(
                                   (m) =>
                                     m.matchupPeriodId ===
-                                    response.scoringPeriodId
+                                    periods.matchupPeriodId
                                 )
                                 .map((m) =>
                                   [m.away, m.home].map((t) => ({
@@ -300,7 +318,7 @@ export class ScoreFetcher extends Fetcher<ScoreboardDataType, null> {
                                               s.statSourceId === 0 &&
                                               s.statSplitTypeId === 1 &&
                                               s.scoringPeriodId ===
-                                                response.scoringPeriodId
+                                                periods.scoringPeriodId
                                           )?.appliedTotal ||
                                           Number.POSITIVE_INFINITY,
                                         projected:
@@ -309,7 +327,7 @@ export class ScoreFetcher extends Fetcher<ScoreboardDataType, null> {
                                               s.statSourceId === 1 &&
                                               s.statSplitTypeId === 1 &&
                                               s.scoringPeriodId ===
-                                                response.scoringPeriodId
+                                                periods.scoringPeriodId
                                           )?.appliedTotal ||
                                           Number.POSITIVE_INFINITY,
                                         isStarting: ![
@@ -341,7 +359,8 @@ export class ScoreFetcher extends Fetcher<ScoreboardDataType, null> {
                                     s.statSourceId === 0 &&
                                     s.statSplitTypeId === 1 &&
                                     s.scoringPeriodId ===
-                                      response.scoringPeriodId
+                                      (response.status?.latestScoringPeriod ??
+                                        response.scoringPeriodId)
                                 )?.appliedTotal ?? 0,
                             }))
                           ),
@@ -361,7 +380,7 @@ export class ScoreFetcher extends Fetcher<ScoreboardDataType, null> {
     return new Promise<ScoreboardDataType>((resolve, reject) => {
       const timeoutId = setTimeout(
         () => reject(new Error("content_script.scoreboard.timeout")),
-        1_000
+        10_000
       );
 
       fetchPromise

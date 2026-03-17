@@ -4,7 +4,7 @@ import firebase from "./etc/Firebase";
 import Menu, { extension_package_url } from "./etc/Menu";
 import { isMobile } from "./etc/Options";
 import Remote from "./etc/Remote";
-import { StreamType } from "./Fetcher";
+import { LeagueName, StreamType } from "./Fetcher";
 import StreamsFetcher from "./Fetcher/StreamsFetcher";
 import style from "./index.module.css";
 import Multiscreen, { ScreenType } from "./Multiscreen";
@@ -78,7 +78,7 @@ class Sub extends React.Component<
       .substring(1)
       .split(",")
       .map((stream_id) =>
-        this.state.streams!.find((s) => s.stream_id === stream_id)
+        this.state.streams!.find((s) => s.stream_id === stream_id),
       )
       .filter(Boolean)
       .map((stream) => streamToScreen(stream!));
@@ -119,6 +119,7 @@ class Sub extends React.Component<
               name: SCOREBOARD_ID,
               stream_id: SCOREBOARD_ID,
               isStream: false,
+              leagueName: "unknown" as LeagueName,
             },
           ])
           .concat(
@@ -131,8 +132,9 @@ class Sub extends React.Component<
                       ?.extensionVersion!}`,
                     stream_id: "ERROR",
                     isStream: false,
+                    leagueName: "unknown" as LeagueName,
                   },
-                ]
+                ],
           )
           .concat(...getStreamsFromUrlQuery()),
       });
@@ -145,7 +147,7 @@ class Sub extends React.Component<
         screens: this.getHashedScreens(),
       });
     return this.state?.extensionVersion === undefined ? null : md5(
-        userPassword || ""
+        userPassword || "",
       ) !== md5(password) ? (
       <PasswordPrompt extensionVersion={this.state.extensionVersion!} />
     ) : (
@@ -185,7 +187,7 @@ class Sub extends React.Component<
                 removeScreen={(iFrameTitle) =>
                   this.setState({
                     screens: this.state.screens.filter(
-                      (o) => o.iFrameTitle !== iFrameTitle
+                      (o) => o.iFrameTitle !== iFrameTitle,
                     ),
                   })
                 }
@@ -230,6 +232,7 @@ function getStreamsFromUrlQuery(): StreamType[] {
     name: `extra_${i + 1}`,
     isStream: false,
     stream_id: `extra_${i + 1}`,
+    leagueName: "unknown" as LeagueName,
   }));
 }
 

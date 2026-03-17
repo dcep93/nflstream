@@ -46,7 +46,7 @@ const ClapprDriver = {
             startTime: 0,
             state: "in" as "in",
             teams: ["", matched.split("/").reverse()[0]],
-            leagueName: "nflstreams",
+            leagueName: "nflstreams" as LeagueName,
           })),
       )
       .then((extra) => games.concat(extra)),

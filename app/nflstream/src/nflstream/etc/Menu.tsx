@@ -23,6 +23,7 @@ class Menu extends React.Component<
       window.open(stream.raw_url);
       return;
     }
+    console.log({ stream });
     alert(`cmd click noop: ${stream.name}`);
   }
 

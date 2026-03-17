@@ -8,15 +8,29 @@ import FunctionToScript from "./FunctionToScript";
 const maxAgeMs = 10 * 60 * 1000;
 const matchRegex =
   /href="(https:\/\/icrackstreams\.app\/live.*?stream.*?)" class/g;
+function normalizeSlug(s: string) {
+  return s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 const getRawUrl = (stream: StreamType) =>
   Promise.resolve()
     .then(() => stream.leagueName)
     .then((path) =>
       fetchES(`https://${HOST}/${path}/live`, maxAgeMs).then(
-        (text) =>
-          Array.from(text.matchAll(matchRegex))
-            .map((m) => m[1])
-            .find((m) => m.includes(stream.stream_id))!,
+        (text) => {
+          const normalizedStreamId = normalizeSlug(stream.stream_id);
+          const matches = Array.from(text.matchAll(matchRegex)).map((m) => m[1]);
+          const matched = matches.find((m) =>
+            normalizeSlug(m).includes(normalizedStreamId),
+          );
+          if (!matched) {
+            throw new Error(`no raw_url match for ${stream.name}`);
+          }
+          return matched;
+        },
       ),
     );
 

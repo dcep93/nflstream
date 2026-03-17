@@ -79,7 +79,7 @@ export default class StreamsFetcher extends Fetcher<StreamType[], null> {
           )
           .map((game) => ({
             name: game.teams.join(" @ "),
-            stream_id: game.teams[1].toLowerCase(),
+            stream_id: game.teams[1].toLowerCase().replaceAll(" ", "-"),
             isStream: true,
             espnId: game.espnId,
             leagueName: game.leagueName,

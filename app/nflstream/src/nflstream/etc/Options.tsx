@@ -30,7 +30,7 @@ export default function Options() {
           onChange={(e) =>
             Promise.resolve()
               .then(() =>
-                localStorage.setItem(EXTENSION_STORAGE_KEY, e.target.value)
+                localStorage.setItem(EXTENSION_STORAGE_KEY, e.target.value),
               )
               .then(() => window.location.reload())
           }
@@ -52,7 +52,7 @@ export default function Options() {
       </div>
       <div>
         <label>
-          <input ref={muteCommercialRef} type={"checkbox"} defaultChecked />
+          <input ref={muteCommercialRef} type={"checkbox"} />
           <span> mute nfl+ commercials</span>
         </label>
       </div>

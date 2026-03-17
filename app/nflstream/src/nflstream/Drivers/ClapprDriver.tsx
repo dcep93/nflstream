@@ -1,6 +1,6 @@
 import ReactDomServer from "react-dom/server";
 import { muteCommercialRef } from "../etc/Options";
-import { StreamType } from "../Fetcher";
+import { LeagueName, StreamType } from "../Fetcher";
 import { fetchES } from "../Fetcher/LogFetcher";
 import { HOST } from "../Fetcher/StreamsFetcher";
 import FunctionToScript from "./FunctionToScript";
@@ -10,27 +10,25 @@ const matchRegex =
   /href="(https:\/\/icrackstreams\.app\/live.*?stream.*?)" class/g;
 const getRawUrl = (stream: StreamType) =>
   Promise.resolve()
-    .then(() =>
-      stream.leagueName?.startsWith("nfl") ? "nflstreams" : "cfbstreams"
-    )
+    .then(() => stream.leagueName)
     .then((path) =>
       fetchES(`https://${HOST}/${path}/live`, maxAgeMs).then(
         (text) =>
           Array.from(text.matchAll(matchRegex))
             .map((m) => m[1])
-            .find((m) => m.includes(stream.stream_id))!
-      )
+            .find((m) => m.includes(stream.stream_id))!,
+      ),
     );
 
 const ClapprDriver = {
   includeSpecialStreams: (
     games: {
-      leagueName: string;
+      leagueName: LeagueName;
       startTime: number;
       state: "in" | "pre" | "post";
       espnId?: number;
       teams: string[];
-    }[]
+    }[],
   ) =>
     fetchES(`https://${HOST}/nflstreams/live`, maxAgeMs)
       .then((text) =>
@@ -41,15 +39,15 @@ const ClapprDriver = {
               games.findIndex((g) =>
                 g.teams
                   .map((t) => t.toLowerCase())
-                  .includes(matched.split("/").reverse()[0].split("-")[0])
-              ) === -1
+                  .includes(matched.split("/").reverse()[0].split("-")[0]),
+              ) === -1,
           )
           .map((matched) => ({
             startTime: 0,
             state: "in" as "in",
             teams: ["", matched.split("/").reverse()[0]],
-            leagueName: "nfl.extra",
-          }))
+            leagueName: "nflstreams",
+          })),
       )
       .then((extra) => games.concat(extra)),
   getRawUrl,
@@ -64,7 +62,7 @@ const ClapprDriver = {
         (gntleocen_src) =>
           ({
             source: `${gntleocen_src}////.m3u8`,
-          } as Record<string, string>)
+          }) as Record<string, string>,
       )
       .catch((err) => ({})),
   getSrcDoc,
@@ -98,7 +96,7 @@ function getSrcDoc(params: { [key: string]: string }) {
               p(event.data.response);
             });
             function getPayload(
-              __meta: Record<string, string>
+              __meta: Record<string, string>,
             ): Promise<string | undefined> {
               if (!__meta.url.includes("////"))
                 return Promise.resolve(undefined);
@@ -113,7 +111,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                     url: __meta.url.split("////")[0],
                     iFrameTitle: params.iFrameTitle,
                   },
-                  "*"
+                  "*",
                 );
               });
             }
@@ -131,7 +129,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                   url: string,
                   async?: boolean,
                   user?: string,
-                  password?: string
+                  password?: string,
                 ]
               ) {
                 const [method, url] = args;
@@ -252,7 +250,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                     return null;
                   }
                   const canvas = document.getElementById(
-                    "canvas"
+                    "canvas",
                   ) as HTMLCanvasElement;
                   if (!canvas) {
                     return null;
@@ -269,14 +267,14 @@ function getSrcDoc(params: { [key: string]: string }) {
                     0,
                     0,
                     video.videoWidth,
-                    video.videoHeight
+                    video.videoHeight,
                   );
 
                   const raw_data = ctx.getImageData(
                     0,
                     0,
                     video.videoWidth,
-                    video.videoHeight
+                    video.videoHeight,
                   ).data;
                   return raw_data;
                 }
@@ -347,29 +345,29 @@ function getSrcDoc(params: { [key: string]: string }) {
                     all_kernels.find((kernels) => {
                       const data = Array.from(
                         new Array(
-                          Math.floor(kernels.heightSize / kernels.scale)
-                        )
+                          Math.floor(kernels.heightSize / kernels.scale),
+                        ),
                       )
                         .map((_, y) => Math.floor(y * kernels.scale))
                         .flatMap((y) =>
                           Array.from(
                             new Array(
-                              Math.floor(kernels.widthSize / kernels.scale)
-                            )
+                              Math.floor(kernels.widthSize / kernels.scale),
+                            ),
                           )
                             .map((_, x) => Math.floor(x * kernels.scale))
                             .map(
                               (x) =>
                                 video.videoWidth * (kernels.heightStart + y) +
                                 kernels.widthStart +
-                                x
-                            )
+                                x,
+                            ),
                         )
                         .map((i) =>
-                          Array.from(raw_data.slice(i * 4, i * 4 + 4))
+                          Array.from(raw_data.slice(i * 4, i * 4 + 4)),
                         );
                       const counts = Object.fromEntries(
-                        kernels.kernels.map(({ k }) => [k, 0])
+                        kernels.kernels.map(({ k }) => [k, 0]),
                       );
                       const other: Record<string, number> = {};
                       data.forEach((d) => {
@@ -404,7 +402,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                       });
                       const rval =
                         kernels.kernels.find(
-                          (o) => counts[o.k] / data.length < o.v.needed
+                          (o) => counts[o.k] / data.length < o.v.needed,
                         ) === undefined;
                       // const common = Object.entries(other)
                       //   .map((o) => ({ k: o[0], v: o[1] }))
@@ -441,7 +439,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                       // console.log({ mute_duration });
                       setTimeout(
                         () => mute_if_commercial(),
-                        Math.max(0, muteCommercialLoopPeriodMs - mute_duration)
+                        Math.max(0, muteCommercialLoopPeriodMs - mute_duration),
                       );
                     });
                 }
@@ -489,7 +487,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                       action: "loaded",
                       iFrameTitle: params.iFrameTitle,
                     },
-                    "*"
+                    "*",
                   );
 
                   muteCommercialLoop();
@@ -510,7 +508,7 @@ function getSrcDoc(params: { [key: string]: string }) {
                               action: "refresh",
                               iFrameTitle: params.iFrameTitle,
                             },
-                            "*"
+                            "*",
                           );
                           clearInterval(refreshInterval);
                         }
@@ -528,6 +526,6 @@ function getSrcDoc(params: { [key: string]: string }) {
           }}
         />
       </body>
-    </html>
+    </html>,
   );
 }

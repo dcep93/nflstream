@@ -1,13 +1,19 @@
 import React from "react";
 import { ScoreboardDataType } from "../Multiscreen/Scoreboard";
 
+export type LeagueName =
+  | "nflstreams"
+  | "cfbstreams"
+  | "ncaabstreams"
+  | "unknown";
+
 export type StreamType = {
   raw_url: string;
   name: string;
   stream_id: string;
   isStream: boolean;
   espnId?: number;
-  leagueName?: string;
+  leagueName: LeagueName;
 };
 
 export type LogType = {
@@ -85,7 +91,7 @@ const cache: {
 export function cacheF<T>(
   key: string,
   maxAgeMs: number,
-  f: () => Promise<T>
+  f: () => Promise<T>,
 ): Promise<T> {
   const timestamp = new Date().getTime();
   var _cached = cache[key];

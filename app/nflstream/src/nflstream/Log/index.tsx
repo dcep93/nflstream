@@ -154,23 +154,31 @@ function SubLog(props: { log: LogType; bigPlay: string }) {
   ) {
     playByPlay.shift();
   }
+  const bigPlay = props.bigPlay?.split(" : ")[1] || "";
   return (
     <div className={logStyle.log}>
       <div className={logStyle.logContent} style={{ height: "64%" }}>
-        <div>
-          <span>{new Date(props.log.timestamp).toLocaleTimeString()}</span>{" "}
-          <span>[bigplay: {props.bigPlay}]</span>
+        <div className={logStyle.topBar}>
+          <span>{new Date(props.log.timestamp).toLocaleTimeString()}</span>
+          {bigPlay && <span className={logStyle.bigPlayBadge}>{bigPlay}</span>}
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <div className={logStyle.teamSummaryRow}>
           {props.log.teams.map((t) => (
-            <span key={t.name} title={JSON.stringify(t.statistics, null, 2)}>
-              {t.name} - {renderTeamStatistics(t.statistics)}
-            </span>
+            <div
+              key={t.name}
+              className={logStyle.teamSummaryCard}
+              title={JSON.stringify(t.statistics, null, 2)}
+            >
+              <div className={logStyle.teamSummaryName}>{t.name}</div>
+              <div className={logStyle.teamSummaryStats}>
+                {renderTeamStatistics(t.statistics)}
+              </div>
+            </div>
           ))}
         </div>
         <div style={{ height: "1em" }}></div>
-        {(playByPlay || []).map((drive, i) => (
-          <div key={i}>
+        {(playByPlay || []).slice().reverse().map((drive, i) => (
+          <div key={i} className={logStyle.eventRow}>
             {i === 0 && (
               <DrivePlayerSummary
                 drive={drive}
@@ -179,24 +187,29 @@ function SubLog(props: { log: LogType; bigPlay: string }) {
               />
             )}
             <div className={logStyle.logHeader}>
-              <div>
-                {drive.team}: {drive.result || "*"}
+              <div className={logStyle.eventMeta}>
+                <span>{drive.team || "Update"}</span>
+                {drive.result && (
+                  <span className={logStyle.eventResult}>{drive.result}</span>
+                )}
+                {drive.score && (
+                  <span className={logStyle.topBarMuted}>{drive.score}</span>
+                )}
               </div>
-              <div>{drive.description}</div>
-              <div>{drive.score}</div>
+              <div className={logStyle.eventDescription}>{drive.description}</div>
             </div>
             <div>
-              {(drive.plays || []).map((play, j) => (
-                <div key={j} className={logStyle.playByPlayContent}>
-                  {
-                    <div>
-                      <div>{play.down}</div>
-                      <div>{play.clock}</div>
-                      <div>{play.text}</div>
+              {(drive.plays || []).slice().reverse().map((play, j) => {
+                const hideText = play.text === drive.description;
+                return (
+                  <div key={j} className={logStyle.playByPlayContent}>
+                    {!hideText && <div>{play.text}</div>}
+                    <div className={logStyle.playMeta}>
+                      <span>{play.clock}</span>
                     </div>
-                  }
-                </div>
-              ))}
+                  </div>
+                );
+              })}
             </div>
           </div>
         ))}
@@ -249,17 +262,60 @@ export function getLogDelayMs() {
 }
 
 function renderTeamStatistics(statistics: { [key: string]: string }) {
+  const fieldGoals = statistics["fieldGoalsMade-fieldGoalsAttempted"];
+  const threePointers =
+    statistics["threePointFieldGoalsMade-threePointFieldGoalsAttempted"];
+  const freeThrows = statistics["freeThrowsMade-freeThrowsAttempted"];
   if (
     statistics.possessionTime &&
     statistics.totalYards &&
     statistics.totalOffensivePlays
   ) {
-    return `${statistics.possessionTime}=${statistics.totalYards}/${statistics.totalOffensivePlays}`;
+    return renderStatRows([
+      ["TOP", statistics.possessionTime],
+      ["YDS", statistics.totalYards],
+      ["PLAYS", statistics.totalOffensivePlays],
+    ]);
   }
-  return Object.entries(statistics)
-    .slice(0, 3)
-    .map(([, value]) => value)
-    .join(" / ");
+  if (fieldGoals && threePointers && statistics.totalRebounds) {
+    return renderStatRows([
+      ["FG", fieldGoals],
+      ["REB", statistics.totalRebounds],
+      ["3PT", threePointers],
+      ["TO", statistics.totalTurnovers || statistics.turnovers || ""],
+      ["FT", freeThrows || ""],
+      [
+        "LP",
+        statistics.leadPercentage ? `${statistics.leadPercentage}%` : "",
+      ],
+    ]);
+  }
+  return renderStatRows(
+    Object.entries(statistics)
+      .slice(0, 4)
+      .map(([key, value]) => [key, value])
+  );
+}
+
+function renderStatRows(lines: string[][]) {
+  const rows = [];
+  for (let i = 0; i < lines.length; i += 2) {
+    rows.push(lines.slice(i, i + 2));
+  }
+  return (
+    <>
+      {rows.map((row, rowIndex) => (
+        <div key={rowIndex} className={logStyle.teamSummaryStatRow}>
+          {row.map(([label, value]) => (
+            <div key={label} className={logStyle.teamSummaryStatLine}>
+              <span className={logStyle.teamSummaryStatLabel}>{label}</span>
+              <span>{value}</span>
+            </div>
+          ))}
+        </div>
+      ))}
+    </>
+  );
 }
 
 function DrivePlayerSummary(props: {

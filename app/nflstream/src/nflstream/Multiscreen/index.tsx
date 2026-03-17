@@ -182,7 +182,11 @@ class Multiscreen extends React.Component<
                   this.updateSelected(screen, "singlescreen")
                 }
                 numScreens={this.props.screens.length}
-                hideLog={!screen.espnId || !displayLogRef.current?.checked}
+                hideLog={
+                  screen.leagueName !== "nflstreams" ||
+                  !screen.espnId ||
+                  !displayLogRef.current?.checked
+                }
               />
             ))}
           </div>

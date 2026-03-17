@@ -184,6 +184,10 @@ function HostStreamIFrame(props: {
   useEffect(
     () => {
       DRIVER.getHostParams(props.screen, false)
+        .then((params) => {
+          console.log("HostStreamIFrame params", props.screen.name, params);
+          return params;
+        })
         .then((params) => ({
           ...params,
           iFrameTitle: props.screen.iFrameTitle,

@@ -25,9 +25,15 @@ export function Singlescreen(props: {
   );
   const screenTitleParts = [props.screen.name];
   if (drivingTeam) {
+    const possessionIndicator =
+      props.screen.leagueName === "ncaabstreams" ? "🏀" : "🏈";
+    const [awayTeam = "", homeTeam = ""] = props.screen.name.split(" @ ");
+    const normalizedDrivingTeam = normalizeTeamName(drivingTeam);
+    const matchesAway = teamNamesMatch(awayTeam, normalizedDrivingTeam);
+    const matchesHome = teamNamesMatch(homeTeam, normalizedDrivingTeam);
     screenTitleParts[
-      props.screen.name.endsWith(drivingTeam) ? "push" : "unshift"
-    ]("🏈");
+      matchesHome && !matchesAway ? "push" : "unshift"
+    ](possessionIndicator);
   }
   const screenTitle = screenTitleParts.join(" ");
   return (
@@ -89,6 +95,19 @@ export function Singlescreen(props: {
         </div>
       </div>
     </div>
+  );
+}
+
+function normalizeTeamName(teamName: string) {
+  return teamName.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function teamNamesMatch(screenTeamName: string, normalizedDrivingTeam: string) {
+  const normalizedScreenTeam = normalizeTeamName(screenTeamName);
+  return (
+    normalizedScreenTeam === normalizedDrivingTeam ||
+    normalizedScreenTeam.includes(normalizedDrivingTeam) ||
+    normalizedDrivingTeam.includes(normalizedScreenTeam)
   );
 }
 

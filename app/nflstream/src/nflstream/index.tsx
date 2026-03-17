@@ -58,6 +58,8 @@ class Sub extends React.Component<
     } else {
       new Promise((resolve, reject) => {
         window.chrome.runtime.sendMessage(extension_id, {}, (response: any) => {
+          const lastError = window.chrome.runtime.lastError;
+          if (lastError) return reject(lastError.message || "runtime_error");
           if (response === undefined) return reject("empty_response");
           // if (response < expected_version) return reject("old version");
           console.log("componentDidMount", "extension detected", response);
@@ -65,8 +67,6 @@ class Sub extends React.Component<
           resolve(null);
         });
       }).catch((err: Error) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        window.chrome.runtime.lastError;
         console.log("componentDidMount", "extension not detected", err);
         this.setState({ extensionVersion: `- ${err}` });
       });

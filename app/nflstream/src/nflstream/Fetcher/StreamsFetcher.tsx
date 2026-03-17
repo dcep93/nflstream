@@ -11,7 +11,14 @@ export default class StreamsFetcher extends Fetcher<StreamType[], null> {
   getResponse(_maxAgeMs: number | null = null) {
     const maxAgeMs = _maxAgeMs !== null ? _maxAgeMs : 10 * 60 * 1000;
     return Promise.resolve()
-      .then(() => ({ nfl: "nflstreams", "college-football": "cfbstreams" }))
+      .then(
+        () =>
+          ({
+            nfl: "nflstreams",
+            "college-football": "cfbstreams",
+            "mens-college-basketball": "ncaabstreams",
+          }) as Record<string, LeagueName>,
+      )
       .then((leagueScheduleUrls) =>
         Object.entries(leagueScheduleUrls).map(
           ([espnLeagueName, clapprLeagueName]) =>

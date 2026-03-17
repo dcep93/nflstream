@@ -5,6 +5,12 @@ import { ScoreboardDataType, ScoreFetcher } from "../Multiscreen/Scoreboard";
 class LogFetcher extends Fetcher<LogType | null, StreamType> {
   intervalMs = 3 * 1000;
   getResponse() {
+    if (
+      this.props.payload.leagueName !== "nflstreams" ||
+      !this.props.payload.espnId
+    ) {
+      return Promise.resolve(null);
+    }
     return Promise.resolve()
       .then(() => [
         fetchC(

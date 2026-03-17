@@ -13,7 +13,6 @@
       ]
     },
     "condition": {
-      "initiatorDomains": ["nflstream.web.app", "localhost"],
       "requestDomains": ["gooz.aapmains.net"],
       "resourceTypes": ["xmlhttprequest"]
     }
@@ -32,7 +31,6 @@
       ]
     },
     "condition": {
-      "initiatorDomains": ["nflstream.web.app", "localhost"],
       "excludedRequestDomains": ["gooz.aapmains.net"],
       "urlFilter": "|http*://*",
       "resourceTypes": ["xmlhttprequest"]
@@ -51,7 +49,6 @@
       ]
     },
     "condition": {
-      "initiatorDomains": ["nflstream.web.app", "localhost"],
       "excludedRequestDomains": ["gooz.aapmains.net"],
       "regexFilter": "^https://[^?]+segment_[^?]+\\.ts\\?token=",
       "resourceTypes": ["xmlhttprequest"]

@@ -148,15 +148,20 @@ function getSrcDoc(params: { [key: string]: string }) {
               ) {
                 const [method, url] = args;
                 xhr.__meta.method = method?.toUpperCase?.() || "GET";
-                xhr.__meta.url = url;
-                return origOpen.apply(xhr, args as any);
+                xhr.__meta.url = url.includes("////")
+                  ? url.split("////")[0]
+                  : url;
+                return origOpen.apply(
+                  xhr,
+                  [method, xhr.__meta.url].concat(args.slice(2)) as any,
+                );
               };
 
               const origSend = xhr.send;
               xhr.send = function (body?: Document | BodyInit | null) {
                 const __meta = xhr.__meta;
                 getPayload(__meta).then((payload) => {
-                  if (!payload) {
+                  if (payload === undefined) {
                     return origSend.call(xhr, body as any);
                   }
 

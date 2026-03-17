@@ -21,7 +21,7 @@ export function Singlescreen(props: {
   const [redZone, updateRedzone] = useState(false);
   const [bigPlay, updateBigPlay] = useState(false);
   const [drivingTeam, updateDrivingTeam] = useState<string | undefined>(
-    undefined
+    undefined,
   );
   const screenTitleParts = [props.screen.name];
   if (drivingTeam) {
@@ -46,8 +46,8 @@ export function Singlescreen(props: {
           backgroundColor: redZone
             ? "maroon"
             : bigPlay && !props.isSelected
-            ? "steelblue"
-            : undefined,
+              ? "steelblue"
+              : undefined,
         }}
       >
         <span className={style.hover} onClick={() => props.removeScreen()}>
@@ -61,7 +61,7 @@ export function Singlescreen(props: {
               .then(() =>
                 props.screen.isStream
                   ? DRIVER.getHostParams(props.screen, true)
-                  : Promise.resolve({})
+                  : Promise.resolve({}),
               )
               .then(() => props.refreshKeyF());
           }}
@@ -184,10 +184,6 @@ function HostStreamIFrame(props: {
   useEffect(
     () => {
       DRIVER.getHostParams(props.screen, false)
-        .then((params) => {
-          console.log("HostStreamIFrame params", props.screen.name, params);
-          return params;
-        })
         .then((params) => ({
           ...params,
           iFrameTitle: props.screen.iFrameTitle,
@@ -207,7 +203,7 @@ function HostStreamIFrame(props: {
         .then((ife) => updateIframeE(ife));
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [props.refreshKeyValue]
+    [props.refreshKeyValue],
   );
   return <>{iframeE}</>;
 }

@@ -164,8 +164,7 @@ function SubLog(props: { log: LogType; bigPlay: string }) {
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           {props.log.teams.map((t) => (
             <span key={t.name} title={JSON.stringify(t.statistics, null, 2)}>
-              {t.name} - {t.statistics.possessionTime}={t.statistics.totalYards}
-              /{t.statistics.totalOffensivePlays}
+              {t.name} - {renderTeamStatistics(t.statistics)}
             </span>
           ))}
         </div>
@@ -247,6 +246,20 @@ function SubLog(props: { log: LogType; bigPlay: string }) {
 
 export function getLogDelayMs() {
   return parseInt(logDelayRef.current?.value || "") || defaultLogDelayMs;
+}
+
+function renderTeamStatistics(statistics: { [key: string]: string }) {
+  if (
+    statistics.possessionTime &&
+    statistics.totalYards &&
+    statistics.totalOffensivePlays
+  ) {
+    return `${statistics.possessionTime}=${statistics.totalYards}/${statistics.totalOffensivePlays}`;
+  }
+  return Object.entries(statistics)
+    .slice(0, 3)
+    .map(([, value]) => value)
+    .join(" / ");
 }
 
 function DrivePlayerSummary(props: {

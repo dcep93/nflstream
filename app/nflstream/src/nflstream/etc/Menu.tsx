@@ -37,6 +37,14 @@ class Menu extends React.Component<
         >
           {titleMessageDiv}
         </h1>
+        <a
+          className={[style.bubble, style.red, style.hover, style.link_bubble].join(
+            " ",
+          )}
+          href="http://watchwall420.web.app/"
+        >
+          nflstream is deprecated. visit watchwall420.web.app instead
+        </a>
 
         {this.props.streams === undefined ? (
           <div>

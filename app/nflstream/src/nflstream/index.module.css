@@ -38,6 +38,12 @@
   cursor: pointer;
 }
 
+.link_bubble {
+  color: inherit;
+  display: block;
+  text-decoration: none;
+}
+
 /* Hide scrollbar */
 *::-webkit-scrollbar {
   display: none;
